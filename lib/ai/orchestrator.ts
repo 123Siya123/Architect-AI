@@ -32,6 +32,7 @@ import {
     ARCHITECT_SYSTEM_PROMPT,
     createHouseContextPrompt,
 } from './prompts';
+import { getNextKey, markKeyRateLimited } from './key-manager';
 
 // =============================================================================
 // CONFIGURATION
@@ -56,7 +57,7 @@ export interface AIConfig {
 export function getAIConfig(): AIConfig {
     return {
         provider: (process.env.NEXT_PUBLIC_AI_PROVIDER as 'gemini' | 'openai' | 'groq') || 'gemini',
-        apiKey: process.env.AI_API_KEY || '',
+        apiKey: '', // Keys are now managed by key-manager.ts (getNextKey)
         model: process.env.AI_MODEL || 'llama-3.3-70b-versatile',
         maxTokens: 4096,
         temperature: 0.7,
@@ -152,7 +153,9 @@ async function callGemini(
     config: AIConfig,
     messages: Array<{ role: string; content: string }>,
 ): Promise<{ text: string; toolCalls: Array<{ name: string; args: Record<string, unknown> }> }> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+    // Get next available key from the carousel
+    const apiKey = getNextKey();
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${apiKey}`;
 
     // Build Gemini's expected format
     const systemInstruction = messages
@@ -196,6 +199,9 @@ async function callGemini(
 
     if (!response.ok) {
         const err = await response.text();
+        if (response.status === 429) {
+            markKeyRateLimited(apiKey);
+        }
         throw new Error(`Gemini API error (${response.status}): ${err}`);
     }
 
@@ -231,13 +237,14 @@ async function callGemini(
 /**
  * Calls the Groq API with function calling support.
  * Groq uses an OpenAI-compatible API — same request format, different base URL.
- * Supports models like llama-3.3-70b-versatile, mixtral-8x7b-32768.
+ * Uses the key carousel to rotate through keys and avoid rate limits.
  */
 async function callGroq(
     config: AIConfig,
     messages: Array<{ role: string; content: string }>,
+    retries = 0,
 ): Promise<{ text: string; toolCalls: Array<{ name: string; args: Record<string, unknown> }> }> {
-    // Groq's OpenAI-compatible endpoint
+    const apiKey = getNextKey();
     const url = 'https://api.groq.com/openai/v1/chat/completions';
 
     const body = {
@@ -260,6 +267,18 @@ async function callGroq(
 
     if (!response.ok) {
         const err = await response.text();
+        if (response.status === 429) {
+            // Parse Retry-After header if present
+            const retryAfterSec = response.headers.get('retry-after');
+            const retryMs = retryAfterSec ? parseInt(retryAfterSec, 10) * 1000 : undefined;
+            markKeyRateLimited(apiKey, retryMs);
+
+            // Retry with next key (up to pool size times)
+            if (retries < 8) {
+                console.log(`[Groq] Key rate limited. Retrying with next key (attempt ${retries + 1}/8)...`);
+                return callGroq(config, messages, retries + 1);
+            }
+        }
         throw new Error(`Groq API error (${response.status}): ${err}`);
     }
 
@@ -294,11 +313,14 @@ async function callGroq(
 
 /**
  * Calls the OpenAI API with function calling support (GPT-4/GPT-4o).
+ * Also uses the key carousel for supporting multiple OpenAI org keys.
  */
 async function callOpenAI(
     config: AIConfig,
     messages: Array<{ role: string; content: string }>,
+    retries = 0,
 ): Promise<{ text: string; toolCalls: Array<{ name: string; args: Record<string, unknown> }> }> {
+    const apiKey = getNextKey();
     const url = 'https://api.openai.com/v1/chat/completions';
 
     const body = {
@@ -314,13 +336,19 @@ async function callOpenAI(
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${config.apiKey}`,
+            Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify(body),
     });
 
     if (!response.ok) {
         const err = await response.text();
+        if (response.status === 429) {
+            markKeyRateLimited(apiKey);
+            if (retries < 8) {
+                return callOpenAI(config, messages, retries + 1);
+            }
+        }
         throw new Error(`OpenAI API error (${response.status}): ${err}`);
     }
 
