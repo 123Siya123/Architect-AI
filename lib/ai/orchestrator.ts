@@ -272,14 +272,30 @@ async function callGroq(
         max_tokens: config.maxTokens,
     };
 
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(body),
-    });
+    let response: Response;
+    try {
+        response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify(body),
+            // 30-second timeout per attempt
+            signal: AbortSignal.timeout(30000),
+        });
+    } catch (networkErr) {
+        // Network-level failures (timeout, DNS, refused) — retry up to 3 times
+        const isTimeout = networkErr instanceof Error &&
+            (networkErr.name === 'TimeoutError' || networkErr.message.includes('Timeout') || networkErr.message.includes('ConnectTimeout'));
+        if (retries < 3) {
+            const waitMs = isTimeout ? 2000 : 1000;
+            console.warn(`[Groq] Network error (${networkErr instanceof Error ? networkErr.message : 'unknown'}). Retrying in ${waitMs}ms (attempt ${retries + 1})...`);
+            await new Promise(r => setTimeout(r, waitMs));
+            return callGroq(config, messages, retries + 1);
+        }
+        throw new Error(`Groq network error after ${retries} retries: ${networkErr instanceof Error ? networkErr.message : 'fetch failed'}`);
+    }
 
     if (!response.ok) {
         const err = await response.text();
@@ -303,6 +319,16 @@ async function callGroq(
 
         if (response.status === 413) {
             throw new Error(`The project state is too large for the current AI model's limits. I've tried to compress it, but we are still exceeding the ${config.model} token limit. Try deleting unused elements or restarting the server.`);
+        }
+
+        // For decommissioned model or other 400 errors, surface a friendly message
+        if (response.status === 400) {
+            let errBody: { error?: { message?: string; code?: string } } = {};
+            try { errBody = JSON.parse(err); } catch { }
+            const code = errBody?.error?.code;
+            if (code === 'model_decommissioned') {
+                throw new Error(`The AI model "${config.model}" has been decommissioned by Groq. Please update AI_MODEL in .env.local to "llama-3.3-70b-versatile" and restart the server.`);
+            }
         }
 
         throw new Error(`Groq API error (${response.status}): ${err}`);

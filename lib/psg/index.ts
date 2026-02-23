@@ -18,5 +18,6 @@ export * from './schema';
 export * from './validator';
 export * from './operations';
 export * from './compiler';
+export * from './geometry';
 export * from './cost-calculator';
 export * from './templates';

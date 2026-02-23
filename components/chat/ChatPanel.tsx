@@ -74,7 +74,7 @@ export default function ChatPanel() {
     const isAIThinking = useDesignStore((s) => s.isAIThinking);
     const setAIThinking = useDesignStore((s) => s.setAIThinking);
     const project = useDesignStore((s) => s.project);
-    const applyBatchOps = useDesignStore((s) => s.applyBatchOps);
+    const applyOp = useDesignStore((s) => s.applyOp);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom on new messages
@@ -109,14 +109,29 @@ export default function ChatPanel() {
 
             const data = await response.json();
 
-            // ✅ CRITICAL: Apply AI operations to the 3D scene via the store
-            let appliedOps = data.operations || [];
-            if (appliedOps.length > 0) {
-                const result = applyBatchOps(appliedOps);
-                if (!result.success) {
-                    console.warn('[ChatPanel] Some operations failed:', result.errors);
-                    // Only keep ops that were attempted — still show them in the chat
+            // ✅ Apply AI operations to the 3D scene one-by-one so a single
+            // bad op (e.g. hallucinated node ID) doesn't crash the whole batch.
+            const allOps: typeof data.operations = data.operations || [];
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const op of allOps) {
+                try {
+                    const result = applyOp(op);
+                    if (result.success) {
+                        successCount++;
+                    } else {
+                        failCount++;
+                        console.warn('[ChatPanel] Op failed validation:', op.type, op.target_id, result.errors);
+                    }
+                } catch (opErr) {
+                    failCount++;
+                    console.warn('[ChatPanel] Op threw at runtime:', op.type, op.target_id, opErr);
                 }
+            }
+
+            if (allOps.length > 0) {
+                console.log(`[ChatPanel] Applied ${successCount}/${allOps.length} operations (${failCount} failed)`);
             }
 
             const aiMsg: ChatMessage = {
@@ -124,7 +139,7 @@ export default function ChatPanel() {
                 role: 'assistant',
                 content: data.message || 'I processed your request.',
                 timestamp: new Date().toISOString(),
-                operations: appliedOps,
+                operations: allOps,
             };
             addChatMessage(aiMsg);
         } catch {
@@ -138,7 +153,7 @@ export default function ChatPanel() {
         } finally {
             setAIThinking(false);
         }
-    }, [input, isAIThinking, project, chatMessages, addChatMessage, setAIThinking, applyBatchOps]);
+    }, [input, isAIThinking, project, chatMessages, addChatMessage, setAIThinking, applyOp]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

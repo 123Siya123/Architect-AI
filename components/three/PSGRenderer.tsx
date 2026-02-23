@@ -1,31 +1,48 @@
 /**
  * =============================================================================
- * COMPONENTS/THREE/PSG-RENDERER.TSX — Renders PSG Nodes as 3D Meshes
+ * COMPONENTS/THREE/PSG-RENDERER.TSX — Renders PSG Nodes as Architecturally
+ *                                     Correct 3D Meshes
  * =============================================================================
  *
- * Iterates over all nodes in the PSGProject and renders each as a
- * Three.js mesh with the correct geometry, material, position, and
- * rotation. Handles selection highlighting and hover outlines.
- *
  * RENDERING STRATEGY:
- * - Skip House/Floor/Room nodes (containers only — no geometry)
- * - Render Walls, Windows, Doors, Roof, Stairs, Slabs, etc.
- * - Use the compiler to generate geometry per node type
- * - Color from materials.json, with selection/hover highlights
+ *
+ *  WALLS:
+ *   - Built with buildWallWithOpenings() → ExtrudeGeometry with holes
+ *   - Corner resolution via resolveWallCorners() → no blind overlaps
+ *   - Each wall is a SINGLE mesh (not box + separate window mesh)
+ *
+ *  WINDOWS:
+ *   - buildWindowGroup() → frame (4 solid members) + glass pane
+ *   - Positioned exactly at the opening in the parent wall
+ *   - No separate "hole" mesh needed — the wall has the hole already
+ *
+ *  DOORS:
+ *   - buildDoorGroup() → frame (3 members) + door leaf
+ *   - Door leaf sits in the closed position flush with interior wall face
+ *
+ *  ALL OTHER TYPES (Roof, Stairs, Slab, etc.):
+ *   - Use getGeometryForNode() from compiler.ts (unchanged)
  *
  * PERFORMANCE:
- * - Each node is a separate <mesh> for raycasting/selection
- * - Geometry is created once per node (keyed by node.id + version)
- * - Materials are cached by material_id
+ *  - Geometry is memoized by node.id + node.version
+ *  - Material is cached by material_id
+ *  - Each node is a separate mesh for raycasting/selection
  * =============================================================================
  */
 
 'use client';
 
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { ThreeEvent } from '@react-three/fiber';
 import { useDesignStore } from '@/store/useDesignStore';
+import {
+    buildWallWithOpenings,
+    buildWindowGroup,
+    buildDoorGroup,
+    resolveWallCorners,
+    resolveWallPosition,
+} from '@/lib/psg/geometry';
 import { getGeometryForNode, compileMaterial, compileGlassMaterial } from '@/lib/psg/compiler';
 import materialsDatabase from '@/data/materials.json';
 import type { PSGNode, Material } from '@/types';
@@ -38,37 +55,21 @@ const materialCache = new Map<string, THREE.MeshStandardMaterial>();
 const glassMaterial = compileGlassMaterial();
 
 function getMaterial(materialId: string, opacity: number): THREE.Material {
-    // Glass materials for windows
-    if (opacity < 1 || materialId.includes('glass')) {
-        return glassMaterial;
-    }
-
-    // Look up from cache first
-    if (materialCache.has(materialId)) {
-        return materialCache.get(materialId)!;
-    }
-
-    // Look up from the materials database
+    if (opacity < 1 || materialId.includes('glass')) return glassMaterial;
+    if (materialCache.has(materialId)) return materialCache.get(materialId)!;
     const matDef = (materialsDatabase as Record<string, Material>)[materialId];
     if (matDef) {
-        const threeMat = compileMaterial(matDef);
-        materialCache.set(materialId, threeMat);
-        return threeMat;
+        const m = compileMaterial(matDef);
+        materialCache.set(materialId, m);
+        return m;
     }
-
-    // Fallback: grey material for unknown material IDs
-    const fallback = new THREE.MeshStandardMaterial({
-        color: '#888888',
-        roughness: 0.8,
-        metalness: 0.1,
-        side: THREE.DoubleSide,
-    });
+    const fallback = new THREE.MeshStandardMaterial({ color: '#888888', roughness: 0.8, metalness: 0.1, side: THREE.DoubleSide });
     materialCache.set(materialId, fallback);
     return fallback;
 }
 
 // =============================================================================
-// HIGHLIGHT MATERIALS (for selection and hover)
+// HIGHLIGHT MATERIALS
 // =============================================================================
 
 const SELECTION_EMISSIVE = new THREE.Color(0x2266ff);
@@ -84,65 +85,232 @@ const RENDERABLE_TYPES = new Set([
     'Balcony', 'Garage', 'Chimney',
 ]);
 
+// Openings are rendered AS PART OF their parent wall group — skip standalone rendering
+const OPENING_TYPES = new Set(['Window', 'Door']);
+
 // =============================================================================
-// SINGLE NODE MESH
+// WALL MESH — with carved openings + corner correction
 // =============================================================================
 
-interface NodeMeshProps {
+interface WallMeshProps {
     node: PSGNode;
     isSelected: boolean;
     isHovered: boolean;
+    allNodes: Record<string, PSGNode>;
 }
 
-function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
-    const meshRef = useRef<THREE.Mesh>(null);
+function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
 
-    // Generate geometry (memoized per node version + style)
-    const geometryOrGroup = useMemo(() => {
-        return getGeometryForNode(node);
-    }, [node.type, node.dimensions.x, node.dimensions.y, node.dimensions.z, node.version, node.roof_style, node.stair_style]);
+    // Get corner-corrected wall data
+    const { adjustedWidth, startInset, endInset } = useMemo(
+        () => resolveWallCorners(node, allNodes),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [node.id, node.version, node.dimensions.x, node.dimensions.z, node.position.x, node.position.z, node.rotation.yaw]
+    );
 
-    // Get material (recomputed when material_id changes)
-    const material = useMemo(() => {
-        return getMaterial(node.material_id, node.opacity);
-    }, [node.material_id, node.opacity]);
+    // Create a "virtual" node with adjusted width for geometry building
+    const adjustedNode = useMemo(() => ({
+        ...node,
+        dimensions: { ...node.dimensions, x: adjustedWidth },
+    }), [node, adjustedWidth]);
 
-    // Rotation: convert yaw/pitch/roll degrees to radians
+    // Build wall geometry with openings
+    const wallGeometry = useMemo(
+        () => buildWallWithOpenings(adjustedNode, allNodes),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [node.id, node.version, adjustedWidth, node.dimensions.y, node.dimensions.z,
+        ...node.children_ids.flatMap(id => {
+            const child = allNodes[id];
+            return child ? [child.version, child.position.x, child.position.z, child.position.y] : [];
+        })]
+    );
+
+    const material = useMemo(
+        () => getMaterial(node.material_id, node.opacity),
+        [node.material_id, node.opacity]
+    );
+
+    // Corner-corrected center position
+    const position = useMemo(
+        () => resolveWallPosition(node, startInset, endInset),
+        [node, startInset, endInset]
+    );
+
     const rotation = useMemo<[number, number, number]>(() => [
         (node.rotation.pitch * Math.PI) / 180,
         (node.rotation.yaw * Math.PI) / 180,
         (node.rotation.roll * Math.PI) / 180,
     ], [node.rotation.yaw, node.rotation.pitch, node.rotation.roll]);
 
-    // Click → select
-    const handleClick = (e: ThreeEvent<MouseEvent>) => {
-        e.stopPropagation();
-        selectNode(node.id);
-    };
+    const handleClick = (e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); selectNode(node.id); };
+    const handlePointerOver = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); hoverNode(node.id); document.body.style.cursor = 'pointer'; };
+    const handlePointerOut = () => { hoverNode(null); document.body.style.cursor = 'default'; };
 
-    // Hover
-    const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
-        e.stopPropagation();
-        hoverNode(node.id);
-        document.body.style.cursor = 'pointer';
-    };
+    return (
+        <group
+            key={`${node.id}_${node.version}`}
+            position={[position.x, position.y, position.z]}
+            rotation={rotation}
+        >
+            {/* Wall solid with holes */}
+            <mesh
+                geometry={wallGeometry}
+                onClick={handleClick}
+                onPointerOver={handlePointerOver}
+                onPointerOut={handlePointerOut}
+                castShadow
+                receiveShadow
+            >
+                {(isSelected || isHovered) ? (
+                    <meshStandardMaterial
+                        color={(material as THREE.MeshStandardMaterial).color || '#888888'}
+                        roughness={0.7}
+                        metalness={0.1}
+                        side={THREE.DoubleSide}
+                        emissive={isSelected ? SELECTION_EMISSIVE : HOVER_EMISSIVE}
+                        emissiveIntensity={isSelected ? 0.3 : 0.15}
+                    />
+                ) : (
+                    <primitive object={material} attach="material" />
+                )}
+            </mesh>
 
-    const handlePointerOut = () => {
-        hoverNode(null);
-        document.body.style.cursor = 'default';
-    };
+            {/* Window + Door groups rendered here, positioned relative to wall center */}
+            {node.children_ids.map(childId => {
+                const child = allNodes[childId];
+                if (!child || !OPENING_TYPES.has(child.type)) return null;
+                return (
+                    <OpeningGroup
+                        key={`${childId}_${child.version}`}
+                        node={child}
+                        parentWall={node}
+                        allNodes={allNodes}
+                    />
+                );
+            })}
+        </group>
+    );
+}
 
-    // If the compiler returned a Group (e.g. stairs), wrap differently
+// =============================================================================
+// OPENING GROUP (Window / Door)
+// =============================================================================
+
+interface OpeningGroupProps {
+    node: PSGNode;
+    parentWall: PSGNode;
+    allNodes: Record<string, PSGNode>;
+}
+
+function OpeningGroup({ node, parentWall, allNodes }: OpeningGroupProps) {
+    const selectNode = useDesignStore((s) => s.selectNode);
+    const hoverNode = useDesignStore((s) => s.hoverNode);
+    const selection = useDesignStore((s) => s.selection);
+    const isSelected = selection.selected_node_id === node.id;
+    const isHovered = selection.hovered_node_id === node.id;
+
+    const wallThickness = parentWall.dimensions.z;
+
+    // Build the 3D group (frame + glass / frame + leaf)
+    const group = useMemo(() => {
+        return node.type === 'Window'
+            ? buildWindowGroup(node, wallThickness)
+            : buildDoorGroup(node, wallThickness);
+    }, [node.id, node.version, wallThickness, node.opening_width, node.opening_height]);
+
+    // Local position within wall: the opening lives at its world position,
+    // but we need to express it RELATIVE to the parent wall group
+    const localPos = useMemo(() => {
+        const yaw = Math.round(parentWall.rotation.yaw) % 180;
+        const isNS = (yaw === 90 || yaw === -90);
+        const wx = isNS ? (node.position.z - parentWall.position.z) : (node.position.x - parentWall.position.x);
+        const wy = node.position.y - parentWall.position.y;
+        return { x: wx, y: wy, z: 0 };
+    }, [node.position, parentWall.position, parentWall.rotation.yaw]);
+
+    const handleClick = (e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); selectNode(node.id); };
+    const handlePointerOver = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); hoverNode(node.id); document.body.style.cursor = 'pointer'; };
+    const handlePointerOut = () => { hoverNode(null); document.body.style.cursor = 'default'; };
+
+    return (
+        <group
+            key={`${node.id}_${node.version}`}
+            position={[localPos.x, localPos.y, localPos.z]}
+            onClick={handleClick}
+            onPointerOver={handlePointerOver}
+            onPointerOut={handlePointerOut}
+        >
+            {group.children.map((child, i) => {
+                const mesh = child as THREE.Mesh;
+                const mat = mesh.material as THREE.Material;
+                // Clone and apply selection/hover tint
+                let renderMat: THREE.Material;
+                if (isSelected || isHovered) {
+                    renderMat = mat.clone();
+                    if (renderMat instanceof THREE.MeshStandardMaterial) {
+                        renderMat.emissive = isSelected ? SELECTION_EMISSIVE : HOVER_EMISSIVE;
+                        renderMat.emissiveIntensity = isSelected ? 0.2 : 0.1;
+                    }
+                } else {
+                    renderMat = mat;
+                }
+                return (
+                    <mesh
+                        key={`${node.id}_frame_${i}`}
+                        geometry={mesh.geometry}
+                        position={mesh.position}
+                        castShadow
+                        receiveShadow
+                    >
+                        <primitive object={renderMat} attach="material" />
+                    </mesh>
+                );
+            })}
+        </group>
+    );
+}
+
+// =============================================================================
+// GENERIC NODE MESH (Roof, Stairs, Slab, Column, Beam, Foundation, ...)
+// =============================================================================
+
+interface GenericMeshProps {
+    node: PSGNode;
+    isSelected: boolean;
+    isHovered: boolean;
+}
+
+function GenericNodeMesh({ node, isSelected, isHovered }: GenericMeshProps) {
+    const selectNode = useDesignStore((s) => s.selectNode);
+    const hoverNode = useDesignStore((s) => s.hoverNode);
+
+    const geometryOrGroup = useMemo(
+        () => getGeometryForNode(node),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [node.type, node.dimensions.x, node.dimensions.y, node.dimensions.z, node.version, node.roof_style, node.stair_style]
+    );
+
+    const material = useMemo(() => getMaterial(node.material_id, node.opacity), [node.material_id, node.opacity]);
+
+    const rotation = useMemo<[number, number, number]>(() => [
+        (node.rotation.pitch * Math.PI) / 180,
+        (node.rotation.yaw * Math.PI) / 180,
+        (node.rotation.roll * Math.PI) / 180,
+    ], [node.rotation.yaw, node.rotation.pitch, node.rotation.roll]);
+
+    const handleClick = (e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); selectNode(node.id); };
+    const handlePointerOver = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); hoverNode(node.id); document.body.style.cursor = 'pointer'; };
+    const handlePointerOut = () => { hoverNode(null); document.body.style.cursor = 'default'; };
+
     if (geometryOrGroup instanceof THREE.Group) {
         return (
             <group
-                key={`${node.id}_${node.version}_${node.stair_style}`}
+                key={`${node.id}_${node.version}`}
                 position={[node.position.x, node.position.y, node.position.z]}
                 rotation={rotation}
             >
-                {/* Render each mesh in the group */}
                 {geometryOrGroup.children.map((child, i) => {
                     const mesh = child as THREE.Mesh;
                     return (
@@ -171,13 +339,10 @@ function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
         );
     }
 
-    // Standard single-mesh node
     return (
         <mesh
             key={`${node.id}_${node.version}_${node.material_id}`}
-            ref={meshRef}
             geometry={geometryOrGroup}
-            material={material}
             position={[node.position.x, node.position.y, node.position.z]}
             rotation={rotation}
             onClick={handleClick}
@@ -186,10 +351,8 @@ function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
             castShadow
             receiveShadow
         >
-            {/* Selection/hover overlay — apply emissive glow */}
-            {(isSelected || isHovered) && (
+            {(isSelected || isHovered) ? (
                 <meshStandardMaterial
-                    attach="material"
                     color={(material as THREE.MeshStandardMaterial).color || '#888888'}
                     roughness={0.7}
                     metalness={0.1}
@@ -199,40 +362,60 @@ function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
                     emissive={isSelected ? SELECTION_EMISSIVE : HOVER_EMISSIVE}
                     emissiveIntensity={isSelected ? 0.3 : 0.15}
                 />
+            ) : (
+                <primitive object={material} attach="material" />
             )}
         </mesh>
     );
 }
 
 // =============================================================================
-// PSG RENDERER (iterates all nodes)
+// PSG RENDERER — iterates all renderable nodes
 // =============================================================================
 
 export default function PSGRenderer() {
     const project = useDesignStore((s) => s.project);
     const selection = useDesignStore((s) => s.selection);
-
-    // Get all renderable nodes
-    const renderableNodes = useMemo(() => {
-        return Object.values(project.nodes).filter(
-            (node) => RENDERABLE_TYPES.has(node.type)
-        );
-    }, [project.nodes]);
-
-    // Click on empty space → deselect
     const selectNode = useDesignStore((s) => s.selectNode);
+
+    const allNodes = project.nodes;
+
+    // Nodes that are the "top-level" renderable structural elements
+    // Windows and Doors are rendered INSIDE their parent wall group
+    const wallAndPartitionNodes = useMemo(
+        () => Object.values(allNodes).filter((n) => n.type === 'Wall' || n.type === 'Partition'),
+        [allNodes]
+    );
+
+    const otherNodes = useMemo(
+        () => Object.values(allNodes).filter(
+            (n) => RENDERABLE_TYPES.has(n.type) && !OPENING_TYPES.has(n.type) && n.type !== 'Wall' && n.type !== 'Partition'
+        ),
+        [allNodes]
+    );
 
     return (
         <group
             onClick={(e) => {
-                // Only deselect if clicking the background (no mesh hit)
                 if (e.object.type === 'Mesh' && !e.object.userData.psgNodeId) {
                     selectNode(null);
                 }
             }}
         >
-            {renderableNodes.map((node) => (
-                <NodeMesh
+            {/* Walls with carved openings */}
+            {wallAndPartitionNodes.map((node) => (
+                <WallMeshNode
+                    key={node.id}
+                    node={node}
+                    isSelected={selection.selected_node_id === node.id}
+                    isHovered={selection.hovered_node_id === node.id}
+                    allNodes={allNodes}
+                />
+            ))}
+
+            {/* All other structural + architectural nodes */}
+            {otherNodes.map((node) => (
+                <GenericNodeMesh
                     key={node.id}
                     node={node}
                     isSelected={selection.selected_node_id === node.id}
