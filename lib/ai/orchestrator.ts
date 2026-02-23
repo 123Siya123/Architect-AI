@@ -199,7 +199,7 @@ async function callGemini(
 
     if (!response.ok) {
         const err = await response.text();
-        if (response.status === 429) {
+        if (response.status === 429 || response.status === 401) {
             markKeyRateLimited(apiKey);
         }
         throw new Error(`Gemini API error (${response.status}): ${err}`);
@@ -267,15 +267,19 @@ async function callGroq(
 
     if (!response.ok) {
         const err = await response.text();
-        if (response.status === 429) {
+        if (response.status === 429 || response.status === 401) {
             // Parse Retry-After header if present
             const retryAfterSec = response.headers.get('retry-after');
             const retryMs = retryAfterSec ? parseInt(retryAfterSec, 10) * 1000 : undefined;
-            markKeyRateLimited(apiKey, retryMs);
 
-            // Retry with next key (up to pool size times)
-            if (retries < 8) {
-                console.log(`[Groq] Key rate limited. Retrying with next key (attempt ${retries + 1}/8)...`);
+            // For 401 (Invalid Key), set a very long cooldown (1 hour) to skip it
+            const cooldown = response.status === 401 ? 3600000 : retryMs;
+            markKeyRateLimited(apiKey, cooldown);
+
+            // Retry with next key (up to pool size limits)
+            if (retries < 10) {
+                const reason = response.status === 401 ? 'Invalid Key' : 'Rate Limited';
+                console.log(`[Groq] Key ${reason}. Retrying with next key (attempt ${retries + 1})...`);
                 return callGroq(config, messages, retries + 1);
             }
         }
@@ -343,9 +347,14 @@ async function callOpenAI(
 
     if (!response.ok) {
         const err = await response.text();
-        if (response.status === 429) {
-            markKeyRateLimited(apiKey);
-            if (retries < 8) {
+        if (response.status === 429 || response.status === 401) {
+            // For 401 (Invalid Key), set a very long cooldown (1 hour)
+            const cooldown = response.status === 401 ? 3600000 : undefined;
+            markKeyRateLimited(apiKey, cooldown);
+
+            if (retries < 10) {
+                const reason = response.status === 401 ? 'Invalid Key' : 'Rate Limited';
+                console.log(`[OpenAI] Key ${reason}. Retrying with next key (attempt ${retries + 1})...`);
                 return callOpenAI(config, messages, retries + 1);
             }
         }
