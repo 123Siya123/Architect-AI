@@ -83,8 +83,16 @@ export function prepareProjectContext(project: PSGProject): string {
                     id: node.id,
                     type: node.type,
                     name: node.name,
-                    position: node.position,
-                    dimensions: node.dimensions,
+                    position: {
+                        x: Number(node.position.x.toFixed(2)),
+                        y: Number(node.position.y.toFixed(2)),
+                        z: Number(node.position.z.toFixed(2)),
+                    },
+                    dimensions: {
+                        x: Number(node.dimensions.x.toFixed(2)),
+                        y: Number(node.dimensions.y.toFixed(2)),
+                        z: Number(node.dimensions.z.toFixed(2)),
+                    },
                     rotation: node.rotation,
                     material_id: node.material_id,
                     tags: node.tags,
@@ -100,7 +108,8 @@ export function prepareProjectContext(project: PSGProject): string {
         budget: project.budget,
     };
 
-    return JSON.stringify(simplified, null, 2);
+    // Use null, 0 to strip all whitespace and save significant tokens
+    return JSON.stringify(simplified);
 }
 
 /**
@@ -109,11 +118,11 @@ export function prepareProjectContext(project: PSGProject): string {
 export function prepareMaterialsContext(
     materials: Record<string, Material>
 ): string {
+    // Highly compressed material list
     const lines = Object.values(materials).map(
-        (m) =>
-            `- ${m.id}: ${m.name} (${m.category}) — €${m.price_per_kg}/kg, ${m.density_kg_m3} kg/m³, thermal: ${m.thermal_conductivity} W/mK`
+        (m) => `${m.id}: ${m.name} (€${m.price_per_kg}/kg, density: ${m.density_kg_m3})`
     );
-    return lines.join('\n');
+    return lines.join(' | ');
 }
 
 /**
@@ -284,6 +293,11 @@ async function callGroq(
                 return callGroq(config, messages, retries + 1);
             }
         }
+
+        if (response.status === 413) {
+            throw new Error(`The project state is too large for the current AI model's limits. I've tried to compress it, but we are still exceeding the ${config.model} token limit. Try deleting unused elements or restarting the server.`);
+        }
+
         throw new Error(`Groq API error (${response.status}): ${err}`);
     }
 
@@ -434,8 +448,8 @@ export async function sendChatToAI(
     const messages = [
         { role: 'system', content: ARCHITECT_SYSTEM_PROMPT },
         { role: 'system', content: houseContext },
-        // Include recent chat history (last 10 messages to stay within context)
-        ...request.history.slice(-10).map((msg) => ({
+        // Include recent chat history (last 4 messages to save tokens)
+        ...request.history.slice(-4).map((msg) => ({
             role: msg.role as string,
             content: msg.content,
         })),
