@@ -112,64 +112,77 @@ function LoadingFallback() {
 // MAIN CANVAS
 // =============================================================================
 
+import WalkthroughControls from './WalkthroughControls';
+import SystemsRenderer from './SystemsRenderer';
+
 export default function SceneCanvas() {
     const camera = useDesignStore((s) => s.camera);
+    const viewMode = useDesignStore((s) => s.viewMode);
 
     return (
-        <Canvas
-            shadows
-            camera={{
-                position: [camera.position.x, camera.position.y, camera.position.z],
-                fov: camera.fov,
-                near: camera.near,
-                far: camera.far,
-            }}
-            gl={{
-                antialias: true,
-                alpha: false,
-                powerPreference: 'high-performance',
-            }}
-            style={{ width: '100%', height: '100%', background: '#0a0a1a' }}
-        >
-            {/* Sky/Environment */}
-            <color attach="background" args={['#0a0a1a']} />
-            <fog attach="fog" args={['#0a0a1a', 40, 100]} />
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <Canvas
+                shadows
+                camera={{
+                    position: [camera.position.x, camera.position.y, camera.position.z],
+                    fov: camera.fov,
+                    near: camera.near,
+                    far: camera.far,
+                }}
+                gl={{
+                    antialias: true,
+                    alpha: false,
+                    powerPreference: 'high-performance',
+                    stencil: true,
+                }}
+                style={{ background: '#0a0a1a' }}
+            >
+                {/* Sky/Environment */}
+                <color attach="background" args={['#0a0a1a']} />
+                <fog attach="fog" args={['#0a0a1a', 40, 100]} />
 
-            {/* Lighting */}
-            <SceneLighting />
+                {/* Lighting */}
+                <SceneLighting />
 
-            {/* Controls */}
-            <OrbitControls
-                makeDefault
-                target={[camera.target.x, camera.target.y, camera.target.z]}
-                enableDamping
-                dampingFactor={0.1}
-                minDistance={2}
-                maxDistance={80}
-                maxPolarAngle={Math.PI / 2 + 0.1}
-            />
+                {/* Controls - Conditional based on ViewMode */}
+                {viewMode === 'orbit' || viewMode === 'top_down' || viewMode === 'front' ? (
+                    <OrbitControls
+                        makeDefault
+                        target={[camera.target.x, camera.target.y, camera.target.z]}
+                        enableDamping
+                        dampingFactor={0.1}
+                        minDistance={2}
+                        maxDistance={80}
+                        maxPolarAngle={viewMode === 'top_down' ? 0.01 : Math.PI / 2 + 0.1}
+                        minPolarAngle={viewMode === 'top_down' ? 0 : 0}
+                    />
+                ) : null}
 
-            {/* Grid */}
-            <SceneGrid />
+                {viewMode === 'walkthrough' && <WalkthroughControls />}
 
-            {/* Ground plane (receives shadows) */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
-                <planeGeometry args={[100, 100]} />
-                <shadowMaterial opacity={0.3} />
-            </mesh>
+                {/* Grid */}
+                <SceneGrid />
 
-            {/* PSG Scene — wrapped in Suspense for async loads */}
-            <Suspense fallback={<LoadingFallback />}>
-                <PSGRenderer />
-            </Suspense>
+                {/* Ground plane (receives shadows) */}
+                <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+                    <planeGeometry args={[100, 100]} />
+                    <shadowMaterial opacity={0.3} />
+                </mesh>
 
-            {/* Orientation gizmo (top-right corner) */}
-            <GizmoHelper alignment="bottom-right" margin={[60, 60]}>
-                <GizmoViewport
-                    axisColors={['#ff4060', '#40ff60', '#4060ff']}
-                    labelColor="white"
-                />
-            </GizmoHelper>
-        </Canvas>
+                {/* PSG Scene — wrapped in Suspense for async loads */}
+                <Suspense fallback={<LoadingFallback />}>
+                    <PSGRenderer />
+                    <SystemsRenderer />
+                </Suspense>
+
+                {/* Orientation gizmo (top-right corner) */}
+                <GizmoHelper alignment="bottom-right" margin={[60, 60]}>
+                    <GizmoViewport
+                        axisColors={['#ff4060', '#40ff60', '#4060ff']}
+                        labelColor="white"
+                    />
+                </GizmoHelper>
+            </Canvas>
+        </div>
     );
 }

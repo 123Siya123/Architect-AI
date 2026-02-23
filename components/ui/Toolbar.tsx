@@ -137,14 +137,35 @@ export default function Toolbar() {
                         currency: project.budget.currency || 'EUR',
                         maximumFractionDigits: 0,
                     }).format(project.budget.spent)}
-                    {' / '}
-                    {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: project.budget.currency || 'EUR',
-                        maximumFractionDigits: 0,
-                    }).format(project.budget.total_budget)}
                 </span>
             </div>
+
+            {/* Separator */}
+            <div className="toolbar-separator" />
+
+            {/* Export Action */}
+            <div className="toolbar-group">
+                <ExportButton />
+            </div>
         </div>
+    );
+}
+
+import ExportModal from './ExportModal';
+import { useState } from 'react';
+
+function ExportButton() {
+    const [isExportOpen, setIsExportOpen] = useState(false);
+
+    return (
+        <>
+            <button
+                className="toolbar-btn export-btn"
+                onClick={() => setIsExportOpen(true)}
+            >
+                📥 Export Plans
+            </button>
+            <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+        </>
     );
 }
