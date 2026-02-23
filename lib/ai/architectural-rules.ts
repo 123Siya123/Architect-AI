@@ -216,25 +216,48 @@ export function getCorrectWallYaw(wallAxis: 'x' | 'z'): number {
 // =============================================================================
 
 /**
- * Calculates the Y position for a new floor level.
- *
- * @param floorIndex - 0 = ground, 1 = first floor, 2 = second floor, etc.
- * @param ceilingHeight - Height of each floor (default 2.7m)
- * @param slabThickness - Thickness of the floor slab (default 0.2m)
+ * Calculates the walking surface Y position (top of slab) for a floor.
  */
-export function calculateFloorY(
+export function calculateFloorTopY(
     floorIndex: number,
     ceilingHeight = ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT,
     slabThickness = ARCH_CONSTANTS.STANDARD_SLAB_THICKNESS
 ): number {
-    // Ground floor is at Y=0
-    // First floor = ceiling height + slab thickness
-    // Second floor = 2 * (ceiling height + slab thickness)
+    // Floor 0: top is 0 (ground level)
+    // Floor 1: top is 2.7 + 0.2 = 2.9
     return floorIndex * (ceilingHeight + slabThickness);
 }
 
 /**
- * Finds the topmost floor level in the house and returns its Y position.
+ * Calculates the required CENTER Y coordinate for a wall to sit ON TOP of a floor.
+ * Formula: FloorTopY + (WallHeight / 2)
+ */
+export function calculateWallCenterY(
+    floorIndex: number,
+    wallHeight = ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT,
+    ceilingHeight = ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT,
+    slabThickness = ARCH_CONSTANTS.STANDARD_SLAB_THICKNESS
+): number {
+    const floorTop = calculateFloorTopY(floorIndex, ceilingHeight, slabThickness);
+    return floorTop + (wallHeight / 2);
+}
+
+/**
+ * Calculates the required CENTER Y coordinate for a floor slab.
+ * Formula: FloorTopY - (SlabThickness / 2)
+ */
+export function calculateSlabCenterY(
+    floorIndex: number,
+    ceilingHeight = ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT,
+    slabThickness = ARCH_CONSTANTS.STANDARD_SLAB_THICKNESS
+): number {
+    if (floorIndex === 0) return -(slabThickness / 2); // Ground slab sits below 0
+    const floorTop = calculateFloorTopY(floorIndex, ceilingHeight, slabThickness);
+    return floorTop - (slabThickness / 2);
+}
+
+/**
+ * Finds the topmost floor level in the house and returns its top Y position.
  */
 export function getTopFloorY(project: PSGProject): number {
     let maxFloorY = 0;
@@ -512,12 +535,14 @@ export function generateFloorOperations(
     newFloorIndex: number
 ): Record<string, unknown>[] {
     const footprint = analyzeFloorFootprint(project, groundFloorId);
-    const floorY = calculateFloorY(newFloorIndex);
+    const floorTopY = calculateFloorTopY(newFloorIndex);
+    const wallCenterY = calculateWallCenterY(newFloorIndex);
+    const slabCenterY = calculateSlabCenterY(newFloorIndex);
     const houseRootId = project.root_node_id;
 
     const ops: Record<string, unknown>[] = [];
 
-    // 1. Add the floor node
+    // 1. Add the floor node (container)
     ops.push({
         tool: 'add_node',
         args: {
@@ -525,10 +550,10 @@ export function generateFloorOperations(
             parent_id: houseRootId,
             name: `Floor ${newFloorIndex}`,
             position_x: footprint.center_x,
-            position_y: floorY,
+            position_y: floorTopY, // Container pos is the logical floor level
             position_z: footprint.center_z,
             width: footprint.width,
-            height: ARCH_CONSTANTS.STANDARD_SLAB_THICKNESS,
+            height: ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT,
             depth: footprint.depth,
         },
     });
@@ -538,10 +563,10 @@ export function generateFloorOperations(
         tool: 'add_node',
         args: {
             type: 'Slab',
-            parent_id: '__LAST_FLOOR_ID__', // Placeholder — resolved at execution time
+            parent_id: '__LAST_FLOOR_ID__',
             name: `Floor ${newFloorIndex} Slab`,
             position_x: footprint.center_x,
-            position_y: floorY,
+            position_y: slabCenterY,
             position_z: footprint.center_z,
             width: footprint.width,
             height: ARCH_CONSTANTS.STANDARD_SLAB_THICKNESS,
@@ -560,12 +585,11 @@ export function generateFloorOperations(
                 parent_id: '__LAST_FLOOR_ID__',
                 name: `Floor ${newFloorIndex} ${wall.facing.charAt(0).toUpperCase() + wall.facing.slice(1)} Wall`,
                 position_x: wall.position.x,
-                position_y: floorY,
+                position_y: wallCenterY,
                 position_z: wall.position.z,
                 width: wall.dimensions.x,
                 height: ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT,
                 depth: wall.dimensions.z,
-                // rotation is handled separately via the yaw from the original wall
             },
         });
     }

@@ -66,7 +66,9 @@ import {
     summarizeHouseStructure,
     ARCH_CONSTANTS,
     analyzeFloorFootprint,
-    calculateFloorY,
+    calculateFloorTopY,
+    calculateWallCenterY,
+    calculateSlabCenterY,
     countFloors,
     getTopFloorY,
     type ArchitecturalIssue,
@@ -86,13 +88,14 @@ import {
 /** Maximum number of fix iterations to prevent infinite loops */
 const MAX_FIX_ITERATIONS = 2;
 
-/** Whether to log detailed agent steps for debugging */
-const DEBUG_AGENTS = true;
+/** Global log for a single request to be shown to the user */
+let agentRequestLog: string[] = [];
 
 function agentLog(agent: string, ...args: unknown[]) {
-    if (DEBUG_AGENTS) {
-        console.log(`[${agent}]`, ...args);
-    }
+    const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+    const logLine = `[${agent}] ${msg}`;
+    console.log(logLine);
+    agentRequestLog.push(logLine);
 }
 
 // =============================================================================
@@ -270,6 +273,14 @@ When adding a new floor, ALL of these are required:
 4. Move the roof upward by the floor height
 5. Optionally add stairs
 
+### POSITIONING CHEAT SHEET (CRITICAL)
+For a Floor level at height H (e.g., 2.9m):
+- WALL (height 2.7m): target_position_y = H + 1.35 = 4.25m
+- SLAB (height 0.2m): target_position_y = H - 0.10 = 2.80m
+- WINDOW (height 1.2m, sill 0.9m): target_position_y = H + 0.9 + 0.6 = 4.40m
+
+FORMULA: Center_Y = Base_Elevation + (Element_Height / 2)
+
 ### TOOL CALL RULES
 - For replace_node: NEVER pass null for optional fields. Omit them instead.
 - For add_node: position values are the CENTER of the element
@@ -345,24 +356,26 @@ function buildGeometryContext(project: PSGProject, plan: ArchitecturalPlan): str
     // If the plan involves adding floors
     if (planText.includes('floor') || planText.includes('storey') || planText.includes('story') || planText.includes('level')) {
         const numFloors = countFloors(project);
-        const newFloorY = calculateFloorY(numFloors);
+        const nextFloorIndex = numFloors; // e.g. if 1 floor exists (index 0), next is index 1
+        const floorTopY = calculateFloorTopY(nextFloorIndex);
+        const wallCenterY = calculateWallCenterY(nextFloorIndex);
+        const slabCenterY = calculateSlabCenterY(nextFloorIndex);
+
         const groundFloors = Object.values(project.nodes).filter(n => n.type === 'Floor');
 
         if (groundFloors.length > 0) {
             const footprint = analyzeFloorFootprint(project, groundFloors[0].id);
-            lines.push(`FLOOR GEOMETRY:`);
-            lines.push(`- Current floors: ${numFloors}`);
-            lines.push(`- New floor Y position: ${newFloorY}m`);
+            lines.push(`FLOOR GEOMETRY FOR NEW LEVEL (Index ${nextFloorIndex}):`);
+            lines.push(`- Current floor count: ${numFloors}`);
+            lines.push(`- Target floor top (walking surface): Y=${floorTopY}m`);
+            lines.push(`- TARGET center_y for NEW WALLS: Y=${wallCenterY}m (Formula: Base ${floorTopY} + 1.35)`);
+            lines.push(`- TARGET center_y for NEW SLAB: Y=${slabCenterY}m (Formula: Base ${floorTopY} - 0.1)`);
             lines.push(`- Footprint: width=${footprint.width}m, depth=${footprint.depth}m`);
             lines.push(`- Footprint center: X=${footprint.center_x}m, Z=${footprint.center_z}m`);
-            lines.push(`- Footprint bounds: X=[${footprint.min_x}, ${footprint.max_x}], Z=[${footprint.min_z}, ${footprint.max_z}]`);
-            lines.push(`- Wall height for new floor: ${ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT}m`);
-            lines.push(`- Roof delta_y needed: ${ARCH_CONSTANTS.STANDARD_CEILING_HEIGHT + ARCH_CONSTANTS.STANDARD_SLAB_THICKNESS}m`);
 
-            lines.push(`\nEXISTING WALLS TO REPLICATE ON NEW FLOOR:`);
+            lines.push(`\nREPLICATION GUIDE (Place these at Center Y=${wallCenterY}):`);
             for (const wall of footprint.walls) {
-                lines.push(`  - "${wall.name}" (${wall.facing}): pos=[${wall.position.x},${wall.position.y},${wall.position.z}], dim=[${wall.dimensions.x},${wall.dimensions.y},${wall.dimensions.z}], yaw=${wall.yaw}°`);
-                lines.push(`    → On new floor: pos=[${wall.position.x},${newFloorY},${wall.position.z}], KEEP SAME yaw=${wall.yaw}°`);
+                lines.push(`  - "${wall.facing}" wall needs pos=[${wall.position.x}, ${wallCenterY}, ${wall.position.z}], yaw=${wall.yaw}°`);
             }
         }
     }
@@ -584,6 +597,9 @@ export async function sendChatToAIAgentic(
     const startTime = Date.now();
     const allWarnings: OperationWarning[] = [];
 
+    // Reset the log for a new request
+    agentRequestLog = [];
+
     try {
         // =====================================================================
         // STEP 1: PLANNER — Decompose the request
@@ -660,12 +676,16 @@ export async function sendChatToAIAgentic(
         // =====================================================================
         const elapsed = Date.now() - startTime;
         agentLog('ORCHESTRATOR', `═══ Pipeline complete in ${elapsed}ms ═══`);
-        agentLog('ORCHESTRATOR', `Final: ${finalOperations.length} operations, ${allWarnings.length} warnings`);
 
-        // Add plan summary to the AI message
+        // Build the final response with reasoning log
+        let verboseLog = `\n\n<details>\n<summary><b>🛠️ Agent Reasoning Log (${elapsed}ms)</b></summary>\n\n`;
+        verboseLog += "```text\n" + agentRequestLog.join('\n') + "\n```\n</details>";
+
         if (plan.complexity !== 'simple' && plan.steps.length > 1) {
             const planSummary = plan.steps.map(s => `${s.step}. ${s.description}`).join('\n');
-            finalMessage = `**Plan:**\n${planSummary}\n\n${finalMessage}`;
+            finalMessage = `### 📋 Architectural Plan:\n${planSummary}\n\n### ✍️ Results:\n${finalMessage}${verboseLog}`;
+        } else {
+            finalMessage = `${finalMessage}${verboseLog}`;
         }
 
         return {
