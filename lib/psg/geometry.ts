@@ -115,10 +115,13 @@ export function buildWallWithOpenings(
 
         if (cx1 > cx0 && cy1 > cy0) {
             const hole = new THREE.Path();
+            // Winding order for holes must be CW (opposite of main shape which is CCW)
+            // CCW: (min,min) -> (max,min) -> (max,max) -> (min,max)
+            // CW: (min,min) -> (min,max) -> (max,max) -> (max,min)
             hole.moveTo(cx0, cy0);
-            hole.lineTo(cx1, cy0);
-            hole.lineTo(cx1, cy1);
             hole.lineTo(cx0, cy1);
+            hole.lineTo(cx1, cy1);
+            hole.lineTo(cx1, cy0);
             hole.closePath();
             wallShape.holes.push(hole);
         }
@@ -288,27 +291,13 @@ export function buildDoorGroup(door: PSGNode, wallThickness: number = 0.25): THR
 // =============================================================================
 
 /**
- * Resolves how two perpendicular walls meet at a corner.
+ * Resolves how two perpendicular walls meet at a corner to eliminate gaps.
  *
- * When a horizontal wall (yaw=0) and a vertical wall (yaw=90) meet at a corner,
- * the simpler wall (usually the shorter one, or the one facing the same direction)
- * is shortened to avoid overlap.
- *
- * This function returns the ADJUSTED width of the wall, accounting for corners.
- * The renderer calls this before building wall geometry.
- *
- * CORNER TYPES:
- *  - T-junction: one wall ends mid-span of another
- *  - L-corner: two walls meet at their ends
- *  - Cross: four walls meet at a point
- *
- * STRATEGY (simple, reliable):
- *  - For each end of the wall, check if another wall's face is at that exact endpoint
- *  - If so, inset the end by T/2 (half the bisecting wall's thickness)
- *
- * @param wall - The wall to adjust
- * @param allNodes - All nodes in the project
- * @returns { adjustedWidth, startInset, endInset } — how much to inset each end
+ * STRATEGY:
+ * - If two walls meet at an L-corner or T-junction, one wall (the "butt" wall)
+ *   is shortened by T/2, and the other (the "through" wall) stays as-is.
+ * - This ensures the intersection point is reached but not doubled up.
+ * - If they are not exactly meeting, we snap them if within tolerance.
  */
 export function resolveWallCorners(
     wall: PSGNode,
@@ -318,17 +307,13 @@ export function resolveWallCorners(
     const T = wall.dimensions.z;
     const yaw = Math.round(wall.rotation.yaw) % 180;
 
-    // Axis the wall runs along
-    const isNS = (yaw === 90 || yaw === -90);  // North-South (along Z)
-    const isEW = (yaw === 0);                   // East-West (along X)
+    const isNS = (yaw === 90 || yaw === -90);
+    const isEW = (yaw === 0);
 
-    if (!isEW && !isNS) {
-        // Non-orthogonal wall — no auto-corner resolution
-        return { adjustedWidth: W, startInset: 0, endInset: 0 };
-    }
+    if (!isEW && !isNS) return { adjustedWidth: W, startInset: 0, endInset: 0 };
 
-    // The wall's two endpoints in world space
     const hw = W / 2;
+    const halfT = T / 2;
     const startPt = isEW
         ? { x: wall.position.x - hw, z: wall.position.z }
         : { x: wall.position.x, z: wall.position.z - hw };
@@ -339,7 +324,7 @@ export function resolveWallCorners(
     let startInset = 0;
     let endInset = 0;
 
-    const SNAP = 0.05; // 5cm snap tolerance
+    const SNAP = 0.2; // 20cm snap
 
     for (const other of Object.values(allNodes)) {
         if (other.id === wall.id) continue;
@@ -349,51 +334,52 @@ export function resolveWallCorners(
         const otherIsNS = (otherYaw === 90 || otherYaw === -90);
         const otherIsEW = (otherYaw === 0);
 
-        // Only resolve perpendicular walls
         if (isEW && !otherIsNS) continue;
         if (isNS && !otherIsEW) continue;
 
         const otherHW = other.dimensions.x / 2;
-        const otherT = other.dimensions.z / 2; // half of other wall thickness
+        const otherT = other.dimensions.z;
 
-        // Check if the other wall's face is at our start endpoint
+        // Intersection logic:
+        // If our endpoint is near the CENTERLINE of the other wall, we inset.
         if (isEW) {
-            // Our wall runs East-West; other runs North-South
-            // Other wall face is at some X position
             const otherX = other.position.x;
-            const otherZMin = other.position.z - otherHW - 0.01;
-            const otherZMax = other.position.z + otherHW + 0.01;
+            const otherZMin = other.position.z - otherHW - SNAP;
+            const otherZMax = other.position.z + otherHW + SNAP;
             const wallZ = wall.position.z;
 
+            // Check if we are the "butt" wall (NS is through)
+            // Simple heuristic: EW is butt if its end is near NS center
             if (Math.abs(startPt.x - otherX) < SNAP && wallZ >= otherZMin && wallZ <= otherZMax) {
-                startInset = Math.max(startInset, otherT);
+                startInset = Math.max(startInset, otherT / 2);
             }
             if (Math.abs(endPt.x - otherX) < SNAP && wallZ >= otherZMin && wallZ <= otherZMax) {
-                endInset = Math.max(endInset, otherT);
+                endInset = Math.max(endInset, otherT / 2);
             }
         } else {
-            // Our wall runs North-South; other runs East-West
             const otherZ = other.position.z;
-            const otherXMin = other.position.x - otherHW - 0.01;
-            const otherXMax = other.position.x + otherHW + 0.01;
+            const otherXMin = other.position.x - otherHW - SNAP;
+            const otherXMax = other.position.x + otherHW + SNAP;
             const wallX = wall.position.x;
 
             if (Math.abs(startPt.z - otherZ) < SNAP && wallX >= otherXMin && wallX <= otherXMax) {
-                startInset = Math.max(startInset, otherT);
+                startInset = Math.max(startInset, otherT / 2);
             }
             if (Math.abs(endPt.z - otherZ) < SNAP && wallX >= otherXMin && wallX <= otherXMax) {
-                endInset = Math.max(endInset, otherT);
+                endInset = Math.max(endInset, otherT / 2);
             }
         }
     }
 
-    const adjustedWidth = W - startInset - endInset;
-    return { adjustedWidth: Math.max(adjustedWidth, 0.1), startInset, endInset };
+    return {
+        adjustedWidth: Math.max(W - startInset - endInset, 0.1),
+        startInset,
+        endInset
+    };
 }
 
 /**
- * Computes the adjusted POSITION of a wall after corner insets are applied.
- * When the wall is inset at the start by S and at end by E, the center shifts.
+ * Computes adjusted position for walls that were inset to prevent gaps/overlaps.
  */
 export function resolveWallPosition(
     wall: PSGNode,

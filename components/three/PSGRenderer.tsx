@@ -40,6 +40,8 @@ import {
     buildWallWithOpenings,
     buildWindowGroup,
     buildDoorGroup,
+    resolveWallCorners,
+    resolveWallPosition,
 } from '@/lib/psg/geometry';
 import { getGeometryForNode, compileMaterial, compileGlassMaterial } from '@/lib/psg/compiler';
 import materialsDatabase from '@/data/materials.json';
@@ -102,13 +104,25 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) 
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
 
-    // Build wall geometry with openings — uses node directly, no corner adjustment
-    const wallGeometry = useMemo(
-        () => buildWallWithOpenings(node, allNodes),
+    // Get corner-corrected wall data
+    const { adjustedWidth, startInset, endInset } = useMemo(
+        () => resolveWallCorners(node, allNodes),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [node.id, node.version, node.dimensions.x, node.dimensions.y, node.dimensions.z,
+        [node.id, node.version, node.dimensions.x, node.dimensions.z, node.position.x, node.position.z, node.rotation.yaw]
+    );
+
+    // Create a "virtual" node with adjusted width for geometry building
+    const adjustedNode = useMemo(() => ({
+        ...node,
+        dimensions: { ...node.dimensions, x: adjustedWidth },
+    }), [node, adjustedWidth]);
+
+    // Build wall geometry with openings
+    const wallGeometry = useMemo(
+        () => buildWallWithOpenings(adjustedNode, allNodes),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [node.id, node.version, adjustedWidth, node.dimensions.y, node.dimensions.z,
         node.children_ids.length,
-        // Re-compute when any child opening changes
         ...node.children_ids.map(id => {
             const child = allNodes[id];
             return child ? `${child.version}_${child.position.x}_${child.position.z}_${child.position.y}` : '';
@@ -118,6 +132,12 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) 
     const material = useMemo(
         () => getMaterial(node.material_id, node.opacity),
         [node.material_id, node.opacity]
+    );
+
+    // Corner-corrected center position
+    const position = useMemo(
+        () => resolveWallPosition(node, startInset, endInset),
+        [node.position, startInset, endInset, node.rotation.yaw]
     );
 
     const rotation = useMemo<[number, number, number]>(() => [
@@ -133,7 +153,7 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) 
     return (
         <group
             key={`${node.id}_${node.version}`}
-            position={[node.position.x, node.position.y, node.position.z]}
+            position={[position.x, position.y, position.z]}
             rotation={rotation}
         >
             {/* Wall solid with holes */}
@@ -168,6 +188,7 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) 
                         key={`${childId}_${child.version}`}
                         node={child}
                         parentWall={node}
+                        parentPosition={position}
                         allNodes={allNodes}
                     />
                 );
@@ -183,10 +204,11 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) 
 interface OpeningGroupProps {
     node: PSGNode;
     parentWall: PSGNode;
+    parentPosition: { x: number; y: number; z: number };
     allNodes: Record<string, PSGNode>;
 }
 
-function OpeningGroup({ node, parentWall, allNodes }: OpeningGroupProps) {
+function OpeningGroup({ node, parentWall, parentPosition, allNodes }: OpeningGroupProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
     const selection = useDesignStore((s) => s.selection);
@@ -207,10 +229,11 @@ function OpeningGroup({ node, parentWall, allNodes }: OpeningGroupProps) {
     const localPos = useMemo(() => {
         const yaw = Math.round(parentWall.rotation.yaw) % 180;
         const isNS = (yaw === 90 || yaw === -90);
-        const wx = isNS ? (node.position.z - parentWall.position.z) : (node.position.x - parentWall.position.x);
-        const wy = node.position.y - parentWall.position.y;
+        // Position relative to the SHIFTED wall center
+        const wx = isNS ? (node.position.z - parentPosition.z) : (node.position.x - parentPosition.x);
+        const wy = node.position.y - parentPosition.y;
         return { x: wx, y: wy, z: 0 };
-    }, [node.position, parentWall.position, parentWall.rotation.yaw]);
+    }, [node.position, parentPosition, parentWall.rotation.yaw]);
 
     const handleClick = (e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); selectNode(node.id); };
     const handlePointerOver = (e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); hoverNode(node.id); document.body.style.cursor = 'pointer'; };
