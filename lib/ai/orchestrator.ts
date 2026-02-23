@@ -260,7 +260,7 @@ async function callGroq(
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${config.apiKey}`,
+            Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify(body),
     });
@@ -277,9 +277,10 @@ async function callGroq(
             markKeyRateLimited(apiKey, cooldown);
 
             // Retry with next key (up to pool size limits)
-            if (retries < 10) {
+            if (retries < 15) {
                 const reason = response.status === 401 ? 'Invalid Key' : 'Rate Limited';
-                console.log(`[Groq] Key ${reason}. Retrying with next key (attempt ${retries + 1})...`);
+                console.log(`[Groq] Key ${reason}. Waiting 500ms and retrying with next key (attempt ${retries + 1})...`);
+                await new Promise(r => setTimeout(r, 500));
                 return callGroq(config, messages, retries + 1);
             }
         }
