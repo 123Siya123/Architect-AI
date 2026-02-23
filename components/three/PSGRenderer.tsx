@@ -98,9 +98,10 @@ interface WallMeshProps {
     isSelected: boolean;
     isHovered: boolean;
     allNodes: Record<string, PSGNode>;
+    isSystemVision: boolean;
 }
 
-function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) {
+function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision }: WallMeshProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
 
@@ -165,7 +166,7 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) 
                 castShadow
                 receiveShadow
             >
-                {(isSelected || isHovered) ? (
+                {isSelected || isHovered ? (
                     <meshStandardMaterial
                         color={(material as THREE.MeshStandardMaterial).color || '#888888'}
                         roughness={0.7}
@@ -173,9 +174,16 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes }: WallMeshProps) 
                         side={THREE.DoubleSide}
                         emissive={isSelected ? SELECTION_EMISSIVE : HOVER_EMISSIVE}
                         emissiveIntensity={isSelected ? 0.3 : 0.15}
+                        transparent={isSystemVision || node.opacity < 1}
+                        opacity={isSystemVision ? 0.3 : node.opacity}
                     />
                 ) : (
-                    <primitive object={material} attach="material" />
+                    <primitive
+                        object={material}
+                        attach="material"
+                        transparent={isSystemVision || node.opacity < 1}
+                        opacity={isSystemVision ? 0.3 : node.opacity}
+                    />
                 )}
             </mesh>
 
@@ -285,9 +293,10 @@ interface GenericMeshProps {
     node: PSGNode;
     isSelected: boolean;
     isHovered: boolean;
+    isSystemVision: boolean;
 }
 
-function GenericNodeMesh({ node, isSelected, isHovered }: GenericMeshProps) {
+function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision }: GenericMeshProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
 
@@ -336,6 +345,8 @@ function GenericNodeMesh({ node, isSelected, isHovered }: GenericMeshProps) {
                                 side={THREE.DoubleSide}
                                 emissive={isSelected ? SELECTION_EMISSIVE : isHovered ? HOVER_EMISSIVE : undefined}
                                 emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
+                                transparent={isSystemVision || node.opacity < 1}
+                                opacity={isSystemVision ? 0.2 : node.opacity}
                             />
                         </mesh>
                     );
@@ -356,20 +367,16 @@ function GenericNodeMesh({ node, isSelected, isHovered }: GenericMeshProps) {
             castShadow
             receiveShadow
         >
-            {(isSelected || isHovered) ? (
-                <meshStandardMaterial
-                    color={(material as THREE.MeshStandardMaterial).color || '#888888'}
-                    roughness={0.7}
-                    metalness={0.1}
-                    side={THREE.DoubleSide}
-                    transparent={node.opacity < 1}
-                    opacity={node.opacity}
-                    emissive={isSelected ? SELECTION_EMISSIVE : HOVER_EMISSIVE}
-                    emissiveIntensity={isSelected ? 0.3 : 0.15}
-                />
-            ) : (
-                <primitive object={material} attach="material" />
-            )}
+            <meshStandardMaterial
+                color={(material as THREE.MeshStandardMaterial).color || '#888888'}
+                roughness={0.7}
+                metalness={0.1}
+                side={THREE.DoubleSide}
+                transparent={isSystemVision || node.opacity < 1}
+                opacity={isSystemVision ? 0.2 : node.opacity}
+                emissive={isSelected ? SELECTION_EMISSIVE : isHovered ? HOVER_EMISSIVE : undefined}
+                emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
+            />
         </mesh>
     );
 }
@@ -382,6 +389,9 @@ export default function PSGRenderer() {
     const project = useDesignStore((s) => s.project);
     const selection = useDesignStore((s) => s.selection);
     const selectNode = useDesignStore((s) => s.selectNode);
+    const visibleLayers = useDesignStore((s) => s.visibleLayers);
+
+    const isSystemVision = visibleLayers.has('electrical') || visibleLayers.has('plumbing') || visibleLayers.has('thermal') || visibleLayers.has('hvac');
 
     const allNodes = project.nodes;
 
@@ -415,6 +425,7 @@ export default function PSGRenderer() {
                     isSelected={selection.selected_node_id === node.id}
                     isHovered={selection.hovered_node_id === node.id}
                     allNodes={allNodes}
+                    isSystemVision={isSystemVision}
                 />
             ))}
 
@@ -425,6 +436,7 @@ export default function PSGRenderer() {
                     node={node}
                     isSelected={selection.selected_node_id === node.id}
                     isHovered={selection.hovered_node_id === node.id}
+                    isSystemVision={isSystemVision}
                 />
             ))}
         </group>

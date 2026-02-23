@@ -19,7 +19,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { PointerLockControls } from '@react-three/drei';
+import { PointerLockControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useDesignStore } from '@/store/useDesignStore';
 
@@ -127,25 +127,27 @@ export default function WalkthroughControls() {
 
             {/* Visual Indicator/Instruction when not locked */}
             {!isLocked && (
-                <div
-                    className="walkthrough-overlay"
-                    onClick={() => {
-                        // PointerLockControls handles the locking automatically on click usually,
-                        // but we provide a fallback UI here.
-                    }}
-                >
-                    <div className="walkthrough-hint">
-                        <p className="walkthrough-hint-title">Walkthrough Mode</p>
-                        <p>Click anywhere to start</p>
-                        <div className="walkthrough-keys">
-                            <span>W A S D</span> — Move
-                            <br />
-                            <span>MOUSE</span> — Look
-                            <br />
-                            <span>ESC</span> — Exit
+                <Html fullscreen>
+                    <div
+                        className="walkthrough-overlay"
+                        onClick={() => {
+                            // PointerLockControls handles the locking automatically on click usually,
+                            // but we provide a fallback UI here.
+                        }}
+                    >
+                        <div className="walkthrough-hint">
+                            <p className="walkthrough-hint-title">Walkthrough Mode</p>
+                            <p>Click anywhere to start</p>
+                            <div className="walkthrough-keys">
+                                <span>W A S D</span> — Move
+                                <br />
+                                <span>MOUSE</span> — Look
+                                <br />
+                                <span>ESC</span> — Exit
+                            </div>
                         </div>
                     </div>
-                </div>
+                </Html>
             )}
         </>
     );

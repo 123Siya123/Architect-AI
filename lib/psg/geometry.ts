@@ -291,13 +291,13 @@ export function buildDoorGroup(door: PSGNode, wallThickness: number = 0.25): THR
 // =============================================================================
 
 /**
- * Resolves how two perpendicular walls meet at a corner to eliminate gaps.
+ * Resolves how two perpendicular or angled walls meet at a corner to eliminate gaps.
+ * Uses a precise "Source of Truth" geometry approach.
  *
  * STRATEGY:
- * - If two walls meet at an L-corner or T-junction, one wall (the "butt" wall)
- *   is shortened by T/2, and the other (the "through" wall) stays as-is.
- * - This ensures the intersection point is reached but not doubled up.
- * - If they are not exactly meeting, we snap them if within tolerance.
+ * 1. Calculate the precise endpoints of the wall centerline.
+ * 2. Find any other wall whose centerline or face intersects this wall's endpoint.
+ * 3. Shorten the "butt" wall by exactly the distance needed to stop at the face of the "through" wall.
  */
 export function resolveWallCorners(
     wall: PSGNode,
@@ -305,74 +305,76 @@ export function resolveWallCorners(
 ): { adjustedWidth: number; startInset: number; endInset: number } {
     const W = wall.dimensions.x;
     const T = wall.dimensions.z;
-    const yaw = Math.round(wall.rotation.yaw) % 180;
 
-    const isNS = (yaw === 90 || yaw === -90);
-    const isEW = (yaw === 0);
+    // Exact angle math
+    const angle = (wall.rotation.yaw * Math.PI) / 180;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
 
-    if (!isEW && !isNS) return { adjustedWidth: W, startInset: 0, endInset: 0 };
-
+    // Half width
     const hw = W / 2;
-    const halfT = T / 2;
-    const startPt = isEW
-        ? { x: wall.position.x - hw, z: wall.position.z }
-        : { x: wall.position.x, z: wall.position.z - hw };
-    const endPt = isEW
-        ? { x: wall.position.x + hw, z: wall.position.z }
-        : { x: wall.position.x, z: wall.position.z + hw };
+
+    // Precise centerline endpoints
+    const startX = wall.position.x - hw * cosA;
+    const startZ = wall.position.z + hw * sinA;
+    const endX = wall.position.x + hw * cosA;
+    const endZ = wall.position.z - hw * sinA;
 
     let startInset = 0;
     let endInset = 0;
 
-    const SNAP = 0.2; // 20cm snap
+    // Tolerance for snapping (5cm is usually enough for precise architectural models)
+    const TOLERANCE = 0.05;
 
     for (const other of Object.values(allNodes)) {
         if (other.id === wall.id) continue;
         if (other.type !== 'Wall' && other.type !== 'Partition') continue;
 
-        const otherYaw = Math.round(other.rotation.yaw) % 180;
-        const otherIsNS = (otherYaw === 90 || otherYaw === -90);
-        const otherIsEW = (otherYaw === 0);
-
-        if (isEW && !otherIsNS) continue;
-        if (isNS && !otherIsEW) continue;
-
-        const otherHW = other.dimensions.x / 2;
+        const otherW = other.dimensions.x;
         const otherT = other.dimensions.z;
+        const otherAngle = (other.rotation.yaw * Math.PI) / 180;
+        const otherCos = Math.cos(otherAngle);
+        const otherSin = Math.sin(otherAngle);
 
-        // Intersection logic:
-        // If our endpoint is near the CENTERLINE of the other wall, we inset.
-        if (isEW) {
-            const otherX = other.position.x;
-            const otherZMin = other.position.z - otherHW - SNAP;
-            const otherZMax = other.position.z + otherHW + SNAP;
-            const wallZ = wall.position.z;
+        // Is the other wall perpendicular? (roughly)
+        const dot = Math.abs(cosA * otherCos - sinA * otherSin);
+        const isPerp = dot < 0.1; // Nearly 90 degrees
 
-            // Check if we are the "butt" wall (NS is through)
-            // Simple heuristic: EW is butt if its end is near NS center
-            if (Math.abs(startPt.x - otherX) < SNAP && wallZ >= otherZMin && wallZ <= otherZMax) {
+        // We only butt-joint into perpendicular or nearly perpendicular walls
+        if (!isPerp) continue;
+
+        // Check if startPt or endPt of this wall is within the other wall's volume
+        // To simplify: check distance from our endpoint to other wall's centerline
+        const dxStart = startX - other.position.x;
+        const dzStart = startZ - other.position.z;
+
+        // Project onto other wall's axes
+        const distAlongOther = Math.abs(dxStart * otherCos - dzStart * otherSin);
+        const distAcrossOther = Math.abs(dxStart * otherSin + dzStart * otherCos);
+
+        // If start point is within the "end region" of the other wall
+        if (distAlongOther <= (otherW / 2 + TOLERANCE) && distAcrossOther <= (otherT / 2 + TOLERANCE)) {
+            // Priority: larger-ID wall or specific tags could decide "through" vs "butt"
+            // For now, if we are the one hitting the other wall's centerline, we butt.
+            if (distAcrossOther < TOLERANCE) {
                 startInset = Math.max(startInset, otherT / 2);
             }
-            if (Math.abs(endPt.x - otherX) < SNAP && wallZ >= otherZMin && wallZ <= otherZMax) {
-                endInset = Math.max(endInset, otherT / 2);
-            }
-        } else {
-            const otherZ = other.position.z;
-            const otherXMin = other.position.x - otherHW - SNAP;
-            const otherXMax = other.position.x + otherHW + SNAP;
-            const wallX = wall.position.x;
+        }
 
-            if (Math.abs(startPt.z - otherZ) < SNAP && wallX >= otherXMin && wallX <= otherXMax) {
-                startInset = Math.max(startInset, otherT / 2);
-            }
-            if (Math.abs(endPt.z - otherZ) < SNAP && wallX >= otherXMin && wallX <= otherXMax) {
+        const dxEnd = endX - other.position.x;
+        const dzEnd = endZ - other.position.z;
+        const distAlongOtherEnd = Math.abs(dxEnd * otherCos - dzEnd * otherSin);
+        const distAcrossOtherEnd = Math.abs(dxEnd * otherSin + dzEnd * otherCos);
+
+        if (distAlongOtherEnd <= (otherW / 2 + TOLERANCE) && distAcrossOtherEnd <= (otherT / 2 + TOLERANCE)) {
+            if (distAcrossOtherEnd < TOLERANCE) {
                 endInset = Math.max(endInset, otherT / 2);
             }
         }
     }
 
     return {
-        adjustedWidth: Math.max(W - startInset - endInset, 0.1),
+        adjustedWidth: Math.max(W - startInset - endInset, 0.01), // Min 1cm
         startInset,
         endInset
     };
@@ -380,20 +382,25 @@ export function resolveWallCorners(
 
 /**
  * Computes adjusted position for walls that were inset to prevent gaps/overlaps.
+ * Shifts the center along the wall's orientation vector.
  */
 export function resolveWallPosition(
     wall: PSGNode,
     startInset: number,
     endInset: number
 ): { x: number; y: number; z: number } {
-    const yaw = Math.round(wall.rotation.yaw) % 180;
-    const isNS = (yaw === 90 || yaw === -90);
+    const angle = (wall.rotation.yaw * Math.PI) / 180;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+
+    // The shift balance: if we inset more at the end than the start,
+    // the center moves towards the start.
     const shift = (endInset - startInset) / 2;
 
     return {
-        x: wall.position.x + (isNS ? 0 : shift),
+        x: wall.position.x - shift * cosA,
         y: wall.position.y,
-        z: wall.position.z + (isNS ? shift : 0),
+        z: wall.position.z + shift * sinA,
     };
 }
 

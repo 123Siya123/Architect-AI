@@ -220,7 +220,11 @@ function isEnvelopeNode(node: PSGNode): boolean {
 
     // Walls/Partitions are envelope IF they are tagged exterior
     // or if they are the primary boundary.
-    return node.type === 'Wall' && (node.tags.includes('exterior') || node.tags.includes('perimeter'));
+    if (node.type === 'Wall' || node.type === 'Partition') {
+        return node.tags.includes('exterior') || node.tags.includes('load_bearing');
+    }
+
+    return false;
 }
 
 /** Gets the thickness relevant for thermal calculation */

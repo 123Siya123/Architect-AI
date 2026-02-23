@@ -116,69 +116,56 @@ export interface ElectricalLayout {
  * @param project - The PSG project
  * @returns Complete electrical layout
  */
-export function generateElectricalLayout(
-    project: PSGProject
-): ElectricalLayout {
+export function generateElectricalLayout(project: PSGProject): ElectricalLayout {
     const devices: ElectricalDevice[] = [];
-    const cables: CableSegment[] = [];
-    const circuits: Circuit[] = [];
 
-    // Find all rooms
-    const rooms = Object.values(project.nodes).filter((n) => n.type === 'Room');
+    // Find entrance for DB (Center of house root node)
+    const house = project.nodes[project.root_node_id];
+    const dbPos = house
+        ? { x: house.position.x, y: 1.5, z: house.position.z }
+        : { x: 0, y: 1.5, z: 0 };
 
-    // Create default circuits
-    const kitchenRing = createCircuit('circuit_kitchen', 'Kitchen Ring', 'ring', 32);
-    const downstairsRing = createCircuit('circuit_downstairs', 'Downstairs Ring', 'ring', 32);
-    const upstairsRing = createCircuit('circuit_upstairs', 'Upstairs Ring', 'ring', 32);
-    const lightingCircuit = createCircuit('circuit_lights', 'Lighting', 'lighting', 6);
+    // Process rooms and place devices
+    const rooms = Object.values(project.nodes).filter(n => n.type === 'Room');
+    rooms.forEach(room => {
+        devices.push(...getDevicesForRoom(room, project));
+    });
 
-    circuits.push(kitchenRing, downstairsRing, upstairsRing, lightingCircuit);
-
-    // Process each room
-    for (const room of rooms) {
-        const roomDevices = getDevicesForRoom(room, project);
-        devices.push(...roomDevices);
-    }
-
-    // Calculate total load
-    const totalLoad = devices.reduce((sum, d) => sum + d.power_watts, 0);
-    const supplyAmps = Math.ceil(totalLoad / 230); // 230V single phase
+    // Generate cables connecting everything to DB
+    const cables = generateCables(devices, dbPos, project);
 
     return {
         devices,
         cables,
-        circuits,
-        distribution_board_position: { x: 0, y: 1.5, z: 0 }, // Near entrance
-        total_load_watts: totalLoad,
-        supply_amps: Math.max(supplyAmps, 60), // Minimum 60A supply
+        circuits: [],
+        distribution_board_position: dbPos,
+        total_load_watts: devices.reduce((s, d) => s + d.power_watts, 0),
+        supply_amps: 100,
     };
 }
 
-// =============================================================================
-// HELPERS
-// =============================================================================
+/**
+ * Helper to calculate world position from wall-relative coordinates
+ */
+function getWallWorldPos(wall: PSGNode, xRel: number, yRel: number, zOffset: number = 0.05) {
+    const halfW = wall.dimensions.x / 2;
+    const localX = xRel - halfW;
+    const angle = (wall.rotation.yaw * Math.PI) / 180;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
 
-function createCircuit(
-    id: string,
-    name: string,
-    type: Circuit['type'],
-    breakerAmps: number
-): Circuit {
+    // Position slightly proud of the wall face
+    const distFromCenter = wall.dimensions.z / 2 + zOffset;
+
     return {
-        id,
-        name,
-        type,
-        breaker_amps: breakerAmps,
-        cable_size_mm2: breakerAmps <= 6 ? 1.5 : breakerAmps <= 20 ? 2.5 : 4.0,
-        devices: [],
-        total_load_watts: 0,
-        rcd_group: 'rcd_main',
+        x: wall.position.x + localX * cosA - distFromCenter * sinA,
+        y: wall.position.y - (wall.dimensions.y / 2) + yRel,
+        z: wall.position.z - localX * sinA - distFromCenter * cosA,
     };
 }
 
 /**
  * Determines what devices a room needs based on its function.
- * Returns device definitions with positions on walls.
  */
 function getDevicesForRoom(
     room: PSGNode,
@@ -187,83 +174,93 @@ function getDevicesForRoom(
     const devices: ElectricalDevice[] = [];
     const roomFunc = room.room_function || 'generic';
 
-    // Find all walls that are children of this room (or connected to it)
     const roomWalls = room.children_ids
         .map(id => project.nodes[id])
         .filter(n => n && (n.type === 'Wall' || n.type === 'Partition'));
 
-    // Ceiling light for every room
+    // 1. Ceiling light (world space)
     devices.push({
         id: `light_${room.id}`,
         type: 'light_ceiling',
-        wall_id: '', // Ceiling-mounted
-        position: { x: room.position.x, y: room.dimensions.y, z: room.position.z },
+        wall_id: '',
+        position: { x: room.position.x, y: room.position.y + room.dimensions.y / 2 - 0.1, z: room.position.z },
         circuit_id: 'circuit_lights',
         power_watts: 60,
     });
 
-    if (roomWalls.length === 0) return devices;
-
-    // Helper to place a device on a specific wall
-    const placeOnWall = (wall: PSGNode, type: ElectricalDeviceType, xPos: number, yPos: number, circuit: string, watts: number) => {
+    const placeOnWall = (wall: PSGNode, type: ElectricalDeviceType, xRel: number, yRel: number, circuit: string, watts: number) => {
         devices.push({
             id: `${type}_${wall.id}_${devices.length}`,
             type,
             wall_id: wall.id,
-            position: { x: xPos, y: yPos, z: 0.05 }, // Slightly offset from wall surface
+            position: getWallWorldPos(wall, xRel, yRel),
             circuit_id: circuit,
             power_watts: watts,
         });
     };
 
-    // Room-specific placement rules
-    switch (roomFunc) {
-        case 'kitchen':
-            roomWalls.forEach(wall => {
-                // Sockets every 1.0m along kitchen walls for appliances
-                const numSockets = Math.floor(wall.dimensions.x / 1.0);
-                for (let i = 1; i <= numSockets; i++) {
-                    placeOnWall(wall, 'socket_double', i * 1.0, 1.1, 'circuit_kitchen', 3000);
-                }
-            });
-            break;
-
-        case 'bedroom':
-            roomWalls.forEach((wall, idx) => {
-                // One double socket per wall at 0.3m height
-                placeOnWall(wall, 'socket_double', wall.dimensions.x / 2, 0.3, 'circuit_upstairs', 500);
-                // Switch near the door if it's the first wall
-                if (idx === 0) {
-                    placeOnWall(wall, 'switch_single', 0.2, 1.2, 'circuit_lights', 0);
-                }
-            });
-            break;
-
-        case 'bathroom':
-            // High-level shaver socket only (safety)
-            if (roomWalls[0]) {
-                placeOnWall(roomWalls[0], 'socket_single', 0.5, 1.6, 'circuit_upstairs', 100);
-                placeOnWall(roomWalls[0], 'switch_single', -0.2, 1.2, 'circuit_lights', 0); // Pull cord or outside
-            }
-            break;
-
-        case 'living':
-            roomWalls.forEach(wall => {
-                // Sockets every 2.0m
-                const numSockets = Math.floor(wall.dimensions.x / 2.0);
-                for (let i = 1; i <= numSockets; i++) {
-                    placeOnWall(wall, 'socket_double', i * 2.0, 0.3, 'circuit_downstairs', 500);
-                }
-            });
-            break;
-
-        default:
-            // Generic: switch + 2 sockets
-            if (roomWalls[0]) {
-                placeOnWall(roomWalls[0], 'switch_single', 0.2, 1.2, 'circuit_lights', 0);
-                placeOnWall(roomWalls[0], 'socket_double', roomWalls[0].dimensions.x / 2, 0.3, 'circuit_downstairs', 500);
-            }
-    }
+    // Placement logic
+    roomWalls.forEach((wall, idx) => {
+        if (roomFunc === 'kitchen') {
+            const num = Math.floor(wall.dimensions.x / 1.5);
+            for (let i = 1; i <= num; i++) placeOnWall(wall, 'socket_double', i * 1.5, 1.1, 'circuit_kitchen', 3000);
+        } else if (roomFunc === 'bathroom') {
+            if (idx === 0) placeOnWall(wall, 'socket_single', 0.5, 1.6, 'circuit_lights', 100);
+        } else {
+            // Standard: one socket per wall, one switch near door
+            placeOnWall(wall, 'socket_double', wall.dimensions.x / 2, 0.45, 'circuit_radial', 500);
+            if (idx === 0) placeOnWall(wall, 'switch_single', 0.2, 1.2, 'circuit_lights', 0);
+        }
+    });
 
     return devices;
+}
+
+/** 
+ * Routes cables from devices back to Distribution Board
+ */
+function generateCables(devices: ElectricalDevice[], dbPos: Vec3, project: PSGProject): CableSegment[] {
+    const cables: CableSegment[] = [];
+
+    devices.forEach(dev => {
+        const wall = project.nodes[dev.wall_id];
+
+        if (wall) {
+            // Vertical to floor routing level (0.1m)
+            const floorY = wall.position.y - wall.dimensions.y / 2 + 0.1;
+            const wallBase = { ...dev.position, y: floorY };
+
+            cables.push({
+                id: `c_v_${dev.id}`,
+                from: dev.position,
+                to: wallBase,
+                circuit_id: dev.circuit_id,
+                cable_type: '2.5mm',
+                in_wall_id: wall.id
+            });
+
+            // Horizontal to DB x/z coordinate
+            const dbBase = { x: dbPos.x, y: floorY, z: dbPos.z };
+            cables.push({
+                id: `c_h_${dev.id}`,
+                from: wallBase,
+                to: dbBase,
+                circuit_id: dev.circuit_id,
+                cable_type: '2.5mm',
+                in_wall_id: ''
+            });
+
+            // Vertical to DB
+            cables.push({
+                id: `c_db_${dev.id}`,
+                from: dbBase,
+                to: dbPos,
+                circuit_id: dev.circuit_id,
+                cable_type: '2.5mm',
+                in_wall_id: ''
+            });
+        }
+    });
+
+    return cables;
 }

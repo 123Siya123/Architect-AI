@@ -76,142 +76,146 @@ export interface PlumbingLayout {
 // =============================================================================
 
 /**
+ * Helper to calculate world position from wall-relative coordinates
+ */
+function getWallWorldPos(wall: PSGNode, xRel: number, yRel: number, zOffset: number = 0.1) {
+    const halfW = wall.dimensions.x / 2;
+    const localX = xRel - halfW;
+    const angle = (wall.rotation.yaw * Math.PI) / 180;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const distFromCenter = wall.dimensions.z / 2 + zOffset;
+
+    return {
+        x: wall.position.x + localX * cosA - distFromCenter * sinA,
+        y: wall.position.y - (wall.dimensions.y / 2) + yRel,
+        z: wall.position.z - localX * sinA - distFromCenter * cosA,
+    };
+}
+
+/**
  * Generates a plumbing layout based on room functions.
- * Identifies wet rooms (bathrooms, kitchen, utility) and places fixtures.
- *
- * @param project - The PSG project
- * @returns Complete plumbing layout
  */
 export function generatePlumbingLayout(project: PSGProject): PlumbingLayout {
     const fixtures: PlumbingFixture[] = [];
 
-    // Find wet rooms
-    const rooms = Object.values(project.nodes).filter((n) => n.type === 'Room');
+    // Global entry/exit points (Source of Truth)
+    const house = project.nodes[project.root_node_id];
+    const mainsEntry = house ? { x: house.position.x - 3, y: -0.5, z: house.position.z } : { x: -3, y: -0.5, z: 0 };
+    const drainExit = house ? { x: house.position.x + 3, y: -0.8, z: house.position.z + 5 } : { x: 3, y: -0.8, z: 5 };
 
-    for (const room of rooms) {
+    // Find wet rooms
+    const rooms = Object.values(project.nodes).filter(n => n.type === 'Room');
+    rooms.forEach(room => {
         const func = room.room_function || '';
         if (['bathroom', 'kitchen', 'utility', 'ensuite', 'wc'].includes(func)) {
-            const roomFixtures = getFixturesForRoom(room, project);
-            fixtures.push(...roomFixtures);
+            fixtures.push(...getFixturesForRoom(room, project));
         }
-    }
+    });
 
-    const pipes = generatePipesForFixtures(fixtures, project);
-    const totalFU = fixtures.reduce((sum: number, f: PlumbingFixture) => sum + getFixtureUnits(f.type), 0);
+    const pipes = generatePipesForFixtures(fixtures, mainsEntry, drainExit, project);
 
     return {
         fixtures,
         pipes,
-        mains_entry: { x: 0, y: -0.5, z: 0 },
-        drain_exit: { x: 0, y: -0.5, z: -1 },
-        total_fixture_units: totalFU,
+        mains_entry: mainsEntry,
+        drain_exit: drainExit,
+        total_fixture_units: fixtures.length * 5,
     };
 }
 
+
 function getFixturesForRoom(room: PSGNode, project: PSGProject): PlumbingFixture[] {
     const fixtures: PlumbingFixture[] = [];
-    const func = room.room_function || '';
-
-    // Find all walls belonging to this room
     const roomWalls = room.children_ids
         .map(id => project.nodes[id])
         .filter(n => n && (n.type === 'Wall' || n.type === 'Partition'));
 
     if (roomWalls.length === 0) return fixtures;
 
-    // Helper to place a fixture on a wall
-    const placeOnWall = (wall: PSGNode, type: FixtureType, xPos: number, yPos: number) => {
+    const placeOnWall = (wall: PSGNode, type: FixtureType, xRel: number, yRel: number) => {
         fixtures.push({
             id: `${type}_${wall.id}_${fixtures.length}`,
             type,
             room_id: room.id,
-            position: { x: xPos, y: yPos, z: 0.1 }, // Offset from wall
+            position: getWallWorldPos(wall, xRel, yRel),
             supply_connections: [],
             drain_connections: [],
         });
     };
 
-    switch (func) {
-        case 'bathroom': case 'ensuite':
-            // Common layout: Toilet, Basin, and Shower along the first available wall
-            if (roomWalls[0]) {
-                const wall = roomWalls[0];
-                placeOnWall(wall, 'toilet', 0.5, 0);
-                placeOnWall(wall, 'basin', 1.5, 0.85);
-                if (wall.dimensions.x > 3) {
-                    placeOnWall(wall, 'shower', 2.5, 0);
-                }
-            }
-            break;
-
-        case 'wc':
-            if (roomWalls[0]) {
-                placeOnWall(roomWalls[0], 'toilet', 0.5, 0);
-                placeOnWall(roomWalls[0], 'basin', 1.2, 0.85);
-            }
-            break;
-
-        case 'kitchen':
-            if (roomWalls[0]) {
-                placeOnWall(roomWalls[0], 'kitchen_sink', 1.5, 0.9);
-                placeOnWall(roomWalls[0], 'dishwasher', 2.2, 0);
-            }
-            break;
-
-        case 'utility':
-            if (roomWalls[0]) {
-                placeOnWall(roomWalls[0], 'washing_machine', 0.8, 0);
-                placeOnWall(roomWalls[0], 'outside_tap', 1.5, 0.5);
-            }
-            break;
+    const func = room.room_function || '';
+    if (func === 'bathroom' || func === 'ensuite') {
+        if (roomWalls[0]) {
+            placeOnWall(roomWalls[0], 'toilet', 0.6, 0.4);
+            placeOnWall(roomWalls[0], 'basin', 1.4, 0.85);
+            if (roomWalls[0].dimensions.x > 2.5) placeOnWall(roomWalls[0], 'shower', 2.2, 0.2);
+        }
+    } else if (func === 'kitchen') {
+        if (roomWalls[0]) placeOnWall(roomWalls[0], 'kitchen_sink', 1.5, 0.9);
     }
 
     return fixtures;
 }
 
-/**
- * Generates the pipe network connecting fixtures.
- * Routes through walls and floors.
- * TODO (Phase 5): Full A* routing for pipes
- */
-function generatePipesForFixtures(fixtures: PlumbingFixture[], _project: PSGProject): PipeSegment[] {
+function generatePipesForFixtures(
+    fixtures: PlumbingFixture[],
+    mainsEntry: Vec3,
+    drainExit: Vec3,
+    project: PSGProject
+): PipeSegment[] {
     const pipes: PipeSegment[] = [];
 
     fixtures.forEach(fixture => {
-        // Every fixture needs a drain
+        const wall = project.nodes[Object.values(project.nodes).find(n => fixture.id.includes(n.id))?.id || ''];
+
+        // 1. Drain: Fixture -> Vertical to below floor -> Drain Exit
+        const floorY = -0.5;
+        const fixtureBase = { ...fixture.position, y: floorY };
+
         pipes.push({
-            id: `drain_${fixture.id}`,
+            id: `d_v_${fixture.id}`,
             type: 'drain',
             diameter_mm: fixture.type === 'toilet' ? 110 : 40,
             from: fixture.position,
-            to: { x: fixture.position.x, y: -0.2, z: fixture.position.z }, // Drops to floor
-            in_wall_id: '',
-            gradient: fixture.type === 'toilet' ? 0.025 : 0.0125,
-        });
-
-        // Every fixture needs cold supply
-        pipes.push({
-            id: `cold_${fixture.id}`,
-            type: 'supply_cold',
-            diameter_mm: 15,
-            from: fixture.position,
-            to: { x: fixture.position.x, y: fixture.position.y - 0.3, z: fixture.position.z },
-            in_wall_id: '',
+            to: fixtureBase,
+            in_wall_id: wall?.id || '',
             gradient: 0,
         });
 
-        // Some fixtures need hot supply
-        if (['basin', 'bath', 'shower', 'kitchen_sink', 'washing_machine'].includes(fixture.type)) {
-            pipes.push({
-                id: `hot_${fixture.id}`,
-                type: 'supply_hot',
-                diameter_mm: 15,
-                from: fixture.position,
-                to: { x: fixture.position.x + 0.1, y: fixture.position.y - 0.3, z: fixture.position.z },
-                in_wall_id: '',
-                gradient: 0,
-            });
-        }
+        pipes.push({
+            id: `d_h_${fixture.id}`,
+            type: 'drain',
+            diameter_mm: fixture.type === 'toilet' ? 110 : 40,
+            from: fixtureBase,
+            to: drainExit,
+            in_wall_id: '',
+            gradient: 0.02,
+        });
+
+        // 2. Supply: Fixture -> Vertical to floor -> Mains Entry
+        const supplyFloorY = -0.3;
+        const supplyBase = { ...fixture.position, y: supplyFloorY };
+
+        pipes.push({
+            id: `s_v_${fixture.id}`,
+            type: 'supply_cold',
+            diameter_mm: 15,
+            from: fixture.position,
+            to: supplyBase,
+            in_wall_id: wall?.id || '',
+            gradient: 0,
+        });
+
+        pipes.push({
+            id: `s_h_${fixture.id}`,
+            type: 'supply_cold',
+            diameter_mm: 15,
+            from: supplyBase,
+            to: mainsEntry,
+            in_wall_id: '',
+            gradient: 0,
+        });
     });
 
     return pipes;
