@@ -99,12 +99,12 @@ function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
 
-    // Generate geometry (memoized per node version)
+    // Generate geometry (memoized per node version + style)
     const geometryOrGroup = useMemo(() => {
         return getGeometryForNode(node);
-    }, [node.type, node.dimensions.x, node.dimensions.y, node.dimensions.z, node.version]);
+    }, [node.type, node.dimensions.x, node.dimensions.y, node.dimensions.z, node.version, node.roof_style, node.stair_style]);
 
-    // Get material
+    // Get material (recomputed when material_id changes)
     const material = useMemo(() => {
         return getMaterial(node.material_id, node.opacity);
     }, [node.material_id, node.opacity]);
@@ -138,6 +138,7 @@ function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
     if (geometryOrGroup instanceof THREE.Group) {
         return (
             <group
+                key={`${node.id}_${node.version}_${node.stair_style}`}
                 position={[node.position.x, node.position.y, node.position.z]}
                 rotation={rotation}
             >
@@ -173,6 +174,7 @@ function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
     // Standard single-mesh node
     return (
         <mesh
+            key={`${node.id}_${node.version}_${node.material_id}`}
             ref={meshRef}
             geometry={geometryOrGroup}
             material={material}

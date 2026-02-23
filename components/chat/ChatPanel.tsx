@@ -74,6 +74,7 @@ export default function ChatPanel() {
     const isAIThinking = useDesignStore((s) => s.isAIThinking);
     const setAIThinking = useDesignStore((s) => s.setAIThinking);
     const project = useDesignStore((s) => s.project);
+    const applyBatchOps = useDesignStore((s) => s.applyBatchOps);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom on new messages
@@ -108,12 +109,22 @@ export default function ChatPanel() {
 
             const data = await response.json();
 
+            // ✅ CRITICAL: Apply AI operations to the 3D scene via the store
+            let appliedOps = data.operations || [];
+            if (appliedOps.length > 0) {
+                const result = applyBatchOps(appliedOps);
+                if (!result.success) {
+                    console.warn('[ChatPanel] Some operations failed:', result.errors);
+                    // Only keep ops that were attempted — still show them in the chat
+                }
+            }
+
             const aiMsg: ChatMessage = {
                 id: `msg_${Date.now()}_ai`,
                 role: 'assistant',
                 content: data.message || 'I processed your request.',
                 timestamp: new Date().toISOString(),
-                operations: data.operations || [],
+                operations: appliedOps,
             };
             addChatMessage(aiMsg);
         } catch {
@@ -127,7 +138,7 @@ export default function ChatPanel() {
         } finally {
             setAIThinking(false);
         }
-    }, [input, isAIThinking, project, chatMessages, addChatMessage, setAIThinking]);
+    }, [input, isAIThinking, project, chatMessages, addChatMessage, setAIThinking, applyBatchOps]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

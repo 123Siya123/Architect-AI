@@ -507,22 +507,47 @@ function collectDescendants(
  * style, but the children (handrails, etc.) are preserved.
  */
 function replaceNode(project: PSGProject, operation: PSGOperation): PSGProject {
-    const { new_node, preserve_children = true } = operation.params as {
-        new_node: PSGNode;
+    const params = operation.params as {
+        new_node?: PSGNode;
+        new_type?: string;
+        roof_style?: string;
+        stair_style?: string;
+        roof_pitch_degrees?: number;
         preserve_children?: boolean;
     };
 
+    const preserve_children = params.preserve_children !== false; // default true
     const oldNode = project.nodes[operation.target_id];
 
-    // Copy children if preserving
-    const updatedNewNode: PSGNode = {
-        ...new_node,
-        id: operation.target_id,  // Keep the same ID for reference stability
-        parent_id: oldNode.parent_id,
-        children_ids: preserve_children ? oldNode.children_ids : [],
-        modified_at: new Date().toISOString(),
-        version: oldNode.version + 1,
-    };
+    let updatedNewNode: PSGNode;
+
+    if (params.new_node) {
+        // Legacy path: a full PSGNode was supplied directly
+        updatedNewNode = {
+            ...params.new_node,
+            id: operation.target_id,
+            parent_id: oldNode.parent_id,
+            children_ids: preserve_children ? oldNode.children_ids : [],
+            modified_at: new Date().toISOString(),
+            version: oldNode.version + 1,
+        };
+    } else {
+        // ✅ AI path: flat args — clone the existing node then overlay changed fields only
+        updatedNewNode = {
+            ...oldNode,
+            // Allow type change (e.g. Stairs → Stairs with different style)
+            type: (params.new_type as PSGNode['type']) ?? oldNode.type,
+            // Roof-specific overrides
+            ...(params.roof_style !== undefined && { roof_style: params.roof_style as PSGNode['roof_style'] }),
+            ...(params.roof_pitch_degrees !== undefined && { roof_pitch_degrees: params.roof_pitch_degrees }),
+            // Stair-specific overrides
+            ...(params.stair_style !== undefined && { stair_style: params.stair_style as PSGNode['stair_style'] }),
+            // Preserve or discard children
+            children_ids: preserve_children ? oldNode.children_ids : [],
+            modified_at: new Date().toISOString(),
+            version: oldNode.version + 1,
+        };
+    }
 
     return {
         ...project,
