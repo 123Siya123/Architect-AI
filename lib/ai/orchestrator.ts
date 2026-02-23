@@ -11,22 +11,18 @@
  * 4. Converts them to PSGOperations
  * 5. Returns the operations + AI message to the frontend
  *
- * WHY A SEPARATE ORCHESTRATOR?
- * - Keeps LLM provider logic isolated (easy to swap Gemini ↔ GPT)
- * - Handles streaming responses
- * - Manages conversation history truncation (context window limits)
- * - Retries on failure
- * - Logs all interactions for debugging
+ * SUPPORTED PROVIDERS:
+ * - Google Gemini (default) — via @google/generative-ai SDK
+ * - OpenAI GPT-4 — via REST API
  *
- * TODO (Phase 2): Implement actual LLM API calls.
- * For now, this file defines the interface and data flow.
+ * The provider is selected via the NEXT_PUBLIC_AI_PROVIDER env var.
+ * API keys are NEVER sent to the client — this runs server-side only.
  * =============================================================================
  */
 
 import type {
     PSGProject,
     PSGOperation,
-    ChatMessage,
     AIChatRequest,
     AIChatResponse,
     Material,
@@ -73,18 +69,9 @@ export function getAIConfig(): AIConfig {
 
 /**
  * Prepares the PSG project for inclusion in the AI prompt.
- *
- * WHY NOT SEND THE ENTIRE PROJECT?
- * The full project JSON can be huge. We optimize by:
- * 1. Only including nodes that are relevant to the user's question
- * 2. Stripping timestamps and version numbers (AI doesn't need them)
- * 3. Limiting the depth of details for distant nodes
- *
- * For Phase 1, we send everything. Optimization comes in Phase 3.
+ * Strips metadata to save tokens, keeps the structural essentials.
  */
 export function prepareProjectContext(project: PSGProject): string {
-    // For now, serialize the entire project
-    // In Phase 3, we'll implement smart context windowing
     const simplified = {
         name: project.name,
         root_node_id: project.root_node_id,
@@ -102,7 +89,6 @@ export function prepareProjectContext(project: PSGProject): string {
                     tags: node.tags,
                     parent_id: node.parent_id,
                     children_ids: node.children_ids,
-                    // Include type-specific fields only if they exist
                     ...(node.room_function && { room_function: node.room_function }),
                     ...(node.stair_style && { stair_style: node.stair_style }),
                     ...(node.roof_style && { roof_style: node.roof_style }),
@@ -141,6 +127,165 @@ Remaining: ${b.currency} ${b.remaining.toLocaleString()}`;
 }
 
 // =============================================================================
+// GEMINI API CALL
+// =============================================================================
+
+/**
+ * Converts our tool definitions to Gemini's function declaration format.
+ */
+function toolsToGeminiFunctions() {
+    return AI_TOOLS.map((tool) => ({
+        name: tool.function.name,
+        description: tool.function.description,
+        parameters: tool.function.parameters,
+    }));
+}
+
+/**
+ * Calls the Google Gemini API with function calling support.
+ *
+ * WHY THE REST API INSTEAD OF THE SDK?
+ * The @google/generative-ai SDK adds a dependency. The REST API is
+ * straightforward and keeps the bundle smaller for a Next.js server route.
+ */
+async function callGemini(
+    config: AIConfig,
+    messages: Array<{ role: string; content: string }>,
+): Promise<{ text: string; toolCalls: Array<{ name: string; args: Record<string, unknown> }> }> {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+
+    // Build Gemini's expected format
+    const systemInstruction = messages
+        .filter((m) => m.role === 'system')
+        .map((m) => m.content)
+        .join('\n\n');
+
+    const contents = messages
+        .filter((m) => m.role !== 'system')
+        .map((m) => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }],
+        }));
+
+    const body = {
+        system_instruction: {
+            parts: [{ text: systemInstruction }],
+        },
+        contents,
+        tools: [
+            {
+                function_declarations: toolsToGeminiFunctions(),
+            },
+        ],
+        tool_config: {
+            function_calling_config: {
+                mode: 'AUTO', // Let model decide when to call tools
+            },
+        },
+        generation_config: {
+            temperature: config.temperature,
+            max_output_tokens: config.maxTokens,
+        },
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`Gemini API error (${response.status}): ${err}`);
+    }
+
+    const data = await response.json();
+    const candidate = data.candidates?.[0];
+    if (!candidate) {
+        throw new Error('Gemini returned no candidates');
+    }
+
+    // Extract text and tool calls from the response parts
+    let text = '';
+    const toolCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+
+    for (const part of candidate.content?.parts || []) {
+        if (part.text) {
+            text += part.text;
+        }
+        if (part.functionCall) {
+            toolCalls.push({
+                name: part.functionCall.name,
+                args: part.functionCall.args || {},
+            });
+        }
+    }
+
+    return { text, toolCalls };
+}
+
+// =============================================================================
+// OPENAI API CALL
+// =============================================================================
+
+/**
+ * Calls the OpenAI API with function calling support (GPT-4/GPT-4o).
+ */
+async function callOpenAI(
+    config: AIConfig,
+    messages: Array<{ role: string; content: string }>,
+): Promise<{ text: string; toolCalls: Array<{ name: string; args: Record<string, unknown> }> }> {
+    const url = 'https://api.openai.com/v1/chat/completions';
+
+    const body = {
+        model: config.model,
+        messages,
+        tools: AI_TOOLS,
+        tool_choice: 'auto',
+        temperature: config.temperature,
+        max_tokens: config.maxTokens,
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`OpenAI API error (${response.status}): ${err}`);
+    }
+
+    const data = await response.json();
+    const choice = data.choices?.[0];
+    if (!choice) {
+        throw new Error('OpenAI returned no choices');
+    }
+
+    const text = choice.message?.content || '';
+    const toolCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+
+    for (const tc of choice.message?.tool_calls || []) {
+        if (tc.type === 'function') {
+            try {
+                toolCalls.push({
+                    name: tc.function.name,
+                    args: JSON.parse(tc.function.arguments),
+                });
+            } catch {
+                console.warn('[AI Orchestrator] Failed to parse tool call args:', tc.function.arguments);
+            }
+        }
+    }
+
+    return { text, toolCalls };
+}
+
+// =============================================================================
 // MAIN ORCHESTRATION FUNCTION
 // =============================================================================
 
@@ -153,16 +298,25 @@ Remaining: ${b.currency} ${b.remaining.toLocaleString()}`;
  * 3. Parse tool calls from the response
  * 4. Convert to PSGOperations
  * 5. Return text response + operations
- *
- * @param request - The chat request with message, project state, and history
- * @param materials - The materials library for context
- * @returns AI response with text and PSG operations
  */
 export async function sendChatToAI(
     request: AIChatRequest,
     materials: Record<string, Material>
 ): Promise<AIChatResponse> {
     const config = getAIConfig();
+
+    // If no API key is configured, return a helpful message
+    if (!config.apiKey) {
+        return {
+            message: `I understand you want to: "${request.message}". However, the AI backend is not yet configured. To enable AI features, add your API key to \`.env.local\`:\n\n\`\`\`\nAI_API_KEY=your_key_here\nNEXT_PUBLIC_AI_PROVIDER=gemini\nAI_MODEL=gemini-2.0-flash\n\`\`\`\n\nFor now, you can use the Inspector panel to directly edit elements.`,
+            operations: [],
+            warnings: [],
+            suggestions: [
+                'Use the sliders in the Inspector panel to make direct changes.',
+                'Click on any element in the 3D view to select and edit it.',
+            ],
+        };
+    }
 
     // Build context
     const projectContext = prepareProjectContext(request.project);
@@ -176,32 +330,53 @@ export async function sendChatToAI(
 
     // Build messages array
     const messages = [
-        { role: 'system' as const, content: ARCHITECT_SYSTEM_PROMPT },
-        { role: 'system' as const, content: houseContext },
+        { role: 'system', content: ARCHITECT_SYSTEM_PROMPT },
+        { role: 'system', content: houseContext },
         // Include recent chat history (last 10 messages to stay within context)
         ...request.history.slice(-10).map((msg) => ({
-            role: msg.role as 'user' | 'assistant',
+            role: msg.role as string,
             content: msg.content,
         })),
-        { role: 'user' as const, content: request.message },
+        { role: 'user', content: request.message },
     ];
 
-    // TODO (Phase 2): Implement actual API calls
-    // For now, return a placeholder response
-    console.log('[AI Orchestrator] Would send to', config.provider, ':', {
-        model: config.model,
-        messages: messages.length,
-        tools: AI_TOOLS.length,
-    });
+    try {
+        // Call the appropriate LLM provider
+        const result = config.provider === 'openai'
+            ? await callOpenAI(config, messages)
+            : await callGemini(config, messages);
 
-    // Placeholder response for Phase 1
-    return {
-        message: `I understand you want to: "${request.message}". The AI backend is not yet connected. This will be implemented in Phase 2.`,
-        operations: [],
-        warnings: [],
-        suggestions: [
-            'Try using the sliders in the Inspector panel to make direct changes.',
-            'Click on any element in the 3D view to select and edit it.',
-        ],
-    };
+        // Convert tool calls to PSG operations
+        const operations: PSGOperation[] = result.toolCalls.map((tc) =>
+            toolCallToOperation(tc.name, tc.args)
+        );
+
+        console.log('[AI Orchestrator]', config.provider, '→', {
+            textLength: result.text.length,
+            toolCalls: result.toolCalls.length,
+            operations: operations.length,
+        });
+
+        return {
+            message: result.text || 'I\'ve made the requested changes to the design.',
+            operations,
+            warnings: [],
+            suggestions: operations.length > 0
+                ? ['Click on modified elements to inspect the changes.']
+                : undefined,
+        };
+    } catch (error) {
+        console.error('[AI Orchestrator] Error:', error);
+        const errMsg = error instanceof Error ? error.message : 'Unknown error';
+
+        return {
+            message: `Sorry, I encountered an error while processing your request: ${errMsg}`,
+            operations: [],
+            warnings: [{ severity: 'warning' as const, message: errMsg }],
+            suggestions: [
+                'Check your API key in .env.local',
+                'Try again in a moment.',
+            ],
+        };
+    }
 }
