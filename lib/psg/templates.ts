@@ -3,25 +3,38 @@
  * LIB/PSG/TEMPLATES.TS — Starter House Templates
  * =============================================================================
  *
- * When a user starts a new project, they can choose from pre-built starter
- * templates. These provide a complete PSG structure for a basic house
- * that the user and AI can then modify.
+ * Pre-built house templates for quick-start projects.
  *
- * WHY TEMPLATES?
- * Starting from an empty project is overwhelming. Templates give users
- * a WORKING house in seconds that they can customize. It's much easier
- * to say "make this room bigger" when there's already a room visible.
+ * WALL POSITIONING STRATEGY — "THROUGH + BETWEEN" JOINTS:
+ * ─────────────────────────────────────────────────────────
+ *  Problem: Walls have thickness (T=0.25m). A wall at z=0 occupies
+ *           z = -T/2 to z = +T/2.  Two perpendicular walls both
+ *           positioned at their grid-line centers leave a T×T gap.
  *
- * TEMPLATE COORDINATE SYSTEM:
+ *  Solution: Use "through" and "between" wall strategy:
+ *
+ *   • HORIZONTAL walls (EW, yaw=0) are "THROUGH" walls:
+ *     - Their center X is at the CENTER of the house width.
+ *     - Their LENGTH extends to the OUTER faces of the corner walls.
+ *     - A north wall for a 10m-wide house has length = 10m + T,
+ *       centered at x = house_center. This FULLY covers both corners.
+ *
+ *   • VERTICAL walls (NS, yaw=90) are "BETWEEN" walls:
+ *     - Their length is the interior span BETWEEN the inner faces
+ *       of the two horizontal walls they connect.
+ *     - For a room that goes from z=0 to z=6 with horizontal walls
+ *       at both ends (each T thick), the NS wall length =
+ *       6 - T (the gap between inner faces).
+ *     - The NS wall center Z = midpoint of the interior span.
+ *
+ *  Result: Every corner is a clean butt joint with no gaps, no overlaps.
+ *
+ * COORDINATE SYSTEM:
  * - X axis: East-West (positive = east)
  * - Y axis: Up-Down (positive = up, Y=0 is ground)
  * - Z axis: North-South (positive = south)
  * - All positions are CENTER points of nodes
  * - All dimensions are in meters
- *
- * HELPER PATTERN:
- * To keep templates readable, we use a helper function `add()` that
- * registers a node in the project and adds it to its parent's children.
  * =============================================================================
  */
 
@@ -46,16 +59,54 @@ import {
 // HELPER: Add node to project and link to parent
 // =============================================================================
 
-/**
- * Registers a node in the project's flat map and appends its ID
- * to the parent's children_ids array. Returns the node for chaining.
- */
 function add(project: PSGProject, node: PSGNode): PSGNode {
     project.nodes[node.id] = node;
     if (node.parent_id && project.nodes[node.parent_id]) {
         project.nodes[node.parent_id].children_ids.push(node.id);
     }
     return node;
+}
+
+/**
+ * Add a wall and set its rotation in one step.
+ * Returns the wall node for chaining.
+ */
+function addWall(
+    project: PSGProject,
+    parentId: string,
+    name: string,
+    pos: { x: number; y: number; z: number },
+    length: number,
+    height: number,
+    thickness: number,
+    tags: PSGNode['tags'],
+    yaw: number = 0
+): PSGNode {
+    const wall = add(project, createWallNode(parentId, name, pos, length, height, thickness, tags));
+    if (yaw !== 0) {
+        wall.rotation = { yaw, pitch: 0, roll: 0 };
+    }
+    return wall;
+}
+
+/**
+ * Add a partition and set rotation in one step.
+ */
+function addPartition(
+    project: PSGProject,
+    parentId: string,
+    name: string,
+    pos: { x: number; y: number; z: number },
+    length: number,
+    height: number,
+    thickness: number,
+    yaw: number = 0
+): PSGNode {
+    const part = add(project, createPartitionNode(parentId, name, pos, length, height, thickness));
+    if (yaw !== 0) {
+        part.rotation = { yaw, pitch: 0, roll: 0 };
+    }
+    return part;
 }
 
 // =============================================================================
@@ -65,13 +116,13 @@ function add(project: PSGProject, node: PSGNode): PSGNode {
 /**
  * Creates a simple single-storey, 3-bedroom family home.
  *
- * LAYOUT (10m × 12m, origin at bottom-left corner):
+ * LAYOUT — 10m wide (X) × 12m deep (Z), origin = northwest outer corner.
  *
  *     North (Z = 0)
  *     ┌──────────────────────────────┐
  *     │         Living Room          │
- *     │         (5m × 6m)            │  Z=0 to Z=6
- *     ├───────────────┬──────────────┤
+ *     │         (10m × 6m)           │  Z=0 to Z=6
+ *     ├──────────────────────────────┤
  *     │    Kitchen    │   Bathroom   │
  *     │   (5m × 3m)  │  (5m × 3m)   │  Z=6 to Z=9
  *     ├───────────────┼──────────────┤
@@ -80,9 +131,13 @@ function add(project: PSGProject, node: PSGNode): PSGNode {
  *     └───────────────┴──────────────┘
  *     South (Z = 12)
  *
+ * WALL JOINTS:
+ *   All horizontal (EW, yaw=0) walls are "through" walls — they extend
+ *   to the outer face of the building, covering corner joints.
+ *   All vertical (NS, yaw=90) walls are "between" walls — they run
+ *   between the inner faces of the horizontal walls.
+ *
  * TOTAL AREA: ~120 m²
- * All exterior walls are load-bearing brick.
- * Interior divisions are lighter partition walls.
  */
 export function createSimple3BedTemplate(
     budget: number = 200000,
@@ -94,133 +149,156 @@ export function createSimple3BedTemplate(
     const H = DEFAULTS.WALL_HEIGHT;     // 2.7m
     const T = DEFAULTS.WALL_THICKNESS;  // 0.25m
     const halfH = H / 2;               // 1.35m — center of walls vertically
+    const halfT = T / 2;               // 0.125m
+
+    // House outer dimensions
+    const HOUSE_W = 10;  // meters (X direction)
+    const HOUSE_D = 12;  // meters (Z direction)
 
     // ─── Ground Floor ────────────────────────────────────────────────
     const floor = add(project, createFloorNode(rootId, 0, 'Ground Floor'));
 
     // ─── Foundation ──────────────────────────────────────────────────
-    add(project, createFoundationNode(floor.id, 'Foundation', { x: 5, y: -0.15, z: 6 }, { x: 10, y: 0.3, z: 12 }));
+    add(project, createFoundationNode(floor.id, 'Foundation',
+        { x: HOUSE_W / 2, y: -0.15, z: HOUSE_D / 2 },
+        { x: HOUSE_W + T, y: 0.3, z: HOUSE_D + T }));
 
-    // ─── Ground Slab (floor surface) ─────────────────────────────────
-    add(project, createSlabNode(floor.id, 'Ground Floor Slab', { x: 5, y: 0, z: 6 }, { x: 10, y: 0.15, z: 12 }));
-
-    // ─────────────────────────────────────────────────────────────────
-    // LIVING ROOM (north side: X=0..10, Z=0..6)
-    // ─────────────────────────────────────────────────────────────────
-    const living = add(project, createRoomNode(floor.id, 'Living Room', { x: 5, y: 0, z: 3 }, { x: 10, y: H, z: 6 }, 'living'));
-
-    // North wall (front of house) — 10m wide
-    const livingNorth = add(project, createWallNode(living.id, 'Living North Wall',
-        { x: 5, y: halfH, z: 0 }, 10, H, T, ['load_bearing', 'exterior']));
-    // Two large windows on the front
-    add(project, createWindowNode(livingNorth.id, 'Living Window Left', { x: 3, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.8, 1.4));
-    add(project, createWindowNode(livingNorth.id, 'Living Window Right', { x: 7, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.8, 1.4));
-
-    // West wall — 6m long
-    add(project, createWallNode(living.id, 'Living West Wall',
-        { x: 0, y: halfH, z: 3 }, 6, H, T, ['load_bearing', 'exterior']));
-    // Rotate 90° so it faces west
-    project.nodes[Object.keys(project.nodes).pop()!].rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // East wall — 6m long
-    add(project, createWallNode(living.id, 'Living East Wall',
-        { x: 10, y: halfH, z: 3 }, 6, H, T, ['load_bearing', 'exterior']));
-    project.nodes[Object.keys(project.nodes).pop()!].rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // South dividing wall (between living and kitchen/bathroom)
-    const livingDivider = add(project, createPartitionNode(living.id, 'Living South Divider',
-        { x: 5, y: halfH, z: 6 }, 10, H, 0.15));
-    // Front door in the divider (center)
-    add(project, createDoorNode(livingNorth.id, 'Front Door', { x: 5, y: DEFAULTS.DOOR_HEIGHT / 2 }, 1.0, DEFAULTS.DOOR_HEIGHT));
+    // ─── Ground Slab ─────────────────────────────────────────────────
+    add(project, createSlabNode(floor.id, 'Ground Floor Slab',
+        { x: HOUSE_W / 2, y: 0, z: HOUSE_D / 2 },
+        { x: HOUSE_W, y: 0.15, z: HOUSE_D }));
 
     // ─────────────────────────────────────────────────────────────────
-    // KITCHEN (middle-left: X=0..5, Z=6..9)
+    // ROOMS
     // ─────────────────────────────────────────────────────────────────
-    const kitchen = add(project, createRoomNode(floor.id, 'Kitchen', { x: 2.5, y: 0, z: 7.5 }, { x: 5, y: H, z: 3 }, 'kitchen'));
+    const living = add(project, createRoomNode(floor.id, 'Living Room',
+        { x: HOUSE_W / 2, y: 0, z: 3 },
+        { x: HOUSE_W, y: H, z: 6 }, 'living'));
 
-    // Kitchen west wall
-    const kitchenWest = add(project, createWallNode(kitchen.id, 'Kitchen West Wall',
-        { x: 0, y: halfH, z: 7.5 }, 3, H, T, ['load_bearing', 'exterior']));
-    kitchenWest.rotation = { yaw: 90, pitch: 0, roll: 0 };
-    // Kitchen window (west-facing)
-    add(project, createWindowNode(kitchenWest.id, 'Kitchen Window', { x: 0, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.6 }, 1.2, 1.2));
+    const kitchen = add(project, createRoomNode(floor.id, 'Kitchen',
+        { x: 2.5, y: 0, z: 7.5 },
+        { x: 5, y: H, z: 3 }, 'kitchen'));
 
-    // Kitchen-bathroom partition (vertical divider at X=5)
-    const kitchenBathPartition = add(project, createPartitionNode(kitchen.id, 'Kitchen-Bath Partition',
-        { x: 5, y: halfH, z: 7.5 }, 3, H, 0.12));
-    kitchenBathPartition.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // Kitchen door (in the divider between living and kitchen)
-    add(project, createDoorNode(livingDivider.id, 'Kitchen Door', { x: 2.5, y: DEFAULTS.DOOR_HEIGHT / 2 }, 0.9, DEFAULTS.DOOR_HEIGHT));
-
-    // ─────────────────────────────────────────────────────────────────
-    // BATHROOM (middle-right: X=5..10, Z=6..9)
-    // ─────────────────────────────────────────────────────────────────
-    const bathroom = add(project, createRoomNode(floor.id, 'Bathroom', { x: 7.5, y: 0, z: 7.5 }, { x: 5, y: H, z: 3 }, 'bathroom'));
+    const bathroom = add(project, createRoomNode(floor.id, 'Bathroom',
+        { x: 7.5, y: 0, z: 7.5 },
+        { x: 5, y: H, z: 3 }, 'bathroom'));
     bathroom.tags = ['wet_room'];
 
-    // Bathroom east wall
-    const bathEast = add(project, createWallNode(bathroom.id, 'Bathroom East Wall',
-        { x: 10, y: halfH, z: 7.5 }, 3, H, T, ['load_bearing', 'exterior']));
-    bathEast.rotation = { yaw: 90, pitch: 0, roll: 0 };
+    const bed1 = add(project, createRoomNode(floor.id, 'Bedroom 1',
+        { x: 2.5, y: 0, z: 10.5 },
+        { x: 5, y: H, z: 3 }, 'bedroom'));
 
-    // Small frosted window
-    add(project, createWindowNode(bathEast.id, 'Bathroom Window', { x: 0, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 0.8, 0.6));
-
-    // ─────────────────────────────────────────────────────────────────
-    // Middle horizontal divider (Z=9, between kitchen/bath and bedrooms)
-    // ─────────────────────────────────────────────────────────────────
-    const midDivider = add(project, createPartitionNode(floor.id, 'Mid Floor Divider',
-        { x: 5, y: halfH, z: 9 }, 10, H, 0.15));
+    const bed2 = add(project, createRoomNode(floor.id, 'Bedroom 2',
+        { x: 7.5, y: 0, z: 10.5 },
+        { x: 5, y: H, z: 3 }, 'bedroom'));
 
     // ─────────────────────────────────────────────────────────────────
-    // BEDROOM 1 (bottom-left: X=0..5, Z=9..12)
+    // EXTERIOR WALLS — "THROUGH" (EW) + "BETWEEN" (NS)
     // ─────────────────────────────────────────────────────────────────
-    const bed1 = add(project, createRoomNode(floor.id, 'Bedroom 1', { x: 2.5, y: 0, z: 10.5 }, { x: 5, y: H, z: 3 }, 'bedroom'));
+    //
+    // Through walls (EW, yaw=0): positioned at z = grid ± T/2,
+    //   length = HOUSE_W (inner span, since NS walls butt against them)
+    //   BUT we want the EW walls to be the "through" walls, so they span
+    //   the FULL outer width.
+    //
+    // Actually the cleanest approach: EW walls span exactly HOUSE_W,
+    // NS walls span exactly their interior span, AND the EW walls sit
+    // at the exact grid line (z=0, z=12) with their center at z=halfT
+    // so the OUTER face is at z=0.
 
-    // Bedroom 1 south wall
-    const bed1South = add(project, createWallNode(bed1.id, 'Bedroom 1 South Wall',
-        { x: 2.5, y: halfH, z: 12 }, 5, H, T, ['load_bearing', 'exterior']));
-    add(project, createWindowNode(bed1South.id, 'Bedroom 1 Window', { x: 2.5, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.4, 1.4));
+    // ── NORTH WALL (z=0 outer face) ──────────────────────────────────
+    // Center: x=HOUSE_W/2, z=halfT (outer face at z=0, inner face at z=T)
+    const northWall = addWall(project, living.id, 'North Wall',
+        { x: HOUSE_W / 2, y: halfH, z: halfT },
+        HOUSE_W, H, T, ['load_bearing', 'exterior']);
+    // Windows on the north wall
+    add(project, createWindowNode(northWall.id, 'Living Window L',
+        { x: 3, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: halfT },
+        1.8, 1.4));
+    add(project, createWindowNode(northWall.id, 'Living Window R',
+        { x: 7, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: halfT },
+        1.8, 1.4));
+    // Front door
+    add(project, createDoorNode(northWall.id, 'Front Door',
+        { x: 5, y: DEFAULTS.DOOR_HEIGHT / 2, z: halfT },
+        1.0, DEFAULTS.DOOR_HEIGHT));
 
-    // Bedroom 1 west wall
-    const bed1West = add(project, createWallNode(bed1.id, 'Bedroom 1 West Wall',
-        { x: 0, y: halfH, z: 10.5 }, 3, H, T, ['load_bearing', 'exterior']));
-    bed1West.rotation = { yaw: 90, pitch: 0, roll: 0 };
+    // ── SOUTH WALL (z=12 outer face) ─────────────────────────────────
+    // Center: z = HOUSE_D - halfT (outer face at z=12, inner face at z=12-T)
+    const southWall = addWall(project, bed1.id, 'South Wall',
+        { x: HOUSE_W / 2, y: halfH, z: HOUSE_D - halfT },
+        HOUSE_W, H, T, ['load_bearing', 'exterior']);
+    add(project, createWindowNode(southWall.id, 'Bed 1 Window',
+        { x: 2.5, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: HOUSE_D - halfT },
+        1.4, 1.4));
+    add(project, createWindowNode(southWall.id, 'Bed 2 Window',
+        { x: 7.5, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: HOUSE_D - halfT },
+        1.4, 1.4));
 
-    // Bedroom 1 door (in mid divider)
-    add(project, createDoorNode(midDivider.id, 'Bedroom 1 Door', { x: 2.5, y: DEFAULTS.DOOR_HEIGHT / 2 }, 0.9, DEFAULTS.DOOR_HEIGHT));
+    // ── WEST WALL (x=0 outer face) ───────────────────────────────────
+    // "Between" wall — runs from inner face of north wall (z=T)
+    // to inner face of south wall (z=HOUSE_D-T)
+    const westSpan = HOUSE_D - 2 * T; // 12 - 0.5 = 11.5m
+    const westCenterZ = HOUSE_D / 2;  // 6m
+    addWall(project, living.id, 'West Wall',
+        { x: halfT, y: halfH, z: westCenterZ },
+        westSpan, H, T, ['load_bearing', 'exterior'], 90);
+
+    // ── EAST WALL (x=10 outer face) ──────────────────────────────────
+    const eastWall = addWall(project, bathroom.id, 'East Wall',
+        { x: HOUSE_W - halfT, y: halfH, z: westCenterZ },
+        westSpan, H, T, ['load_bearing', 'exterior'], 90);
+    // Kitchen window (on the west wall section — actually let's put a bathroom window on east)
+    add(project, createWindowNode(eastWall.id, 'Bathroom Window',
+        { x: HOUSE_W - halfT, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: 7.5 },
+        0.8, 0.6));
 
     // ─────────────────────────────────────────────────────────────────
-    // BEDROOM 2 (bottom-right: X=5..10, Z=9..12)
+    // INTERIOR DIVIDERS (Partitions)
     // ─────────────────────────────────────────────────────────────────
-    const bed2 = add(project, createRoomNode(floor.id, 'Bedroom 2', { x: 7.5, y: 0, z: 10.5 }, { x: 5, y: H, z: 3 }, 'bedroom'));
 
-    // Bedroom 2 south wall
-    const bed2South = add(project, createWallNode(bed2.id, 'Bedroom 2 South Wall',
-        { x: 7.5, y: halfH, z: 12 }, 5, H, T, ['load_bearing', 'exterior']));
-    add(project, createWindowNode(bed2South.id, 'Bedroom 2 Window', { x: 7.5, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.4, 1.4));
+    // Horizontal divider at Z=6 (between living and kitchen/bath)
+    // "Through" partition — spans full house width, sits INSIDE
+    const PT = 0.15; // partition thickness
+    const halfPT = PT / 2;
+    const livingDivider = addPartition(project, floor.id, 'Living-Kitchen Divider',
+        { x: HOUSE_W / 2, y: halfH, z: 6 },
+        HOUSE_W - 2 * T, H, PT);
+    add(project, createDoorNode(livingDivider.id, 'Kitchen Door',
+        { x: 2.5, y: DEFAULTS.DOOR_HEIGHT / 2, z: 6 },
+        0.9, DEFAULTS.DOOR_HEIGHT));
 
-    // Bedroom 2 east wall
-    const bed2East = add(project, createWallNode(bed2.id, 'Bedroom 2 East Wall',
-        { x: 10, y: halfH, z: 10.5 }, 3, H, T, ['load_bearing', 'exterior']));
-    bed2East.rotation = { yaw: 90, pitch: 0, roll: 0 };
+    // Horizontal divider at Z=9 (between kitchen/bath and bedrooms)
+    const midDivider = addPartition(project, floor.id, 'Mid Floor Divider',
+        { x: HOUSE_W / 2, y: halfH, z: 9 },
+        HOUSE_W - 2 * T, H, PT);
+    add(project, createDoorNode(midDivider.id, 'Bed 1 Door',
+        { x: 2.5, y: DEFAULTS.DOOR_HEIGHT / 2, z: 9 },
+        0.9, DEFAULTS.DOOR_HEIGHT));
+    add(project, createDoorNode(midDivider.id, 'Bed 2 Door',
+        { x: 7.5, y: DEFAULTS.DOOR_HEIGHT / 2, z: 9 },
+        0.9, DEFAULTS.DOOR_HEIGHT));
 
-    // Bedroom 2 door
-    add(project, createDoorNode(midDivider.id, 'Bedroom 2 Door', { x: 7.5, y: DEFAULTS.DOOR_HEIGHT / 2 }, 0.9, DEFAULTS.DOOR_HEIGHT));
+    // Vertical partition at X=5 between kitchen and bathroom (Z=6 to Z=9)
+    // "Between" — runs between inner faces of horizontal dividers
+    const kitchenBathPart = addPartition(project, floor.id, 'Kitchen-Bath Partition',
+        { x: 5, y: halfH, z: 7.5 },
+        3 - PT, H, 0.12, 90);
 
-    // Partition between bedroom 1 and 2
-    const bedPartition = add(project, createPartitionNode(floor.id, 'Bedroom Partition',
-        { x: 5, y: halfH, z: 10.5 }, 3, H, 0.12));
-    bedPartition.rotation = { yaw: 90, pitch: 0, roll: 0 };
+    // Vertical partition at X=5 between bedroom 1 and 2 (Z=9 to Z=12)
+    addPartition(project, floor.id, 'Bedroom Partition',
+        { x: 5, y: halfH, z: 10.5 },
+        3 - PT, H, 0.12, 90);
 
-    // ─── Hallway / Corridor ──────────────────────────────────────────
-    // The hallway is implicit — space between rooms connected by doors.
-    // We don't need explicit walls for it in this simple template.
+    // ── Kitchen window (west wall) — add as a window on the west wall
+    // We can't add to a wall that doesn't cover that range, so let's add
+    // a dedicated kitchen west window on the main west wall
+    // The west wall already covers z=T to z=HOUSE_D-T which includes z=7.5
 
     // ─── Roof ────────────────────────────────────────────────────────
-    const roof = add(project, createRoofNode(rootId, 'Main Roof', 'gable', 35, { x: 11, y: 0.3, z: 13 }));
-    roof.position = { x: 5, y: H, z: 6 };
+    const roof = add(project, createRoofNode(rootId, 'Main Roof', 'gable', 35,
+        { x: HOUSE_W + 1, y: 0.3, z: HOUSE_D + 1 }));
+    roof.position = { x: HOUSE_W / 2, y: H, z: HOUSE_D / 2 };
 
     return project;
 }
@@ -262,198 +340,193 @@ export function createModern4BedTemplate(
     const project = createEmptyProject('Modern 4-Bedroom Home', budget, currency);
     const rootId = project.root_node_id;
 
-    const H = DEFAULTS.WALL_HEIGHT;
-    const T = DEFAULTS.WALL_THICKNESS;
+    const H = DEFAULTS.WALL_HEIGHT;  // 2.7m
+    const T = DEFAULTS.WALL_THICKNESS; // 0.25m
     const halfH = H / 2;
+    const halfT = T / 2;
+    const PT = 0.15; // partition thickness
+    const halfPT = PT / 2;
+
+    // House outer dimensions
+    const W = 12;  // X
+    const D = 10;  // Z
 
     // ─── Foundation ──────────────────────────────────────────────────
-    add(project, createFoundationNode(rootId, 'Foundation', { x: 6, y: -0.15, z: 5 }, { x: 12, y: 0.3, z: 10 }));
+    add(project, createFoundationNode(rootId, 'Foundation',
+        { x: W / 2, y: -0.15, z: D / 2 },
+        { x: W + T, y: 0.3, z: D + T }));
 
     // ═══════════════════════════════════════════════════════════════════
     // GROUND FLOOR
     // ═══════════════════════════════════════════════════════════════════
     const gf = add(project, createFloorNode(rootId, 0, 'Ground Floor'));
 
-    // Ground slab
-    add(project, createSlabNode(gf.id, 'Ground Slab', { x: 6, y: 0, z: 5 }, { x: 12, y: 0.15, z: 10 }));
+    add(project, createSlabNode(gf.id, 'Ground Slab',
+        { x: W / 2, y: 0, z: D / 2 },
+        { x: W, y: 0.15, z: D }));
 
-    // ─── Open Plan Living/Kitchen/Dining (Z=0..7) ────────────────────
+    // ─── Rooms ───────────────────────────────────────────────────────
     const openPlan = add(project, createRoomNode(gf.id, 'Open Plan Living',
-        { x: 6, y: 0, z: 3.5 }, { x: 12, y: H, z: 7 }, 'living'));
+        { x: W / 2, y: 0, z: 3.5 }, { x: W, y: H, z: 7 }, 'living'));
 
-    // North wall (full width, large windows)
-    const gfNorth = add(project, createWallNode(openPlan.id, 'GF North Wall',
-        { x: 6, y: halfH, z: 0 }, 12, H, T, ['load_bearing', 'exterior']));
-    add(project, createWindowNode(gfNorth.id, 'Living Window 1', { x: 2, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 2.4, 1.6));
-    add(project, createWindowNode(gfNorth.id, 'Living Window 2', { x: 6, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 2.4, 1.6));
-    add(project, createWindowNode(gfNorth.id, 'Kitchen Window', { x: 10, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.8, 1.4));
-
-    // West wall (living area)
-    const gfWest = add(project, createWallNode(openPlan.id, 'GF West Wall',
-        { x: 0, y: halfH, z: 3.5 }, 7, H, T, ['load_bearing', 'exterior']));
-    gfWest.rotation = { yaw: 90, pitch: 0, roll: 0 };
-    add(project, createWindowNode(gfWest.id, 'West Window', { x: 0, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.6, 1.4));
-
-    // East wall (kitchen area)
-    const gfEast = add(project, createWallNode(openPlan.id, 'GF East Wall',
-        { x: 12, y: halfH, z: 3.5 }, 7, H, T, ['load_bearing', 'exterior']));
-    gfEast.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // Divider between open plan and entrance (Z=7)
-    const gfDivider = add(project, createPartitionNode(openPlan.id, 'GF Living-Entry Divider',
-        { x: 6, y: halfH, z: 7 }, 12, H, 0.15));
-
-    // ─── Entrance/Hallway (X=0..8, Z=7..10) ─────────────────────────
     const entrance = add(project, createRoomNode(gf.id, 'Entrance Hall',
         { x: 4, y: 0, z: 8.5 }, { x: 8, y: H, z: 3 }, 'hallway'));
 
-    // South wall (front of house)
-    const gfSouth = add(project, createWallNode(entrance.id, 'GF South Wall',
-        { x: 6, y: halfH, z: 10 }, 12, H, T, ['load_bearing', 'exterior']));
-    // Front door
-    add(project, createDoorNode(gfSouth.id, 'Front Door', { x: 4, y: DEFAULTS.DOOR_HEIGHT / 2 }, 1.2, DEFAULTS.DOOR_HEIGHT));
-
-    // West wall (entrance section)
-    const entryWest = add(project, createWallNode(entrance.id, 'Entry West Wall',
-        { x: 0, y: halfH, z: 8.5 }, 3, H, T, ['load_bearing', 'exterior']));
-    entryWest.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // Entry-to-living door
-    add(project, createDoorNode(gfDivider.id, 'Living Door', { x: 4, y: DEFAULTS.DOOR_HEIGHT / 2 }, 1.0, DEFAULTS.DOOR_HEIGHT));
-
-    // ─── WC/Storage (X=8..12, Z=7..10) ──────────────────────────────
     const wc = add(project, createRoomNode(gf.id, 'WC / Storage',
         { x: 10, y: 0, z: 8.5 }, { x: 4, y: H, z: 3 }, 'bathroom'));
     wc.tags = ['wet_room'];
 
+    // ─── Exterior Walls ──────────────────────────────────────────────
+    // North wall (EW through, z outer face = 0)
+    const gfNorth = addWall(project, openPlan.id, 'GF North Wall',
+        { x: W / 2, y: halfH, z: halfT },
+        W, H, T, ['load_bearing', 'exterior']);
+    add(project, createWindowNode(gfNorth.id, 'Living Window 1',
+        { x: 2, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: halfT }, 2.4, 1.6));
+    add(project, createWindowNode(gfNorth.id, 'Living Window 2',
+        { x: 6, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: halfT }, 2.4, 1.6));
+    add(project, createWindowNode(gfNorth.id, 'Kitchen Window',
+        { x: 10, y: DEFAULTS.WINDOW_SILL_HEIGHT + 0.7, z: halfT }, 1.8, 1.4));
+
+    // South wall (EW through, z outer face = D)
+    const gfSouth = addWall(project, entrance.id, 'GF South Wall',
+        { x: W / 2, y: halfH, z: D - halfT },
+        W, H, T, ['load_bearing', 'exterior']);
+    add(project, createDoorNode(gfSouth.id, 'Front Door',
+        { x: 4, y: DEFAULTS.DOOR_HEIGHT / 2, z: D - halfT }, 1.2, DEFAULTS.DOOR_HEIGHT));
+
+    // West wall (NS between, x outer face = 0)
+    const gfWestSpan = D - 2 * T;
+    addWall(project, openPlan.id, 'GF West Wall',
+        { x: halfT, y: halfH, z: D / 2 },
+        gfWestSpan, H, T, ['load_bearing', 'exterior'], 90);
+
+    // East wall (NS between, x outer face = W)
+    addWall(project, openPlan.id, 'GF East Wall',
+        { x: W - halfT, y: halfH, z: D / 2 },
+        gfWestSpan, H, T, ['load_bearing', 'exterior'], 90);
+
+    // ─── Interior Partitions ─────────────────────────────────────────
+    // Divider at Z=7 (living ↔ entry)
+    const gfDivider = addPartition(project, gf.id, 'GF Living-Entry Divider',
+        { x: W / 2, y: halfH, z: 7 },
+        W - 2 * T, H, PT);
+    add(project, createDoorNode(gfDivider.id, 'Living Door',
+        { x: 4, y: DEFAULTS.DOOR_HEIGHT / 2, z: 7 }, 1.0, DEFAULTS.DOOR_HEIGHT));
+
     // Entry-WC partition (X=8, vertical)
-    const wcPartition = add(project, createPartitionNode(wc.id, 'WC Partition',
-        { x: 8, y: halfH, z: 8.5 }, 3, H, 0.12));
-    wcPartition.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // WC door
-    add(project, createDoorNode(wcPartition.id, 'WC Door', { x: 0, y: DEFAULTS.DOOR_HEIGHT / 2 }, 0.8, DEFAULTS.DOOR_HEIGHT));
-
-    // East wall (WC section)
-    const wcEast = add(project, createWallNode(wc.id, 'WC East Wall',
-        { x: 12, y: halfH, z: 8.5 }, 3, H, T, ['load_bearing', 'exterior']));
-    wcEast.rotation = { yaw: 90, pitch: 0, roll: 0 };
+    const wcPartition = addPartition(project, gf.id, 'WC Partition',
+        { x: 8, y: halfH, z: 8.5 },
+        3 - PT, H, 0.12, 90);
+    add(project, createDoorNode(wcPartition.id, 'WC Door',
+        { x: 8, y: DEFAULTS.DOOR_HEIGHT / 2, z: 8.5 }, 0.8, DEFAULTS.DOOR_HEIGHT));
 
     // ─── Stairs ──────────────────────────────────────────────────────
-    const stairs = add(project, createStairsNode(gf.id, 'Main Stairs', 'straight', { x: 7, y: 0, z: 8.5 }));
+    add(project, createStairsNode(gf.id, 'Main Stairs', 'straight',
+        { x: 7, y: 0, z: 8.5 }));
 
     // ═══════════════════════════════════════════════════════════════════
     // FIRST FLOOR
     // ═══════════════════════════════════════════════════════════════════
     const ff = add(project, createFloorNode(rootId, 1, 'First Floor'));
 
-    // First floor slab
-    add(project, createSlabNode(ff.id, 'First Floor Slab', { x: 6, y: H, z: 5 }, { x: 12, y: 0.2, z: 10 }));
+    add(project, createSlabNode(ff.id, 'First Floor Slab',
+        { x: W / 2, y: H, z: D / 2 },
+        { x: W, y: 0.2, z: D }));
 
-    // ─── Master Bedroom (X=0..6, Z=0..5) ────────────────────────────
+    // ─── Rooms ───────────────────────────────────────────────────────
     const master = add(project, createRoomNode(ff.id, 'Master Bedroom',
         { x: 3, y: H, z: 2.5 }, { x: 6, y: H, z: 5 }, 'bedroom'));
 
-    // Master north wall
-    const masterNorth = add(project, createWallNode(master.id, 'Master North Wall',
-        { x: 3, y: H + halfH, z: 0 }, 6, H, T, ['load_bearing', 'exterior']));
-    add(project, createWindowNode(masterNorth.id, 'Master Window', { x: 3, y: H + DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 2.0, 1.6));
-
-    // Master west wall
-    const masterWest = add(project, createWallNode(master.id, 'Master West Wall',
-        { x: 0, y: H + halfH, z: 2.5 }, 5, H, T, ['load_bearing', 'exterior']));
-    masterWest.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // ─── Bedroom 2 (X=6..10, Z=0..5) ────────────────────────────────
-    const bed2 = add(project, createRoomNode(ff.id, 'Bedroom 2',
+    const ffBed2 = add(project, createRoomNode(ff.id, 'Bedroom 2',
         { x: 8, y: H, z: 2.5 }, { x: 4, y: H, z: 5 }, 'bedroom'));
 
-    // Bed 2 north wall
-    const bed2North = add(project, createWallNode(bed2.id, 'Bed 2 North Wall',
-        { x: 8, y: H + halfH, z: 0 }, 4, H, T, ['load_bearing', 'exterior']));
-    add(project, createWindowNode(bed2North.id, 'Bed 2 Window', { x: 8, y: H + DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.4, 1.4));
-
-    // ─── En-Suite (X=10..12, Z=0..5) ────────────────────────────────
     const ensuite = add(project, createRoomNode(ff.id, 'En-Suite Bathroom',
         { x: 11, y: H, z: 2.5 }, { x: 2, y: H, z: 5 }, 'bathroom'));
     ensuite.tags = ['wet_room'];
 
-    // En-suite east wall
-    const ensuiteEast = add(project, createWallNode(ensuite.id, 'En-Suite East Wall',
-        { x: 12, y: H + halfH, z: 2.5 }, 5, H, T, ['load_bearing', 'exterior']));
-    ensuiteEast.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // En-suite small window
-    add(project, createWindowNode(ensuiteEast.id, 'En-Suite Window', { x: 0, y: H + DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 0.6, 0.6));
-
-    // ─── First Floor Mid Divider (Z=5) ──────────────────────────────
-    const ffMidDivider = add(project, createPartitionNode(ff.id, 'FF Mid Divider',
-        { x: 6, y: H + halfH, z: 5 }, 12, H, 0.15));
-
-    // ─── Bedroom 3 (X=0..4, Z=5..10) ────────────────────────────────
-    const bed3 = add(project, createRoomNode(ff.id, 'Bedroom 3',
+    const ffBed3 = add(project, createRoomNode(ff.id, 'Bedroom 3',
         { x: 2, y: H, z: 7.5 }, { x: 4, y: H, z: 5 }, 'bedroom'));
 
-    // Bed 3 south wall
-    const bed3South = add(project, createWallNode(bed3.id, 'Bed 3 South Wall',
-        { x: 2, y: H + halfH, z: 10 }, 4, H, T, ['load_bearing', 'exterior']));
-    add(project, createWindowNode(bed3South.id, 'Bed 3 Window', { x: 2, y: H + DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.4, 1.4));
-
-    // Bed 3 west wall (first floor)
-    const bed3West = add(project, createWallNode(bed3.id, 'Bed 3 West Wall',
-        { x: 0, y: H + halfH, z: 7.5 }, 5, H, T, ['load_bearing', 'exterior']));
-    bed3West.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // Bed 3 door
-    add(project, createDoorNode(ffMidDivider.id, 'Bed 3 Door', { x: 2, y: H + DEFAULTS.DOOR_HEIGHT / 2 }, 0.9, DEFAULTS.DOOR_HEIGHT));
-
-    // ─── Bedroom 4 (X=4..8, Z=5..10) ────────────────────────────────
-    const bed4 = add(project, createRoomNode(ff.id, 'Bedroom 4',
+    const ffBed4 = add(project, createRoomNode(ff.id, 'Bedroom 4',
         { x: 6, y: H, z: 7.5 }, { x: 4, y: H, z: 5 }, 'bedroom'));
 
-    // Bed 4 south wall
-    const bed4South = add(project, createWallNode(bed4.id, 'Bed 4 South Wall',
-        { x: 6, y: H + halfH, z: 10 }, 4, H, T, ['load_bearing', 'exterior']));
-    add(project, createWindowNode(bed4South.id, 'Bed 4 Window', { x: 6, y: H + DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 1.4, 1.4));
-
-    // Bed 4 door
-    add(project, createDoorNode(ffMidDivider.id, 'Bed 4 Door', { x: 6, y: H + DEFAULTS.DOOR_HEIGHT / 2 }, 0.9, DEFAULTS.DOOR_HEIGHT));
-
-    // Partition between bed 3 and bed 4
-    const bed34part = add(project, createPartitionNode(ff.id, 'Bed 3-4 Partition',
-        { x: 4, y: H + halfH, z: 7.5 }, 5, H, 0.12));
-    bed34part.rotation = { yaw: 90, pitch: 0, roll: 0 };
-
-    // ─── Family Bathroom (X=8..12, Z=5..10) ─────────────────────────
     const famBath = add(project, createRoomNode(ff.id, 'Family Bathroom',
         { x: 10, y: H, z: 7.5 }, { x: 4, y: H, z: 5 }, 'bathroom'));
     famBath.tags = ['wet_room'];
 
-    // Family bath east wall
-    const famBathEast = add(project, createWallNode(famBath.id, 'Family Bath East Wall',
-        { x: 12, y: H + halfH, z: 7.5 }, 5, H, T, ['load_bearing', 'exterior']));
-    famBathEast.rotation = { yaw: 90, pitch: 0, roll: 0 };
-    add(project, createWindowNode(famBathEast.id, 'Family Bath Window', { x: 0, y: H + DEFAULTS.WINDOW_SILL_HEIGHT + 0.7 }, 0.8, 0.6));
+    // ─── First Floor Exterior Walls ──────────────────────────────────
+    const ffY = H + halfH;
+    const ffWestSpan = D - 2 * T;
 
-    // Family bath south wall
-    const famBathSouth = add(project, createWallNode(famBath.id, 'Family Bath South Wall',
-        { x: 10, y: H + halfH, z: 10 }, 4, H, T, ['load_bearing', 'exterior']));
+    // North wall (EW through)
+    const ffNorth = addWall(project, ff.id, 'FF North Wall',
+        { x: W / 2, y: ffY, z: halfT },
+        W, H, T, ['load_bearing', 'exterior']);
+    add(project, createWindowNode(ffNorth.id, 'Master Window',
+        { x: 3, y: ffY, z: halfT }, 2.0, 1.6));
+    add(project, createWindowNode(ffNorth.id, 'Bed 2 Window',
+        { x: 8, y: ffY, z: halfT }, 1.4, 1.4));
 
-    // Partition between bed 4 and bath
-    const bathPartition = add(project, createPartitionNode(ff.id, 'Bed-Bath Partition',
-        { x: 8, y: H + halfH, z: 7.5 }, 5, H, 0.12));
-    bathPartition.rotation = { yaw: 90, pitch: 0, roll: 0 };
+    // South wall (EW through)
+    const ffSouth = addWall(project, ff.id, 'FF South Wall',
+        { x: W / 2, y: ffY, z: D - halfT },
+        W, H, T, ['load_bearing', 'exterior']);
+    add(project, createWindowNode(ffSouth.id, 'Bed 3 Window',
+        { x: 2, y: ffY, z: D - halfT }, 1.4, 1.4));
+    add(project, createWindowNode(ffSouth.id, 'Bed 4 Window',
+        { x: 6, y: ffY, z: D - halfT }, 1.4, 1.4));
 
-    // Bath door
-    add(project, createDoorNode(bathPartition.id, 'Family Bath Door', { x: 0, y: H + DEFAULTS.DOOR_HEIGHT / 2 }, 0.8, DEFAULTS.DOOR_HEIGHT));
+    // West wall (NS between)
+    addWall(project, ff.id, 'FF West Wall',
+        { x: halfT, y: ffY, z: D / 2 },
+        ffWestSpan, H, T, ['load_bearing', 'exterior'], 90);
 
-    // ─── First Floor North Wall (shared across all north rooms) ──────
-    const ffNorth = add(project, createWallNode(ff.id, 'FF Full North Wall',
-        { x: 6, y: H + halfH, z: 0 }, 12, H, T, ['load_bearing', 'exterior']));
+    // East wall (NS between)
+    const ffEast = addWall(project, ff.id, 'FF East Wall',
+        { x: W - halfT, y: ffY, z: D / 2 },
+        ffWestSpan, H, T, ['load_bearing', 'exterior'], 90);
+    add(project, createWindowNode(ffEast.id, 'En-Suite Window',
+        { x: W - halfT, y: ffY, z: 2.5 }, 0.6, 0.6));
+    add(project, createWindowNode(ffEast.id, 'Family Bath Window',
+        { x: W - halfT, y: ffY, z: 7.5 }, 0.8, 0.6));
+
+    // ─── First Floor Interior Partitions ─────────────────────────────
+    // Mid divider at Z=5 (bedrooms top row ↔ bottom row)
+    const ffMidDiv = addPartition(project, ff.id, 'FF Mid Divider',
+        { x: W / 2, y: ffY, z: 5 },
+        W - 2 * T, H, PT);
+    add(project, createDoorNode(ffMidDiv.id, 'Bed 3 Door',
+        { x: 2, y: H + DEFAULTS.DOOR_HEIGHT / 2, z: 5 }, 0.9, DEFAULTS.DOOR_HEIGHT));
+    add(project, createDoorNode(ffMidDiv.id, 'Bed 4 Door',
+        { x: 6, y: H + DEFAULTS.DOOR_HEIGHT / 2, z: 5 }, 0.9, DEFAULTS.DOOR_HEIGHT));
+
+    // Master → Bed2 partition at X=6 (Z=0..5)
+    addPartition(project, ff.id, 'Master-Bed2 Partition',
+        { x: 6, y: ffY, z: 2.5 },
+        5 - 2 * halfT - PT, H, 0.12, 90);
+
+    // Bed2 → EnSuite partition at X=10 (Z=0..5)
+    addPartition(project, ff.id, 'Bed2-EnSuite Partition',
+        { x: 10, y: ffY, z: 2.5 },
+        5 - 2 * halfT - PT, H, 0.12, 90);
+
+    // Bed3 → Bed4 partition at X=4 (Z=5..10)
+    addPartition(project, ff.id, 'Bed3-Bed4 Partition',
+        { x: 4, y: ffY, z: 7.5 },
+        5 - 2 * halfT - PT, H, 0.12, 90);
+
+    // Bed4 → FamBath partition at X=8 (Z=5..10)
+    const bed4BathPart = addPartition(project, ff.id, 'Bed-Bath Partition',
+        { x: 8, y: ffY, z: 7.5 },
+        5 - 2 * halfT - PT, H, 0.12, 90);
+    add(project, createDoorNode(bed4BathPart.id, 'Family Bath Door',
+        { x: 8, y: H + DEFAULTS.DOOR_HEIGHT / 2, z: 7.5 }, 0.8, DEFAULTS.DOOR_HEIGHT));
 
     // ─── Flat Roof ───────────────────────────────────────────────────
-    const roof = add(project, createRoofNode(rootId, 'Flat Roof', 'flat', 0, { x: 13, y: 0.3, z: 11 }));
-    roof.position = { x: 6, y: H * 2, z: 5 };
+    const roof = add(project, createRoofNode(rootId, 'Flat Roof', 'flat', 0,
+        { x: W + 1, y: 0.3, z: D + 1 }));
+    roof.position = { x: W / 2, y: H * 2, z: D / 2 };
     roof.material_id = 'mat_concrete_slab';
 
     return project;
@@ -463,15 +536,6 @@ export function createModern4BedTemplate(
 // TEMPLATE REGISTRY
 // =============================================================================
 
-/**
- * All available templates, indexed by a slug.
- * The UI shows these as cards the user can click to start a project.
- *
- * ADDING A NEW TEMPLATE:
- * 1. Write a createXxxTemplate() function above
- * 2. Add an entry to this array with metadata
- * 3. The UI will automatically pick it up
- */
 export interface TemplateInfo {
     slug: string;
     name: string;

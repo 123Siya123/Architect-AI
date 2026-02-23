@@ -21,7 +21,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sendChatToAI } from '@/lib/ai/orchestrator';
+import { sendChatToAIAgentic } from '@/lib/ai/agentic-orchestrator';
 import { validateOperation } from '@/lib/psg/validator';
 import type { AIChatRequest, Material, PSGOperation } from '@/types';
 import materialsJson from '@/data/materials.json';
@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
             materials[id] = mat as unknown as Material;
         }
 
-        // Send to AI orchestrator
-        const aiResponse = await sendChatToAI(
+        // Send to AI orchestrator (multi-agent pipeline)
+        const aiResponse = await sendChatToAIAgentic(
             { message, project, history: history || [] },
             materials
         );

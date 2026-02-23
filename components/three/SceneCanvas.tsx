@@ -140,6 +140,7 @@ export default function SceneCanvas() {
 
             {/* Controls */}
             <OrbitControls
+                makeDefault
                 target={[camera.target.x, camera.target.y, camera.target.z]}
                 enableDamping
                 dampingFactor={0.1}
