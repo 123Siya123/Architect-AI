@@ -3,28 +3,19 @@
  * COMPONENTS/THREE/PSG-RENDERER.TSX — Renders PSG Nodes as 3D Meshes
  * =============================================================================
  *
- * This is the bridge between the PSG data model and the Three.js scene.
- * It reads the PSG nodes from the Zustand store and renders each one
- * as the appropriate 3D geometry.
+ * Iterates over all nodes in the PSGProject and renders each as a
+ * Three.js mesh with the correct geometry, material, position, and
+ * rotation. Handles selection highlighting and hover outlines.
  *
- * HOW IT WORKS:
- * 1. Subscribes to project.nodes from the store
- * 2. Iterates over all nodes
- * 3. For each renderable node (Wall, Slab, Roof, etc.):
- *    a. Creates geometry via the compiler
- *    b. Applies material (color from material library)
- *    c. Positions using the node's position/rotation
- * 4. Handles selection highlighting (outline/glow on selected node)
- * 5. Handles hover highlighting
- *
- * CLICK HANDLING:
- * - Clicking a mesh calls selectNode(nodeId) in the store
- * - The Inspector panel then shows that node's properties
- * - The selected mesh gets a highlight outline
+ * RENDERING STRATEGY:
+ * - Skip House/Floor/Room nodes (containers only — no geometry)
+ * - Render Walls, Windows, Doors, Roof, Stairs, Slabs, etc.
+ * - Use the compiler to generate geometry per node type
+ * - Color from materials.json, with selection/hover highlights
  *
  * PERFORMANCE:
- * - Only re-renders when project.nodes changes (Zustand selector)
- * - Geometry is memoized — only regenerated when dimensions change
+ * - Each node is a separate <mesh> for raycasting/selection
+ * - Geometry is created once per node (keyed by node.id + version)
  * - Materials are cached by material_id
  * =============================================================================
  */
@@ -33,128 +24,218 @@
 
 import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { ThreeEvent } from '@react-three/fiber';
 import { useDesignStore } from '@/store/useDesignStore';
-import type { PSGNode } from '@/types';
-import materialsData from '@/data/materials.json';
+import { getGeometryForNode, compileMaterial, compileGlassMaterial } from '@/lib/psg/compiler';
+import materialsDatabase from '@/data/materials.json';
+import type { PSGNode, Material } from '@/types';
 
-/**
- * Gets a Three.js color for a node based on its material_id.
- * Looks up the color from the materials database.
- */
-function getColorForNode(node: PSGNode): string {
-    const material = (materialsData as Record<string, { color_hex: string }>)[node.material_id];
-    if (material) return material.color_hex;
+// =============================================================================
+// MATERIAL CACHE
+// =============================================================================
 
-    // Fallback colors by node type
-    const fallbacks: Record<string, string> = {
-        Wall: '#B8860B',
-        Slab: '#808080',
-        Roof: '#8B0000',
-        Window: '#87CEEB',
-        Door: '#8B4513',
-        Stairs: '#DEB887',
-        Room: '#FFFFFF',
-        Floor: '#A9A9A9',
-        Foundation: '#696969',
-    };
-    return fallbacks[node.type] || '#CCCCCC';
+const materialCache = new Map<string, THREE.MeshStandardMaterial>();
+const glassMaterial = compileGlassMaterial();
+
+function getMaterial(materialId: string, opacity: number): THREE.Material {
+    // Glass materials for windows
+    if (opacity < 1 || materialId.includes('glass')) {
+        return glassMaterial;
+    }
+
+    // Look up from cache first
+    if (materialCache.has(materialId)) {
+        return materialCache.get(materialId)!;
+    }
+
+    // Look up from the materials database
+    const matDef = (materialsDatabase as Record<string, Material>)[materialId];
+    if (matDef) {
+        const threeMat = compileMaterial(matDef);
+        materialCache.set(materialId, threeMat);
+        return threeMat;
+    }
+
+    // Fallback: grey material for unknown material IDs
+    const fallback = new THREE.MeshStandardMaterial({
+        color: '#888888',
+        roughness: 0.8,
+        metalness: 0.1,
+        side: THREE.DoubleSide,
+    });
+    materialCache.set(materialId, fallback);
+    return fallback;
 }
 
-/**
- * Determines if a node should be rendered as a 3D mesh.
- * Container nodes (House, Floor, Room) are NOT rendered —
- * they're just organizational.
- */
-function isRenderable(node: PSGNode): boolean {
-    return ['Wall', 'Slab', 'Roof', 'Window', 'Door', 'Stairs', 'Column', 'Beam', 'Foundation', 'Partition'].includes(node.type);
+// =============================================================================
+// HIGHLIGHT MATERIALS (for selection and hover)
+// =============================================================================
+
+const SELECTION_EMISSIVE = new THREE.Color(0x2266ff);
+const HOVER_EMISSIVE = new THREE.Color(0x115599);
+
+// =============================================================================
+// NODE TYPES THAT RENDER GEOMETRY
+// =============================================================================
+
+const RENDERABLE_TYPES = new Set([
+    'Wall', 'Window', 'Door', 'Roof', 'Stairs', 'Slab',
+    'Foundation', 'Column', 'Beam', 'Partition',
+    'Balcony', 'Garage', 'Chimney',
+]);
+
+// =============================================================================
+// SINGLE NODE MESH
+// =============================================================================
+
+interface NodeMeshProps {
+    node: PSGNode;
+    isSelected: boolean;
+    isHovered: boolean;
 }
 
-/**
- * Single PSG Node mesh component.
- * Renders one architectural element as a Three.js mesh.
- */
-function NodeMesh({ node }: { node: PSGNode }) {
+function NodeMesh({ node, isSelected, isHovered }: NodeMeshProps) {
     const meshRef = useRef<THREE.Mesh>(null);
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
-    const selectedId = useDesignStore((s) => s.selection.selected_node_id);
-    const hoveredId = useDesignStore((s) => s.selection.hovered_node_id);
 
-    const isSelected = selectedId === node.id;
-    const isHovered = hoveredId === node.id;
+    // Generate geometry (memoized per node version)
+    const geometryOrGroup = useMemo(() => {
+        return getGeometryForNode(node);
+    }, [node.type, node.dimensions.x, node.dimensions.y, node.dimensions.z, node.version]);
 
-    // Create geometry based on node dimensions
-    const geometry = useMemo(() => {
-        const { x, y, z } = node.dimensions;
-        if (node.type === 'Window') {
-            return new THREE.PlaneGeometry(
-                node.opening_width || x,
-                node.opening_height || y
-            );
-        }
-        return new THREE.BoxGeometry(x, y, z);
-    }, [node.dimensions, node.type, node.opening_width, node.opening_height]);
+    // Get material
+    const material = useMemo(() => {
+        return getMaterial(node.material_id, node.opacity);
+    }, [node.material_id, node.opacity]);
 
-    // Determine color and opacity
-    const color = getColorForNode(node);
-    const isGlass = node.type === 'Window';
+    // Rotation: convert yaw/pitch/roll degrees to radians
+    const rotation = useMemo<[number, number, number]>(() => [
+        (node.rotation.pitch * Math.PI) / 180,
+        (node.rotation.yaw * Math.PI) / 180,
+        (node.rotation.roll * Math.PI) / 180,
+    ], [node.rotation.yaw, node.rotation.pitch, node.rotation.roll]);
 
+    // Click → select
+    const handleClick = (e: ThreeEvent<MouseEvent>) => {
+        e.stopPropagation();
+        selectNode(node.id);
+    };
+
+    // Hover
+    const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
+        e.stopPropagation();
+        hoverNode(node.id);
+        document.body.style.cursor = 'pointer';
+    };
+
+    const handlePointerOut = () => {
+        hoverNode(null);
+        document.body.style.cursor = 'default';
+    };
+
+    // If the compiler returned a Group (e.g. stairs), wrap differently
+    if (geometryOrGroup instanceof THREE.Group) {
+        return (
+            <group
+                position={[node.position.x, node.position.y, node.position.z]}
+                rotation={rotation}
+            >
+                {/* Render each mesh in the group */}
+                {geometryOrGroup.children.map((child, i) => {
+                    const mesh = child as THREE.Mesh;
+                    return (
+                        <mesh
+                            key={`${node.id}_step_${i}`}
+                            geometry={mesh.geometry}
+                            position={mesh.position}
+                            onClick={handleClick}
+                            onPointerOver={handlePointerOver}
+                            onPointerOut={handlePointerOut}
+                            castShadow
+                            receiveShadow
+                        >
+                            <meshStandardMaterial
+                                color={(material as THREE.MeshStandardMaterial).color}
+                                roughness={0.6}
+                                metalness={0.1}
+                                side={THREE.DoubleSide}
+                                emissive={isSelected ? SELECTION_EMISSIVE : isHovered ? HOVER_EMISSIVE : undefined}
+                                emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
+                            />
+                        </mesh>
+                    );
+                })}
+            </group>
+        );
+    }
+
+    // Standard single-mesh node
     return (
         <mesh
             ref={meshRef}
+            geometry={geometryOrGroup}
+            material={material}
             position={[node.position.x, node.position.y, node.position.z]}
-            rotation={[
-                (node.rotation.pitch * Math.PI) / 180,
-                (node.rotation.yaw * Math.PI) / 180,
-                (node.rotation.roll * Math.PI) / 180,
-            ]}
-            geometry={geometry}
-            castShadow={!isGlass}
+            rotation={rotation}
+            onClick={handleClick}
+            onPointerOver={handlePointerOver}
+            onPointerOut={handlePointerOut}
+            castShadow
             receiveShadow
-            onClick={(e) => {
-                e.stopPropagation();
-                selectNode(node.id);
-            }}
-            onPointerOver={(e) => {
-                e.stopPropagation();
-                hoverNode(node.id);
-                document.body.style.cursor = 'pointer';
-            }}
-            onPointerOut={() => {
-                hoverNode(null);
-                document.body.style.cursor = 'default';
-            }}
         >
-            <meshStandardMaterial
-                color={isSelected ? '#FFD700' : isHovered ? '#FFA500' : color}
-                transparent={isGlass}
-                opacity={isGlass ? 0.3 : 1}
-                roughness={isGlass ? 0.0 : 0.7}
-                metalness={isGlass ? 0.0 : 0.1}
-                side={THREE.DoubleSide}
-                emissive={isSelected ? '#FFD700' : isHovered ? '#FFA500' : '#000000'}
-                emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
-            />
+            {/* Selection/hover overlay — apply emissive glow */}
+            {(isSelected || isHovered) && (
+                <meshStandardMaterial
+                    attach="material"
+                    color={(material as THREE.MeshStandardMaterial).color || '#888888'}
+                    roughness={0.7}
+                    metalness={0.1}
+                    side={THREE.DoubleSide}
+                    transparent={node.opacity < 1}
+                    opacity={node.opacity}
+                    emissive={isSelected ? SELECTION_EMISSIVE : HOVER_EMISSIVE}
+                    emissiveIntensity={isSelected ? 0.3 : 0.15}
+                />
+            )}
         </mesh>
     );
 }
 
-/**
- * Main PSG Renderer — renders ALL nodes in the project.
- */
-export function PSGRenderer() {
-    const nodes = useDesignStore((s) => s.project.nodes);
+// =============================================================================
+// PSG RENDERER (iterates all nodes)
+// =============================================================================
 
-    // Filter to renderable nodes
-    const renderableNodes = useMemo(
-        () => Object.values(nodes).filter(isRenderable),
-        [nodes]
-    );
+export default function PSGRenderer() {
+    const project = useDesignStore((s) => s.project);
+    const selection = useDesignStore((s) => s.selection);
+
+    // Get all renderable nodes
+    const renderableNodes = useMemo(() => {
+        return Object.values(project.nodes).filter(
+            (node) => RENDERABLE_TYPES.has(node.type)
+        );
+    }, [project.nodes]);
+
+    // Click on empty space → deselect
+    const selectNode = useDesignStore((s) => s.selectNode);
 
     return (
-        <group>
+        <group
+            onClick={(e) => {
+                // Only deselect if clicking the background (no mesh hit)
+                if (e.object.type === 'Mesh' && !e.object.userData.psgNodeId) {
+                    selectNode(null);
+                }
+            }}
+        >
             {renderableNodes.map((node) => (
-                <NodeMesh key={node.id} node={node} />
+                <NodeMesh
+                    key={node.id}
+                    node={node}
+                    isSelected={selection.selected_node_id === node.id}
+                    isHovered={selection.hovered_node_id === node.id}
+                />
             ))}
         </group>
     );

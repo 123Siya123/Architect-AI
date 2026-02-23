@@ -84,7 +84,9 @@ export function compileSlabGeometry(node: PSGNode): THREE.BufferGeometry {
 export function compileWindowGeometry(node: PSGNode): THREE.BufferGeometry {
     const width = node.opening_width || node.dimensions.x;
     const height = node.opening_height || node.dimensions.y;
-    const geometry = new THREE.PlaneGeometry(width, height);
+    // Window is rendered as a thin box (50mm depth) with glass material
+    // The frame is achieved by coloring only the edges in the renderer
+    const geometry = new THREE.BoxGeometry(width, height, 0.05);
     return geometry;
 }
 
@@ -123,17 +125,22 @@ export function compileRoofGeometry(node: PSGNode): THREE.BufferGeometry {
     const pitch = node.roof_pitch_degrees || 0;
 
     if (node.roof_style === 'flat' || pitch === 0) {
-        // Flat roof — just a slab
         return new THREE.BoxGeometry(width, thickness, depth);
     }
 
-    // Gable roof — create a triangular prism shape
-    // This uses custom geometry with manually defined vertices
     if (node.roof_style === 'gable') {
         return compileGableRoof(width, depth, pitch, thickness);
     }
 
-    // Default: flat box
+    if (node.roof_style === 'hip') {
+        return compileHipRoof(width, depth, pitch, thickness);
+    }
+
+    if (node.roof_style === 'shed') {
+        return compileShedRoof(width, depth, pitch, thickness);
+    }
+
+    // Default: flat box for unrecognized styles
     return new THREE.BoxGeometry(width, thickness, depth);
 }
 
@@ -239,6 +246,91 @@ export function compileStairsGeometry(node: PSGNode): THREE.Group {
     return group;
 }
 
+/**
+ * Creates a hip roof shape (four sloped planes, shorter ridge than building).
+ */
+function compileHipRoof(
+    width: number,
+    depth: number,
+    pitchDegrees: number,
+    _thickness: number
+): THREE.BufferGeometry {
+    const pitchRad = (pitchDegrees * Math.PI) / 180;
+    const ridgeHeight = Math.tan(pitchRad) * (depth / 2);
+    const halfW = width / 2;
+    const halfD = depth / 2;
+    const ridgeInset = Math.min(halfD, halfW);
+
+    const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+        -halfW, 0, -halfD,                          // 0: back-left
+        halfW, 0, -halfD,                          // 1: back-right
+        halfW, 0, halfD,                          // 2: front-right
+        -halfW, 0, halfD,                          // 3: front-left
+        -halfW + ridgeInset, ridgeHeight, 0,         // 4: ridge-left
+        halfW - ridgeInset, ridgeHeight, 0,         // 5: ridge-right
+    ]);
+    const indices = [
+        0, 1, 2, 0, 2, 3,     // bottom
+        0, 4, 5, 0, 5, 1,     // back slope
+        3, 2, 5, 3, 5, 4,     // front slope
+        0, 3, 4,               // left hip
+        1, 5, 2,               // right hip
+    ];
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    return geometry;
+}
+
+/**
+ * Creates a shed (mono-pitch) roof — single sloped plane.
+ */
+function compileShedRoof(
+    width: number,
+    depth: number,
+    pitchDegrees: number,
+    _thickness: number
+): THREE.BufferGeometry {
+    const pitchRad = (pitchDegrees * Math.PI) / 180;
+    const rise = Math.tan(pitchRad) * depth;
+    const halfW = width / 2;
+    const halfD = depth / 2;
+
+    const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+        -halfW, rise, -halfD,   // 0: back-left (high)
+        halfW, rise, -halfD,   // 1: back-right (high)
+        halfW, 0, halfD,    // 2: front-right (low)
+        -halfW, 0, halfD,    // 3: front-left (low)
+    ]);
+    const indices = [0, 1, 2, 0, 2, 3];
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    return geometry;
+}
+
+/** Column geometry — tall, narrow box with square cross-section */
+export function compileColumnGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
+/** Beam geometry — horizontal rectangular box */
+export function compileBeamGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
+/** Foundation geometry — large flat slab below grade */
+export function compileFoundationGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
+/** Partition geometry — thin internal wall */
+export function compilePartitionGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
 // =============================================================================
 // MATERIAL COMPILATION
 // =============================================================================
@@ -257,23 +349,24 @@ export function compileStairsGeometry(node: PSGNode): THREE.Group {
 export function compileMaterial(material: Material): THREE.MeshStandardMaterial {
     const mat = new THREE.MeshStandardMaterial({
         color: new THREE.Color(material.color_hex),
-        roughness: 0.7,     // Most building materials are rough
-        metalness: 0.1,     // Most are non-metallic
+        roughness: 0.7,
+        metalness: 0.1,
         transparent: false,
         opacity: 1,
-        side: THREE.DoubleSide, // Render both sides (important for interiors)
+        side: THREE.DoubleSide,
     });
 
-    // Load texture if provided
-    // TODO (Phase 2): Implement texture loading with TextureLoader
-    // if (material.texture_url) {
-    //   const textureLoader = new THREE.TextureLoader();
-    //   const texture = textureLoader.load(material.texture_url);
-    //   texture.wrapS = THREE.RepeatWrapping;
-    //   texture.wrapT = THREE.RepeatWrapping;
-    //   texture.repeat.set(1 / material.texture_scale, 1 / material.texture_scale);
-    //   mat.map = texture;
-    // }
+    // Load texture if a URL is provided in the material definition
+    if (material.texture_url) {
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load(material.texture_url);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        // texture_scale is meters per repeat — so 1/scale gives repeats per meter
+        const repeatsPerMeter = 1 / (material.texture_scale || 1);
+        texture.repeat.set(repeatsPerMeter, repeatsPerMeter);
+        mat.map = texture;
+    }
 
     return mat;
 }
@@ -423,11 +516,15 @@ export const GEOMETRY_COMPILERS: Record<
     (node: PSGNode) => THREE.BufferGeometry | THREE.Group
 > = {
     Wall: compileWallGeometry,
+    Partition: compilePartitionGeometry,
     Slab: compileSlabGeometry,
+    Foundation: compileFoundationGeometry,
     Window: compileWindowGeometry,
     Door: compileDoorGeometry,
     Roof: compileRoofGeometry,
     Stairs: compileStairsGeometry,
+    Column: compileColumnGeometry,
+    Beam: compileBeamGeometry,
 };
 
 /**

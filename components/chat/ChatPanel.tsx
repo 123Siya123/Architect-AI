@@ -1,155 +1,189 @@
 /**
  * =============================================================================
- * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Sidebar
+ * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Interface
  * =============================================================================
  *
- * The chat panel where users interact with the AI architect through
- * natural language. Users can:
- * - Describe changes ("move the north wall back by 1m")
- * - Ask questions ("how much would stone cost for this wall?")
- * - Upload reference images for style guidance
- * - See the AI's reasoning and operation summaries
- *
- * ARCHITECTURE:
- * - Messages are stored in the Zustand store
- * - User sends message → API route → AI orchestrator → response
- * - AI response includes both text and PSGOperations
- * - Operations are applied to the project automatically
- * - The 3D viewport updates in real-time
- *
- * UI DESIGN:
- * - Dark panel on the left side
- * - Messages flow bottom-to-top (newest at bottom)
- * - AI messages may include operation badges showing what changed
- * - Input at the bottom with send button and image upload
+ * The chat panel where users interact with the AI architect.
+ * Sends messages to the /api/ai/chat endpoint, displays responses,
+ * and shows operation badges when the AI makes edits.
  * =============================================================================
  */
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useDesignStore } from '@/store/useDesignStore';
-import { v4 as uuidv4 } from 'uuid';
+import type { ChatMessage } from '@/types';
 
-export function ChatPanel() {
+// =============================================================================
+// SUGGESTION CHIPS
+// =============================================================================
+
+const SUGGESTIONS = [
+    'Make the living room 2m wider',
+    'Add a window to the north wall',
+    'Change the roof to a flat roof',
+    'Show me the total material cost',
+    'Replace all brick with stone',
+    'Add a balcony to the master bedroom',
+];
+
+// =============================================================================
+// MESSAGE BUBBLE
+// =============================================================================
+
+function MessageBubble({ msg }: { msg: ChatMessage }) {
+    const isUser = msg.role === 'user';
+
+    return (
+        <div className={`chat-message ${isUser ? 'chat-message-user' : 'chat-message-ai'}`}>
+            <div className="chat-message-header">
+                <span className="chat-message-role">
+                    {isUser ? '👤 You' : '🏗️ Architect AI'}
+                </span>
+                <span className="chat-message-time">
+                    {new Date(msg.timestamp).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })}
+                </span>
+            </div>
+            <p className="chat-message-content">{msg.content}</p>
+            {/* Operation badges — show when AI made edits */}
+            {msg.operations && msg.operations.length > 0 && (
+                <div className="chat-operations">
+                    {msg.operations.map((op, i) => (
+                        <span key={i} className="chat-op-badge">
+                            {op.type.replace(/_/g, ' ')}
+                        </span>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// =============================================================================
+// MAIN CHAT PANEL
+// =============================================================================
+
+export default function ChatPanel() {
     const [input, setInput] = useState('');
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-
     const chatMessages = useDesignStore((s) => s.chatMessages);
     const addChatMessage = useDesignStore((s) => s.addChatMessage);
     const isAIThinking = useDesignStore((s) => s.isAIThinking);
     const setAIThinking = useDesignStore((s) => s.setAIThinking);
+    const project = useDesignStore((s) => s.project);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll to bottom when new messages arrive
+    // Auto-scroll to bottom on new messages
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [chatMessages]);
+    }, [chatMessages.length, isAIThinking]);
 
-    /**
-     * Handles sending a message to the AI.
-     *
-     * FLOW:
-     * 1. Add user message to chat
-     * 2. Set AI thinking state (shows loading indicator)
-     * 3. Call API route with message + project state
-     * 4. Receive response with text + operations
-     * 5. Apply operations to project
-     * 6. Add AI response to chat
-     */
-    const handleSend = async () => {
-        if (!input.trim() || isAIThinking) return;
+    const sendMessage = useCallback(async (text: string) => {
+        if (!text.trim() || isAIThinking) return;
 
-        const userMessage = {
-            id: uuidv4(),
-            role: 'user' as const,
-            content: input.trim(),
+        // Add user message
+        const userMsg: ChatMessage = {
+            id: `msg_${Date.now()}`,
+            role: 'user',
+            content: text.trim(),
             timestamp: new Date().toISOString(),
         };
-
-        addChatMessage(userMessage);
+        addChatMessage(userMsg);
         setInput('');
         setAIThinking(true);
 
         try {
-            // TODO (Phase 2): Call actual AI API route
-            // For now, simulate a response
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: text.trim(),
+                    project,
+                    history: chatMessages,
+                }),
+            });
 
-            const aiMessage = {
-                id: uuidv4(),
-                role: 'assistant' as const,
-                content: `I understand you'd like to: "${userMessage.content}". The AI backend will be connected in Phase 2. For now, use the Inspector panel sliders to make direct changes, or try loading a template from the home page.`,
+            const data = await response.json();
+
+            const aiMsg: ChatMessage = {
+                id: `msg_${Date.now()}_ai`,
+                role: 'assistant',
+                content: data.message || 'I processed your request.',
+                timestamp: new Date().toISOString(),
+                operations: data.operations || [],
+            };
+            addChatMessage(aiMsg);
+        } catch {
+            const errMsg: ChatMessage = {
+                id: `msg_${Date.now()}_err`,
+                role: 'assistant',
+                content: 'Sorry, I couldn\'t process that request. The AI backend may not be connected yet.',
                 timestamp: new Date().toISOString(),
             };
-
-            addChatMessage(aiMessage);
-        } catch (error) {
-            addChatMessage({
-                id: uuidv4(),
-                role: 'assistant' as const,
-                content: 'Sorry, I encountered an error. Please try again.',
-                timestamp: new Date().toISOString(),
-            });
+            addChatMessage(errMsg);
         } finally {
             setAIThinking(false);
         }
+    }, [input, isAIThinking, project, chatMessages, addChatMessage, setAIThinking]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        sendMessage(input);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            handleSend();
+            sendMessage(input);
         }
     };
 
     return (
-        <div className="panel chat-panel">
-            <h3 className="panel-title">AI Architect</h3>
+        <div className="chat-panel">
+            {/* Chat Header */}
+            <div className="chat-header">
+                <h3>🏗️ AI Architect</h3>
+                <span className="chat-status">
+                    {isAIThinking ? '⏳ Thinking...' : '🟢 Ready'}
+                </span>
+            </div>
 
-            {/* ── Messages List ───────────────────────────────────────── */}
+            {/* Messages Area */}
             <div className="chat-messages">
                 {chatMessages.length === 0 && (
                     <div className="chat-welcome">
-                        <p>👋 Hi! I&apos;m your AI architect.</p>
-                        <p>Describe the house you want to build, or ask me to modify the current design.</p>
-                        <p className="chat-examples-title">Try saying:</p>
-                        <ul className="chat-examples">
-                            <li>&ldquo;Move the north wall back by 1 meter&rdquo;</li>
-                            <li>&ldquo;Make the living room windows larger&rdquo;</li>
-                            <li>&ldquo;Replace the brick with stone&rdquo;</li>
-                            <li>&ldquo;Add a bathroom next to the master bedroom&rdquo;</li>
-                        </ul>
+                        <p className="chat-welcome-title">Hello! 👋</p>
+                        <p className="chat-welcome-text">
+                            I&apos;m your AI architect. Describe what you&apos;d like to change
+                            about the house, and I&apos;ll modify the 3D model for you.
+                        </p>
+                        <div className="chat-suggestions">
+                            {SUGGESTIONS.map((s) => (
+                                <button
+                                    key={s}
+                                    className="chat-suggestion-btn"
+                                    onClick={() => sendMessage(s)}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 )}
 
                 {chatMessages.map((msg) => (
-                    <div key={msg.id} className={`chat-message ${msg.role}`}>
-                        <div className="chat-message-header">
-                            <span className="chat-role">
-                                {msg.role === 'user' ? '👤 You' : '🏠 Architect'}
-                            </span>
-                            <span className="chat-time">
-                                {new Date(msg.timestamp).toLocaleTimeString()}
-                            </span>
-                        </div>
-                        <div className="chat-message-content">{msg.content}</div>
-                        {/* Show operation badges if the AI made changes */}
-                        {msg.operations && msg.operations.length > 0 && (
-                            <div className="chat-operations">
-                                {msg.operations.map((op, i) => (
-                                    <span key={i} className="operation-badge">
-                                        {op.type}: {op.target_id}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <MessageBubble key={msg.id} msg={msg} />
                 ))}
 
                 {isAIThinking && (
-                    <div className="chat-message assistant thinking">
-                        <div className="chat-message-content">
-                            <span className="thinking-dots">Thinking</span>
+                    <div className="chat-message chat-message-ai">
+                        <div className="chat-thinking">
+                            <span className="chat-thinking-dot" />
+                            <span className="chat-thinking-dot" />
+                            <span className="chat-thinking-dot" />
                         </div>
                     </div>
                 )}
@@ -157,28 +191,25 @@ export function ChatPanel() {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* ── Input Area ──────────────────────────────────────────── */}
-            <div className="chat-input-container">
+            {/* Input Area */}
+            <form className="chat-input-form" onSubmit={handleSubmit}>
                 <textarea
                     className="chat-input"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Describe what you want to change..."
+                    placeholder="Describe what you'd like to change..."
                     rows={2}
                     disabled={isAIThinking}
                 />
-                <div className="chat-input-actions">
-                    {/* TODO (Phase 3): Image upload button */}
-                    <button
-                        className="chat-send-btn"
-                        onClick={handleSend}
-                        disabled={!input.trim() || isAIThinking}
-                    >
-                        Send
-                    </button>
-                </div>
-            </div>
+                <button
+                    type="submit"
+                    className="chat-send-btn"
+                    disabled={!input.trim() || isAIThinking}
+                >
+                    Send →
+                </button>
+            </form>
         </div>
     );
 }

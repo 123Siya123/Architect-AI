@@ -416,6 +416,150 @@ export function createSlabNode(
     };
 }
 
+/**
+ * Creates a Foundation node (below-grade structural element).
+ * Foundation sits below ground level (negative Y position).
+ * It's always fixed_position — you never move a foundation after placing it.
+ */
+export function createFoundationNode(
+    parentId: string,
+    name: string = 'Foundation Slab',
+    position: Partial<Vec3> = {},
+    dimensions: Partial<Vec3> = {}
+): PSGNode {
+    return {
+        id: `foundation_${uuidv4().slice(0, 8)}`,
+        type: 'Foundation',
+        name,
+        position: { x: 0, y: -0.15, z: 0, ...position },
+        dimensions: { x: 12, y: 0.3, z: 10, ...dimensions },
+        rotation: defaultRotation(),
+        material_id: 'mat_concrete_reinforced',
+        opacity: 1,
+        tags: ['load_bearing'],
+        constraints: { ...defaultConstraints(), fixed_position: true },
+        systems: defaultSystems(),
+        parent_id: parentId,
+        children_ids: [],
+        created_at: now(),
+        modified_at: now(),
+        version: 1,
+    };
+}
+
+/**
+ * Creates a Column node (vertical structural element).
+ * Columns transfer loads from beams/slabs to foundations.
+ * Dimensions: x = width, y = height (floor-to-floor), z = depth.
+ */
+export function createColumnNode(
+    parentId: string,
+    name: string,
+    position: Partial<Vec3> = {},
+    height: number = DEFAULTS.WALL_HEIGHT,
+    crossSection: number = 0.3
+): PSGNode {
+    return {
+        id: `column_${uuidv4().slice(0, 8)}`,
+        type: 'Column',
+        name,
+        position: { x: 0, y: height / 2, z: 0, ...position },
+        dimensions: { x: crossSection, y: height, z: crossSection },
+        rotation: defaultRotation(),
+        material_id: 'mat_concrete_reinforced',
+        opacity: 1,
+        tags: ['load_bearing'],
+        constraints: {
+            min_width: 0.15,
+            min_height: 2.0,
+            min_thickness: 0.15,
+            connected_to: [],
+        },
+        systems: defaultSystems(),
+        parent_id: parentId,
+        children_ids: [],
+        created_at: now(),
+        modified_at: now(),
+        version: 1,
+    };
+}
+
+/**
+ * Creates a Beam node (horizontal structural spanning element).
+ * Beams span between columns or walls, supporting floor loads above.
+ * Dimensions: x = span length, y = depth (vertical), z = width.
+ */
+export function createBeamNode(
+    parentId: string,
+    name: string,
+    position: Partial<Vec3> = {},
+    span: number = 4,
+    depth: number = 0.4,
+    width: number = 0.25
+): PSGNode {
+    return {
+        id: `beam_${uuidv4().slice(0, 8)}`,
+        type: 'Beam',
+        name,
+        position: { x: 0, y: DEFAULTS.WALL_HEIGHT - depth / 2, z: 0, ...position },
+        dimensions: { x: span, y: depth, z: width },
+        rotation: defaultRotation(),
+        material_id: 'mat_steel_beam',
+        opacity: 1,
+        tags: ['load_bearing'],
+        constraints: {
+            min_width: 1.0,      // Min span
+            min_height: 0.15,    // Min depth
+            min_thickness: 0.1,  // Min width
+            connected_to: [],
+        },
+        systems: defaultSystems(),
+        parent_id: parentId,
+        children_ids: [],
+        created_at: now(),
+        modified_at: now(),
+        version: 1,
+    };
+}
+
+/**
+ * Creates a Partition node (non-load-bearing internal wall).
+ * Partitions are thinner than structural walls (100mm vs 250mm).
+ * They can be freely moved/removed without structural concerns.
+ */
+export function createPartitionNode(
+    parentId: string,
+    name: string,
+    position: Partial<Vec3> = {},
+    width: number = 3,
+    height: number = DEFAULTS.WALL_HEIGHT,
+    thickness: number = 0.1
+): PSGNode {
+    return {
+        id: `partition_${uuidv4().slice(0, 8)}`,
+        type: 'Partition',
+        name,
+        position: { x: 0, y: height / 2, z: 0, ...position },
+        dimensions: { x: width, y: height, z: thickness },
+        rotation: defaultRotation(),
+        material_id: 'mat_plasterboard',
+        opacity: 1,
+        tags: ['interior'],
+        constraints: {
+            min_width: 0.5,
+            min_height: 2.1,
+            min_thickness: 0.05,
+            connected_to: [],
+        },
+        systems: defaultSystems(),
+        parent_id: parentId,
+        children_ids: [],
+        created_at: now(),
+        modified_at: now(),
+        version: 1,
+    };
+}
+
 // =============================================================================
 // PROJECT FACTORY
 // =============================================================================

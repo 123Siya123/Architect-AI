@@ -1,27 +1,18 @@
 /**
  * =============================================================================
- * COMPONENTS/THREE/SCENE-CANVAS.TSX — Main Three.js Canvas Wrapper
+ * COMPONENTS/THREE/SCENE-CANVAS.TSX — Main 3D Viewport
  * =============================================================================
  *
- * The root 3D viewport component. Wraps React Three Fiber's <Canvas>
- * with our application-specific configuration:
- * - Camera setup (position, FOV, clipping planes)
- * - Lighting (ambient + directional for realistic shadows)
- * - Fog (depth cue for large scenes)
- * - Performance settings (pixel ratio, frame loop)
- * - Post-processing (future: SSAO, bloom)
+ * Wraps the Three.js canvas in a React Three Fiber component.
+ * Sets up: camera, lighting, shadows, orbit controls, grid, and
+ * the PSG renderer that draws the actual house geometry.
  *
- * This component renders the PSGRenderer (which draws the house)
- * and the CameraController (which handles orbit/walk-through).
+ * RENDERING PIPELINE:
+ * SceneCanvas sets up the "world" → PSGRenderer draws each node
  *
- * USAGE:
- * <SceneCanvas /> — that's it. It reads all state from the Zustand store.
- *
- * WHY A SEPARATE WRAPPER?
- * - Isolates Three.js setup from business logic
- * - Easy to add/remove post-processing effects
- * - Camera configuration in one place
- * - Performance tuning without touching components
+ * IMPORTANT: This component must be loaded with dynamic import
+ * (next/dynamic with ssr: false) because Three.js doesn't work
+ * in server-side rendering.
  * =============================================================================
  */
 
@@ -29,91 +20,154 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, GizmoHelper, GizmoViewport } from '@react-three/drei';
-import { PSGRenderer } from './PSGRenderer';
+import { OrbitControls, Grid, Environment, GizmoHelper, GizmoViewport } from '@react-three/drei';
 import { useDesignStore } from '@/store/useDesignStore';
+import PSGRenderer from './PSGRenderer';
 
-export function SceneCanvas() {
-    const viewMode = useDesignStore((s) => s.viewMode);
+// =============================================================================
+// LIGHTING SETUP
+// =============================================================================
 
+/**
+ * Three-point lighting: ambient fill + directional sun + soft secondary.
+ * The directional light casts shadows for visual depth.
+ */
+function SceneLighting() {
     return (
-        <Canvas
-            /**
-             * Camera configuration:
-             * - position: starts zoomed out to see the whole house
-             * - fov: 60° is natural for architectural visualization
-             * - near/far: clipping planes in meters
-             */
-            camera={{
-                position: [15, 12, 15],
-                fov: 60,
-                near: 0.1,
-                far: 500,
-            }}
-            /**
-             * Performance settings:
-             * - dpr: device pixel ratio (auto-adjust for retina)
-             * - shadows: enabled for realism in walk-through mode
-             */
-            dpr={[1, 2]}
-            shadows
-            style={{ background: 'transparent' }}
-        >
-            {/* ── Lighting ────────────────────────────────────────────────── */}
-            {/* Ambient: soft fill light so nothing is pure black */}
-            <ambientLight intensity={0.4} />
-            {/* Directional: sun-like light casting shadows */}
+        <>
+            {/* Ambient fill — prevents pure-black shadows */}
+            <ambientLight intensity={0.4} color="#e0e8ff" />
+
+            {/* Main sun light — positioned high and to the northwest */}
             <directionalLight
-                position={[20, 30, 10]}
+                position={[20, 30, -10]}
                 intensity={1.2}
+                color="#fff5e6"
                 castShadow
-                shadow-mapSize={[2048, 2048]}
-                shadow-camera-far={100}
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
                 shadow-camera-left={-30}
                 shadow-camera-right={30}
                 shadow-camera-top={30}
                 shadow-camera-bottom={-30}
+                shadow-camera-near={0.5}
+                shadow-camera-far={80}
+                shadow-bias={-0.0001}
             />
-            {/* Hemisphere: sky/ground color bleed for natural look */}
-            <hemisphereLight args={['#87CEEB', '#8B7D6B', 0.3]} />
 
-            {/* ── Scene Content ───────────────────────────────────────────── */}
-            <Suspense fallback={null}>
-                {/* The PSG Renderer draws all house nodes */}
+            {/* Secondary fill light — softer, from the opposite side */}
+            <directionalLight
+                position={[-15, 10, 15]}
+                intensity={0.3}
+                color="#b0c4ff"
+            />
+
+            {/* Hemisphere light — sky + ground bounce */}
+            <hemisphereLight
+                args={['#87CEEB', '#556B2F', 0.3]}
+            />
+        </>
+    );
+}
+
+// =============================================================================
+// GROUND GRID
+// =============================================================================
+
+function SceneGrid() {
+    const visibleLayers = useDesignStore((s) => s.visibleLayers);
+    if (!visibleLayers.has('grid')) return null;
+
+    return (
+        <Grid
+            args={[50, 50]}
+            position={[0, -0.01, 0]}
+            cellSize={1}
+            cellThickness={0.5}
+            cellColor="#444466"
+            sectionSize={5}
+            sectionThickness={1}
+            sectionColor="#6666aa"
+            fadeDistance={60}
+            fadeStrength={1.5}
+            infiniteGrid
+        />
+    );
+}
+
+// =============================================================================
+// LOADING FALLBACK
+// =============================================================================
+
+function LoadingFallback() {
+    return (
+        <mesh position={[5, 1, 5]}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color="#666" wireframe />
+        </mesh>
+    );
+}
+
+// =============================================================================
+// MAIN CANVAS
+// =============================================================================
+
+export default function SceneCanvas() {
+    const camera = useDesignStore((s) => s.camera);
+
+    return (
+        <Canvas
+            shadows
+            camera={{
+                position: [camera.position.x, camera.position.y, camera.position.z],
+                fov: camera.fov,
+                near: camera.near,
+                far: camera.far,
+            }}
+            gl={{
+                antialias: true,
+                alpha: false,
+                powerPreference: 'high-performance',
+            }}
+            style={{ width: '100%', height: '100%', background: '#0a0a1a' }}
+        >
+            {/* Sky/Environment */}
+            <color attach="background" args={['#0a0a1a']} />
+            <fog attach="fog" args={['#0a0a1a', 40, 100]} />
+
+            {/* Lighting */}
+            <SceneLighting />
+
+            {/* Controls */}
+            <OrbitControls
+                target={[camera.target.x, camera.target.y, camera.target.z]}
+                enableDamping
+                dampingFactor={0.1}
+                minDistance={2}
+                maxDistance={80}
+                maxPolarAngle={Math.PI / 2 + 0.1}
+            />
+
+            {/* Grid */}
+            <SceneGrid />
+
+            {/* Ground plane (receives shadows) */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+                <planeGeometry args={[100, 100]} />
+                <shadowMaterial opacity={0.3} />
+            </mesh>
+
+            {/* PSG Scene — wrapped in Suspense for async loads */}
+            <Suspense fallback={<LoadingFallback />}>
                 <PSGRenderer />
             </Suspense>
 
-            {/* ── Ground Grid ─────────────────────────────────────────────── */}
-            {/* Helps with spatial orientation; 1m grid squares */}
-            <Grid
-                position={[0, -0.01, 0]}
-                args={[100, 100]}
-                cellSize={1}
-                cellThickness={0.5}
-                cellColor="#6e6e6e"
-                sectionSize={5}
-                sectionThickness={1}
-                sectionColor="#9d4b4b"
-                fadeDistance={50}
-                fadeStrength={1}
-                infiniteGrid
-            />
-
-            {/* ── Camera Controls ─────────────────────────────────────────── */}
-            {viewMode === 'orbit' && (
-                <OrbitControls
-                    makeDefault
-                    enableDamping
-                    dampingFactor={0.1}
-                    minDistance={2}
-                    maxDistance={100}
-                    maxPolarAngle={Math.PI / 2.1} // Prevent going below ground
+            {/* Orientation gizmo (top-right corner) */}
+            <GizmoHelper alignment="bottom-right" margin={[60, 60]}>
+                <GizmoViewport
+                    axisColors={['#ff4060', '#40ff60', '#4060ff']}
+                    labelColor="white"
                 />
-            )}
-
-            {/* ── Gizmo (axis indicator in corner) ────────────────────────── */}
-            <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-                <GizmoViewport labelColor="white" axisHeadScale={1} />
             </GizmoHelper>
         </Canvas>
     );

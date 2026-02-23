@@ -328,5 +328,50 @@
     "price_per_kg": 0.30,
     "price_per_m3": 240,
     "sourcing": "local"
+  },
+  "mat_concrete_reinforced": {
+    "id": "mat_concrete_reinforced",
+    "name": "Reinforced Concrete (Foundation)",
+    "category": "structure",
+    "color_hex": "#6B6B6B",
+    "texture_url": null,
+    "texture_scale": 1.0,
+    "density_kg_m3": 2500,
+    "thermal_conductivity": 1.7,
+    "compressive_strength_mpa": 40,
+    "fire_rating": "A1",
+    "price_per_kg": 0.14,
+    "price_per_m3": 350,
+    "sourcing": "local"
+  },
+  "mat_steel_beam": {
+    "id": "mat_steel_beam",
+    "name": "Steel I-Beam",
+    "category": "structure",
+    "color_hex": "#3A3A3A",
+    "texture_url": null,
+    "texture_scale": 1.0,
+    "density_kg_m3": 7850,
+    "thermal_conductivity": 50.0,
+    "compressive_strength_mpa": 275,
+    "fire_rating": "A1",
+    "price_per_kg": 1.80,
+    "price_per_m3": 14130,
+    "sourcing": "local"
+  },
+  "mat_plasterboard": {
+    "id": "mat_plasterboard",
+    "name": "Plasterboard (Partition)",
+    "category": "interior",
+    "color_hex": "#ECECDF",
+    "texture_url": null,
+    "texture_scale": 1.2,
+    "density_kg_m3": 800,
+    "thermal_conductivity": 0.25,
+    "compressive_strength_mpa": 2,
+    "fire_rating": "A2",
+    "price_per_kg": 0.28,
+    "price_per_m3": 224,
+    "sourcing": "local"
   }
 }

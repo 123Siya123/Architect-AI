@@ -1,28 +1,16 @@
 /**
  * =============================================================================
- * COMPONENTS/UI/SLIDER-CONTROL.TSX — Precision Slider Component
+ * COMPONENTS/UI/SLIDER-CONTROL.TSX — Precision Numeric Slider
  * =============================================================================
  *
- * A reusable slider for precise numeric input with:
- * - Visual slider track with thumb
- * - Direct numeric input field
- * - Unit label (m, °, etc.)
- * - Configurable min/max/step
- *
- * DESIGN: [Label] [◄──────●──────►] [12.50 m]
- *
- * WHY A CUSTOM SLIDER?
- * Browser <input type="range"> doesn't support:
- * - Custom styling that matches our dark theme
- * - Step snapping with floating point precision
- * - Combined slider + text input
- * - Keyboard shortcuts (±step on arrow keys)
+ * Reusable slider + number input combo for editing numeric values.
+ * Used in the InspectorPanel for position, dimensions, rotation.
  * =============================================================================
  */
 
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
 interface SliderControlProps {
     label: string;
@@ -30,59 +18,92 @@ interface SliderControlProps {
     min: number;
     max: number;
     step: number;
-    unit: string;
     onChange: (value: number) => void;
+    unit?: string;
 }
 
-export function SliderControl({
+export default function SliderControl({
     label,
     value,
     min,
     max,
     step,
-    unit,
     onChange,
+    unit = 'm',
 }: SliderControlProps) {
+    const [localValue, setLocalValue] = useState(value.toFixed(2));
+
+    // Sync local value when prop changes
+    useEffect(() => {
+        setLocalValue(value.toFixed(2));
+    }, [value]);
+
     const handleSliderChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            onChange(parseFloat(e.target.value));
+            const v = parseFloat(e.target.value);
+            setLocalValue(v.toFixed(2));
+            onChange(v);
         },
         [onChange]
     );
 
     const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            const newVal = parseFloat(e.target.value);
-            if (!isNaN(newVal) && newVal >= min && newVal <= max) {
-                onChange(newVal);
+            setLocalValue(e.target.value);
+        },
+        []
+    );
+
+    const handleInputBlur = useCallback(() => {
+        const v = parseFloat(localValue);
+        if (!isNaN(v)) {
+            const clamped = Math.max(min, Math.min(max, v));
+            setLocalValue(clamped.toFixed(2));
+            onChange(clamped);
+        } else {
+            setLocalValue(value.toFixed(2));
+        }
+    }, [localValue, min, max, value, onChange]);
+
+    const handleKeyDown = useCallback(
+        (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                handleInputBlur();
             }
         },
-        [onChange, min, max]
+        [handleInputBlur]
     );
+
+    // Calculate fill percentage for slider track
+    const fillPercent = ((value - min) / (max - min)) * 100;
 
     return (
         <div className="slider-control">
             <label className="slider-label">{label}</label>
-            <input
-                type="range"
-                className="slider-track"
-                min={min}
-                max={max}
-                step={step}
-                value={value}
-                onChange={handleSliderChange}
-            />
-            <div className="slider-value">
+            <div className="slider-row">
                 <input
-                    type="number"
-                    className="slider-input"
-                    value={value.toFixed(2)}
-                    step={step}
+                    type="range"
+                    className="slider-range"
                     min={min}
                     max={max}
-                    onChange={handleInputChange}
+                    step={step}
+                    value={value}
+                    onChange={handleSliderChange}
+                    style={{
+                        background: `linear-gradient(to right, #4466ff ${fillPercent}%, #333 ${fillPercent}%)`,
+                    }}
                 />
-                <span className="slider-unit">{unit}</span>
+                <div className="slider-input-wrap">
+                    <input
+                        type="text"
+                        className="slider-input"
+                        value={localValue}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <span className="slider-unit">{unit}</span>
+                </div>
             </div>
         </div>
     );
