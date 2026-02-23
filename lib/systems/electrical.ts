@@ -179,65 +179,90 @@ function createCircuit(
 /**
  * Determines what devices a room needs based on its function.
  * Returns device definitions with positions on walls.
- *
- * TODO (Phase 4): Implement full device placement with wall locations
  */
 function getDevicesForRoom(
     room: PSGNode,
-    _project: PSGProject
+    project: PSGProject
 ): ElectricalDevice[] {
     const devices: ElectricalDevice[] = [];
     const roomFunc = room.room_function || 'generic';
+
+    // Find all walls that are children of this room (or connected to it)
+    const roomWalls = room.children_ids
+        .map(id => project.nodes[id])
+        .filter(n => n && (n.type === 'Wall' || n.type === 'Partition'));
 
     // Ceiling light for every room
     devices.push({
         id: `light_${room.id}`,
         type: 'light_ceiling',
-        wall_id: '',           // Ceiling-mounted, no wall
+        wall_id: '', // Ceiling-mounted
         position: { x: room.position.x, y: room.dimensions.y, z: room.position.z },
         circuit_id: 'circuit_lights',
         power_watts: 60,
     });
 
-    // Room-specific devices
+    if (roomWalls.length === 0) return devices;
+
+    // Helper to place a device on a specific wall
+    const placeOnWall = (wall: PSGNode, type: ElectricalDeviceType, xPos: number, yPos: number, circuit: string, watts: number) => {
+        devices.push({
+            id: `${type}_${wall.id}_${devices.length}`,
+            type,
+            wall_id: wall.id,
+            position: { x: xPos, y: yPos, z: 0.05 }, // Slightly offset from wall surface
+            circuit_id: circuit,
+            power_watts: watts,
+        });
+    };
+
+    // Room-specific placement rules
     switch (roomFunc) {
         case 'kitchen':
-            // Many sockets for appliances
-            for (let i = 0; i < 6; i++) {
-                devices.push({
-                    id: `socket_kitchen_${i}`,
-                    type: 'socket_double',
-                    wall_id: '',
-                    position: { x: room.position.x + i * 0.6, y: 1.1, z: room.position.z },
-                    circuit_id: 'circuit_kitchen',
-                    power_watts: 3000,
-                });
-            }
-            break;
-        case 'bedroom':
-            // Bedside sockets
-            devices.push(
-                { id: `socket_bed_l_${room.id}`, type: 'socket_double', wall_id: '', position: { x: room.position.x, y: 0.3, z: room.position.z }, circuit_id: 'circuit_upstairs', power_watts: 500 },
-                { id: `socket_bed_r_${room.id}`, type: 'socket_double', wall_id: '', position: { x: room.position.x + room.dimensions.x, y: 0.3, z: room.position.z }, circuit_id: 'circuit_upstairs', power_watts: 500 }
-            );
-            break;
-        case 'bathroom':
-            // IP-rated light, shaver socket only
-            devices.push({
-                id: `shaver_${room.id}`,
-                type: 'socket_single',
-                wall_id: '',
-                position: { x: room.position.x + 1, y: 1.5, z: room.position.z },
-                circuit_id: 'circuit_upstairs',
-                power_watts: 100,
+            roomWalls.forEach(wall => {
+                // Sockets every 1.0m along kitchen walls for appliances
+                const numSockets = Math.floor(wall.dimensions.x / 1.0);
+                for (let i = 1; i <= numSockets; i++) {
+                    placeOnWall(wall, 'socket_double', i * 1.0, 1.1, 'circuit_kitchen', 3000);
+                }
             });
             break;
+
+        case 'bedroom':
+            roomWalls.forEach((wall, idx) => {
+                // One double socket per wall at 0.3m height
+                placeOnWall(wall, 'socket_double', wall.dimensions.x / 2, 0.3, 'circuit_upstairs', 500);
+                // Switch near the door if it's the first wall
+                if (idx === 0) {
+                    placeOnWall(wall, 'switch_single', 0.2, 1.2, 'circuit_lights', 0);
+                }
+            });
+            break;
+
+        case 'bathroom':
+            // High-level shaver socket only (safety)
+            if (roomWalls[0]) {
+                placeOnWall(roomWalls[0], 'socket_single', 0.5, 1.6, 'circuit_upstairs', 100);
+                placeOnWall(roomWalls[0], 'switch_single', -0.2, 1.2, 'circuit_lights', 0); // Pull cord or outside
+            }
+            break;
+
+        case 'living':
+            roomWalls.forEach(wall => {
+                // Sockets every 2.0m
+                const numSockets = Math.floor(wall.dimensions.x / 2.0);
+                for (let i = 1; i <= numSockets; i++) {
+                    placeOnWall(wall, 'socket_double', i * 2.0, 0.3, 'circuit_downstairs', 500);
+                }
+            });
+            break;
+
         default:
-            // Standard: 2 double sockets
-            devices.push(
-                { id: `socket_${room.id}_1`, type: 'socket_double', wall_id: '', position: { x: room.position.x, y: 0.3, z: room.position.z }, circuit_id: 'circuit_downstairs', power_watts: 500 },
-                { id: `socket_${room.id}_2`, type: 'socket_double', wall_id: '', position: { x: room.position.x + room.dimensions.x, y: 0.3, z: room.position.z }, circuit_id: 'circuit_downstairs', power_watts: 500 }
-            );
+            // Generic: switch + 2 sockets
+            if (roomWalls[0]) {
+                placeOnWall(roomWalls[0], 'switch_single', 0.2, 1.2, 'circuit_lights', 0);
+                placeOnWall(roomWalls[0], 'socket_double', roomWalls[0].dimensions.x / 2, 0.3, 'circuit_downstairs', 500);
+            }
     }
 
     return devices;

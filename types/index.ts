@@ -147,6 +147,7 @@ export type StructuralTag =
   | 'wet_room'        // Bathroom/kitchen — needs waterproofing
   | 'fire_wall'       // Fire separation wall
   | 'party_wall'      // Shared wall with neighbor
+  | 'perimeter'       // Part of the building's outer boundary
   | 'insulated';      // Has insulation layer
 
 /** Constraints prevent the AI from making structurally invalid edits */

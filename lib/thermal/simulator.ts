@@ -111,6 +111,13 @@ export function runThermalSimulation(
 
     const deltaT = config.indoor_target_c - config.outdoor_temp_c;
 
+    // Helper to calculate opening areas for a parent wall
+    const getOpeningsArea = (wallId: string): number => {
+        return Object.values(project.nodes)
+            .filter(n => (n.type === 'Window' || n.type === 'Door') && n.parent_id === wallId)
+            .reduce((sum, n) => sum + calculateSurfaceArea(n), 0);
+    };
+
     for (const [nodeId, node] of Object.entries(project.nodes)) {
         // Only process physical envelope elements
         if (!isEnvelopeNode(node)) {
@@ -129,10 +136,16 @@ export function runThermalSimulation(
         const uValue = calculateUValue(material.thermal_conductivity, thickness);
 
         // Calculate area
-        const area = calculateSurfaceArea(node);
+        let area = calculateSurfaceArea(node);
+
+        // If it's a wall, subtract the areas of its windows and doors
+        if (node.type === 'Wall' || node.type === 'Partition') {
+            area -= getOpeningsArea(nodeId);
+            area = Math.max(area, 0); // Safety check
+        }
 
         // Calculate heat loss through this element
-        const effectiveDeltaT = node.type === 'Slab' && !node.tags.includes('exterior')
+        const effectiveDeltaT = (node.type === 'Slab' || node.type === 'Foundation') && !node.tags.includes('exterior')
             ? config.indoor_target_c - config.ground_temp_c  // Floor loses to ground
             : deltaT;  // Walls/roof/windows lose to outside air
 
@@ -151,25 +164,27 @@ export function runThermalSimulation(
             case 'Window': breakdown.windows += heatLoss; break;
             case 'Roof': breakdown.roof += heatLoss; break;
             case 'Slab': case 'Foundation': breakdown.floor += heatLoss; break;
+            case 'Door': breakdown.walls += heatLoss; break; // Count doors with walls for breakdown
         }
 
-        // Track cold spots (high heat loss areas)
-        if (uValue > 1.0) {
-            coldSpots.push({
-                node_id: nodeId,
-                node_name: node.name,
-                u_value: Math.round(uValue * 100) / 100,
-                heat_loss_watts: Math.round(heatLoss),
-            });
-        }
+        // Track cold spots (highest heat loss per unit area)
+        coldSpots.push({
+            node_id: nodeId,
+            node_name: node.name,
+            u_value: Math.round(uValue * 100) / 100,
+            heat_loss_watts: Math.round(heatLoss),
+        });
     }
 
-    // Sort cold spots by severity
+    // Sort cold spots by severity (absolute heat loss)
     coldSpots.sort((a, b) => b.heat_loss_watts - a.heat_loss_watts);
 
-    // Annual heating estimate (simplified: 4380 heating hours/year for central Europe)
-    const heatingHoursPerYear = 4380;
-    const annualKwh = (totalLoss * heatingHoursPerYear) / 1000;
+    // Annual heating estimate using degree-days concept
+    // Simplified: 2500 heating degree-days (typical for mild-to-cold climates)
+    // Energy (kWh) = (Total Loss / deltaT) * HDD * 24 / 1000
+    const hdd = 2500;
+    const heatLossPerDegree = totalLoss / deltaT;
+    const annualKwh = heatLossPerDegree * hdd * 24 / 1000;
 
     return {
         node_temperatures: nodeTemps,
@@ -191,19 +206,34 @@ export function runThermalSimulation(
 
 /** Checks if a node is part of the building envelope (loses heat) */
 function isEnvelopeNode(node: PSGNode): boolean {
-    return ['Wall', 'Window', 'Roof', 'Slab', 'Foundation', 'Door'].includes(node.type)
-        && (node.tags.includes('exterior') || node.type === 'Window' || node.type === 'Slab');
+    // Rooms, groups, etc. are not physical surfaces
+    if (['Room', 'Group', 'House', 'Floor'].includes(node.type)) return false;
+
+    // Windows and Doors are always part of the envelope
+    if (['Window', 'Door'].includes(node.type)) return true;
+
+    // Roofs are almost always envelope (exposed to sky)
+    if (node.type === 'Roof') return true;
+
+    // Slabs/Foundations are envelope (exposed to ground or air)
+    if (['Slab', 'Foundation'].includes(node.type)) return true;
+
+    // Walls/Partitions are envelope IF they are tagged exterior
+    // or if they are the primary boundary.
+    return node.type === 'Wall' && (node.tags.includes('exterior') || node.tags.includes('perimeter'));
 }
 
 /** Gets the thickness relevant for thermal calculation */
 function getEnvelopeThickness(node: PSGNode): number {
     if (node.type === 'Window') return 0.024; // Double glazing ~24mm
-    return node.dimensions.z || 0.25; // Wall thickness
+    if (node.type === 'Door') return 0.044;   // External door ~44mm
+    // For walls/slabs, depth (z) is usually thickness
+    return node.dimensions.z || 0.25;
 }
 
 /** U = k / d  (thermal conductivity / thickness) + surface resistances */
 function calculateUValue(thermalConductivity: number, thickness: number): number {
-    if (thickness <= 0) return 5.0; // Fallback high U-value
+    if (thickness <= 0 || thermalConductivity <= 0) return 5.0; // Fallback high U-value
     const Rsi = 0.13;  // Internal surface resistance (m²K/W)
     const Rse = 0.04;  // External surface resistance (m²K/W)
     const Rmaterial = thickness / thermalConductivity;
@@ -211,14 +241,18 @@ function calculateUValue(thermalConductivity: number, thickness: number): number
     return 1 / Rtotal;
 }
 
-/** Calculates the external surface area of a node */
+/** Calculates the raw surface area of a node */
 function calculateSurfaceArea(node: PSGNode): number {
     switch (node.type) {
         case 'Wall': case 'Partition':
             return node.dimensions.x * node.dimensions.y; // width × height
         case 'Window': case 'Door':
-            return (node.opening_width || node.dimensions.x) * (node.opening_height || node.dimensions.y);
+            // Use specific opening dimensions if available, otherwise node dimensions
+            const w = node.opening_width || node.dimensions.x;
+            const h = node.opening_height || node.dimensions.y;
+            return w * h;
         case 'Slab': case 'Roof': case 'Foundation':
+            // These are horizontal or sloped surfaces
             return node.dimensions.x * node.dimensions.z; // width × depth
         default:
             return 0;
