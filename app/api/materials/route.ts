@@ -1,37 +1,40 @@
 /**
- * =============================================================================
- * APP/API/MATERIALS/ROUTE.TS — Materials Library API
- * =============================================================================
- *
- * Serves the materials database to the frontend.
- * GET /api/materials — returns all materials
- * GET /api/materials?category=cladding — filtered by category
- *
- * WHY AN API ROUTE?
- * While the JSON could be imported directly, an API route allows:
- * - Future: user-defined custom materials
- * - Future: regional pricing (different prices by country)
- * - Future: material search/filtering
- * - Keeps the JSON out of the client bundle
- * =============================================================================
+ * GET /api/materials
+ * Search and filter materials from the library.
+ * Support query params: ?search=name&category=type&maxPrice=val
  */
-
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import materialsData from '@/data/materials.json';
+import { Material } from '@/types';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
 
-    let materials = Object.values(materialsData);
+    const search = searchParams.get('search')?.toLowerCase() || '';
+    const category = searchParams.get('category') || '';
+    const maxPrice = parseFloat(searchParams.get('maxPrice') || '0');
 
-    // Filter by category if specified
+    // Convert object to array for filtering
+    let results = Object.values(materialsData) as Material[];
+
+    // Apply filters
+    if (search) {
+        results = results.filter(m =>
+            m.name.toLowerCase().includes(search) ||
+            m.id.toLowerCase().includes(search)
+        );
+    }
+
     if (category) {
-        materials = materials.filter((m) => m.category === category);
+        results = results.filter(m => m.category === category);
+    }
+
+    if (maxPrice > 0) {
+        results = results.filter(m => m.price_per_kg <= maxPrice);
     }
 
     return NextResponse.json({
-        count: materials.length,
-        materials: Object.fromEntries(materials.map((m) => [m.id, m])),
+        total: results.length,
+        items: results
     });
 }
