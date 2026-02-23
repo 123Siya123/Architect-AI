@@ -42,7 +42,7 @@ import {
  * Set via environment variables in .env.local
  */
 export interface AIConfig {
-    provider: 'gemini' | 'openai';
+    provider: 'gemini' | 'openai' | 'groq';
     apiKey: string;
     model: string;
     maxTokens: number;
@@ -55,9 +55,9 @@ export interface AIConfig {
  */
 export function getAIConfig(): AIConfig {
     return {
-        provider: (process.env.NEXT_PUBLIC_AI_PROVIDER as 'gemini' | 'openai') || 'gemini',
+        provider: (process.env.NEXT_PUBLIC_AI_PROVIDER as 'gemini' | 'openai' | 'groq') || 'gemini',
         apiKey: process.env.AI_API_KEY || '',
-        model: process.env.AI_MODEL || 'gemini-2.0-flash',
+        model: process.env.AI_MODEL || 'llama-3.3-70b-versatile',
         maxTokens: 4096,
         temperature: 0.7,
     };
@@ -225,6 +225,70 @@ async function callGemini(
 }
 
 // =============================================================================
+// GROQ API CALL (OpenAI-compatible)
+// =============================================================================
+
+/**
+ * Calls the Groq API with function calling support.
+ * Groq uses an OpenAI-compatible API — same request format, different base URL.
+ * Supports models like llama-3.3-70b-versatile, mixtral-8x7b-32768.
+ */
+async function callGroq(
+    config: AIConfig,
+    messages: Array<{ role: string; content: string }>,
+): Promise<{ text: string; toolCalls: Array<{ name: string; args: Record<string, unknown> }> }> {
+    // Groq's OpenAI-compatible endpoint
+    const url = 'https://api.groq.com/openai/v1/chat/completions';
+
+    const body = {
+        model: config.model,
+        messages,
+        tools: AI_TOOLS,
+        tool_choice: 'auto',
+        temperature: config.temperature,
+        max_tokens: config.maxTokens,
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`Groq API error (${response.status}): ${err}`);
+    }
+
+    const data = await response.json();
+    const choice = data.choices?.[0];
+    if (!choice) {
+        throw new Error('Groq returned no choices');
+    }
+
+    const text = choice.message?.content || '';
+    const toolCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+
+    for (const tc of choice.message?.tool_calls || []) {
+        if (tc.type === 'function') {
+            try {
+                toolCalls.push({
+                    name: tc.function.name,
+                    args: JSON.parse(tc.function.arguments),
+                });
+            } catch {
+                console.warn('[AI Orchestrator] Failed to parse Groq tool call args:', tc.function.arguments);
+            }
+        }
+    }
+
+    return { text, toolCalls };
+}
+
+// =============================================================================
 // OPENAI API CALL
 // =============================================================================
 
@@ -342,9 +406,14 @@ export async function sendChatToAI(
 
     try {
         // Call the appropriate LLM provider
-        const result = config.provider === 'openai'
-            ? await callOpenAI(config, messages)
-            : await callGemini(config, messages);
+        let result;
+        if (config.provider === 'openai') {
+            result = await callOpenAI(config, messages);
+        } else if (config.provider === 'groq') {
+            result = await callGroq(config, messages);
+        } else {
+            result = await callGemini(config, messages);
+        }
 
         // Convert tool calls to PSG operations
         const operations: PSGOperation[] = result.toolCalls.map((tc) =>
