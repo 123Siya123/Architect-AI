@@ -82,6 +82,11 @@ function getKeyPool(): KeyEntry[] {
     return keyPool;
 }
 
+/** Returns true if at least one key is configured */
+export function hasKeys(): boolean {
+    return getKeyPool().length > 0;
+}
+
 // =============================================================================
 // KEY SELECTION
 // =============================================================================

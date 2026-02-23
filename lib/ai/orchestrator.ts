@@ -32,7 +32,7 @@ import {
     ARCHITECT_SYSTEM_PROMPT,
     createHouseContextPrompt,
 } from './prompts';
-import { getNextKey, markKeyRateLimited } from './key-manager';
+import { getNextKey, markKeyRateLimited, hasKeys } from './key-manager';
 
 // =============================================================================
 // CONFIGURATION
@@ -397,10 +397,10 @@ export async function sendChatToAI(
 ): Promise<AIChatResponse> {
     const config = getAIConfig();
 
-    // If no API key is configured, return a helpful message
-    if (!config.apiKey) {
+    // If no API keys are configured in the carousel (or legacy single key), return a helpful message
+    if (!hasKeys()) {
         return {
-            message: `I understand you want to: "${request.message}". However, the AI backend is not yet configured. To enable AI features, add your API key to \`.env.local\`:\n\n\`\`\`\nAI_API_KEY=your_key_here\nNEXT_PUBLIC_AI_PROVIDER=gemini\nAI_MODEL=gemini-2.0-flash\n\`\`\`\n\nFor now, you can use the Inspector panel to directly edit elements.`,
+            message: `I understand you want to: "${request.message}". However, the AI backend is not yet configured. To enable AI features, add your API key to \`.env.local\`:\n\n\`\`\`\nAI_API_KEYS=your_key_here\nNEXT_PUBLIC_AI_PROVIDER=groq\nAI_MODEL=llama-3.3-70b-versatile\n\`\`\`\n\nFor now, you can use the Inspector panel to directly edit elements.`,
             operations: [],
             warnings: [],
             suggestions: [
