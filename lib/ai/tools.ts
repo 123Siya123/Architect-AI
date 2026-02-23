@@ -80,7 +80,15 @@ export const AI_TOOLS = [
             parameters: {
                 type: 'object',
                 properties: {
-                    type: { type: 'string', enum: ['Wall', 'Window', 'Door', 'Room', 'Slab', 'Stairs', 'Roof', 'Partition', 'Column', 'Beam'], description: 'Type of element to add' },
+                    type: {
+                        type: 'string',
+                        enum: [
+                            'Floor', 'Room', 'Wall', 'Window', 'Door', 'Slab', 'Stairs', 'Roof',
+                            'Partition', 'Column', 'Beam', 'Foundation', 'House', 'Balcony',
+                            'Garage', 'Chimney'
+                        ],
+                        description: 'Type of element to add'
+                    },
                     parent_id: { type: 'string', description: 'ID of the parent node to attach to' },
                     name: { type: 'string', description: 'Human-readable name, e.g. "Kitchen East Wall"' },
                     position_x: { type: 'number', description: 'X position in meters relative to parent' },

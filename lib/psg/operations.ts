@@ -340,18 +340,86 @@ function replaceMaterial(project: PSGProject, operation: PSGOperation): PSGProje
 }
 
 /**
+ * Builds a valid PSGNode from the flat args the AI sends via tool call.
+ * The AI sends: { type, parent_id, name, position_x, position_y, position_z, width, height, depth, material_id }
+ * We need to turn that into a full PSGNode with id, systems, constraints, etc.
+ */
+function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
+    const {
+        type = 'Wall',
+        parent_id = null,
+        name = 'New Element',
+        position_x = 0,
+        position_y = 0,
+        position_z = 0,
+        width = 4,
+        height = 2.7,
+        depth = 0.25,
+        material_id = '',
+        stair_style,
+        roof_style,
+        roof_pitch_degrees,
+        room_function,
+    } = params as Record<string, unknown>;
+
+    const now = new Date().toISOString();
+    const nodeType = type as string;
+    const shortId = Math.random().toString(36).slice(2, 10);
+    const id = `${nodeType.toLowerCase()}_${shortId}`;
+
+    return {
+        id,
+        type: nodeType as PSGNode['type'],
+        name: name as string,
+        position: {
+            x: Number(position_x),
+            y: Number(position_y),
+            z: Number(position_z),
+        },
+        dimensions: {
+            x: Number(width),
+            y: Number(height),
+            z: Number(depth),
+        },
+        rotation: { yaw: 0, pitch: 0, roll: 0 },
+        material_id: (material_id as string) || '',
+        opacity: nodeType === 'Window' ? 0.3 : 1,
+        tags: nodeType === 'Wall' || nodeType === 'Slab' || nodeType === 'Column' || nodeType === 'Beam' || nodeType === 'Foundation'
+            ? ['load_bearing']
+            : [],
+        constraints: { connected_to: [], fixed_position: nodeType === 'Foundation' },
+        systems: { electrical: [], plumbing: [], hvac: [] },
+        parent_id: (parent_id as string | null),
+        children_ids: [],
+        stair_style: stair_style as PSGNode['stair_style'],
+        roof_style: roof_style as PSGNode['roof_style'],
+        roof_pitch_degrees: roof_pitch_degrees ? Number(roof_pitch_degrees) : undefined,
+        room_function: room_function as string | undefined,
+        created_at: now,
+        modified_at: now,
+        version: 1,
+    };
+}
+
+/**
  * Adds a new node to the project.
  *
- * The operation params must contain a complete PSGNode (minus the id,
- * which is generated). The factory functions in schema.ts are used
- * to create these.
+ * Accepts either a complete PSGNode in params (legacy) or flat AI tool call
+ * args like { type, parent_id, name, position_x, width, height, ... }.
+ * The AI sends flat args; the factory functions send complete nodes.
  */
 function addNode(project: PSGProject, operation: PSGOperation): PSGProject {
-    const newNode = operation.params as unknown as PSGNode;
+    const params = operation.params as Record<string, unknown>;
 
-    // Ensure the new node has an ID
-    if (!newNode.id) {
-        throw new Error('add_node: new node must have an ID');
+    // Detect whether the AI sent flat args or a complete PSGNode.
+    // A complete node always has an `id` field set.
+    let newNode: PSGNode;
+    if (params.id) {
+        // Already a full node (e.g. from old code paths)
+        newNode = params as unknown as PSGNode;
+    } else {
+        // AI sent flat tool args — build a proper PSGNode from them
+        newNode = createNodeFromAIArgs(params);
     }
 
     // Verify parent exists
