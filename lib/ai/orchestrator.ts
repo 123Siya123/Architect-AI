@@ -73,43 +73,50 @@ export function getAIConfig(): AIConfig {
  * Strips metadata to save tokens, keeps the structural essentials.
  */
 export function prepareProjectContext(project: PSGProject): string {
-    const simplified = {
+    // EXTREME MINIFICATION: Map keys to single letters to save massive token count
+    // t: type, n: name, p: pos, d: dim, r: rot, m: mat, g: tags, c: children, f: room_func
+    const nodes: Record<string, any> = {};
+
+    for (const [id, node] of Object.entries(project.nodes)) {
+        const minNode: any = { t: node.type };
+
+        // Only include fields if they are non-default/non-empty
+        if (node.name && node.name !== node.type) minNode.n = node.name;
+
+        minNode.p = [
+            Number(node.position.x.toFixed(2)),
+            Number(node.position.y.toFixed(2)),
+            Number(node.position.z.toFixed(2))
+        ];
+
+        minNode.d = [
+            Number(node.dimensions.x.toFixed(2)),
+            Number(node.dimensions.y.toFixed(2)),
+            Number(node.dimensions.z.toFixed(2))
+        ];
+
+        if (node.rotation.yaw || node.rotation.pitch || node.rotation.roll) {
+            minNode.r = [node.rotation.yaw, node.rotation.pitch, node.rotation.roll];
+        }
+
+        if (node.material_id) minNode.m = node.material_id;
+        if (node.tags && node.tags.length > 0) minNode.g = node.tags;
+        if (node.children_ids && node.children_ids.length > 0) minNode.c = node.children_ids;
+        if (node.room_function) minNode.f = node.room_function;
+        if (node.roof_style) minNode.rs = node.roof_style;
+        if (node.roof_pitch_degrees) minNode.rp = node.roof_pitch_degrees;
+
+        nodes[id] = minNode;
+    }
+
+    const compressed = {
         name: project.name,
-        root_node_id: project.root_node_id,
-        nodes: Object.fromEntries(
-            Object.entries(project.nodes).map(([id, node]) => [
-                id,
-                {
-                    id: node.id,
-                    type: node.type,
-                    name: node.name,
-                    position: {
-                        x: Number(node.position.x.toFixed(2)),
-                        y: Number(node.position.y.toFixed(2)),
-                        z: Number(node.position.z.toFixed(2)),
-                    },
-                    dimensions: {
-                        x: Number(node.dimensions.x.toFixed(2)),
-                        y: Number(node.dimensions.y.toFixed(2)),
-                        z: Number(node.dimensions.z.toFixed(2)),
-                    },
-                    rotation: node.rotation,
-                    material_id: node.material_id,
-                    tags: node.tags,
-                    parent_id: node.parent_id,
-                    children_ids: node.children_ids,
-                    ...(node.room_function && { room_function: node.room_function }),
-                    ...(node.stair_style && { stair_style: node.stair_style }),
-                    ...(node.roof_style && { roof_style: node.roof_style }),
-                    ...(node.roof_pitch_degrees && { roof_pitch_degrees: node.roof_pitch_degrees }),
-                },
-            ])
-        ),
-        budget: project.budget,
+        rid: project.root_node_id,
+        nodes,
+        budget: { t: project.budget.total_budget, s: project.budget.spent, r: project.budget.remaining }
     };
 
-    // Use null, 0 to strip all whitespace and save significant tokens
-    return JSON.stringify(simplified);
+    return JSON.stringify(compressed);
 }
 
 /**

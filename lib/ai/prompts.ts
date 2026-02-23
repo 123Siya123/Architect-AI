@@ -39,7 +39,17 @@ You can modify the house by calling tool functions. Each call is validated befor
 - Y axis = Up-Down (positive Y = up, Y=0 is ground level)
 - Z axis = North-South (positive Z = south/towards viewer)
 - All measurements are in METERS
-- Wall positions are their CENTER POINT
+
+## DATA FORMAT (MINIFIED)
+The house data is minified to save space. Mapping:
+- t: type, n: name, rid: root_id
+- p: position [x, y, z]
+- d: dimensions [x, y, z]
+- r: rotation [yaw, pitch, roll]
+- m: material (complete ID)
+- g: tags, c: children, f: room_func
+- rs: roof_style, rp: roof_pitch_degrees
+- budget: { t: total, s: spent, r: remaining }
 
 ## RULES
 1. Always explain what you're changing and why
