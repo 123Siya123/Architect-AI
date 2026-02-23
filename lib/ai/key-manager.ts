@@ -53,13 +53,13 @@ function initKeyPool(): KeyEntry[] {
     const singleKey = process.env.AI_API_KEY || '';
 
     // Combine both sources, split by comma, filter empty strings
+    // AND aggressively clean each key of quotes, whitespace, or hidden symbols
     const allKeys = [
-        ...multiKeys.split(',').map(k => k.trim()).filter(Boolean),
-        // Add the single key only if it's not already in the list
+        ...multiKeys.split(',').map(k => k.trim().replace(/^["']|["']$/g, '').trim()).filter(Boolean),
     ];
 
     if (singleKey && !allKeys.includes(singleKey)) {
-        allKeys.push(singleKey);
+        allKeys.push(singleKey.trim().replace(/^["']|["']$/g, '').trim());
     }
 
     if (allKeys.length === 0) {
@@ -67,6 +67,9 @@ function initKeyPool(): KeyEntry[] {
     }
 
     console.log(`[KeyManager] Initialized with ${allKeys.length} key(s)`);
+    allKeys.forEach((k, i) => {
+        console.log(`[KeyManager] Key #${i + 1}: length ${k.length}, starts with ${k.substring(0, 4)}...`);
+    });
 
     return allKeys.map(key => ({
         key,
