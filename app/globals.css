@@ -1,26 +1,783 @@
-@import "tailwindcss";
+/**
+ * =============================================================================
+ * APP/GLOBALS.CSS — Global Design System Styles
+ * =============================================================================
+ *
+ * This file defines the complete visual design system for the application.
+ * Everything is built using CSS custom properties (variables) for consistency
+ * and easy theming.
+ *
+ * DESIGN PHILOSOPHY:
+ * - Dark theme for architectural visualization (reduces eye strain)
+ * - Glassmorphism panels floating over the 3D viewport
+ * - Subtle animations for micro-interactions
+ * - Professional, clean typography (Inter font family)
+ *
+ * SECTIONS:
+ * 1. CSS Variables (colors, spacing, typography)
+ * 2. Reset & Base styles
+ * 3. Layout (design studio grid)
+ * 4. Toolbar
+ * 5. Panels (chat, inspector, layers)
+ * 6. Sliders
+ * 7. Chat
+ * 8. Animations
+ * =============================================================================
+ */
+
+/* =============================================================================
+   1. CSS VARIABLES — Design Tokens
+   ============================================================================= */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Colors ────────────────────────────────────────────────── */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-panel: rgba(18, 18, 26, 0.85);
+  --bg-panel-solid: #1a1a2e;
+  --bg-toolbar: rgba(10, 10, 15, 0.92);
+  --bg-input: rgba(255, 255, 255, 0.06);
+  --bg-hover: rgba(255, 255, 255, 0.08);
+  --bg-active: rgba(108, 99, 255, 0.2);
+
+  --text-primary: #e8e8ed;
+  --text-secondary: #8888a0;
+  --text-muted: #555566;
+  --text-accent: #6c63ff;
+
+  --accent-primary: #6c63ff;
+  --accent-secondary: #00d4aa;
+  --accent-warning: #ffaa00;
+  --accent-danger: #ff4455;
+  --accent-success: #00cc55;
+
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(108, 99, 255, 0.5);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+
+  /* ── Typography ────────────────────────────────────────────── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --text-xs: 0.7rem;
+  --text-sm: 0.8rem;
+  --text-base: 0.9rem;
+  --text-lg: 1.1rem;
+  --text-xl: 1.3rem;
+  --text-2xl: 1.6rem;
+  --text-3xl: 2.2rem;
+
+  /* ── Spacing ───────────────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* ── Layout ────────────────────────────────────────────────── */
+  --toolbar-height: 52px;
+  --panel-width: 340px;
+  --border-radius: 8px;
+  --border-radius-sm: 4px;
+  --border-radius-lg: 12px;
+
+  /* ── Transitions ───────────────────────────────────────────── */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* =============================================================================
+   2. RESET & BASE
+   ============================================================================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  height: 100%;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+a { color: var(--accent-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   3. DESIGN STUDIO LAYOUT
+   ============================================================================= */
+
+.design-studio {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.design-content {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.viewport-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.viewport-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: var(--text-lg);
+  background: var(--bg-primary);
+}
+
+/* ── Panel Containers (left chat, right inspector) ──────────── */
+.panel-container {
+  width: var(--panel-width);
+  min-width: var(--panel-width);
+  max-width: var(--panel-width);
+  height: 100%;
+  overflow: hidden;
+  transition: width var(--transition-normal), min-width var(--transition-normal);
+}
+
+.panel-container.left {
+  border-right: 1px solid var(--border-color);
+}
+
+.panel-container.right {
+  border-left: 1px solid var(--border-color);
+}
+
+/* =============================================================================
+   4. TOOLBAR
+   ============================================================================= */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  height: var(--toolbar-height);
+  padding: 0 var(--space-4);
+  background: var(--bg-toolbar);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(20px);
+  gap: var(--space-2);
+  z-index: 10;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.toolbar-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-right: var(--space-2);
+}
+
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.toolbar-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.toolbar-btn.active {
+  background: var(--bg-active);
+  color: var(--accent-primary);
+}
+
+.toolbar-icon {
+  font-size: 1.1em;
+}
+
+.toolbar-text {
+  font-size: var(--text-xs);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color);
+  margin: 0 var(--space-2);
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+/* ── Budget Indicator ────────────────────────────────────────── */
+.budget-indicator {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.budget-bar-container {
+  width: 120px;
+  height: 4px;
+  background: var(--bg-input);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--transition-normal), background-color var(--transition-normal);
+}
+
+.budget-text {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.export-btn {
+  background: var(--accent-primary);
+  color: white;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+}
+
+.export-btn:hover {
+  opacity: 0.9;
+}
+
+/* =============================================================================
+   5. PANELS
+   ============================================================================= */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-panel-solid);
+  overflow: hidden;
+}
+
+.panel-title {
+  padding: var(--space-4);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.panel-empty {
+  padding: var(--space-6);
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── Inspector ───────────────────────────────────────────────── */
+.inspector-panel {
+  overflow-y: auto;
+}
+
+.inspector-section {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.inspector-section h4 {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-3);
+}
+
+.inspector-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-1) 0;
+}
+
+.inspector-field label {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.field-value {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.field-value.badge {
+  background: var(--bg-active);
+  color: var(--accent-primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.field-value.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tag {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent-secondary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.tag-empty {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-style: italic;
+}
+
+/* =============================================================================
+   6. SLIDER CONTROLS
+   ============================================================================= */
+
+.slider-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+}
+
+.slider-label {
+  width: 50px;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+
+.slider-track {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg-input);
+  border-radius: 2px;
+  outline: none;
+}
+
+.slider-track::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  cursor: grab;
+  transition: transform var(--transition-fast);
+}
+
+.slider-track::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider-track::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.3);
+}
+
+.slider-value {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 70px;
+}
+
+.slider-input {
+  width: 50px;
+  padding: 2px 4px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  text-align: right;
+  outline: none;
+}
+
+.slider-input:focus {
+  border-color: var(--border-focus);
+}
+
+.slider-unit {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+/* =============================================================================
+   7. CHAT PANEL
+   ============================================================================= */
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.chat-welcome {
+  padding: var(--space-4);
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.chat-welcome p { margin-bottom: var(--space-3); }
+
+.chat-examples-title {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  margin-top: var(--space-4);
+}
+
+.chat-examples {
+  list-style: none;
+  padding: 0;
+}
+
+.chat-examples li {
+  padding: var(--space-2) var(--space-3);
+  margin: var(--space-1) 0;
+  background: var(--bg-input);
+  border-radius: var(--border-radius);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.chat-examples li:hover {
+  background: var(--bg-hover);
+}
+
+.chat-message {
+  padding: var(--space-3);
+  border-radius: var(--border-radius);
+  max-width: 95%;
+}
+
+.chat-message.user {
+  background: var(--bg-active);
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+}
+
+.chat-message.assistant {
+  background: var(--bg-input);
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+
+.chat-message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.chat-role {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.chat-time {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.chat-message-content {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.chat-operations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.operation-badge {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent-secondary);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+}
+
+.thinking-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* ── Chat Input ──────────────────────────────────────────────── */
+.chat-input-container {
+  padding: var(--space-3);
+  border-top: 1px solid var(--border-color);
+}
+
+.chat-input {
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  resize: none;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.chat-input:focus {
+  border-color: var(--border-focus);
+}
+
+.chat-input::placeholder {
+  color: var(--text-muted);
+}
+
+.chat-input-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+.chat-send-btn {
+  background: var(--accent-primary);
+  color: white;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.chat-send-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+/* =============================================================================
+   8. LANDING PAGE
+   ============================================================================= */
+
+.landing-page {
+  min-height: 100vh;
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+.landing-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: var(--space-10);
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1030 50%, #0a1520 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(108, 99, 255, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 70% 30%, rgba(0, 212, 170, 0.06) 0%, transparent 50%);
+  animation: heroGlow 15s ease-in-out infinite alternate;
+}
+
+@keyframes heroGlow {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-5%, 5%); }
+}
+
+.landing-hero h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #e8e8ed, #6c63ff, #00d4aa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-5);
+  position: relative;
+  z-index: 1;
+}
+
+.landing-hero p {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: 1.8;
+  margin-bottom: var(--space-8);
+  position: relative;
+  z-index: 1;
+}
+
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-8);
+  background: linear-gradient(135deg, var(--accent-primary), #8b5cf6);
+  color: white;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  border-radius: var(--border-radius-lg);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+}
+
+.landing-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(108, 99, 255, 0.5);
+  text-decoration: none;
+}
+
+/* ── Features Grid ───────────────────────────────────────────── */
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+  padding: var(--space-10);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-6);
+  transition: all var(--transition-normal);
+}
+
+.feature-card:hover {
+  border-color: rgba(108, 99, 255, 0.3);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-3);
+}
+
+.feature-card h3 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+/* =============================================================================
+   9. SCROLLBAR STYLING
+   ============================================================================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-hover);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
