@@ -58,7 +58,7 @@ import type {
     OperationType,
 } from '@/types';
 import { AI_TOOLS } from './tools';
-import { getProviderConfig, rotateKey, type AIProviderConfig } from './key-manager';
+import { getProviderConfig, rotateKey, markKeyRateLimited, type AIProviderConfig } from './key-manager';
 import { validateOperation } from '@/lib/psg/validator';
 import { applyOperation } from '@/lib/psg/operations';
 import {
@@ -387,7 +387,7 @@ ${budgetContext}
 
         try {
             const workerConfig = getProviderConfig();
-            const result = await runWorkerWithRetry(workerConfig, task, currentWorkerContext, i);
+            const result = await runWorker(workerConfig, task, currentWorkerContext, i);
 
             const ops = result.operations;
             const opNames = ops.map((o: PSGOperation) => `${o.type}(${o.target_id})`).join(', ');
@@ -708,22 +708,7 @@ async function runWorker(
  * Wraps runWorker with retry logic: if the first attempt fails (e.g., bad API key),
  * rotate to the next key and try once more.
  */
-async function runWorkerWithRetry(
-    config: AIProviderConfig,
-    task: SubTask,
-    fullContext: string,
-    workerIndex: number
-): Promise<WorkerResult> {
-    try {
-        return await runWorker(config, task, fullContext, workerIndex);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        console.warn(`[Worker ${workerIndex + 1}] First attempt failed: ${errMsg}, retrying with rotated key...`);
-        rotateKey();
-        const retryConfig = getProviderConfig();
-        return await runWorker(retryConfig, task, fullContext, workerIndex);
-    }
-}
+
 
 // =============================================================================
 // PHASE 3: CHECKER AGENT
@@ -1008,40 +993,80 @@ interface LLMCallResult {
 
 /**
  * Calls the LLM WITHOUT tools (for Coordinator and Checker agents).
+ * Automatically detects rate limits, marks the key for cooldown, rotates, and retries.
  */
 async function callProviderNoTools(
-    config: AIProviderConfig,
+    initialConfig: AIProviderConfig,
     messages: Array<{ role: string; content: string }>
 ): Promise<LLMCallResult> {
-    switch (config.provider) {
-        case 'gemini':
-            return callGeminiNoTools(config, messages);
-        case 'groq':
-            return callGroqNoTools(config, messages);
-        case 'openai':
-            return callOpenAINoTools(config, messages);
-        default:
-            throw new Error(`Unknown provider: ${config.provider}`);
+    const MAX_ATTEMPTS = 5;
+    let config = initialConfig;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+            switch (config.provider) {
+                case 'gemini': return await callGeminiNoTools(config, messages);
+                case 'groq': return await callGroqNoTools(config, messages);
+                case 'openai': return await callOpenAINoTools(config, messages);
+                default: throw new Error(`Unknown provider: ${config.provider}`);
+            }
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.warn(`[callProviderNoTools] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, errMsg);
+
+            if (errMsg.includes('429')) {
+                markKeyRateLimited(config.apiKey);
+            }
+
+            if (attempt === MAX_ATTEMPTS) throw error;
+
+            rotateKey();
+            config = getProviderConfig();
+
+            // Wait a moment before hammering the API again
+            await new Promise(r => setTimeout(r, 1500));
+        }
     }
+    throw new Error('Unreachable');
 }
 
 /**
  * Calls the LLM WITH tools (for Worker and Fixer agents).
+ * Automatically detects rate limits, marks the key for cooldown, rotates, and retries.
  */
 async function callProviderWithTools(
-    config: AIProviderConfig,
+    initialConfig: AIProviderConfig,
     messages: Array<{ role: string; content: string }>
 ): Promise<LLMCallResult> {
-    switch (config.provider) {
-        case 'gemini':
-            return callGemini(config, messages);
-        case 'groq':
-            return callGroq(config, messages);
-        case 'openai':
-            return callOpenAI(config, messages);
-        default:
-            throw new Error(`Unknown provider: ${config.provider}`);
+    const MAX_ATTEMPTS = 5;
+    let config = initialConfig;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+            switch (config.provider) {
+                case 'gemini': return await callGemini(config, messages);
+                case 'groq': return await callGroq(config, messages);
+                case 'openai': return await callOpenAI(config, messages);
+                default: throw new Error(`Unknown provider: ${config.provider}`);
+            }
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.warn(`[callProviderWithTools] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, errMsg);
+
+            if (errMsg.includes('429')) {
+                markKeyRateLimited(config.apiKey);
+            }
+
+            if (attempt === MAX_ATTEMPTS) throw error;
+
+            rotateKey();
+            config = getProviderConfig();
+
+            // Wait a moment before hammering the API again
+            await new Promise(r => setTimeout(r, 1500));
+        }
     }
+    throw new Error('Unreachable');
 }
 
 // =============================================================================
