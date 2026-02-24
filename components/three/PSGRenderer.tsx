@@ -230,7 +230,7 @@ function OpeningGroup({ node, parentWall, parentPosition, allNodes }: OpeningGro
         return node.type === 'Window'
             ? buildWindowGroup(node, wallThickness)
             : buildDoorGroup(node, wallThickness);
-    }, [node.id, node.version, wallThickness, node.opening_width, node.opening_height]);
+    }, [node, wallThickness]);
 
     // Local position within wall: the opening lives at its world position,
     // but we need to express it RELATIVE to the parent wall group

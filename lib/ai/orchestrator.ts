@@ -500,7 +500,7 @@ ${materialContext}
     // =========================================================================
     // PHASE 4: FIXER — Correct mistakes (if any)
     // =========================================================================
-    let fixerOps: PSGOperation[] = [];
+    const fixerOps: PSGOperation[] = [];
 
     if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
         progressLog.push('');

@@ -15,7 +15,7 @@ import { useDesignStore } from '@/store/useDesignStore';
 import { generateFloorPlanSVG, generateMaterialScheduleHTML } from '@/lib/export/plan-generator';
 import { calculateProjectCost } from '@/lib/psg/cost-calculator';
 import materialsDatabase from '@/data/materials.json';
-import type { ExportFormat } from '@/types';
+import type { ExportFormat, Material } from '@/types';
 
 interface ExportModalProps {
     isOpen: boolean;
@@ -43,7 +43,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                 const svg = generateFloorPlanSVG(project, 0); // 0 for ground floor
                 downloadFile(svg, `${project.name.replace(/\s/g, '_')}_Plan.svg`, 'image/svg+xml');
             } else if (selected === 'material_list') {
-                const { items } = calculateProjectCost(project, materialsDatabase as Record<string, any>);
+                const { items } = calculateProjectCost(project, materialsDatabase as Record<string, Material>);
                 const html = generateMaterialScheduleHTML(items, project.budget.currency);
                 downloadFile(html, `${project.name.replace(/\s/g, '_')}_Schedule.html`, 'text/html');
             } else {

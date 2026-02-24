@@ -128,7 +128,6 @@ export function generatePlumbingLayout(project: PSGProject): PlumbingLayout {
 
     // Mains entry and drain exit are at slab level at the edge of the house
     const houseW = house ? house.dimensions?.x || 10 : 10;
-    const houseD = house ? house.dimensions?.z || 12 : 12;
     const mainsEntry: Vec3 = {
         x: houseCenter.x - houseW / 2,
         y: slabTopY + 0.05,
@@ -228,9 +227,8 @@ function generatePipesForFixtures(
     const supplyPipeY = slabTopY + 0.12;   // Supply pipes run slightly higher
 
     fixtures.forEach(fixture => {
-        // Find the wall this fixture is mounted on
+        // Find the wall context for this fixture
         const wallId = fixture.wall_id || '';
-        const wall = wallId ? project.nodes[wallId] : null;
 
         // ─── DRAIN PIPES ───────────────────────────────────────────────
         // 1. Vertical drop: fixture → wall base (inside wall)
