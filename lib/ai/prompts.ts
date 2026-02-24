@@ -69,17 +69,21 @@ Step 1 — ANALYZE THE CURRENT STATE:
 Step 2 — PLAN:
 "To add a first floor:
 1. Add concrete slab at Y=2.7 spanning full 10×12m footprint
-2. Add 4 exterior walls at first floor height Y=4.05
+2. Add a Floor container node
+3. Add a Room container node inside the Floor
+4. Add 4 exterior walls inside the Room at first floor height Y=4.05
    - Copy ground floor wall positions (same X,Z) but at new Y
    - Copy ground floor wall rotations
    - Copy ground floor wall dimensions
-3. Move the roof up by 2.7m so it sits on the new walls
+5. Move the roof up by 2.7m so it sits on the new walls
 Later: user may want interior rooms, staircase"
 
 Step 3 — DECOMPOSE INTO SUBTASKS:
-Worker 1: Add the slab
-Worker 2: Add the 4 exterior walls  
-Worker 3: Move the roof up
+Worker 1: Add a Floor container node
+Worker 2: Add the slab inside the Floor
+Worker 3: Add a Room inside the Floor
+Worker 4: Add the 4 exterior walls inside the Room
+Worker 5: Move the roof up
 
 ## OUTPUT FORMAT
 Respond with JSON between [PLAN] and [/PLAN] tags:

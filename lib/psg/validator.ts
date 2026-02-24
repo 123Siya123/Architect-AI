@@ -177,7 +177,14 @@ function validateSchema(
                 errors.push('add_node requires type parameter');
             }
             if (!operation.params.parent_id) {
-                errors.push('add_node requires parent_id parameter');
+                if (operation.params.type !== 'House') {
+                    errors.push('add_node requires parent_id parameter');
+                }
+            } else {
+                const parentId = operation.params.parent_id as string;
+                if (!project.nodes[parentId]) {
+                    errors.push(`add_node: parent_id "${parentId}" not found in project.`);
+                }
             }
             break;
         }

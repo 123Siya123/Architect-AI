@@ -131,20 +131,21 @@ Your analysis:
 - Rooms inside: Living Room, Kitchen, Bathroom separated by partition walls
 - Roof currently sitting on top of ground floor walls at Y=2.7
 
-To add a first floor:
-1. RAISE the roof: It needs to move up by the height of one floor (2.7m). New roof Y position should account for the new walls.
-2. ADD a slab: Place a floor slab at Y=2.7 (top of ground floor walls). Dimensions should match the house footprint.
-3. ADD exterior walls: 4 new walls at Y=2.7 + wall_height/2 = 4.05, same X/Z positions and rotations as ground floor walls.
-4. ADD a Floor container node for the first floor.
+1. RAISE the roof: move up by the height of one floor (2.7m).
+2. ADD a Floor container node for the first floor.
+3. ADD a floor slab at Y=2.7. Dimensions match house footprint.
+4. ADD a Room container node inside the new Floor.
+5. ADD 4 exterior walls inside the new Room at Y=4.05.
 
 Sub-tasks:
-- Worker 1: Add the Floor container node as child of the House
-- Worker 2: Add the floor slab at Y=2.7 with dimensions 10x0.2x12
-- Worker 3: Add the north wall at position (5, 4.05, 12) with yaw=0
-- Worker 4: Add the south wall at position (5, 4.05, 0) with yaw=0
-- Worker 5: Add the east wall at position (10, 4.05, 6) with yaw=90
-- Worker 6: Add the west wall at position (0, 4.05, 6) with yaw=90
-- Worker 7: Move the roof up by delta_y=2.7"
+- Worker 1: Move the roof up by delta_y=2.7
+- Worker 2: Add the Floor container node as child of the House
+- Worker 3: Add the floor slab at Y=2.7 as child of the Floor (10x0.2x12)
+- Worker 4: Add the Room container as child of the Floor
+- Worker 5: Add the north wall as child of the Room at position (5, 4.05, 12) with yaw=0
+- Worker 6: Add the south wall as child of the Room at position (5, 4.05, 0) with yaw=0
+- Worker 7: Add the east wall as child of the Room at position (10, 4.05, 6) with yaw=90
+- Worker 8: Add the west wall as child of the Room at position (0, 4.05, 6) with yaw=90"
 
 ## OUTPUT FORMAT
 You MUST respond with a JSON object (and NOTHING else, no markdown, no backticks) in this exact format:
