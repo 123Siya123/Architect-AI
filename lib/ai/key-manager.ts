@@ -174,3 +174,47 @@ export function getKeyPoolStatus(): Array<{
         uses: entry.uses,
     }));
 }
+
+// =============================================================================
+// PROVIDER CONFIG — used by orchestrator.ts
+// =============================================================================
+
+/** Configuration object that the orchestrator uses to call an LLM provider. */
+export interface AIProviderConfig {
+    provider: 'gemini' | 'groq' | 'openai';
+    model: string;
+    apiKey: string;
+}
+
+/**
+ * Builds a provider config from environment variables + the next available key.
+ * The orchestrator calls this once per request.
+ *
+ * ENV VARS:
+ * - AI_PROVIDER: "gemini" | "groq" | "openai" (default: "gemini")
+ * - AI_MODEL: model name (default depends on provider)
+ */
+export function getProviderConfig(): AIProviderConfig {
+    const provider = (process.env.AI_PROVIDER || 'gemini') as AIProviderConfig['provider'];
+    const defaultModels: Record<string, string> = {
+        gemini: 'gemini-2.0-flash',
+        groq: 'llama-3.3-70b-versatile',
+        openai: 'gpt-4o',
+    };
+    const model = process.env.AI_MODEL || defaultModels[provider] || 'gemini-2.0-flash';
+    const apiKey = getNextKey();
+
+    return { provider, model, apiKey };
+}
+
+/**
+ * Advances the key cursor so the next call to getNextKey() uses a different key.
+ * Called by the orchestrator after a failed API call.
+ */
+export function rotateKey(): void {
+    const pool = getKeyPool();
+    if (pool.length > 1) {
+        cursor = (cursor + 1) % pool.length;
+        console.log(`[KeyManager] Rotated to next key`);
+    }
+}

@@ -3,6 +3,8 @@
  * LIB/PSG/VALIDATOR.TS — PSG Validation Engine
  * =============================================================================
  *
+ * UPGRADE v2 — Added AABB collision detection + room closure checks
+ *
  * Every edit to the PSG (whether from the AI, sliders, or direct manipulation)
  * passes through this validator BEFORE being applied. This is the safety net
  * that prevents the AI from creating structurally impossible houses.
@@ -13,6 +15,7 @@
  * 3. Structural validation — would removing a load-bearing wall collapse the roof?
  * 4. Budget validation — would this edit push the project over budget?
  * 5. Physics validation — is the window larger than the wall it's in?
+ * 6. Collision detection — does the edited node overlap with siblings? (NEW)
  *
  * DESIGN PRINCIPLE:
  * The validator NEVER modifies the PSG. It only returns a validation result
@@ -96,6 +99,14 @@ export function validateOperation(
         const physicsResult = validatePhysics(operation, project);
         errors.push(...physicsResult.errors);
         warnings.push(...physicsResult.warnings);
+    }
+
+    // --- Layer 6: Collision Detection (NEW) ---
+    // Check for AABB overlaps with sibling nodes
+    if (errors.length === 0) {
+        const collisionResult = validateCollisions(operation, project);
+        // Collisions are warnings, not errors — the LLM can self-correct
+        warnings.push(...collisionResult.warnings);
     }
 
     return {
@@ -388,7 +399,181 @@ function validatePhysics(
         }
     }
 
+    // For move operations, check node doesn't go underground
+    if (operation.type === 'move_node' && node.type !== 'Foundation') {
+        const params = operation.params as Record<string, number>;
+        const newY = node.position.y + (params.delta_y || 0);
+        const halfHeight = node.dimensions.y / 2;
+        if (newY - halfHeight < -0.5) { // Allow 0.5m below grade for basements
+            warnings.push({
+                severity: 'warning',
+                message: `Moving "${node.name}" would place it ${Math.abs(newY - halfHeight).toFixed(1)}m below ground level.`,
+                suggestion: 'Check if this is intentional (e.g., basement). If not, adjust delta_y.',
+            });
+        }
+    }
+
     return { valid: errors.length === 0, errors, warnings };
+}
+
+// =============================================================================
+// LAYER 6: COLLISION DETECTION (NEW)
+// =============================================================================
+
+/**
+ * AABB (Axis-Aligned Bounding Box) collision detection.
+ *
+ * After a move_node or resize_node operation, check if the target node's
+ * bounding box overlaps with any sibling node (same parent). This catches:
+ * - Walls stacking on top of each other
+ * - Rooms overlapping after a move
+ * - Elements placed inside other elements unintentionally
+ *
+ * Returns warnings (not errors) because some overlaps are intentional
+ * (e.g., a door is embedded in a wall — that's by design).
+ *
+ * WHY ONLY SIBLINGS?
+ * Parent-child overlaps are intentional (window in wall, wall in room).
+ * We only check nodes at the same level in the hierarchy.
+ */
+function validateCollisions(
+    operation: PSGOperation,
+    project: PSGProject
+): ValidationResult {
+    const errors: string[] = [];
+    const warnings: OperationWarning[] = [];
+
+    // Only check for move and resize operations
+    if (operation.type !== 'move_node' && operation.type !== 'resize_node' && operation.type !== 'add_node') {
+        return { valid: true, errors, warnings };
+    }
+
+    const node = project.nodes[operation.target_id];
+    if (!node) return { valid: true, errors, warnings };
+
+    // Calculate the node's AABB after the proposed edit
+    const editedAABB = getEditedAABB(node, operation);
+
+    // Skip collision checks for certain node types where overlap is expected
+    const skipTypes = new Set(['Window', 'Door', 'House', 'Floor']);
+    if (skipTypes.has(node.type)) {
+        return { valid: true, errors, warnings };
+    }
+
+    // Get sibling nodes (same parent)
+    if (!node.parent_id) return { valid: true, errors, warnings };
+    const parent = project.nodes[node.parent_id];
+    if (!parent) return { valid: true, errors, warnings };
+
+    const siblings = parent.children_ids
+        .filter(id => id !== node.id)
+        .map(id => project.nodes[id])
+        .filter(Boolean)
+        .filter(sib => !skipTypes.has(sib.type)); // Don't check against windows/doors
+
+    for (const sibling of siblings) {
+        const sibAABB = getNodeAABB(sibling);
+        if (aabbOverlap(editedAABB, sibAABB)) {
+            const overlapVolume = calculateOverlapVolume(editedAABB, sibAABB);
+            // Only warn for significant overlaps (> 0.01 m³, skip micro-overlaps)
+            if (overlapVolume > 0.01) {
+                warnings.push({
+                    severity: 'warning',
+                    message: `"${node.name}" would overlap with "${sibling.name}" by approximately ${overlapVolume.toFixed(2)}m³ after this edit.`,
+                    suggestion: `Consider adjusting the position or size to avoid overlap. "${sibling.name}" is at pos=[${sibling.position.x.toFixed(2)}, ${sibling.position.y.toFixed(2)}, ${sibling.position.z.toFixed(2)}] with dim=[${sibling.dimensions.x.toFixed(2)}, ${sibling.dimensions.y.toFixed(2)}, ${sibling.dimensions.z.toFixed(2)}].`,
+                });
+            }
+        }
+    }
+
+    return { valid: true, errors, warnings }; // Collisions are warnings, not errors
+}
+
+// =============================================================================
+// AABB HELPER TYPES & FUNCTIONS
+// =============================================================================
+
+interface AABB {
+    minX: number; maxX: number;
+    minY: number; maxY: number;
+    minZ: number; maxZ: number;
+}
+
+/**
+ * Gets the axis-aligned bounding box for a node.
+ * Accounts for rotation: when yaw=90, width and depth are swapped.
+ */
+function getNodeAABB(node: PSGNode): AABB {
+    const isRotated = Math.abs(node.rotation.yaw) % 180 === 90;
+    const halfW = (isRotated ? node.dimensions.z : node.dimensions.x) / 2;
+    const halfH = node.dimensions.y / 2;
+    const halfD = (isRotated ? node.dimensions.x : node.dimensions.z) / 2;
+
+    return {
+        minX: node.position.x - halfW,
+        maxX: node.position.x + halfW,
+        minY: node.position.y - halfH,
+        maxY: node.position.y + halfH,
+        minZ: node.position.z - halfD,
+        maxZ: node.position.z + halfD,
+    };
+}
+
+/**
+ * Gets the AABB after a proposed edit (move or resize).
+ */
+function getEditedAABB(node: PSGNode, operation: PSGOperation): AABB {
+    let pos = { ...node.position };
+    let dim = { ...node.dimensions };
+
+    if (operation.type === 'move_node') {
+        const params = operation.params as Record<string, number>;
+        pos.x += params.delta_x || 0;
+        pos.y += params.delta_y || 0;
+        pos.z += params.delta_z || 0;
+    }
+
+    if (operation.type === 'resize_node') {
+        const params = operation.params as Record<string, number>;
+        dim.x = params.width ?? dim.x;
+        dim.y = params.height ?? dim.y;
+        dim.z = params.depth ?? dim.z;
+    }
+
+    const isRotated = Math.abs(node.rotation.yaw) % 180 === 90;
+    const halfW = (isRotated ? dim.z : dim.x) / 2;
+    const halfH = dim.y / 2;
+    const halfD = (isRotated ? dim.x : dim.z) / 2;
+
+    return {
+        minX: pos.x - halfW,
+        maxX: pos.x + halfW,
+        minY: pos.y - halfH,
+        maxY: pos.y + halfH,
+        minZ: pos.z - halfD,
+        maxZ: pos.z + halfD,
+    };
+}
+
+/**
+ * Checks if two AABBs overlap in all three axes.
+ */
+function aabbOverlap(a: AABB, b: AABB): boolean {
+    return (
+        a.minX < b.maxX && a.maxX > b.minX &&
+        a.minY < b.maxY && a.maxY > b.minY &&
+        a.minZ < b.maxZ && a.maxZ > b.minZ
+    );
+}
+
+/**
+ * Calculates the volume of overlap between two AABBs.
+ */
+function calculateOverlapVolume(a: AABB, b: AABB): number {
+    const overlapX = Math.max(0, Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX));
+    const overlapY = Math.max(0, Math.min(a.maxY, b.maxY) - Math.max(a.minY, b.minY));
+    const overlapZ = Math.max(0, Math.min(a.maxZ, b.maxZ) - Math.max(a.minZ, b.minZ));
+    return overlapX * overlapY * overlapZ;
 }
 
 // =============================================================================

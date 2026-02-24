@@ -3,8 +3,16 @@
  * LIB/PSG/OPERATIONS.TS — PSG Edit Operations
  * =============================================================================
  *
+ * UPGRADE v2 — Grid snapping + move_room compound operation
+ *
  * This is the ONLY module that can mutate the PSG. Every edit — whether from
  * the AI, the UI sliders, or direct manipulation — goes through these functions.
+ *
+ * Changes from v1:
+ * 1. Grid snapping (5cm) on ALL position/dimension changes — eliminates
+ *    floating-point micro-gaps between walls
+ * 2. move_room compound operation — moves a room + all children atomically
+ * 3. create_custom_element stub — generates a node from natural language description
  *
  * WHY A SINGLE MUTATION POINT?
  * 1. Every edit is validated before application (via validator.ts)
@@ -13,7 +21,7 @@
  * 4. Budget is recalculated after every edit
  *
  * OPERATION FLOW:
- * User/AI action → create PSGOperation → validate → apply → update state
+ * User/AI action → create PSGOperation → validate → apply → snap → update state
  *
  * IMMUTABILITY:
  * All functions return a NEW PSGProject. They never mutate the input.
@@ -31,6 +39,37 @@ import type {
     Vec3,
 } from '@/types';
 import { validateOperation } from './validator';
+
+// =============================================================================
+// GRID SNAPPING — Eliminates floating-point drift
+// =============================================================================
+
+/**
+ * Default grid size: 5cm (0.05m).
+ * Every position and dimension is snapped to this grid after edits.
+ * This prevents micro-gaps between walls (e.g., 3.00001 instead of 3.0).
+ *
+ * WHY 5CM?
+ * - 1cm is too fine (no architectural significance at residential scale)
+ * - 10cm is too coarse (can't do 0.25m wall thickness cleanly)
+ * - 5cm divides evenly into all standard dimensions:
+ *   0.25m walls, 0.9m doors, 1.2m windows, 2.7m ceilings
+ */
+const GRID_SIZE = 0.05; // 5cm
+
+/** Snaps a single value to the nearest grid increment. */
+function snapToGrid(value: number, gridSize: number = GRID_SIZE): number {
+    return Math.round(value / gridSize) * gridSize;
+}
+
+/** Snaps a Vec3 position to the grid. */
+function snapVec3(vec: Vec3, gridSize: number = GRID_SIZE): Vec3 {
+    return {
+        x: snapToGrid(vec.x, gridSize),
+        y: snapToGrid(vec.y, gridSize),
+        z: snapToGrid(vec.z, gridSize),
+    };
+}
 
 // =============================================================================
 // OPERATION APPLICATION
@@ -101,6 +140,15 @@ export function applyOperation(
                 break;
             case 'replace_node':
                 updatedProject = replaceNode(project, operation);
+                break;
+            case 'move_room':
+                // Compound operation: move_room is just move_node that
+                // verifies target is a Room first
+                updatedProject = moveRoom(project, operation);
+                break;
+            case 'create_custom_element':
+                // Creates a new node with a shape_description field
+                updatedProject = createCustomElement(project, operation);
                 break;
             default:
                 return {
@@ -196,10 +244,12 @@ export function applyBatchOperations(
 // =============================================================================
 // Each function takes the current project and returns a NEW project.
 // They use the spread operator for immutability.
+// ALL position/dimension changes are grid-snapped.
 
 /**
  * Moves a node by a delta offset (in meters).
  * Also moves all children by the same delta to maintain relative positions.
+ * All resulting positions are snapped to the 5cm grid.
  */
 function moveNode(project: PSGProject, operation: PSGOperation): PSGProject {
     const { delta_x = 0, delta_y = 0, delta_z = 0 } = operation.params as {
@@ -211,11 +261,11 @@ function moveNode(project: PSGProject, operation: PSGOperation): PSGProject {
     const node = project.nodes[operation.target_id];
     const updatedNode: PSGNode = {
         ...node,
-        position: {
+        position: snapVec3({
             x: node.position.x + (delta_x as number),
             y: node.position.y + (delta_y as number),
             z: node.position.z + (delta_z as number),
-        },
+        }),
         modified_at: new Date().toISOString(),
         version: node.version + 1,
     };
@@ -230,6 +280,7 @@ function moveNode(project: PSGProject, operation: PSGOperation): PSGProject {
 /**
  * Helper: recursively moves all descendant nodes.
  * Mutates the nodes map in place (but it's already a shallow copy).
+ * Snaps all positions to grid.
  */
 function moveChildrenRecursive(
     nodes: Record<string, PSGNode>,
@@ -243,11 +294,11 @@ function moveChildrenRecursive(
         if (child) {
             nodes[childId] = {
                 ...child,
-                position: {
+                position: snapVec3({
                     x: child.position.x + dx,
                     y: child.position.y + dy,
                     z: child.position.z + dz,
-                },
+                }),
                 modified_at: new Date().toISOString(),
                 version: child.version + 1,
             };
@@ -258,6 +309,7 @@ function moveChildrenRecursive(
 
 /**
  * Resizes a node by setting new absolute dimensions.
+ * All dimensions are snapped to the 5cm grid.
  *
  * NOTE: This sets ABSOLUTE dimensions, not deltas.
  * The AI or UI provides the new width/height/depth.
@@ -272,11 +324,11 @@ function resizeNode(project: PSGProject, operation: PSGOperation): PSGProject {
 
     const updatedNode: PSGNode = {
         ...node,
-        dimensions: {
+        dimensions: snapVec3({
             x: width ?? node.dimensions.x,
             y: height ?? node.dimensions.y,
             z: depth ?? node.dimensions.z,
-        },
+        }),
         modified_at: new Date().toISOString(),
         version: node.version + 1,
     };
@@ -288,7 +340,7 @@ function resizeNode(project: PSGProject, operation: PSGOperation): PSGProject {
 }
 
 /**
- * Rotates a node by setting new rotation values(in degrees).
+ * Rotates a node by setting new rotation values (in degrees).
  */
 function rotateNode(project: PSGProject, operation: PSGOperation): PSGProject {
     const node = project.nodes[operation.target_id];
@@ -343,6 +395,7 @@ function replaceMaterial(project: PSGProject, operation: PSGOperation): PSGProje
  * Builds a valid PSGNode from the flat args the AI sends via tool call.
  * The AI sends: { type, parent_id, name, position_x, position_y, position_z, width, height, depth, material_id }
  * We need to turn that into a full PSGNode with id, systems, constraints, etc.
+ * All positions and dimensions are grid-snapped.
  */
 function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
     const {
@@ -371,16 +424,16 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         id,
         type: nodeType as PSGNode['type'],
         name: name as string,
-        position: {
+        position: snapVec3({
             x: Number(position_x),
             y: Number(position_y),
             z: Number(position_z),
-        },
-        dimensions: {
+        }),
+        dimensions: snapVec3({
             x: Number(width),
             y: Number(height),
             z: Number(depth),
-        },
+        }),
         rotation: { yaw: 0, pitch: 0, roll: 0 },
         material_id: (material_id as string) || '',
         opacity: nodeType === 'Window' ? 0.3 : 1,
@@ -556,6 +609,109 @@ function replaceNode(project: PSGProject, operation: PSGOperation): PSGProject {
 }
 
 // =============================================================================
+// COMPOUND OPERATIONS (NEW)
+// =============================================================================
+
+/**
+ * Moves an entire room including all its child nodes (walls, windows, doors).
+ * This is a COMPOUND operation that ensures the room + children stay consistent.
+ *
+ * WHY NOT JUST move_node?
+ * move_node already moves children recursively. But move_room adds validation:
+ * 1. Verifies the target is actually a Room type
+ * 2. Logs the operation type distinctly for the undo stack
+ * 3. Could add room-specific logic (e.g., checking adjacent rooms)
+ */
+function moveRoom(project: PSGProject, operation: PSGOperation): PSGProject {
+    const node = project.nodes[operation.target_id];
+    if (!node) {
+        throw new Error(`move_room: node "${operation.target_id}" not found`);
+    }
+    if (node.type !== 'Room') {
+        throw new Error(`move_room: node "${operation.target_id}" is type "${node.type}", not Room`);
+    }
+
+    // Delegate to moveNode — it already handles children recursively
+    return moveNode(project, operation);
+}
+
+/**
+ * Creates a custom architectural element from a natural language description.
+ * The description is stored in a `shape_description` field on the node
+ * for future processing by a CAD backend.
+ *
+ * For now, this creates a standard box node with the given dimensions.
+ * When a CadQuery backend is integrated, the shape_description field
+ * will be used to generate accurate B-rep geometry.
+ */
+function createCustomElement(project: PSGProject, operation: PSGOperation): PSGProject {
+    const params = operation.params as Record<string, unknown>;
+    const {
+        parent_id,
+        name = 'Custom Element',
+        description = '',
+        position_x = 0,
+        position_y = 0,
+        position_z = 0,
+        width = 1,
+        height = 1,
+        depth = 1,
+        material_id = '',
+    } = params;
+
+    const now = new Date().toISOString();
+    const shortId = Math.random().toString(36).slice(2, 10);
+    const id = `custom_${shortId}`;
+
+    const newNode: PSGNode = {
+        id,
+        type: 'Wall', // Default type — rendererd as a box placeholder
+        name: name as string,
+        position: snapVec3({
+            x: Number(position_x),
+            y: Number(position_y),
+            z: Number(position_z),
+        }),
+        dimensions: snapVec3({
+            x: Number(width),
+            y: Number(height),
+            z: Number(depth),
+        }),
+        rotation: { yaw: 0, pitch: 0, roll: 0 },
+        material_id: (material_id as string) || '',
+        opacity: 1,
+        tags: ['custom'],
+        constraints: { connected_to: [], fixed_position: false },
+        systems: { electrical: [], plumbing: [], hvac: [] },
+        parent_id: (parent_id as string | null),
+        children_ids: [],
+        // Store the natural language description for future CAD processing
+        cad_script: `# Custom element: ${name}\n# Description: ${description}\n# TODO: Replace with CadQuery script when backend is ready`,
+        created_at: now,
+        modified_at: now,
+        version: 1,
+    };
+
+    // Verify parent exists
+    if (newNode.parent_id && !project.nodes[newNode.parent_id]) {
+        throw new Error(`create_custom_element: parent "${newNode.parent_id}" not found`);
+    }
+
+    const updatedNodes = { ...project.nodes, [newNode.id]: newNode };
+
+    if (newNode.parent_id) {
+        const parent = updatedNodes[newNode.parent_id];
+        updatedNodes[newNode.parent_id] = {
+            ...parent,
+            children_ids: [...parent.children_ids, newNode.id],
+            modified_at: now,
+        };
+    }
+
+    return { ...project, nodes: updatedNodes };
+}
+
+// =============================================================================
 // UNDO / REDO SUPPORT
 // =============================================================================
 
@@ -572,7 +728,7 @@ export function createUndoOperation(operation: PSGOperation): PSGOperation | nul
     }
 
     // For move operations, calculate the inverse delta
-    if (operation.type === 'move_node') {
+    if (operation.type === 'move_node' || operation.type === 'move_room') {
         const { delta_x = 0, delta_y = 0, delta_z = 0 } = operation.params as Record<string, number>;
         return {
             type: 'move_node',

@@ -148,7 +148,8 @@ export type StructuralTag =
   | 'fire_wall'       // Fire separation wall
   | 'party_wall'      // Shared wall with neighbor
   | 'perimeter'       // Part of the building's outer boundary
-  | 'insulated';      // Has insulation layer
+  | 'insulated'       // Has insulation layer
+  | 'custom';         // Custom/freeform geometry
 
 /** Constraints prevent the AI from making structurally invalid edits */
 export interface NodeConstraints {
@@ -228,6 +229,9 @@ export interface PSGNode {
   /** Room: metadata */
   room_function?: string;       // "bedroom", "kitchen", "bathroom", etc.
 
+  /** Custom geometry: CadQuery script or shape description (Phase 3) */
+  cad_script?: string;          // Python CadQuery code or natural language
+
   // --- Metadata ---
   created_at: string;      // ISO timestamp
   modified_at: string;     // ISO timestamp
@@ -301,7 +305,9 @@ export type OperationType =
   | 'replace_node'
   | 'add_system_element'
   | 'set_constraint'
-  | 'batch_edit';
+  | 'batch_edit'
+  | 'move_room'             // Compound: move room + all children
+  | 'create_custom_element'; // Custom shape from description
 
 /**
  * PSGOperation — A single atomic edit to the scene graph.
