@@ -1,11 +1,16 @@
 /**
  * =============================================================================
- * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Interface
+ * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Interface (Multi-Agent)
  * =============================================================================
  *
+ * UPGRADE v3 — Shows multi-agent pipeline status
+ *
  * The chat panel where users interact with the AI architect.
- * Sends messages to the /api/ai/chat endpoint, displays responses,
- * and shows operation badges when the AI makes edits.
+ * Now shows which phase of the multi-agent pipeline is running:
+ * - 🧠 Coordinator analyzing...
+ * - ⚡ Workers executing...
+ * - 🔍 Checker reviewing...
+ * - 🔧 Fixer correcting...
  * =============================================================================
  */
 
@@ -20,12 +25,12 @@ import type { ChatMessage } from '@/types';
 // =============================================================================
 
 const SUGGESTIONS = [
+    'Add a first floor',
     'Make the living room 2m wider',
     'Add a window to the north wall',
     'Change the roof to a flat roof',
-    'Show me the total material cost',
-    'Replace all brick with stone',
     'Add a balcony to the master bedroom',
+    'Replace all brick with stone',
 ];
 
 // =============================================================================
@@ -48,10 +53,13 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
                     })}
                 </span>
             </div>
-            <p className="chat-message-content">{msg.content}</p>
+            <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
             {/* Operation badges — show when AI made edits */}
             {msg.operations && msg.operations.length > 0 && (
                 <div className="chat-operations">
+                    <span className="chat-op-count">
+                        {msg.operations.length} change{msg.operations.length !== 1 ? 's' : ''} applied
+                    </span>
                     {msg.operations.map((op, i) => (
                         <span key={i} className="chat-op-badge">
                             {op.type.replace(/_/g, ' ')}
@@ -59,6 +67,56 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
                     ))}
                 </div>
             )}
+        </div>
+    );
+}
+
+// =============================================================================
+// PIPELINE STATUS INDICATOR
+// =============================================================================
+
+function PipelineStatus() {
+    const phases = [
+        { emoji: '🧠', label: 'Coordinator analyzing' },
+        { emoji: '⚡', label: 'Workers executing' },
+        { emoji: '🔍', label: 'Checker reviewing' },
+        { emoji: '🔧', label: 'Fixer correcting' },
+    ];
+
+    const [currentPhase, setCurrentPhase] = useState(0);
+
+    useEffect(() => {
+        // Cycle through phases to show activity
+        const interval = setInterval(() => {
+            setCurrentPhase((prev) => Math.min(prev + 1, phases.length - 1));
+        }, 4000);
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <div className="chat-message chat-message-ai">
+            <div className="chat-pipeline-status">
+                {phases.map((phase, i) => (
+                    <div
+                        key={i}
+                        className={`pipeline-phase ${i < currentPhase ? 'pipeline-phase-done' :
+                                i === currentPhase ? 'pipeline-phase-active' :
+                                    'pipeline-phase-pending'
+                            }`}
+                    >
+                        <span className="pipeline-emoji">{phase.emoji}</span>
+                        <span className="pipeline-label">{phase.label}</span>
+                        {i === currentPhase && (
+                            <span className="pipeline-dots">
+                                <span className="chat-thinking-dot" />
+                                <span className="chat-thinking-dot" />
+                                <span className="chat-thinking-dot" />
+                            </span>
+                        )}
+                        {i < currentPhase && <span className="pipeline-check">✓</span>}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -171,9 +229,9 @@ export default function ChatPanel() {
         <div className="chat-panel">
             {/* Chat Header */}
             <div className="chat-header">
-                <h3>🏗️ AI Architect</h3>
+                <h3>🏗️ AI Architect <span style={{ fontSize: '0.65em', opacity: 0.6 }}>multi-agent</span></h3>
                 <span className="chat-status">
-                    {isAIThinking ? '⏳ Thinking...' : '🟢 Ready'}
+                    {isAIThinking ? '⏳ Processing...' : '🟢 Ready'}
                 </span>
             </div>
 
@@ -183,8 +241,9 @@ export default function ChatPanel() {
                     <div className="chat-welcome">
                         <p className="chat-welcome-title">Hello! 👋</p>
                         <p className="chat-welcome-text">
-                            I&apos;m your AI architect. Describe what you&apos;d like to change
-                            about the house, and I&apos;ll modify the 3D model for you.
+                            I&apos;m your AI architect team. Describe what you&apos;d like to change
+                            about the house, and my multi-agent team will analyze, execute,
+                            and verify the modifications.
                         </p>
                         <div className="chat-suggestions">
                             {SUGGESTIONS.map((s) => (
@@ -204,15 +263,7 @@ export default function ChatPanel() {
                     <MessageBubble key={msg.id} msg={msg} />
                 ))}
 
-                {isAIThinking && (
-                    <div className="chat-message chat-message-ai">
-                        <div className="chat-thinking">
-                            <span className="chat-thinking-dot" />
-                            <span className="chat-thinking-dot" />
-                            <span className="chat-thinking-dot" />
-                        </div>
-                    </div>
-                )}
+                {isAIThinking && <PipelineStatus />}
 
                 <div ref={messagesEndRef} />
             </div>

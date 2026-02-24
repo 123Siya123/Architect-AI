@@ -1,25 +1,50 @@
 /**
  * =============================================================================
- * LIB/AI/ORCHESTRATOR.TS — AI Request Orchestration
+ * LIB/AI/ORCHESTRATOR.TS — Multi-Agent Agentic Architecture
  * =============================================================================
  *
- * UPGRADE v2 — Full rewrite for reliability
+ * UPGRADE v3 — Full multi-agent rewrite
  *
- * Changes from v1:
- * 1. READABLE KEYS — pos/dim/rot instead of p/d/r (LLM comprehension +40%)
- * 2. ASCII FLOOR PLAN — visual spatial context for the LLM
- * 3. FOCUSED SUBGRAPH — send only relevant room + neighbors (≤40% of tokens)
- * 4. AUTO-RETRY — failed operations sent back to LLM for self-correction
- * 5. CHAIN-OF-THOUGHT — enhanced prompts force explicit coordinate math
- * 6. New tool support — move_room + create_custom_element mapping
+ * ARCHITECTURE:
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  User Request                                                   │
+ * │       │                                                         │
+ * │       ▼                                                         │
+ * │  ┌──────────────────────┐                                       │
+ * │  │  COORDINATOR AGENT   │  Understands the request in 3D       │
+ * │  │  (Planning Phase)    │  context. Reads current building     │
+ * │  │                      │  state. Plans sub-tasks.             │
+ * │  └──────────┬───────────┘                                       │
+ * │       ┌─────┼─────┐                                             │
+ * │       ▼     ▼     ▼                                             │
+ * │  ┌────────┐┌────────┐┌────────┐                                │
+ * │  │Worker 1││Worker 2││Worker 3│  Each gets full building specs │
+ * │  │(e.g.   ││(e.g.   ││(e.g.   │  + specific task description  │
+ * │  │ slab)  ││ walls) ││ roof)  │  Executes tool calls          │
+ * │  └───┬────┘└───┬────┘└───┬────┘                                │
+ * │      └────┬────┘         │                                      │
+ * │           ▼              ▼                                      │
+ * │  ┌──────────────────────────┐                                   │
+ * │  │    CHECKER AGENT         │  Gets original question +        │
+ * │  │    (QA Phase)            │  full building state after edits │
+ * │  │                          │  Looks for spatial mistakes      │
+ * │  └──────────┬───────────────┘                                   │
+ * │             │ If mistakes found                                 │
+ * │             ▼                                                   │
+ * │  ┌──────────────────────────┐                                   │
+ * │  │    FIXER AGENT           │  Gets building + mistake desc   │
+ * │  │    (Correction Phase)    │  Applies corrections            │
+ * │  └──────────────────────────┘                                   │
+ * └─────────────────────────────────────────────────────────────────┘
  *
- * FLOW:
- * 1. Prepares the context (PSG state, materials, budget) for the LLM
- * 2. Generates ASCII floor plan for spatial awareness
- * 3. Sends the request with tool definitions
- * 4. Parses the LLM's tool call responses
- * 5. Validates operations → if fail, auto-retry once
- * 6. Returns validated operations
+ * READABLE KEYS:
+ * - "position" instead of "pos"
+ * - "dimensions" instead of "dim"
+ * - "rotation" instead of "rot"
+ * - "material" instead of "mat"
+ * - "children" instead of "kids"
+ * - "function" instead of "fn"
+ *
  * =============================================================================
  */
 
@@ -34,29 +59,206 @@ import type {
 } from '@/types';
 import { AI_TOOLS } from './tools';
 import { getProviderConfig, rotateKey, type AIProviderConfig } from './key-manager';
-import {
-    ARCHITECT_SYSTEM_PROMPT,
-    CONTEXT_HEADER,
-    FIX_PROMPT,
-    MATERIAL_CONTEXT_PROMPT,
-    BUDGET_CONTEXT_PROMPT,
-} from './prompts';
 import { validateOperation } from '@/lib/psg/validator';
+import { applyOperation } from '@/lib/psg/operations';
 
 // =============================================================================
-// MAIN EXPORT — Send Chat to AI
+// AGENT PROMPTS
 // =============================================================================
 
-/**
- * Main entry: sends a user message to the LLM with full house context.
- *
- * FLOW:
- * 1. Build context (ASCII plan + readable PSG + materials + budget)
- * 2. Call LLM with tools
- * 3. Parse tool calls → PSGOperations
- * 4. Validate → if any fail, auto-retry once
- * 5. Return message + validated operations
- */
+const COORDINATOR_SYSTEM_PROMPT = `You are the COORDINATOR of an AI architecture team. Your job is to understand a user's request about modifying a 3D house model, analyze the current building state, and produce a DETAILED PLAN that will be executed by specialist worker agents.
+
+## YOUR ROLE
+You do NOT make tool calls yourself. You PLAN and DELEGATE.
+
+## COORDINATE SYSTEM
+- X axis = East/West (positive X = East)
+- Y axis = Up/Down (positive Y = Up, Y=0 is ground)
+- Z axis = North/South (positive Z = South)
+- All units are METERS.
+- All positions are CENTER POINTS.
+
+## DATA FORMAT — PSG (Parametric Scene Graph)
+The house data uses these readable keys:
+- "type": Node type (Wall, Room, Floor, Window, Door, Roof, Stairs, Slab, etc.)
+- "name": Human-readable name
+- "position": { x, y, z } — center position in meters
+- "dimensions": { width, height, depth } — size in meters
+- "rotation": { yaw, pitch, roll } — rotation in degrees (yaw=0 means wall runs East-West along X, yaw=90 means North-South along Z)
+- "material": Material ID
+- "children": Array of child node IDs
+- "parent": Parent node ID
+- "function": Room function (living, bedroom, kitchen, bathroom, hallway)
+- "tags": Structural tags (load_bearing, exterior, interior, wet_room)
+
+## STANDARD DIMENSIONS
+- Ceiling height: 2.7m
+- Wall thickness: 0.25m (exterior), 0.12m (partition)
+- Door height: 2.1m, width: 0.9m
+- Window sill: 0.9m above floor, height: 1.4m
+- Slab thickness: 0.2m
+
+## NODE HIERARCHY
+House
+  └── Floor (level 0, 1, 2...)
+       ├── Room
+       │    ├── Wall (exterior/interior)
+       │    │    ├── Window
+       │    │    └── Door
+       │    └── Partition
+       ├── Slab (floor/ceiling)
+       ├── Stairs
+       └── Foundation
+  └── Roof
+
+## INSTRUCTIONS
+1. Read the user's request carefully.
+2. Study the CURRENT BUILDING STATE (all nodes, positions, dimensions, rotations).
+3. Think spatially about what needs to change in the 3D world.
+4. Break the work into PARALLEL SUB-TASKS for worker agents.
+
+## EXAMPLE THINKING PROCESS
+User: "Add a first floor"
+Your analysis:
+"The user wants a first floor above the ground floor. Let me examine the current state:
+- Ground floor at Y=0 with 4 exterior walls at positions [x1,y1,z1], [x2,y2,z2]... each with dimensions [w,h,d]
+- Rooms inside: Living Room, Kitchen, Bathroom separated by partition walls
+- Roof currently sitting on top of ground floor walls at Y=2.7
+
+To add a first floor:
+1. RAISE the roof: It needs to move up by the height of one floor (2.7m). New roof Y position should account for the new walls.
+2. ADD a slab: Place a floor slab at Y=2.7 (top of ground floor walls). Dimensions should match the house footprint.
+3. ADD exterior walls: 4 new walls at Y=2.7 + wall_height/2 = 4.05, same X/Z positions and rotations as ground floor walls.
+4. ADD a Floor container node for the first floor.
+
+Sub-tasks:
+- Worker 1: Add the Floor node + Slab at the correct height
+- Worker 2: Add the 4 exterior walls with correct positions/rotations/dimensions
+- Worker 3: Move the roof up to sit on top of the new walls"
+
+## OUTPUT FORMAT
+You MUST respond with a JSON object (and NOTHING else, no markdown, no backticks) in this exact format:
+{
+  "analysis": "Your detailed spatial analysis of what needs to happen",
+  "sub_tasks": [
+    {
+      "id": "task_1",
+      "description": "Detailed description of what this worker should do, including EXACT positions, dimensions, rotations, parent IDs, and node IDs to reference",
+      "priority": 1
+    },
+    {
+      "id": "task_2", 
+      "description": "...",
+      "priority": 1
+    }
+  ],
+  "user_message": "A friendly summary to show the user about what you're doing",
+  "follow_up_suggestions": ["Optional suggestions for what the user might want next"]
+}
+
+CRITICAL: Each sub_task description MUST include ALL the specific values (positions, dimensions, rotations, parent IDs) the worker needs. The worker will NOT see the building data — only YOUR description and the building specs. Be extremely precise with coordinates and IDs.
+`;
+
+const WORKER_SYSTEM_PROMPT = `You are a WORKER agent in an architecture AI team. You receive a specific task and the full building specifications. Your job is to execute EXACTLY the task described using tool calls.
+
+## COORDINATE SYSTEM
+- X axis = East/West (positive X = East)
+- Y axis = Up/Down (positive Y = Up, Y=0 is ground)
+- Z axis = North/South (positive Z = South)
+- All units are METERS. Positions are CENTER POINTS.
+
+## WALL ORIENTATION
+- yaw=0: Wall runs East-West (width along X axis)
+- yaw=90: Wall runs North-South (width along Z axis)
+
+## STANDARD DIMENSIONS
+- Ceiling height: 2.7m
+- Wall thickness: 0.25m (exterior), 0.12m (partition)
+- Door: 2.1m high, 0.9m wide
+- Window sill: 0.9m, height: 1.4m
+- Slab thickness: 0.2m
+
+## RULES
+1. Use EXACT node IDs from the building data — never guess or fabricate IDs
+2. For add_node: position is CENTER POINT. A wall at ground level has position_y = height/2 (e.g. 1.35 for 2.7m wall)
+3. For move_node: provide DELTA values (how much to move), NOT absolute positions
+4. For resize_node: provide NEW absolute dimensions
+5. ALWAYS set all position, dimension, and rotation values explicitly
+6. Pay very careful attention to ROTATION (yaw) — a wall running North-South has yaw=90
+7. A Floor node is a CONTAINER with no visible geometry. You MUST add Rooms, Walls, Slabs etc.
+
+## YOUR TASK
+Execute the task described below. Make ALL necessary tool calls. Show your reasoning before each tool call.
+Think step by step about positions, verify your math, and ensure everything fits together correctly.
+`;
+
+const CHECKER_SYSTEM_PROMPT = `You are a QUALITY CHECKER agent for an architecture AI team. Your job is to review the building state AFTER modifications were made, and verify that everything is spatially correct.
+
+## COORDINATE SYSTEM
+- X axis = East/West (positive X = East)
+- Y axis = Up/Down (positive Y = Up, Y=0 is ground)
+- Z axis = North/South (positive Z = South)
+- All units are METERS. Positions are CENTER POINTS.
+
+## WHAT TO CHECK
+1. **Rotation correctness**: Do walls have the right yaw? A north/south wall should have yaw=90.
+2. **Height/Position alignment**: Are walls sitting at the right Y level? Ground floor walls at Y=1.35, first floor at Y=4.05, etc.
+3. **Slab placement**: Are slabs at the correct height (top of lower walls)?
+4. **Roof height**: Does the roof sit on top of the highest walls?
+5. **Wall connectivity**: Do exterior walls form a closed perimeter? Are corners connected?
+6. **Dimension consistency**: Are matching walls the same length? Are slabs the right size?
+7. **Parent-child relationships**: Are walls inside the correct rooms? Are windows in walls?
+8. **Overlap detection**: Are any elements overlapping incorrectly?
+
+## OUTPUT FORMAT
+You MUST respond with a JSON object (and NOTHING else, no markdown, no backticks):
+
+If everything is correct:
+{
+  "status": "OK",
+  "message": "All modifications look correct. The building is structurally sound."
+}
+
+If mistakes are found:
+{
+  "status": "MISTAKE_FOUND",
+  "mistakes": [
+    {
+      "node_id": "the ID of the problematic node (or 'general' if not node-specific)",
+      "description": "Detailed description of the mistake",
+      "expected": "What the correct value/state should be",
+      "actual": "What the current incorrect value/state is",
+      "fix_description": "Exactly what needs to be done to fix this"
+    }
+  ]
+}
+
+Be extremely thorough. Check EVERY node that was recently modified. Compare positions, dimensions, and rotations with what makes sense spatially.
+`;
+
+const FIXER_SYSTEM_PROMPT = `You are a FIXER agent for an architecture AI team. A quality checker has identified mistakes in the building. Your job is to FIX those mistakes using tool calls.
+
+## COORDINATE SYSTEM
+- X axis = East/West (positive X = East)
+- Y axis = Up/Down (positive Y = Up, Y=0 is ground)
+- Z axis = North/South (positive Z = South)
+- All units are METERS. Positions are CENTER POINTS.
+
+## RULES
+1. Use EXACT node IDs from the building data
+2. For move_node: provide DELTA values
+3. For resize_node: provide NEW absolute dimensions
+4. Fix ONLY the problems described — don't make other changes
+5. Show your reasoning for each fix
+
+## YOUR TASK
+Read the mistake descriptions below and make the corrective tool calls.
+`;
+
+// =============================================================================
+// MAIN EXPORT — Send Chat to AI (Multi-Agent)
+// =============================================================================
+
 export async function sendChatToAI(
     request: AIChatRequest,
     materials: Record<string, Material>,
@@ -64,49 +266,346 @@ export async function sendChatToAI(
 ): Promise<AIChatResponse> {
     const config = getProviderConfig();
 
-    // Build context using readable keys + ASCII floor plan
-    const houseContext = prepareProjectContext(request.project);
+    // Build full readable context
+    const buildingSpecs = prepareProjectContext(request.project);
     const materialContext = prepareMaterialContext(materials);
-    const budgetContext = prepareBudgetContext(request.project);
     const asciiPlan = generateASCIIFloorPlan(request.project);
+    const budgetContext = prepareBudgetContext(request.project);
 
-    // Build messages array
+    const fullContext = `
+## CURRENT BUILDING STATE
+
+### ASCII FLOOR PLAN
+\`\`\`
+${asciiPlan}
+\`\`\`
+
+### FULL NODE DATA (Readable Format)
+\`\`\`json
+${buildingSpecs}
+\`\`\`
+
+### AVAILABLE MATERIALS
+\`\`\`json
+${materialContext}
+\`\`\`
+
+### BUDGET STATUS
+${budgetContext}
+`;
+
+    console.log('[Orchestrator] ═══ MULTI-AGENT PIPELINE STARTING ═══');
+    console.log(`[Orchestrator] User request: "${request.message}"`);
+
+    // =========================================================================
+    // PHASE 1: COORDINATOR — Analyze and plan
+    // =========================================================================
+    console.log('[Orchestrator] Phase 1: COORDINATOR analyzing request...');
+
+    let coordinatorPlan: CoordinatorOutput;
+    try {
+        coordinatorPlan = await runCoordinator(config, request.message, fullContext, request.history || []);
+    } catch (error) {
+        console.error('[Orchestrator] Coordinator failed:', error);
+        // Fallback to simple single-agent mode
+        return runSimpleFallback(config, request, materials, fullContext);
+    }
+
+    console.log(`[Orchestrator] Coordinator plan: ${coordinatorPlan.sub_tasks.length} sub-tasks`);
+    console.log(`[Orchestrator] Analysis: ${coordinatorPlan.analysis.substring(0, 200)}...`);
+
+    // If coordinator produced no sub-tasks, it was a question — just return the message
+    if (coordinatorPlan.sub_tasks.length === 0) {
+        return {
+            message: coordinatorPlan.user_message || coordinatorPlan.analysis,
+            operations: [],
+            warnings: [],
+            suggestions: coordinatorPlan.follow_up_suggestions || [],
+        };
+    }
+
+    // =========================================================================
+    // PHASE 2: WORKERS — Execute sub-tasks (parallel where possible)
+    // =========================================================================
+    console.log('[Orchestrator] Phase 2: WORKERS executing sub-tasks...');
+
+    const allWorkerOps: PSGOperation[] = [];
+    const workerErrors: string[] = [];
+
+    // Run all workers in parallel
+    const workerPromises = coordinatorPlan.sub_tasks.map((task, i) =>
+        runWorker(config, task, fullContext, i)
+    );
+
+    const workerResults = await Promise.allSettled(workerPromises);
+
+    for (let i = 0; i < workerResults.length; i++) {
+        const result = workerResults[i];
+        const task = coordinatorPlan.sub_tasks[i];
+
+        if (result.status === 'fulfilled') {
+            console.log(`[Orchestrator] Worker ${i + 1} (${task.id}): ${result.value.operations.length} operations`);
+            allWorkerOps.push(...result.value.operations);
+            if (result.value.errors.length > 0) {
+                workerErrors.push(...result.value.errors);
+            }
+        } else {
+            console.error(`[Orchestrator] Worker ${i + 1} (${task.id}) FAILED:`, result.reason);
+            workerErrors.push(`Worker "${task.id}" failed: ${result.reason}`);
+        }
+    }
+
+    console.log(`[Orchestrator] Total worker operations: ${allWorkerOps.length}`);
+
+    // Validate all worker operations
+    const validatedOps: PSGOperation[] = [];
+    const validationErrors: string[] = [];
+
+    // Apply operations to a COPY of the project to get the new state for the checker
+    let projectAfterWorkers = { ...request.project, nodes: { ...request.project.nodes } };
+
+    for (const op of allWorkerOps) {
+        const validation = validateOperation(op, projectAfterWorkers);
+        if (validation.valid) {
+            validatedOps.push(op);
+            // Apply to our running copy so subsequent validations see the updated state
+            try {
+                const applied = applyOperation(projectAfterWorkers, op);
+                if (applied.success && applied.project) {
+                    projectAfterWorkers = applied.project;
+                }
+            } catch {
+                // Still keep the op — it validated, the apply might just have a minor issue
+            }
+        } else {
+            validationErrors.push(
+                `Operation ${op.type} on ${op.target_id}: ${validation.errors.join(', ')}`
+            );
+            console.warn(`[Orchestrator] Validation failed:`, validation.errors);
+        }
+    }
+
+    console.log(`[Orchestrator] Validated operations: ${validatedOps.length}/${allWorkerOps.length}`);
+
+    if (validatedOps.length === 0 && allWorkerOps.length > 0) {
+        // All operations failed validation — try simple fallback
+        console.warn('[Orchestrator] All worker ops failed validation, trying simple fallback...');
+        return runSimpleFallback(config, request, materials, fullContext);
+    }
+
+    // =========================================================================
+    // PHASE 3: CHECKER — Verify the result
+    // =========================================================================
+    console.log('[Orchestrator] Phase 3: CHECKER reviewing result...');
+
+    const updatedSpecs = prepareProjectContext(projectAfterWorkers);
+    let checkerResult: CheckerOutput;
+
+    try {
+        checkerResult = await runChecker(
+            config,
+            request.message,
+            updatedSpecs,
+            generateASCIIFloorPlan(projectAfterWorkers)
+        );
+    } catch (error) {
+        console.warn('[Orchestrator] Checker failed, skipping QA:', error);
+        checkerResult = { status: 'OK', message: 'Checker unavailable, skipping QA.' };
+    }
+
+    console.log(`[Orchestrator] Checker result: ${checkerResult.status}`);
+
+    // =========================================================================
+    // PHASE 4: FIXER — Correct mistakes (if any)
+    // =========================================================================
+    let fixerOps: PSGOperation[] = [];
+
+    if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
+        console.log(`[Orchestrator] Phase 4: FIXER correcting ${checkerResult.mistakes.length} mistake(s)...`);
+
+        try {
+            const fixResult = await runFixer(
+                config,
+                updatedSpecs,
+                checkerResult.mistakes,
+                generateASCIIFloorPlan(projectAfterWorkers)
+            );
+
+            // Validate fixer operations
+            for (const op of fixResult.operations) {
+                const validation = validateOperation(op, projectAfterWorkers);
+                if (validation.valid) {
+                    fixerOps.push(op);
+                    // Apply to running copy
+                    try {
+                        const applied = applyOperation(projectAfterWorkers, op);
+                        if (applied.success && applied.project) {
+                            projectAfterWorkers = applied.project;
+                        }
+                    } catch { /* continue */ }
+                }
+            }
+
+            console.log(`[Orchestrator] Fixer applied ${fixerOps.length} corrections`);
+        } catch (error) {
+            console.warn('[Orchestrator] Fixer failed:', error);
+        }
+    } else {
+        console.log('[Orchestrator] Phase 4: FIXER skipped — no mistakes found ✓');
+    }
+
+    // =========================================================================
+    // COMPOSE FINAL RESPONSE
+    // =========================================================================
+    const allOps = [...validatedOps, ...fixerOps];
+
+    let finalMessage = coordinatorPlan.user_message || 'I processed your request.';
+
+    if (allOps.length > 0) {
+        finalMessage += `\n\n✅ Applied ${allOps.length} change(s) to the building.`;
+    }
+
+    if (checkerResult.status === 'MISTAKE_FOUND' && fixerOps.length > 0) {
+        finalMessage += `\n🔧 Quality check found ${checkerResult.mistakes!.length} issue(s), ${fixerOps.length} were auto-corrected.`;
+    }
+
+    if (validationErrors.length > 0) {
+        finalMessage += `\n\n⚠️ ${validationErrors.length} operation(s) couldn't be applied:\n${validationErrors.map(e => `- ${e}`).join('\n')}`;
+    }
+
+    const warnings: AIChatResponse['warnings'] = [];
+    if (workerErrors.length > 0) {
+        warnings.push({ severity: 'warning', message: workerErrors.join('; ') });
+    }
+
+    console.log('[Orchestrator] ═══ PIPELINE COMPLETE ═══');
+    console.log(`[Orchestrator] Final: ${allOps.length} operations, ${warnings.length} warnings`);
+
+    return {
+        message: finalMessage,
+        operations: allOps,
+        warnings,
+        suggestions: coordinatorPlan.follow_up_suggestions || [],
+    };
+}
+
+// =============================================================================
+// AGENT TYPES
+// =============================================================================
+
+interface CoordinatorOutput {
+    analysis: string;
+    sub_tasks: SubTask[];
+    user_message: string;
+    follow_up_suggestions?: string[];
+}
+
+interface SubTask {
+    id: string;
+    description: string;
+    priority: number;
+}
+
+interface WorkerResult {
+    operations: PSGOperation[];
+    text: string;
+    errors: string[];
+}
+
+interface CheckerOutput {
+    status: 'OK' | 'MISTAKE_FOUND';
+    message?: string;
+    mistakes?: MistakeReport[];
+}
+
+interface MistakeReport {
+    node_id: string;
+    description: string;
+    expected: string;
+    actual: string;
+    fix_description: string;
+}
+
+// =============================================================================
+// PHASE 1: COORDINATOR AGENT
+// =============================================================================
+
+async function runCoordinator(
+    config: AIProviderConfig,
+    userMessage: string,
+    fullContext: string,
+    history: Array<{ role: string; content: string }>
+): Promise<CoordinatorOutput> {
     const messages: Array<{ role: string; content: string }> = [
-        { role: 'system', content: ARCHITECT_SYSTEM_PROMPT },
-        {
-            role: 'user',
-            content: `${CONTEXT_HEADER}\n\n### ASCII FLOOR PLAN\n\`\`\`\n${asciiPlan}\n\`\`\`\n\n### NODE DATA (Readable Format)\n\`\`\`json\n${houseContext}\n\`\`\`\n\n${MATERIAL_CONTEXT_PROMPT}\n\`\`\`json\n${materialContext}\n\`\`\`\n\n${BUDGET_CONTEXT_PROMPT}\n${budgetContext}`,
-        },
+        { role: 'system', content: COORDINATOR_SYSTEM_PROMPT },
+        { role: 'user', content: fullContext },
     ];
 
-    // Add last few messages of history for conversation continuity
-    const recentHistory = (request.history || []).slice(-4);
+    // Add recent history
+    const recentHistory = history.slice(-4);
     for (const msg of recentHistory) {
         messages.push({
             role: msg.role === 'assistant' ? 'assistant' : 'user',
-            content: msg.content,
+            content: typeof msg.content === 'string' ? msg.content : String(msg.content),
         });
     }
 
-    // Add the current user message
-    messages.push({ role: 'user', content: request.message });
+    messages.push({
+        role: 'user',
+        content: `USER REQUEST: ${userMessage}\n\nAnalyze this request, study the building state above, and produce your plan as JSON.`,
+    });
 
-    // Call the LLM
-    let result: LLMCallResult;
+    const result = await callProviderNoTools(config, messages);
+
+    // Parse the coordinator's JSON response
     try {
-        result = await callProvider(config, messages);
+        const parsed = extractJSON<CoordinatorOutput>(result.text);
+        if (!parsed || !parsed.sub_tasks) {
+            throw new Error('Invalid coordinator output format');
+        }
+        return parsed;
     } catch (error) {
-        // If primary call fails, rotate key and retry once
-        console.warn('[Orchestrator] Primary call failed, rotating key...', error);
-        rotateKey();
-        const retryConfig = getProviderConfig();
-        result = await callProvider(retryConfig, messages);
+        console.warn('[Coordinator] Failed to parse JSON output, creating fallback subtask...');
+        console.log('[Coordinator] Raw output:', result.text.substring(0, 500));
+        // CRITICAL FIX: Instead of returning 0 subtasks (which means nothing happens),
+        // create 1 fallback subtask with the full user request so a worker still executes.
+        return {
+            analysis: result.text,
+            sub_tasks: [{
+                id: 'fallback_task',
+                description: `The coordinator's analysis: ${result.text.substring(0, 2000)}\n\nExecute the user's request by making the appropriate tool calls based on the analysis above and the building data.`,
+                priority: 1,
+            }],
+            user_message: 'I\'m processing your request...',
+            follow_up_suggestions: [],
+        };
     }
+}
 
-    // Parse tool calls into PSGOperations
+// =============================================================================
+// PHASE 2: WORKER AGENTS
+// =============================================================================
+
+async function runWorker(
+    config: AIProviderConfig,
+    task: SubTask,
+    fullContext: string,
+    workerIndex: number
+): Promise<WorkerResult> {
+    console.log(`[Worker ${workerIndex + 1}] Starting task: ${task.id}`);
+
+    const messages: Array<{ role: string; content: string }> = [
+        { role: 'system', content: WORKER_SYSTEM_PROMPT },
+        {
+            role: 'user',
+            content: `${fullContext}\n\n## YOUR SPECIFIC TASK\n${task.description}\n\nStudy the building specifications above carefully. Look at exact positions, dimensions, rotations, and IDs. Then execute your task using tool calls. Show your reasoning.`,
+        },
+    ];
+
+    const result = await callProviderWithTools(config, messages);
+
     const operations: PSGOperation[] = [];
-    const warnings: AIChatResponse['warnings'] = [];
-    const suggestions: string[] = [];
+    const errors: string[] = [];
 
     if (result.toolCalls && result.toolCalls.length > 0) {
         for (const tc of result.toolCalls) {
@@ -114,106 +613,202 @@ export async function sendChatToAI(
                 const op = toolCallToOperation(tc.name, tc.args);
                 operations.push(op);
             } catch (err) {
-                console.warn('[Orchestrator] Failed to parse tool call:', tc.name, err);
-                warnings.push({
-                    severity: 'warning',
-                    message: `Failed to parse tool call "${tc.name}": ${err instanceof Error ? err.message : 'Unknown error'}`,
-                });
+                const errMsg = err instanceof Error ? err.message : String(err);
+                errors.push(`Worker ${workerIndex + 1}: Failed to parse ${tc.name}: ${errMsg}`);
+                console.warn(`[Worker ${workerIndex + 1}] Failed to parse tool call:`, tc.name, err);
             }
         }
     }
 
-    // ─── AUTO-RETRY: Validate operations, retry once if any fail ─────
-    if (operations.length > 0 && _retryCount === 0) {
-        const { validOps, invalidOps } = partitionOperations(operations, request.project);
+    console.log(`[Worker ${workerIndex + 1}] Completed: ${operations.length} operations, ${errors.length} errors`);
+    return { operations, text: result.text, errors };
+}
 
-        if (invalidOps.length > 0 && validOps.length < operations.length) {
-            console.log(`[Orchestrator] ${invalidOps.length}/${operations.length} operations failed validation. Attempting auto-retry...`);
+// =============================================================================
+// PHASE 3: CHECKER AGENT
+// =============================================================================
 
-            // Build fix prompt with error details
-            const errorDetails = invalidOps
-                .map(({ op, errors }) =>
-                    `- ${op.type} on "${op.target_id}": ${errors.join('; ')}`
-                )
-                .join('\n');
+async function runChecker(
+    config: AIProviderConfig,
+    originalQuestion: string,
+    updatedBuildingSpecs: string,
+    asciiPlan: string
+): Promise<CheckerOutput> {
+    const messages: Array<{ role: string; content: string }> = [
+        { role: 'system', content: CHECKER_SYSTEM_PROMPT },
+        {
+            role: 'user',
+            content: `## ORIGINAL USER REQUEST
+"${originalQuestion}"
 
-            const fixMessages = [
-                ...messages,
-                { role: 'assistant', content: result.text || '' },
-                { role: 'user', content: `${FIX_PROMPT}${errorDetails}\n\nPlease try again with corrected values.` },
-            ];
+## CURRENT BUILDING STATE (after modifications)
 
+### ASCII FLOOR PLAN
+\`\`\`
+${asciiPlan}
+\`\`\`
+
+### FULL NODE DATA
+\`\`\`json
+${updatedBuildingSpecs}
+\`\`\`
+
+Review the building state above. Check if the modifications correctly fulfill the user's request. Look carefully at rotation, height, position, dimensions, and structural integrity. Output your findings as JSON.`,
+        },
+    ];
+
+    const result = await callProviderNoTools(config, messages);
+
+    try {
+        const parsed = extractJSON<CheckerOutput>(result.text);
+        if (!parsed || !parsed.status) {
+            return { status: 'OK', message: 'Checker response could not be parsed.' };
+        }
+        return parsed;
+    } catch {
+        return { status: 'OK', message: 'Checker response could not be parsed.' };
+    }
+}
+
+// =============================================================================
+// PHASE 4: FIXER AGENT
+// =============================================================================
+
+async function runFixer(
+    config: AIProviderConfig,
+    buildingSpecs: string,
+    mistakes: MistakeReport[],
+    asciiPlan: string
+): Promise<WorkerResult> {
+    const mistakeDescriptions = mistakes
+        .map((m, i) => `${i + 1}. [Node: ${m.node_id}] ${m.description}\n   Expected: ${m.expected}\n   Actual: ${m.actual}\n   Fix: ${m.fix_description}`)
+        .join('\n\n');
+
+    const messages: Array<{ role: string; content: string }> = [
+        { role: 'system', content: FIXER_SYSTEM_PROMPT },
+        {
+            role: 'user',
+            content: `## CURRENT BUILDING STATE
+
+### ASCII FLOOR PLAN
+\`\`\`
+${asciiPlan}
+\`\`\`
+
+### FULL NODE DATA
+\`\`\`json
+${buildingSpecs}
+\`\`\`
+
+## MISTAKES TO FIX
+${mistakeDescriptions}
+
+Fix each mistake above using tool calls. Show your reasoning.`,
+        },
+    ];
+
+    const result = await callProviderWithTools(config, messages);
+
+    const operations: PSGOperation[] = [];
+    const errors: string[] = [];
+
+    if (result.toolCalls && result.toolCalls.length > 0) {
+        for (const tc of result.toolCalls) {
             try {
-                const retryResult = await callProvider(config, fixMessages);
-                const retryOps: PSGOperation[] = [];
-                if (retryResult.toolCalls) {
-                    for (const tc of retryResult.toolCalls) {
-                        try {
-                            retryOps.push(toolCallToOperation(tc.name, tc.args));
-                        } catch { /* skip bad calls */ }
-                    }
-                }
-
-                // Use retry ops that are valid
-                const retryValid = retryOps.filter(op => {
-                    const v = validateOperation(op, request.project);
-                    return v.valid;
-                });
-
-                // Combine: original valid ops + retry valid ops
-                const allValid = [...validOps, ...retryValid];
-                const retryText = retryResult.text || '';
-                const combinedMessage = result.text
-                    ? `${result.text}\n\n${retryText ? `📝 Auto-correction: ${retryText}` : ''}`
-                    : retryText;
-
-                return {
-                    message: combinedMessage || 'I processed your request.',
-                    operations: allValid,
-                    warnings,
-                    suggestions,
-                };
-            } catch (retryErr) {
-                console.warn('[Orchestrator] Auto-retry failed:', retryErr);
-                // Fall through to return original valid ops only
+                operations.push(toolCallToOperation(tc.name, tc.args));
+            } catch (err) {
+                errors.push(`Fixer: Failed to parse ${tc.name}: ${err instanceof Error ? err.message : String(err)}`);
             }
+        }
+    }
 
-            return {
-                message: result.text || 'I processed your request.',
-                operations: validOps,
-                warnings: [
-                    ...warnings,
-                    {
-                        severity: 'warning',
-                        message: `${invalidOps.length} operation(s) failed validation and could not be auto-corrected.`,
-                    },
-                ],
-                suggestions,
-            };
+    return { operations, text: result.text, errors };
+}
+
+// =============================================================================
+// SIMPLE FALLBACK — Single-agent mode (for simple questions or when multi fails)
+// =============================================================================
+
+async function runSimpleFallback(
+    config: AIProviderConfig,
+    request: AIChatRequest,
+    materials: Record<string, Material>,
+    fullContext: string
+): Promise<AIChatResponse> {
+    console.log('[Orchestrator] Running simple single-agent fallback...');
+
+    const SIMPLE_PROMPT = `You are an Expert AI Architect assistant. You help users design and modify houses by making precise edits to a 3D building model.
+
+## COORDINATE SYSTEM
+- X = East/West, Y = Up/Down, Z = North/South. All meters. Positions are center points.
+
+## WALL ORIENTATION  
+- yaw=0: East-West. yaw=90: North-South.
+
+## STANDARD DIMENSIONS
+- Ceiling: 2.7m, Walls: 0.25m thick, Doors: 2.1m×0.9m, Windows: 1.4m×1.2m at 0.9m sill
+
+## RULES
+1. Use EXACT node IDs from the data
+2. move_node: DELTA values
+3. resize_node: ABSOLUTE dimensions  
+4. add_node: specify correct parent_id
+5. For adding a floor: add Floor container, then Rooms, then Walls, then Slab, then adjust Roof
+6. Always set position_y for walls at height/2 above the floor level
+
+## NODE HIERARCHY
+House → Floor → Room → Wall → Window/Door
+House → Roof
+Floor → Slab, Stairs`;
+
+    const messages: Array<{ role: string; content: string }> = [
+        { role: 'system', content: SIMPLE_PROMPT },
+        { role: 'user', content: fullContext },
+    ];
+
+    const recentHistory = (request.history || []).slice(-4);
+    for (const msg of recentHistory) {
+        messages.push({
+            role: msg.role === 'assistant' ? 'assistant' : 'user',
+            content: typeof msg.content === 'string' ? msg.content : String(msg.content),
+        });
+    }
+    messages.push({ role: 'user', content: request.message });
+
+    let result: LLMCallResult;
+    try {
+        result = await callProviderWithTools(config, messages);
+    } catch (error) {
+        console.warn('[Orchestrator] Fallback primary call failed, rotating key...', error);
+        rotateKey();
+        const retryConfig = getProviderConfig();
+        result = await callProviderWithTools(retryConfig, messages);
+    }
+
+    const operations: PSGOperation[] = [];
+    if (result.toolCalls) {
+        for (const tc of result.toolCalls) {
+            try {
+                operations.push(toolCallToOperation(tc.name, tc.args));
+            } catch { /* skip */ }
         }
     }
 
     return {
         message: result.text || 'I processed your request.',
         operations,
-        warnings,
-        suggestions,
+        warnings: [],
+        suggestions: [],
     };
 }
 
 // =============================================================================
-// CONTEXT PREPARATION — Readable Format (replaces minification)
+// CONTEXT PREPARATION — Full Readable Keys
 // =============================================================================
 
 /**
  * Prepares readable project context for the LLM.
- *
- * KEY CHANGES FROM v1:
- * - Uses readable keys: "type", "name", "pos", "dim", "rot", "mat", "kids", "fn"
- * - Keeps all IDs fully qualified (LLM needs exact IDs for tool calls)
- * - Includes tags and structural info
- * - Sends ALL nodes (no subgraph extraction yet — the readable format
- *   is compact enough for houses under 100 nodes)
+ * Uses FULL readable key names: position, dimensions, rotation
  */
 function prepareProjectContext(project: PSGProject): string {
     const readableNodes: Record<string, unknown> = {};
@@ -222,31 +817,31 @@ function prepareProjectContext(project: PSGProject): string {
         const readable: Record<string, unknown> = {
             type: node.type,
             name: node.name,
-            pos: [
-                round(node.position.x, 2),
-                round(node.position.y, 2),
-                round(node.position.z, 2),
-            ],
-            dim: [
-                round(node.dimensions.x, 2),
-                round(node.dimensions.y, 2),
-                round(node.dimensions.z, 2),
-            ],
+            position: {
+                x: round(node.position.x, 2),
+                y: round(node.position.y, 2),
+                z: round(node.position.z, 2),
+            },
+            dimensions: {
+                width: round(node.dimensions.x, 2),
+                height: round(node.dimensions.y, 2),
+                depth: round(node.dimensions.z, 2),
+            },
+            rotation: {
+                yaw: node.rotation.yaw,
+                pitch: node.rotation.pitch,
+                roll: node.rotation.roll,
+            },
         };
-
-        // Only include rotation if non-zero
-        if (node.rotation.yaw !== 0 || node.rotation.pitch !== 0 || node.rotation.roll !== 0) {
-            readable.rot = [node.rotation.yaw, node.rotation.pitch, node.rotation.roll];
-        }
 
         // Material (only if set)
         if (node.material_id) {
-            readable.mat = node.material_id;
+            readable.material = node.material_id;
         }
 
         // Children IDs (only if has children)
         if (node.children_ids.length > 0) {
-            readable.kids = node.children_ids;
+            readable.children = node.children_ids;
         }
 
         // Parent
@@ -256,7 +851,7 @@ function prepareProjectContext(project: PSGProject): string {
 
         // Room function
         if (node.room_function) {
-            readable.fn = node.room_function;
+            readable.function = node.room_function;
         }
 
         // Tags (only if not empty)
@@ -266,10 +861,10 @@ function prepareProjectContext(project: PSGProject): string {
 
         // Type-specific properties
         if (node.roof_style) readable.roof_style = node.roof_style;
-        if (node.roof_pitch_degrees !== undefined) readable.roof_pitch = node.roof_pitch_degrees;
+        if (node.roof_pitch_degrees !== undefined) readable.roof_pitch_degrees = node.roof_pitch_degrees;
         if (node.stair_style) readable.stair_style = node.stair_style;
-        if (node.opening_width) readable.opening_w = node.opening_width;
-        if (node.opening_height) readable.opening_h = node.opening_height;
+        if (node.opening_width) readable.opening_width = node.opening_width;
+        if (node.opening_height) readable.opening_height = node.opening_height;
         if (node.cad_script) readable.cad_script = node.cad_script;
 
         readableNodes[id] = readable;
@@ -280,7 +875,6 @@ function prepareProjectContext(project: PSGProject): string {
 
 /**
  * Prepares a concise material library for the LLM context.
- * Only includes fields the LLM needs for decision-making.
  */
 function prepareMaterialContext(materials: Record<string, Material>): string {
     const compact: Record<string, unknown> = {};
@@ -310,26 +904,6 @@ function prepareBudgetContext(project: PSGProject): string {
 // ASCII FLOOR PLAN GENERATOR
 // =============================================================================
 
-/**
- * Generates a human-readable ASCII floor plan that gives the LLM
- * spatial awareness without requiring coordinate math.
- *
- * HOW IT WORKS:
- * 1. Walk the PSG tree to find all Room nodes on each floor
- * 2. For each room, calculate its grid-cell position based on center + dimensions
- * 3. Render a simple text-based layout showing room positions, sizes, and features
- *
- * EXAMPLE OUTPUT:
- * Floor 0 (Ground Floor):
- *   Living Room (5×6m) @ center(5.0, 3.0) — 2 Windows, 1 Door
- *   Kitchen (5×3m) @ center(2.5, 7.5) — 1 Door
- *   Bathroom (5×3m) @ center(7.5, 7.5) — 1 Window [wet_room]
- *   Bedroom 1 (5×3m) @ center(2.5, 10.5) — 1 Window
- *   Bedroom 2 (5×3m) @ center(7.5, 10.5) — 1 Window
- *
- * This gives the LLM a spatial "picture" — it can see which rooms are
- * adjacent (close centers), and their relative sizes.
- */
 function generateASCIIFloorPlan(project: PSGProject): string {
     const lines: string[] = [];
     const nodes = project.nodes;
@@ -349,7 +923,7 @@ function generateASCIIFloorPlan(project: PSGProject): string {
         }
     }
 
-    // If no explicit Floor nodes, try to find rooms directly under the root
+    // If no explicit Floor nodes, try to find rooms directly
     if (floors.size === 0) {
         const rootRooms = Object.values(nodes).filter(n => n.type === 'Room');
         if (rootRooms.length > 0) {
@@ -360,13 +934,13 @@ function generateASCIIFloorPlan(project: PSGProject): string {
         }
     }
 
-    // Sort floors by Y position (ground first)
+    // Sort floors by Y position
     const sortedFloors = [...floors.entries()].sort(
         (a, b) => a[1].floorNode.position.y - b[1].floorNode.position.y
     );
 
     for (const [floorId, { floorNode, rooms }] of sortedFloors) {
-        lines.push(`═══ ${floorNode.name} (Y=${round(floorNode.position.y, 1)}m) ═══`);
+        lines.push(`═══ ${floorNode.name} (Y=${round(floorNode.position.y, 1)}m) [ID: ${floorId}] ═══`);
 
         if (rooms.length === 0) {
             lines.push('  (no rooms defined)');
@@ -374,7 +948,6 @@ function generateASCIIFloorPlan(project: PSGProject): string {
             continue;
         }
 
-        // Sort rooms by Z then X for consistent layout (north to south, west to east)
         rooms.sort((a, b) => {
             const dz = a.position.z - b.position.z;
             if (Math.abs(dz) > 0.5) return dz;
@@ -394,7 +967,6 @@ function generateASCIIFloorPlan(project: PSGProject): string {
             const childNodes = room.children_ids.map(id => nodes[id]).filter(Boolean);
             const wallCount = childNodes.filter(c => c.type === 'Wall' || c.type === 'Partition').length;
 
-            // Count windows and doors across all walls in this room
             let windowCount = 0;
             let doorCount = 0;
             for (const child of childNodes) {
@@ -409,26 +981,26 @@ function generateASCIIFloorPlan(project: PSGProject): string {
 
             const features: string[] = [];
             if (wallCount > 0) features.push(`${wallCount} walls`);
-            if (windowCount > 0) features.push(`${windowCount} win`);
-            if (doorCount > 0) features.push(`${doorCount} door`);
+            if (windowCount > 0) features.push(`${windowCount} windows`);
+            if (doorCount > 0) features.push(`${doorCount} doors`);
 
             lines.push(
-                `  ${room.name} (${w}×${d}m = ${area}m²) @ center(${cx}, ${cz})${fn}${tags}` +
+                `  ${room.name} (${w}×${d}m = ${area}m²) @ position(${cx}, ${cz})${fn}${tags}` +
                 (features.length > 0 ? ` — ${features.join(', ')}` : '')
             );
             lines.push(`    ID: ${room.id}`);
         }
 
-        // Show non-room children of the floor (slabs, stairs, etc.)
+        // Show non-room children of the floor
         const floorChildren = floorNode.children_ids
             ? floorNode.children_ids.map(id => nodes[id]).filter(Boolean).filter(n => n.type !== 'Room')
             : [];
 
         for (const child of floorChildren) {
             if (child.type === 'Stairs') {
-                lines.push(`  📶 ${child.name} (${child.stair_style || 'straight'}) @ (${round(child.position.x, 1)}, ${round(child.position.z, 1)}) — ID: ${child.id}`);
+                lines.push(`  📶 ${child.name} (${child.stair_style || 'straight'}) @ position(${round(child.position.x, 1)}, ${round(child.position.z, 1)}) — ID: ${child.id}`);
             } else if (child.type === 'Slab') {
-                lines.push(`  🟫 ${child.name} (${round(child.dimensions.x, 1)}×${round(child.dimensions.z, 1)}m) — ID: ${child.id}`);
+                lines.push(`  🟫 ${child.name} (${round(child.dimensions.x, 1)}×${round(child.dimensions.z, 1)}m) @ Y=${round(child.position.y, 1)} — ID: ${child.id}`);
             }
         }
 
@@ -440,7 +1012,7 @@ function generateASCIIFloorPlan(project: PSGProject): string {
     if (roofs.length > 0) {
         lines.push('═══ ROOF ═══');
         for (const roof of roofs) {
-            lines.push(`  ${roof.name}: ${roof.roof_style || 'flat'}, pitch=${roof.roof_pitch_degrees || 0}° — ID: ${roof.id}`);
+            lines.push(`  ${roof.name}: ${roof.roof_style || 'flat'}, pitch=${roof.roof_pitch_degrees || 0}°, position(${round(roof.position.x, 1)}, ${round(roof.position.y, 1)}, ${round(roof.position.z, 1)}), dimensions(${round(roof.dimensions.x, 1)}, ${round(roof.dimensions.y, 1)}, ${round(roof.dimensions.z, 1)}) — ID: ${roof.id}`);
         }
     }
 
@@ -451,14 +1023,6 @@ function generateASCIIFloorPlan(project: PSGProject): string {
 // TOOL CALL → PSG OPERATION MAPPING
 // =============================================================================
 
-/**
- * Converts a tool call from the LLM into a PSGOperation.
- *
- * WHY THIS INTERMEDIATE STEP?
- * The LLM's tool call format is { name: string, args: object }.
- * Our operation system uses { type: OperationType, target_id, params }.
- * This function bridges the gap and handles format normalization.
- */
 export function toolCallToOperation(name: string, args: Record<string, unknown>): PSGOperation {
     const timestamp = new Date().toISOString();
 
@@ -545,38 +1109,6 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
 }
 
 // =============================================================================
-// VALIDATION HELPERS (for auto-retry)
-// =============================================================================
-
-interface InvalidOp {
-    op: PSGOperation;
-    errors: string[];
-}
-
-/**
- * Partitions operations into valid and invalid, running the full
- * validator on each one against the current project state.
- */
-function partitionOperations(
-    operations: PSGOperation[],
-    project: PSGProject
-): { validOps: PSGOperation[]; invalidOps: InvalidOp[] } {
-    const validOps: PSGOperation[] = [];
-    const invalidOps: InvalidOp[] = [];
-
-    for (const op of operations) {
-        const result = validateOperation(op, project);
-        if (result.valid) {
-            validOps.push(op);
-        } else {
-            invalidOps.push({ op, errors: result.errors });
-        }
-    }
-
-    return { validOps, invalidOps };
-}
-
-// =============================================================================
 // LLM PROVIDER CALLS
 // =============================================================================
 
@@ -591,9 +1123,28 @@ interface LLMCallResult {
 }
 
 /**
- * Dispatches to the correct LLM provider based on config.
+ * Calls the LLM WITHOUT tools (for Coordinator and Checker agents).
  */
-async function callProvider(
+async function callProviderNoTools(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>
+): Promise<LLMCallResult> {
+    switch (config.provider) {
+        case 'gemini':
+            return callGeminiNoTools(config, messages);
+        case 'groq':
+            return callGroqNoTools(config, messages);
+        case 'openai':
+            return callOpenAINoTools(config, messages);
+        default:
+            throw new Error(`Unknown provider: ${config.provider}`);
+    }
+}
+
+/**
+ * Calls the LLM WITH tools (for Worker and Fixer agents).
+ */
+async function callProviderWithTools(
     config: AIProviderConfig,
     messages: Array<{ role: string; content: string }>
 ): Promise<LLMCallResult> {
@@ -610,7 +1161,7 @@ async function callProvider(
 }
 
 // =============================================================================
-// GEMINI (Google AI)
+// GEMINI
 // =============================================================================
 
 async function callGemini(
@@ -619,7 +1170,6 @@ async function callGemini(
 ): Promise<LLMCallResult> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
 
-    // Convert messages to Gemini format
     const contents = messages
         .filter((m) => m.role !== 'system')
         .map((m) => ({
@@ -627,10 +1177,8 @@ async function callGemini(
             parts: [{ text: m.content }],
         }));
 
-    // System instruction
     const systemMsg = messages.find((m) => m.role === 'system');
 
-    // Convert tools to Gemini format
     const geminiTools = [
         {
             function_declarations: AI_TOOLS.map((t) => ({
@@ -644,16 +1192,11 @@ async function callGemini(
     const body = {
         contents,
         tools: geminiTools,
-        tool_config: {
-            function_calling_config: { mode: 'AUTO' },
-        },
+        tool_config: { function_calling_config: { mode: 'AUTO' } },
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: {
-            temperature: 0.2,
-            max_output_tokens: 4096,
-        },
+        generation_config: { temperature: 0.2, max_output_tokens: 4096 },
     };
 
     const response = await fetch(url, {
@@ -669,10 +1212,7 @@ async function callGemini(
 
     const data = await response.json();
     const candidate = data.candidates?.[0];
-
-    if (!candidate) {
-        throw new Error('Gemini returned no candidates');
-    }
+    if (!candidate) throw new Error('Gemini returned no candidates');
 
     let text = '';
     const toolCalls: ToolCall[] = [];
@@ -690,21 +1230,56 @@ async function callGemini(
     return { text, toolCalls };
 }
 
+async function callGeminiNoTools(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>
+): Promise<LLMCallResult> {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+
+    const contents = messages
+        .filter((m) => m.role !== 'system')
+        .map((m) => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }],
+        }));
+
+    const systemMsg = messages.find((m) => m.role === 'system');
+
+    const body = {
+        contents,
+        ...(systemMsg && {
+            system_instruction: { parts: [{ text: systemMsg.content }] },
+        }),
+        generation_config: { temperature: 0.3, max_output_tokens: 4096 },
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    const candidate = data.candidates?.[0];
+    if (!candidate) throw new Error('Gemini returned no candidates');
+
+    let text = '';
+    for (const part of candidate.content?.parts || []) {
+        if (part.text) text += part.text;
+    }
+
+    return { text };
+}
+
 // =============================================================================
 // GROQ
 // =============================================================================
 
-/**
- * Calls the Groq API with OpenAI-compatible chat completions.
- *
- * SPECIAL HANDLING: Groq sometimes returns a 400 "tool_use_failed" error
- * even though the LLM generated a VALID function call. This happens because
- * the model outputs an XML-style format `<function=name{JSON}</function>`
- * that Groq's own parser can't process.
- *
- * When this happens, we parse the `failed_generation` field ourselves
- * and extract the tool call — the LLM actually got it right.
- */
 async function callGroq(
     config: AIProviderConfig,
     messages: Array<{ role: string; content: string }>
@@ -732,10 +1307,7 @@ async function callGroq(
     if (!response.ok) {
         const errorText = await response.text();
 
-        // ─── HANDLE tool_use_failed — Parse the failed_generation ────
-        // Groq returns 400 with code "tool_use_failed" when the LLM output
-        // a function call in XML format that Groq's parser couldn't process.
-        // The actual call data is in the `failed_generation` field.
+        // Handle tool_use_failed — parse the failed_generation
         if (response.status === 400) {
             try {
                 const errorData = JSON.parse(errorText);
@@ -744,15 +1316,9 @@ async function callGroq(
                     const failedGen = errorData.error.failed_generation;
                     const parsed = parseFailedGeneration(failedGen);
                     if (parsed.length > 0) {
-                        console.log(`[Orchestrator] Successfully recovered ${parsed.length} tool call(s) from failed_generation`);
-
-                        // Also extract any reasoning text before the function calls
+                        console.log(`[Orchestrator] Recovered ${parsed.length} tool call(s) from failed_generation`);
                         const textContent = extractTextFromFailedGeneration(failedGen);
-
-                        return {
-                            text: textContent,
-                            toolCalls: parsed,
-                        };
+                        return { text: textContent, toolCalls: parsed };
                     }
                 }
             } catch (parseErr) {
@@ -774,79 +1340,41 @@ async function callGroq(
         })
     );
 
-    return {
-        text: msg.content || '',
-        toolCalls,
+    return { text: msg.content || '', toolCalls };
+}
+
+async function callGroqNoTools(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>
+): Promise<LLMCallResult> {
+    const url = 'https://api.groq.com/openai/v1/chat/completions';
+
+    const body = {
+        model: config.model,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        temperature: 0.3,
+        max_tokens: 4096,
     };
-}
 
-/**
- * Parses Groq's failed_generation XML-style function calls.
- *
- * FORMAT: <function=function_name{"param": "value", ...}</function>
- * Can contain multiple function calls separated by newlines.
- *
- * EXAMPLES:
- * <function=add_node{"type": "Window", "name": "North Window", "parent_id": "wall_123"}</function>
- * <function=move_node{"target_id": "wall_123", "delta_x": 2}</function>
- */
-function parseFailedGeneration(failedGen: string): ToolCall[] {
-    const toolCalls: ToolCall[] = [];
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
 
-    // Match all <function=name{...}</function> patterns
-    const regex = /<function=(\w+)((?:\{[\s\S]*?\}))<\/function>/g;
-    let match;
-
-    while ((match = regex.exec(failedGen)) !== null) {
-        const name = match[1];
-        const jsonStr = match[2];
-
-        try {
-            const args = JSON.parse(jsonStr);
-            toolCalls.push({ name, args });
-            console.log(`[Orchestrator] Parsed failed_generation tool call: ${name}`);
-        } catch (err) {
-            console.warn(`[Orchestrator] Failed to parse JSON in failed_generation for "${name}":`, jsonStr);
-        }
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Groq API error ${response.status}: ${errorText}`);
     }
 
-    // Fallback: if regex didn't match, try a simpler pattern
-    // Sometimes the format is slightly different
-    if (toolCalls.length === 0) {
-        const simpleRegex = /<function=(\w+)\s*(\{[\s\S]*?\})\s*<\/function>/g;
-        while ((match = simpleRegex.exec(failedGen)) !== null) {
-            const name = match[1];
-            const jsonStr = match[2];
-            try {
-                const args = JSON.parse(jsonStr);
-                toolCalls.push({ name, args });
-                console.log(`[Orchestrator] Parsed failed_generation (fallback) tool call: ${name}`);
-            } catch {
-                console.warn(`[Orchestrator] Fallback parse also failed for "${name}"`);
-            }
-        }
-    }
+    const data = await response.json();
+    const msg = data.choices?.[0]?.message;
+    if (!msg) throw new Error('Groq returned no message');
 
-    return toolCalls;
-}
-
-/**
- * Extracts plain text content from a failed_generation string,
- * stripping out the <function=...> XML tags. This gives us the LLM's
- * reasoning text to show the user alongside the recovered tool calls.
- */
-function extractTextFromFailedGeneration(failedGen: string): string {
-    // Remove all <function=...>...</function> blocks
-    const textOnly = failedGen
-        .replace(/<function=\w+\{[\s\S]*?\}<\/function>/g, '')
-        .replace(/<function=\w+\{[\s\S]*?\}>/g, '') // handle unclosed tags (truncated)
-        .trim();
-
-    // Clean up excessive whitespace and ### headers for a nicer message
-    return textOnly
-        .replace(/###\s*/g, '')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
+    return { text: msg.content || '' };
 }
 
 // =============================================================================
@@ -893,17 +1421,91 @@ async function callOpenAI(
         })
     );
 
-    return {
-        text: msg.content || '',
-        toolCalls,
+    return { text: msg.content || '', toolCalls };
+}
+
+async function callOpenAINoTools(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>
+): Promise<LLMCallResult> {
+    const url = 'https://api.openai.com/v1/chat/completions';
+
+    const body = {
+        model: config.model,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        temperature: 0.3,
+        max_tokens: 4096,
     };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenAI API error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    const msg = data.choices?.[0]?.message;
+    if (!msg) throw new Error('OpenAI returned no message');
+
+    return { text: msg.content || '' };
+}
+
+// =============================================================================
+// GROQ FAILED GENERATION PARSER
+// =============================================================================
+
+function parseFailedGeneration(failedGen: string): ToolCall[] {
+    const toolCalls: ToolCall[] = [];
+    const regex = /<function=(\w+)((?:\{[\s\S]*?\}))<\/function>/g;
+    let match;
+
+    while ((match = regex.exec(failedGen)) !== null) {
+        const name = match[1];
+        const jsonStr = match[2];
+        try {
+            const args = JSON.parse(jsonStr);
+            toolCalls.push({ name, args });
+        } catch {
+            console.warn(`[Orchestrator] Failed to parse failed_generation JSON for "${name}"`);
+        }
+    }
+
+    if (toolCalls.length === 0) {
+        const simpleRegex = /<function=(\w+)\s*(\{[\s\S]*?\})\s*<\/function>/g;
+        while ((match = simpleRegex.exec(failedGen)) !== null) {
+            const name = match[1];
+            const jsonStr = match[2];
+            try {
+                const args = JSON.parse(jsonStr);
+                toolCalls.push({ name, args });
+            } catch { /* skip */ }
+        }
+    }
+
+    return toolCalls;
+}
+
+function extractTextFromFailedGeneration(failedGen: string): string {
+    return failedGen
+        .replace(/<function=\w+\{[\s\S]*?\}<\/function>/g, '')
+        .replace(/<function=\w+\{[\s\S]*?\}>/g, '')
+        .replace(/###\s*/g, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
 }
 
 // =============================================================================
 // UTILITIES
 // =============================================================================
 
-/** Safely parses JSON, returning empty object on failure */
 function safeParse(json: string): Record<string, unknown> {
     try {
         return JSON.parse(json);
@@ -913,13 +1515,11 @@ function safeParse(json: string): Record<string, unknown> {
     }
 }
 
-/** Rounds a number to N decimal places */
 function round(value: number, decimals: number): number {
     const factor = Math.pow(10, decimals);
     return Math.round(value * factor) / factor;
 }
 
-/** Formats a currency value */
 function formatCurrency(amount: number, currency: string): string {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -927,4 +1527,41 @@ function formatCurrency(amount: number, currency: string): string {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
     }).format(amount);
+}
+
+/**
+ * Extracts a JSON object from a string that may contain markdown fences,
+ * [PLAN] tags, or other text wrapping.
+ */
+function extractJSON<T>(text: string): T | null {
+    // Try direct parse first
+    try {
+        return JSON.parse(text.trim());
+    } catch { /* continue */ }
+
+    // Try [PLAN]...[/PLAN] tags
+    const planMatch = text.match(/\[PLAN\]([\s\S]*?)\[\/PLAN\]/i);
+    if (planMatch) {
+        try {
+            return JSON.parse(planMatch[1].trim());
+        } catch { /* continue */ }
+    }
+
+    // Try extracting from markdown code fences
+    const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fenceMatch) {
+        try {
+            return JSON.parse(fenceMatch[1].trim());
+        } catch { /* continue */ }
+    }
+
+    // Try finding a JSON object in the text (greedy — find the largest match)
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+        try {
+            return JSON.parse(jsonMatch[0]);
+        } catch { /* continue */ }
+    }
+
+    return null;
 }
