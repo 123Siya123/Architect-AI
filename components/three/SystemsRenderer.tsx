@@ -5,9 +5,9 @@
  * 
  * Renders non-structural layers when toggled on:
  * 1. ELECTRICAL: Wires (yellow lines) + Sockets/Switches (boxes)
- * 2. PLUMBING: Cold supply (green), Hot supply (orange), Drain (red)
+ * 2. PLUMBING: Cold supply (cyan), Hot supply (orange), Drain (red)
  * 3. THERMAL: Heatmap overlay using custom shader
- * 4. DIMENSIONS: 3D labels and lines (future Phase 4)
+ * 4. DIMENSIONS: 3D measurement labels on walls/openings
  * =============================================================================
  */
 
@@ -20,9 +20,31 @@ import { useDesignStore } from '@/store/useDesignStore';
 import { generateElectricalLayout } from '@/lib/systems/electrical';
 import { generatePlumbingLayout } from '@/lib/systems/plumbing';
 import { runThermalSimulation } from '@/lib/thermal/simulator';
-import { LAYER_MATERIALS, createThermalShaderMaterial } from '@/lib/psg/compiler';
+import { createThermalShaderMaterial } from '@/lib/psg/compiler';
 import materialsDatabase from '@/data/materials.json';
 import type { Material } from '@/types';
+
+/**
+ * Calculates the rotation quaternion to orient a cylinder/box from point A to point B.
+ */
+function getPipeTransform(from: { x: number; y: number; z: number }, to: { x: number; y: number; z: number }) {
+    const dir = new THREE.Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
+    const length = dir.length();
+    if (length < 0.001) return null;
+
+    const mid = new THREE.Vector3(
+        (from.x + to.x) / 2,
+        (from.y + to.y) / 2,
+        (from.z + to.z) / 2,
+    );
+
+    // Build a quaternion that rotates the default Y-axis to the pipe direction
+    dir.normalize();
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+
+    return { position: mid, quaternion, length };
+}
 
 export default function SystemsRenderer() {
     const project = useDesignStore((s) => s.project);
@@ -51,7 +73,7 @@ export default function SystemsRenderer() {
 
     return (
         <group>
-            {/* Electrical Visualization */}
+            {/* ─── Electrical Visualization ──────────────────────────────── */}
             {electricalData && (
                 <group name="layer-electrical">
                     {electricalData.devices.map((dev) => (
@@ -63,7 +85,6 @@ export default function SystemsRenderer() {
                             <meshStandardMaterial color="#ffff00" emissive="#ffff00" emissiveIntensity={0.5} />
                         </mesh>
                     ))}
-                    {/* Cables - using lines with improved routing */}
                     {electricalData.cables.map((cable) => (
                         <line key={cable.id}>
                             <bufferGeometry>
@@ -81,29 +102,31 @@ export default function SystemsRenderer() {
                 </group>
             )}
 
-            {/* Plumbing Visualization */}
+            {/* ─── Plumbing Visualization ────────────────────────────────── */}
             {plumbingData && (
                 <group name="layer-plumbing">
                     {plumbingData.pipes.map((pipe) => {
-                        const midX = (pipe.from.x + pipe.to.x) / 2;
-                        const midY = (pipe.from.y + pipe.to.y) / 2;
-                        const midZ = (pipe.from.z + pipe.to.z) / 2;
-                        const dist = Math.sqrt(
-                            (pipe.to.x - pipe.from.x) ** 2 +
-                            (pipe.to.y - pipe.from.y) ** 2 +
-                            (pipe.to.z - pipe.from.z) ** 2
-                        );
+                        const transform = getPipeTransform(pipe.from, pipe.to);
+                        if (!transform) return null;
+
+                        const radius = (pipe.diameter_mm / 1000) / 2;
+                        const color = pipe.type === 'supply_cold' ? '#00ccff'
+                            : pipe.type === 'supply_hot' ? '#ff6600'
+                                : '#ff3333';
 
                         return (
                             <mesh
                                 key={pipe.id}
-                                position={[midX, midY, midZ]}
+                                position={transform.position}
+                                quaternion={transform.quaternion}
                             >
-                                <boxGeometry args={[dist, pipe.diameter_mm / 1000, pipe.diameter_mm / 1000]} />
+                                <cylinderGeometry args={[radius, radius, transform.length, 6]} />
                                 <meshStandardMaterial
-                                    color={pipe.type === 'supply_cold' ? '#00ccff' : pipe.type === 'supply_hot' ? '#ff6600' : '#ff3333'}
-                                    emissive={pipe.type === 'supply_cold' ? '#00ccff' : pipe.type === 'supply_hot' ? '#ff6600' : '#ff3333'}
-                                    emissiveIntensity={0.2}
+                                    color={color}
+                                    emissive={color}
+                                    emissiveIntensity={0.3}
+                                    transparent
+                                    opacity={0.85}
                                 />
                             </mesh>
                         );
@@ -111,7 +134,7 @@ export default function SystemsRenderer() {
                 </group>
             )}
 
-            {/* Thermal Layer Overlay */}
+            {/* ─── Thermal Layer Overlay ─────────────────────────────────── */}
             {thermalData && (
                 <group name="layer-thermal">
                     {Object.entries(project.nodes).map(([id, node]) => {
@@ -165,25 +188,37 @@ export default function SystemsRenderer() {
                 </group>
             )}
 
-            {/* Dimensions Visualization */}
+            {/* ─── Dimensions Visualization ──────────────────────────────── */}
             {visibleLayers.has('dimensions') && (
                 <group name="layer-dimensions">
                     {Object.values(project.nodes).map((node) => {
                         if (node.type !== 'Wall' && node.type !== 'Partition' && node.type !== 'Window' && node.type !== 'Door') return null;
 
-                        const valMm = Math.round(node.dimensions.x * 1000);
-                        const label = `${valMm}mm`;
+                        // dimensions.x is always the "length" of the element (along its local axis)
+                        const lengthM = node.dimensions.x;
+                        const heightM = node.dimensions.y;
+
+                        // Format: show meters if >= 1m, otherwise mm
+                        const lengthLabel = lengthM >= 1
+                            ? `${lengthM.toFixed(2)}m`
+                            : `${Math.round(lengthM * 1000)}mm`;
+                        const heightLabel = heightM >= 1
+                            ? `${heightM.toFixed(2)}m`
+                            : `${Math.round(heightM * 1000)}mm`;
+
+                        // Position label above the node
+                        const labelY = node.position.y + node.dimensions.y / 2 + 0.15;
 
                         return (
                             <group
-                                key={`dim_${node.id}`}
-                                position={[node.position.x, node.position.y + node.dimensions.y / 2 + 0.15, node.position.z]}
+                                key={`dim_${node.id}_${lengthM}_${heightM}`}
+                                position={[node.position.x, labelY, node.position.z]}
                             >
                                 <Html center distanceFactor={12}>
                                     <div style={{
-                                        background: 'rgba(0,0,0,0.8)',
+                                        background: 'rgba(0,0,0,0.85)',
                                         color: '#00f0ff',
-                                        padding: '1px 5px',
+                                        padding: '2px 6px',
                                         borderRadius: '3px',
                                         fontSize: '10px',
                                         fontFamily: 'monospace',
@@ -191,9 +226,19 @@ export default function SystemsRenderer() {
                                         border: '1px solid #00f0ff',
                                         whiteSpace: 'nowrap',
                                         pointerEvents: 'none',
-                                        textShadow: '0 0 5px #00f0ff88'
+                                        textShadow: '0 0 5px #00f0ff88',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        gap: '1px',
+                                        lineHeight: '1.2',
                                     }}>
-                                        {label}
+                                        <span>{lengthLabel} × {heightLabel}</span>
+                                        {node.type === 'Wall' || node.type === 'Partition' ? (
+                                            <span style={{ fontSize: '8px', opacity: 0.7 }}>
+                                                t: {Math.round(node.dimensions.z * 1000)}mm
+                                            </span>
+                                        ) : null}
                                     </div>
                                 </Html>
                             </group>
