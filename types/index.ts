@@ -137,7 +137,14 @@ export type PSGNodeType =
   | 'Balcony'    // External platform
   | 'Garage'     // Vehicle storage
   | 'Chimney'    // Vertical flue
-  | 'Custom';    // User-defined geometry (future)
+  | 'Custom'     // User-defined geometry (future)
+  | 'Toilet'     // Plumbing
+  | 'Sink'       // Plumbing
+  | 'Shower'     // Plumbing
+  | 'Bathtub'    // Plumbing
+  | 'LightSwitch'// Electrical
+  | 'ElectricalOutlet' // Electrical
+  | 'ElectricalPanel'; // Electrical
 
 /** Tags that classify a node's structural role */
 export type StructuralTag =

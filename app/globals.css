@@ -1449,6 +1449,9 @@ button:disabled {
 
 .export-modal {
   width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg-panel-solid);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
@@ -1474,6 +1477,7 @@ button:disabled {
   flex-direction: column;
   gap: var(--space-3);
   margin: var(--space-5) 0;
+  overflow-y: auto;
 }
 
 .export-option {

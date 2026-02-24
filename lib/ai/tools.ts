@@ -38,8 +38,9 @@ export const AI_TOOLS = [
                 properties: {
                     type: {
                         type: 'string',
-                        enum: ['Wall', 'Window', 'Door', 'Room', 'Roof', 'Stairs', 'Slab',
-                            'Column', 'Beam', 'Foundation', 'Partition', 'Floor', 'Balcony'],
+                        enum: ['Wall', 'Window', 'Door', 'Room', 'Floor', 'Slab', 'Stairs', 'Roof',
+                            'Column', 'Beam', 'Foundation', 'Partition', 'Balcony',
+                            'Toilet', 'Sink', 'Shower', 'Bathtub', 'LightSwitch', 'ElectricalOutlet', 'ElectricalPanel'],
                         description: 'Type of element to add',
                     },
                     parent_id: {

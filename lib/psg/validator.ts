@@ -530,8 +530,8 @@ function getNodeAABB(node: PSGNode): AABB {
  * Gets the AABB after a proposed edit (move or resize).
  */
 function getEditedAABB(node: PSGNode, operation: PSGOperation): AABB {
-    let pos = { ...node.position };
-    let dim = { ...node.dimensions };
+    const pos = { ...node.position };
+    const dim = { ...node.dimensions };
 
     if (operation.type === 'move_node') {
         const params = operation.params as Record<string, number>;

@@ -144,7 +144,11 @@ export const useDesignStore = create<DesignState>((set, get) => ({
 
     toggleLayer: (layer) => {
         const newLayers = new Set(get().visibleLayers);
-        newLayers.has(layer) ? newLayers.delete(layer) : newLayers.add(layer);
+        if (newLayers.has(layer)) {
+            newLayers.delete(layer);
+        } else {
+            newLayers.add(layer);
+        }
         set({ visibleLayers: newLayers });
     },
 

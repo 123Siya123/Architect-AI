@@ -436,6 +436,13 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         Foundation: { w: 10, h: 0.6, d: 12 },
         Balcony: { w: 3, h: 0.15, d: 1.5 },
         House: { w: 10, h: 6, d: 12 },
+        Toilet: { w: 0.4, h: 0.8, d: 0.6 },
+        Sink: { w: 0.6, h: 0.85, d: 0.5 },
+        Shower: { w: 0.9, h: 2.1, d: 0.9 },
+        Bathtub: { w: 1.7, h: 0.5, d: 0.75 },
+        LightSwitch: { w: 0.1, h: 0.1, d: 0.02 },
+        ElectricalOutlet: { w: 0.1, h: 0.1, d: 0.02 },
+        ElectricalPanel: { w: 0.4, h: 0.6, d: 0.1 },
     };
 
     const defaults = typeDefaults[nodeType] || { w: 1, h: 1, d: 1 };
