@@ -129,6 +129,7 @@ Execute the task using the available tools. Be EXTREMELY precise.
 6. Position is the CENTER of the element (e.g., wall at Y=1.35 means base at Y=0, top at Y=2.7)
 7. Execute ALL parts of your task — if it says "add 4 walls", add ALL 4
 8. NEVER set width=0 or depth=0 — every element needs real dimensions
+9. NEVER use mathematical formulas in JSON (e.g. "2.7 + 0.3/2"). Only provide the final calculated number.
 
 ## 3D COORDINATE SYSTEM
 - X: left ↔ right

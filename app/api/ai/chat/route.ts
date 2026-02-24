@@ -50,30 +50,9 @@ export async function POST(request: NextRequest) {
             materials
         );
 
-        // Validate all returned operations against the current project
-        const validatedOps: PSGOperation[] = [];
-        const validationErrors: string[] = [];
-
-        for (const op of aiResponse.operations) {
-            const result = validateOperation(op, project);
-            if (result.valid) {
-                validatedOps.push(op);
-            } else {
-                validationErrors.push(
-                    `Operation ${op.type} on ${op.target_id} rejected: ${result.errors.join(', ')}`
-                );
-            }
-        }
-
-        // If some operations were rejected, append a note to the message
-        let finalMessage = aiResponse.message;
-        if (validationErrors.length > 0) {
-            finalMessage += `\n\n⚠️ Some changes couldn't be applied:\n${validationErrors.map((e) => `- ${e}`).join('\n')}`;
-        }
-
         return NextResponse.json({
-            message: finalMessage,
-            operations: validatedOps,
+            message: aiResponse.message,
+            operations: aiResponse.operations,
             warnings: aiResponse.warnings || [],
             suggestions: aiResponse.suggestions || [],
         });
