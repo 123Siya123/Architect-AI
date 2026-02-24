@@ -195,7 +195,7 @@ export interface AIProviderConfig {
  * - AI_MODEL: model name (default depends on provider)
  */
 export function getProviderConfig(): AIProviderConfig {
-    const provider = (process.env.AI_PROVIDER || 'gemini') as AIProviderConfig['provider'];
+    const provider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'groq') as AIProviderConfig['provider'];
     const defaultModels: Record<string, string> = {
         gemini: 'gemini-2.0-flash',
         groq: 'llama-3.3-70b-versatile',
