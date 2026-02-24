@@ -19,6 +19,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useDesignStore } from '@/store/useDesignStore';
 import type { ChatMessage } from '@/types';
+import { prepareProjectContext, generateASCIIFloorPlan } from '@/lib/ai/context';
 
 // =============================================================================
 // SUGGESTION CHIPS
@@ -100,8 +101,8 @@ function PipelineStatus() {
                     <div
                         key={i}
                         className={`pipeline-phase ${i < currentPhase ? 'pipeline-phase-done' :
-                                i === currentPhase ? 'pipeline-phase-active' :
-                                    'pipeline-phase-pending'
+                            i === currentPhase ? 'pipeline-phase-active' :
+                                'pipeline-phase-pending'
                             }`}
                     >
                         <span className="pipeline-emoji">{phase.emoji}</span>
@@ -225,11 +226,35 @@ export default function ChatPanel() {
         }
     };
 
+    const handleDownloadSpecs = () => {
+        const fullSpecs = prepareProjectContext(project);
+        const asciiPlan = generateASCIIFloorPlan(project);
+
+        const content = `// ASCII FLOOR PLAN\n${asciiPlan}\n\n// EXACT JSON SPECS SENT TO AI\n${fullSpecs}`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `debug_ai_specs_${Date.now()}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="chat-panel">
             {/* Chat Header */}
             <div className="chat-header">
-                <h3>🏗️ AI Architect <span style={{ fontSize: '0.65em', opacity: 0.6 }}>multi-agent</span></h3>
+                <div>
+                    <h3>🏗️ AI Architect <span style={{ fontSize: '0.65em', opacity: 0.6 }}>multi-agent</span></h3>
+                    <button
+                        onClick={handleDownloadSpecs}
+                        style={{ fontSize: '0.7em', marginTop: '4px', background: 'var(--accent)', color: 'white', padding: '2px 6px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+                    >
+                        ↓ Download Debug Specs
+                    </button>
+                </div>
                 <span className="chat-status">
                     {isAIThinking ? '⏳ Processing...' : '🟢 Ready'}
                 </span>
