@@ -694,6 +694,17 @@ async function callGemini(
 // GROQ
 // =============================================================================
 
+/**
+ * Calls the Groq API with OpenAI-compatible chat completions.
+ *
+ * SPECIAL HANDLING: Groq sometimes returns a 400 "tool_use_failed" error
+ * even though the LLM generated a VALID function call. This happens because
+ * the model outputs an XML-style format `<function=name{JSON}</function>`
+ * that Groq's own parser can't process.
+ *
+ * When this happens, we parse the `failed_generation` field ourselves
+ * and extract the tool call — the LLM actually got it right.
+ */
 async function callGroq(
     config: AIProviderConfig,
     messages: Array<{ role: string; content: string }>
@@ -720,6 +731,30 @@ async function callGroq(
 
     if (!response.ok) {
         const errorText = await response.text();
+
+        // ─── HANDLE tool_use_failed — Parse the failed_generation ────
+        // Groq returns 400 with code "tool_use_failed" when the LLM output
+        // a function call in XML format that Groq's parser couldn't process.
+        // The actual call data is in the `failed_generation` field.
+        if (response.status === 400) {
+            try {
+                const errorData = JSON.parse(errorText);
+                if (errorData.error?.code === 'tool_use_failed' && errorData.error?.failed_generation) {
+                    console.log('[Orchestrator] Groq tool_use_failed — parsing failed_generation manually');
+                    const parsed = parseFailedGeneration(errorData.error.failed_generation);
+                    if (parsed.length > 0) {
+                        console.log(`[Orchestrator] Successfully recovered ${parsed.length} tool call(s) from failed_generation`);
+                        return {
+                            text: '',
+                            toolCalls: parsed,
+                        };
+                    }
+                }
+            } catch (parseErr) {
+                console.warn('[Orchestrator] Could not parse Groq error response:', parseErr);
+            }
+        }
+
         throw new Error(`Groq API error ${response.status}: ${errorText}`);
     }
 
@@ -738,6 +773,56 @@ async function callGroq(
         text: msg.content || '',
         toolCalls,
     };
+}
+
+/**
+ * Parses Groq's failed_generation XML-style function calls.
+ *
+ * FORMAT: <function=function_name{"param": "value", ...}</function>
+ * Can contain multiple function calls separated by newlines.
+ *
+ * EXAMPLES:
+ * <function=add_node{"type": "Window", "name": "North Window", "parent_id": "wall_123"}</function>
+ * <function=move_node{"target_id": "wall_123", "delta_x": 2}</function>
+ */
+function parseFailedGeneration(failedGen: string): ToolCall[] {
+    const toolCalls: ToolCall[] = [];
+
+    // Match all <function=name{...}</function> patterns
+    const regex = /<function=(\w+)((?:\{[\s\S]*?\}))<\/function>/g;
+    let match;
+
+    while ((match = regex.exec(failedGen)) !== null) {
+        const name = match[1];
+        const jsonStr = match[2];
+
+        try {
+            const args = JSON.parse(jsonStr);
+            toolCalls.push({ name, args });
+            console.log(`[Orchestrator] Parsed failed_generation tool call: ${name}`);
+        } catch (err) {
+            console.warn(`[Orchestrator] Failed to parse JSON in failed_generation for "${name}":`, jsonStr);
+        }
+    }
+
+    // Fallback: if regex didn't match, try a simpler pattern
+    // Sometimes the format is slightly different
+    if (toolCalls.length === 0) {
+        const simpleRegex = /<function=(\w+)\s*(\{[\s\S]*?\})\s*<\/function>/g;
+        while ((match = simpleRegex.exec(failedGen)) !== null) {
+            const name = match[1];
+            const jsonStr = match[2];
+            try {
+                const args = JSON.parse(jsonStr);
+                toolCalls.push({ name, args });
+                console.log(`[Orchestrator] Parsed failed_generation (fallback) tool call: ${name}`);
+            } catch {
+                console.warn(`[Orchestrator] Fallback parse also failed for "${name}"`);
+            }
+        }
+    }
+
+    return toolCalls;
 }
 
 // =============================================================================
