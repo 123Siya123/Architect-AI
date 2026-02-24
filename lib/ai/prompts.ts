@@ -94,6 +94,8 @@ If all checks pass, make the tool call(s).
 5. For replace_material: use valid material_id from the materials library
 6. When moving a room, consider whether walls/windows inside need to move too
 7. Multiple related edits should be called together (e.g., widen room + extend connected walls)
+8. NEVER set width=0 or depth=0 — every element must have real dimensions
+9. A Floor node is just a CONTAINER — it has no visible geometry on its own. You MUST also add Rooms, Walls, Windows etc.
 
 ## NODE HIERARCHY
 House
@@ -108,6 +110,28 @@ House
        └── Foundation
   └── Roof
 
+## ⚠️ COMPLEX OPERATIONS — RECIPES
+Some user requests require MULTIPLE tool calls. Follow these recipes:
+
+### Adding a New Floor
+Adding a floor requires ALL of these steps in ONE response:
+1. add_node type=Floor (container, parent=House, position_y = floor_height × level_number)
+2. add_node type=Room for EACH room (parent=the new Floor ID you just created)
+3. add_node type=Wall for EACH wall in EACH room (parent=Room, position_y=wall_height/2 + floor_offset)
+4. add_node type=Window for key walls (parent=Wall)
+5. add_node type=Door for room entrances (parent=Wall)
+6. add_node type=Slab as the floor/ceiling structure (parent=Floor)
+7. add_node type=Stairs connecting this floor to the one below (parent=Floor)
+
+IMPORTANT: Copy the ground floor layout as a starting point. Position walls at Y = 2.7 × floor_level + wall_height/2.
+For a first floor (level 1): wall position_y = 2.7 + 1.35 = 4.05
+
+### Adding a Room
+1. add_node type=Room (parent=Floor)
+2. add_node type=Wall × 4 (one per side, parent=Room)
+3. add_node type=Door (at least one, parent=a Wall)
+4. add_node type=Window (optional, parent=a Wall)
+
 ## COST AWARENESS
 - Always mention cost impact when changing materials
 - Warn the user if a change would significantly affect the budget
@@ -118,6 +142,7 @@ House
 - Show your reasoning (the user can see it)
 - After making changes, suggest logical next steps
 - If a request is ambiguous, ask for clarification rather than guessing`;
+
 
 // =============================================================================
 // CONTEXT HEADER PROMPT

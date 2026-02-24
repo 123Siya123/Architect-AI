@@ -741,11 +741,16 @@ async function callGroq(
                 const errorData = JSON.parse(errorText);
                 if (errorData.error?.code === 'tool_use_failed' && errorData.error?.failed_generation) {
                     console.log('[Orchestrator] Groq tool_use_failed — parsing failed_generation manually');
-                    const parsed = parseFailedGeneration(errorData.error.failed_generation);
+                    const failedGen = errorData.error.failed_generation;
+                    const parsed = parseFailedGeneration(failedGen);
                     if (parsed.length > 0) {
                         console.log(`[Orchestrator] Successfully recovered ${parsed.length} tool call(s) from failed_generation`);
+
+                        // Also extract any reasoning text before the function calls
+                        const textContent = extractTextFromFailedGeneration(failedGen);
+
                         return {
-                            text: '',
+                            text: textContent,
                             toolCalls: parsed,
                         };
                     }
@@ -823,6 +828,25 @@ function parseFailedGeneration(failedGen: string): ToolCall[] {
     }
 
     return toolCalls;
+}
+
+/**
+ * Extracts plain text content from a failed_generation string,
+ * stripping out the <function=...> XML tags. This gives us the LLM's
+ * reasoning text to show the user alongside the recovered tool calls.
+ */
+function extractTextFromFailedGeneration(failedGen: string): string {
+    // Remove all <function=...>...</function> blocks
+    const textOnly = failedGen
+        .replace(/<function=\w+\{[\s\S]*?\}<\/function>/g, '')
+        .replace(/<function=\w+\{[\s\S]*?\}>/g, '') // handle unclosed tags (truncated)
+        .trim();
+
+    // Clean up excessive whitespace and ### headers for a nicer message
+    return textOnly
+        .replace(/###\s*/g, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
 }
 
 // =============================================================================

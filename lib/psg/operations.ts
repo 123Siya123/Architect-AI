@@ -405,9 +405,9 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         position_x = 0,
         position_y = 0,
         position_z = 0,
-        width = 4,
-        height = 2.7,
-        depth = 0.25,
+        width,
+        height,
+        depth,
         material_id = '',
         stair_style,
         roof_style,
@@ -420,6 +420,31 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
     const shortId = Math.random().toString(36).slice(2, 10);
     const id = `${nodeType.toLowerCase()}_${shortId}`;
 
+    // Type-specific sensible defaults — prevents zero-dimension nodes
+    const typeDefaults: Record<string, { w: number; h: number; d: number }> = {
+        Wall: { w: 4, h: 2.7, d: 0.25 },
+        Partition: { w: 3, h: 2.7, d: 0.12 },
+        Window: { w: 1.2, h: 1.4, d: 0.05 },
+        Door: { w: 0.9, h: 2.1, d: 0.1 },
+        Room: { w: 4, h: 2.7, d: 4 },
+        Floor: { w: 10, h: 0.3, d: 12 },
+        Slab: { w: 10, h: 0.2, d: 12 },
+        Roof: { w: 12, h: 0.3, d: 14 },
+        Stairs: { w: 1, h: 2.7, d: 3 },
+        Column: { w: 0.3, h: 2.7, d: 0.3 },
+        Beam: { w: 4, h: 0.3, d: 0.2 },
+        Foundation: { w: 10, h: 0.6, d: 12 },
+        Balcony: { w: 3, h: 0.15, d: 1.5 },
+        House: { w: 10, h: 6, d: 12 },
+    };
+
+    const defaults = typeDefaults[nodeType] || { w: 1, h: 1, d: 1 };
+
+    // Use LLM-provided values, but clamp zeros to type defaults
+    const finalWidth = (width !== undefined && Number(width) > 0) ? Number(width) : defaults.w;
+    const finalHeight = (height !== undefined && Number(height) > 0) ? Number(height) : defaults.h;
+    const finalDepth = (depth !== undefined && Number(depth) > 0) ? Number(depth) : defaults.d;
+
     return {
         id,
         type: nodeType as PSGNode['type'],
@@ -430,9 +455,9 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
             z: Number(position_z),
         }),
         dimensions: snapVec3({
-            x: Number(width),
-            y: Number(height),
-            z: Number(depth),
+            x: finalWidth,
+            y: finalHeight,
+            z: finalDepth,
         }),
         rotation: { yaw: 0, pitch: 0, roll: 0 },
         material_id: (material_id as string) || '',
