@@ -803,6 +803,18 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
                 timestamp,
             };
 
+        case 'rotate_node':
+            return {
+                type: 'rotate_node',
+                target_id: (args.target_id as string) || 'unknown',
+                params: {
+                    ...(args.yaw !== undefined && { yaw: args.yaw }),
+                    ...(args.pitch !== undefined && { pitch: args.pitch }),
+                    ...(args.roll !== undefined && { roll: args.roll }),
+                },
+                timestamp,
+            };
+
         case 'replace_material':
             return {
                 type: 'replace_material',

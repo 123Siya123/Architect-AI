@@ -61,6 +61,7 @@ export const AI_TOOLS = [
                     width: { type: 'number', description: 'Width in meters (X dimension, or length for rotated walls)' },
                     height: { type: 'number', description: 'Height in meters (Y dimension)' },
                     depth: { type: 'number', description: 'Depth/thickness in meters (Z dimension). Walls: 0.25, Partitions: 0.12' },
+                    yaw: { type: 'number', description: 'Rotation in degrees around Y axis (e.g. 0 for East-West, 90 for North-South)' },
                     material_id: { type: 'string', description: 'Material ID from the materials library' },
                     room_function: {
                         type: 'string',
@@ -300,6 +301,30 @@ export const AI_TOOLS = [
                     },
                 },
                 required: ['parent_id', 'name', 'description'],
+            },
+        },
+    },
+
+    // ─── TOOL 9: Rotate a node ───────────────────────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'rotate_node',
+            description:
+                'Rotate an architectural element by specifying new absolute rotation angles in degrees. ' +
+                'For walls, use yaw=0 to run East-West (along X-axis) and yaw=90 to run North-South (along Z-axis).',
+            parameters: {
+                type: 'object',
+                properties: {
+                    target_id: {
+                        type: 'string',
+                        description: 'ID of the node to rotate',
+                    },
+                    yaw: { type: 'number', description: 'Rotation around Y axis (vertical) in degrees. Horizontal orientation.' },
+                    pitch: { type: 'number', description: 'Rotation around X axis in degrees. Vertical tilt.' },
+                    roll: { type: 'number', description: 'Rotation around Z axis in degrees. Bank/twist.' },
+                },
+                required: ['target_id'],
             },
         },
     },

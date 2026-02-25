@@ -409,6 +409,9 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         width,
         height,
         depth,
+        yaw = 0,
+        pitch = 0,
+        roll = 0,
         material_id = '',
         stair_style,
         roof_style,
@@ -467,7 +470,7 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
             y: finalHeight,
             z: finalDepth,
         }),
-        rotation: { yaw: 0, pitch: 0, roll: 0 },
+        rotation: { yaw: Number(yaw) || 0, pitch: Number(pitch) || 0, roll: Number(roll) || 0 },
         material_id: (material_id as string) || '',
         opacity: nodeType === 'Window' ? 0.3 : 1,
         tags: nodeType === 'Wall' || nodeType === 'Slab' || nodeType === 'Column' || nodeType === 'Beam' || nodeType === 'Foundation'
