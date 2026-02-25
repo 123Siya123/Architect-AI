@@ -13,7 +13,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useDesignStore } from '@/store/useDesignStore';
-import { generateFloorPlanSVG, generateMaterialScheduleHTML } from '@/lib/export/plan-generator';
+import { generateFloorPlanSVG, generateProjectExportHTML, generateMaterialScheduleHTML } from '@/lib/export/plan-generator';
 import { calculateProjectCost } from '@/lib/psg/cost-calculator';
 import materialsDatabase from '@/data/materials.json';
 import type { ExportFormat, Material } from '@/types';
@@ -46,12 +46,18 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         setIsExporting(true);
         try {
             if (selected === 'floor_plans') {
-                const svg = generateFloorPlanSVG(project, 0); // 0 for ground floor
-                downloadFile(svg, `${project.name.replace(/\s/g, '_')}_Plan.svg`, 'image/svg+xml');
+                const html = generateProjectExportHTML(project);
+                downloadFile(html, `${project.name.replace(/\s/g, '_')}_Plans_Elevations.html`, 'text/html');
             } else if (selected === 'material_list') {
                 const { items } = calculateProjectCost(project, materialsDatabase as Record<string, Material>);
                 const html = generateMaterialScheduleHTML(items, project.budget.currency);
                 downloadFile(html, `${project.name.replace(/\s/g, '_')}_Schedule.html`, 'text/html');
+            } else if (selected === 'electrical') {
+                const svg = generateFloorPlanSVG(project, 0, { plan_type: 'electrical', title: 'Electrical Layout' });
+                downloadFile(svg, `${project.name.replace(/\s/g, '_')}_Electrical_Plan.svg`, 'image/svg+xml');
+            } else if (selected === 'plumbing') {
+                const svg = generateFloorPlanSVG(project, 0, { plan_type: 'plumbing', title: 'Plumbing Layout' });
+                downloadFile(svg, `${project.name.replace(/\s/g, '_')}_Plumbing_Plan.svg`, 'image/svg+xml');
             } else {
                 alert(`Export for ${selected} is coming in Phase 4!`);
             }

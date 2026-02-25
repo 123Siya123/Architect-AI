@@ -56,6 +56,7 @@ export interface ExportOptions {
   date: string;
   project_number: string;
   revision: string;
+  plan_type: 'floor_plan' | 'electrical' | 'plumbing';
 }
 
 export interface GeneratedDrawing {
@@ -83,6 +84,7 @@ const DEFAULT_OPTIONS: ExportOptions = {
   date: new Date().toISOString().slice(0, 10),
   project_number: '001',
   revision: 'A',
+  plan_type: 'floor_plan',
 };
 
 /** Line weight definitions in mm (SVG stroke-width) */
@@ -140,6 +142,13 @@ export function generateFloorPlanSVG(
   // Include Room nodes explicitly for labels
   const roomNodes = Object.values(project.nodes).filter(n =>
     n.type === 'Room' && n.position.y >= floorMin && n.position.y <= floorMax
+  );
+
+  // If this is an electrical or plumbing plan, we might want to tone down the walls, but for now we'll keep them as is and just draw the symbols on top.
+  // Let's also collect systems nodes
+  const sysNodes = Object.values(project.nodes).filter(n =>
+    ['Toilet', 'Sink', 'Shower', 'Bathtub', 'LightSwitch', 'ElectricalOutlet', 'ElectricalPanel'].includes(n.type) &&
+    n.position.y >= floorMin && n.position.y <= floorMax
   );
 
   const wallNodes = floorNodes.filter(n => n.type === 'Wall' || n.type === 'Partition');
@@ -247,7 +256,7 @@ export function generateFloorPlanSVG(
   svg += `\n</g>\n`;
 
   // ─── 7. Draw Walls ────────────────────────────────────────────────────────
-  svg += `<!-- Walls -->\n<g id="walls">`;
+  svg += `<!-- Walls -->\n<g id="walls" ${opts.plan_type !== 'floor_plan' ? 'opacity="0.5"' : ''}>`;
   wallNodes.forEach(n => {
     const wallSvg = drawWallSection(n, toSvgX, toSvgZ, toMm, project.nodes, LW);
     svg += wallSvg;
@@ -255,7 +264,7 @@ export function generateFloorPlanSVG(
   svg += `\n</g>\n`;
 
   // ─── 8. Draw Windows ──────────────────────────────────────────────────────
-  svg += `<!-- Windows -->\n<g id="windows">`;
+  svg += `<!-- Windows -->\n<g id="windows" ${opts.plan_type !== 'floor_plan' ? 'opacity="0.5"' : ''}>`;
   windowNodes.forEach(n => {
     const parent = n.parent_id ? project.nodes[n.parent_id] : null;
     const winSvg = drawWindowSymbol(n, parent, toSvgX, toSvgZ, toMm, LW);
@@ -264,7 +273,7 @@ export function generateFloorPlanSVG(
   svg += `\n</g>\n`;
 
   // ─── 9. Draw Doors ────────────────────────────────────────────────────────
-  svg += `<!-- Doors -->\n<g id="doors">`;
+  svg += `<!-- Doors -->\n<g id="doors" ${opts.plan_type !== 'floor_plan' ? 'opacity="0.5"' : ''}>`;
   doorNodes.forEach(n => {
     const parent = n.parent_id ? project.nodes[n.parent_id] : null;
     const doorSvg = drawDoorSymbol(n, parent, toSvgX, toSvgZ, toMm, LW);
@@ -274,7 +283,7 @@ export function generateFloorPlanSVG(
 
   // ─── 10. Room Labels ─────────────────────────────────────────────────────
   if (opts.include_room_labels) {
-    svg += `<!-- Room Labels -->\n<g id="room-labels">`;
+    svg += `<!-- Room Labels -->\n<g id="room-labels" ${opts.plan_type !== 'floor_plan' ? 'opacity="0.3"' : ''}>`;
     roomNodes.forEach(n => {
       const cx = toSvgX(n.position.x);
       const cz = toSvgZ(n.position.z);
@@ -295,6 +304,52 @@ export function generateFloorPlanSVG(
     svg += `\n</g>\n`;
   }
 
+  // ─── 10.5. Systems (Electrical / Plumbing) ──────────────────────────────
+  if (opts.plan_type === 'electrical') {
+    const elecNodes = sysNodes.filter(n => ['LightSwitch', 'ElectricalOutlet', 'ElectricalPanel'].includes(n.type));
+    svg += `<!-- Electrical Symbols -->\n<g id="electrical">`;
+    elecNodes.forEach(n => {
+      const cx = toSvgX(n.position.x);
+      const cz = toSvgZ(n.position.z);
+      if (n.type === 'LightSwitch') {
+        svg += `\n  <circle cx="${cx.toFixed(2)}" cy="${cz.toFixed(2)}" r="2.5" fill="none" stroke="#eab308" stroke-width="0.8"/>
+  <text x="${cx.toFixed(2)}" y="${(cz + 1).toFixed(2)}" text-anchor="middle" font-size="2.5" font-weight="bold" fill="#eab308">S</text>`;
+      } else if (n.type === 'ElectricalOutlet') {
+        svg += `\n  <circle cx="${cx.toFixed(2)}" cy="${cz.toFixed(2)}" r="2.5" fill="none" stroke="#eab308" stroke-width="0.8"/>
+  <line x1="${(cx - 2.5).toFixed(2)}" y1="${cz.toFixed(2)}" x2="${(cx + 2.5).toFixed(2)}" y2="${cz.toFixed(2)}" stroke="#eab308" stroke-width="0.8"/>`;
+      } else if (n.type === 'ElectricalPanel') {
+        svg += `\n  <rect x="${(cx - 4).toFixed(2)}" y="${(cz - 2).toFixed(2)}" width="8" height="4" fill="#1e293b" />
+  <text x="${cx.toFixed(2)}" y="${(cz + 1.2).toFixed(2)}" text-anchor="middle" font-size="3" fill="white" font-weight="bold">DB</text>`;
+      }
+    });
+    svg += `\n</g>\n`;
+  } else if (opts.plan_type === 'plumbing') {
+    const plumbNodes = sysNodes.filter(n => ['Toilet', 'Sink', 'Shower', 'Bathtub'].includes(n.type));
+    svg += `<!-- Plumbing Symbols -->\n<g id="plumbing">`;
+    plumbNodes.forEach(n => {
+      const cx = toSvgX(n.position.x);
+      const cz = toSvgZ(n.position.z);
+      const w = toMm(n.dimensions.x);
+      const h = toMm(n.dimensions.z);
+      const rx = cx - w / 2;
+      const ry = cz - h / 2;
+      if (n.type === 'Toilet') {
+        svg += `\n  <ellipse cx="${cx.toFixed(2)}" cy="${(cz + h / 4).toFixed(2)}" rx="${(w / 2.5).toFixed(2)}" ry="${(h / 3).toFixed(2)}" fill="none" stroke="#3b82f6" stroke-width="0.7"/>
+  <rect x="${(cx - w / 2.5).toFixed(2)}" y="${(cz - h / 2).toFixed(2)}" width="${(w * 0.8).toFixed(2)}" height="${(h / 3).toFixed(2)}" fill="none" stroke="#3b82f6" stroke-width="0.7"/>`;
+      } else if (n.type === 'Sink') {
+        svg += `\n  <ellipse cx="${cx.toFixed(2)}" cy="${cz.toFixed(2)}" rx="${(w / 2.5).toFixed(2)}" ry="${(h / 2.5).toFixed(2)}" fill="none" stroke="#3b82f6" stroke-width="0.7"/>`;
+      } else if (n.type === 'Shower') {
+        svg += `\n  <rect x="${rx.toFixed(2)}" y="${ry.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="none" stroke="#3b82f6" stroke-width="0.7"/>
+  <line x1="${rx.toFixed(2)}" y1="${ry.toFixed(2)}" x2="${(rx + w).toFixed(2)}" y2="${(ry + h).toFixed(2)}" stroke="#3b82f6" stroke-width="0.4"/>
+  <line x1="${rx.toFixed(2)}" y1="${(ry + h).toFixed(2)}" x2="${(rx + w).toFixed(2)}" y2="${ry.toFixed(2)}" stroke="#3b82f6" stroke-width="0.4"/>`;
+      } else if (n.type === 'Bathtub') {
+        svg += `\n  <rect x="${rx.toFixed(2)}" y="${ry.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" rx="3" ry="3" fill="none" stroke="#3b82f6" stroke-width="0.7"/>`;
+      }
+    });
+    svg += `\n</g>\n`;
+  }
+
+
   // ─── 11. Dimension chains ─────────────────────────────────────────────────
   if (opts.include_dimensions) {
     svg += generateDimensionChains(
@@ -307,38 +362,38 @@ export function generateFloorPlanSVG(
   if (opts.include_north_arrow) {
     const nax = MARGIN + drawW - 15;
     const nay = MARGIN + 15;
-    svg += `<!-- North Arrow -->
-<g id="north-arrow" transform="translate(${nax}, ${nay})">
-  <circle cx="0" cy="0" r="8" fill="white" stroke="#000" stroke-width="0.4"/>
-  <path d="M 0,-7 L 3,3 L 0,1 L -3,3 Z" fill="#000"/>
-  <path d="M 0,-7 L -3,3 L 0,1 L 3,3 Z" fill="white" stroke="#000" stroke-width="0.2"/>
-  <text x="0" y="-9" text-anchor="middle" font-size="3.5" font-weight="bold" fill="#000">N</text>
-</g>
-`;
+    svg += `< !--North Arrow-- >
+      <g id="north-arrow" transform = "translate(${nax}, ${nay})" >
+        <circle cx="0" cy = "0" r = "8" fill = "white" stroke = "#000" stroke - width="0.4" />
+          <path d="M 0,-7 L 3,3 L 0,1 L -3,3 Z" fill = "#000" />
+            <path d="M 0,-7 L -3,3 L 0,1 L 3,3 Z" fill = "white" stroke = "#000" stroke - width="0.2" />
+              <text x="0" y = "-9" text - anchor="middle" font - size="3.5" font - weight="bold" fill = "#000" > N </text>
+                </g>
+                  `;
   }
 
   // ─── 13. Title Block ─────────────────────────────────────────────────────
   const tbY = paper.height - TITLE_HEIGHT;
-  svg += `<!-- Title Block -->
-<g id="title-block">
-  <line x1="${MARGIN}" y1="${tbY}" x2="${paper.width - MARGIN}" y2="${tbY}" stroke="#000" stroke-width="0.5"/>
-  
-  <!-- Project info -->
-  <text x="${MARGIN + 3}" y="${tbY + 6}" font-size="5" font-weight="800" fill="#000">${escapeXml(opts.title)}</text>
-  <text x="${MARGIN + 3}" y="${tbY + 12}" font-size="3.5" fill="#333">${escapeXml(project.name)}</text>
-  <text x="${MARGIN + 3}" y="${tbY + 18}" font-size="3" fill="#666">Floor ${floorLevel} — Total area: ${(houseW * houseD).toFixed(1)} m²</text>
+  svg += `< !--Title Block-- >
+      <g id="title-block" >
+        <line x1="${MARGIN}" y1 = "${tbY}" x2 = "${paper.width - MARGIN}" y2 = "${tbY}" stroke = "#000" stroke - width="0.5" />
 
-  <!-- Drawing info box -->
-  <line x1="${paper.width - 80}" y1="${tbY}" x2="${paper.width - 80}" y2="${paper.height - MARGIN}" stroke="#000" stroke-width="0.3"/>
-  <text x="${paper.width - 40}" y="${tbY + 5}" text-anchor="middle" font-size="2.5" fill="#666">Drawn by:</text>
-  <text x="${paper.width - 40}" y="${tbY + 10}" text-anchor="middle" font-size="3" font-weight="600" fill="#000">${escapeXml(opts.drawn_by)}</text>
-  <line x1="${paper.width - 80}" y1="${tbY + 13}" x2="${paper.width - MARGIN}" y2="${tbY + 13}" stroke="#000" stroke-width="0.2"/>
-  <text x="${paper.width - 40}" y="${tbY + 17}" text-anchor="middle" font-size="2.5" fill="#666">Scale:</text>
-  <text x="${paper.width - 40}" y="${tbY + 22}" text-anchor="middle" font-size="3" font-weight="600" fill="#000">${opts.scale}  ${opts.paper}</text>
-  <line x1="${paper.width - 80}" y1="${tbY + 24}" x2="${paper.width - MARGIN}" y2="${tbY + 24}" stroke="#000" stroke-width="0.2"/>
-  <text x="${paper.width - 75}" y="${tbY + 28}" font-size="2.5" fill="#666">Date: ${opts.date}   Rev: ${opts.revision}   Dwg: ${opts.project_number}</text>
-</g>
-`;
+          <!--Project info-- >
+            <text x="${MARGIN + 3}" y = "${tbY + 6}" font - size="5" font - weight="800" fill = "#000" > ${escapeXml(opts.title)} </text>
+              < text x = "${MARGIN + 3}" y = "${tbY + 12}" font - size="3.5" fill = "#333" > ${escapeXml(project.name)} </text>
+                < text x = "${MARGIN + 3}" y = "${tbY + 18}" font - size="3" fill = "#666" > Floor ${floorLevel} — Total area: ${(houseW * houseD).toFixed(1)} m²</text>
+
+                  < !--Drawing info box-- >
+                    <line x1="${paper.width - 80}" y1 = "${tbY}" x2 = "${paper.width - 80}" y2 = "${paper.height - MARGIN}" stroke = "#000" stroke - width="0.3" />
+                      <text x="${paper.width - 40}" y = "${tbY + 5}" text - anchor="middle" font - size="2.5" fill = "#666" > Drawn by: </text>
+                        < text x = "${paper.width - 40}" y = "${tbY + 10}" text - anchor="middle" font - size="3" font - weight="600" fill = "#000" > ${escapeXml(opts.drawn_by)} </text>
+                          < line x1 = "${paper.width - 80}" y1 = "${tbY + 13}" x2 = "${paper.width - MARGIN}" y2 = "${tbY + 13}" stroke = "#000" stroke - width="0.2" />
+                            <text x="${paper.width - 40}" y = "${tbY + 17}" text - anchor="middle" font - size="2.5" fill = "#666" > Scale: </text>
+                              < text x = "${paper.width - 40}" y = "${tbY + 22}" text - anchor="middle" font - size="3" font - weight="600" fill = "#000" > ${opts.scale}  ${opts.paper} </text>
+                                < line x1 = "${paper.width - 80}" y1 = "${tbY + 24}" x2 = "${paper.width - MARGIN}" y2 = "${tbY + 24}" stroke = "#000" stroke - width="0.2" />
+                                  <text x="${paper.width - 75}" y = "${tbY + 28}" font - size="2.5" fill = "#666" > Date: ${opts.date} Rev: ${opts.revision} Dwg: ${opts.project_number} </text>
+                                    </g>
+                                      `;
 
   svg += `</svg>`;
   return svg;
@@ -868,4 +923,274 @@ function escapeXml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
+}
+
+// =============================================================================
+// ELEVATION GENERATOR
+// =============================================================================
+
+export function generateElevationSVG(
+  project: PSGProject,
+  side: 'North' | 'South' | 'East' | 'West',
+  options: Partial<ExportOptions> = {}
+): string {
+  const opts: ExportOptions = { ...DEFAULT_OPTIONS, ...options };
+  const paper = PAPER_SIZES[opts.paper];
+  const MARGIN = 20;
+  const TITLE_HEIGHT = 30;
+  const DIM_LEADER = 8;
+  const DIM_OFFSET = 6;
+  const dimStroke = LW.DIM;
+
+  const scaleRatio = getScaleRatio(opts.scale);
+  const mmPerMeter = 1000 / scaleRatio;
+
+  const drawW = paper.width - 2 * MARGIN;
+  const drawH = paper.height - MARGIN - TITLE_HEIGHT - MARGIN;
+
+  const archNodes = Object.values(project.nodes).filter(
+    n => n.type === 'Wall' || n.type === 'Slab' || n.type === 'Roof' || n.type === 'Window' || n.type === 'Door' || n.type === 'Partition'
+  );
+
+  if (archNodes.length === 0) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${paper.width} ${paper.height}"><text y="20" font-family="sans-serif" font-size="5">No data found for ${side} elevation</text></svg>`;
+  }
+
+  interface ProjNode {
+    node: PSGNode;
+    minH: number; maxH: number;
+    minV: number; maxV: number;
+    depth: number;
+    rx: number; ry: number; // For door visualization
+  }
+
+  const projected: ProjNode[] = [];
+
+  archNodes.forEach(node => {
+    let sizeX = node.dimensions.x;
+    let sizeY = node.dimensions.y;
+    let sizeZ = node.dimensions.z;
+    const yaw = Math.round(node.rotation.yaw) % 180;
+    if (yaw === 90 || yaw === -90) {
+      sizeX = node.dimensions.z;
+      sizeZ = node.dimensions.x;
+    }
+
+    if (node.type === 'Window' || node.type === 'Door') {
+      const ow = node.opening_width ?? node.dimensions.x;
+      if (yaw === 90 || yaw === -90) {
+        sizeZ = ow;
+      } else {
+        sizeX = ow;
+      }
+    }
+
+    const minX = node.position.x - sizeX / 2;
+    const maxX = node.position.x + sizeX / 2;
+    const minZ = node.position.z - sizeZ / 2;
+    const maxZ = node.position.z + sizeZ / 2;
+    const minY = node.position.y;
+    const maxY = node.position.y + sizeY;
+
+    let minH = 0, maxH = 0, depth = 0;
+    if (side === 'North') {
+      minH = minX; maxH = maxX; depth = node.position.z;
+    } else if (side === 'South') {
+      minH = -maxX; maxH = -minX; depth = -node.position.z;
+    } else if (side === 'East') {
+      minH = -maxZ; maxH = -minZ; depth = -node.position.x;
+    } else if (side === 'West') {
+      minH = minZ; maxH = maxZ; depth = node.position.x;
+    }
+
+    // If a wall is perpendicular to view, its H width is just its thickness.
+    projected.push({
+      node, minH, maxH, minV: minY, maxV: maxY, depth,
+      rx: node.position.x, ry: node.position.y // Not strictly needed
+    });
+  });
+
+  // Sort descending by distance from camera (larger distance drawn first)
+  projected.sort((a, b) => {
+    let distA, distB;
+    if (side === 'North') distA = a.node.position.z;
+    else if (side === 'South') distA = -a.node.position.z;
+    else if (side === 'East') distA = -a.node.position.x;
+    else distA = a.node.position.x;
+
+    if (side === 'North') distB = b.node.position.z;
+    else if (side === 'South') distB = -b.node.position.z;
+    else if (side === 'East') distB = -b.node.position.x;
+    else distB = b.node.position.x;
+
+    return distB - distA; // large distance first 
+  });
+
+  const allMinH = Math.min(...projected.map(p => p.minH));
+  const allMaxH = Math.max(...projected.map(p => p.maxH));
+
+  // Use slabs for minimum vertical
+  const slabV = projected.filter(p => p.node.type === 'Slab').map(p => p.minV);
+  const allMinV = slabV.length > 0 ? Math.min(...slabV) : 0;
+  const allMaxV = Math.max(...projected.map(p => p.maxV));
+
+  const houseW = allMaxH - allMinH;
+  const houseH = allMaxV - allMinV;
+
+  const houseMmW = houseW * mmPerMeter;
+  const houseMmH = houseH * mmPerMeter;
+
+  const offsetX = MARGIN + (drawW - houseMmW) / 2 - allMinH * mmPerMeter;
+  const offsetTop = MARGIN + (drawH - houseMmH) / 2;
+  const groundSvgY = offsetTop + houseMmH;
+
+  function toSvgX(h: number) { return h * mmPerMeter + offsetX; }
+  function toSvgY(v: number) { return groundSvgY - (v - allMinV) * mmPerMeter; }
+  function toMm(meters: number) { return meters * mmPerMeter; }
+
+  let svg = `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${paper.width}mm" height="${paper.height}mm" style="background:#fff; font-family:'Arial',sans-serif;">`;
+
+  svg += `<defs>
+  <marker id="arrowHead" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="3" markerHeight="3" orient="auto"><path d="M 0 0 L 6 3 L 0 6 z" fill="#000"/></marker>
+  <marker id="arrowTail" viewBox="0 0 6 6" refX="0" refY="3" markerWidth="3" markerHeight="3" orient="auto-start-reverse"><path d="M 0 0 L 6 3 L 0 6 z" fill="#000"/></marker>
+  </defs>`;
+
+  svg += `<rect x="5" y="5" width="${paper.width - 10}" height="${paper.height - 10}" fill="none" stroke="#000" stroke-width="0.5"/>`;
+  svg += `<rect x="${MARGIN}" y="${MARGIN}" width="${drawW}" height="${drawH}" fill="none" stroke="#999" stroke-width="0.2" stroke-dasharray="2 1"/>`;
+
+  svg += `<g id="elevation-nodes">`;
+  projected.forEach(p => {
+    const x = toSvgX(p.minH);
+    const y = toSvgY(p.maxV);
+    const w = Math.max(0.1, toMm(p.maxH - p.minH));
+    const h = Math.max(0.1, toMm(p.maxV - p.minV));
+
+    let fill = '#fff';
+    let stroke = '#000';
+    let strokeW: number = LW.WALL_CUT;
+
+    if (p.node.type === 'Roof') { fill = '#bbbbbb'; strokeW = LW.WALL_CUT; }
+    if (p.node.type === 'Slab') { fill = '#eeeeee'; strokeW = LW.WALL_CUT; }
+    if (p.node.type === 'Window') { fill = '#cceeff'; strokeW = LW.OPENING; }
+    if (p.node.type === 'Door') { fill = '#ddbbaa'; strokeW = LW.OPENING; }
+
+    // Draw the node's rect
+    svg += `\n  <rect class="${p.node.type}" data-id="${p.node.id}" x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}" stroke-linejoin="round"/>`;
+
+    if (p.node.type === 'Window') {
+      svg += `\n  <line x1="${x.toFixed(2)}" y1="${y.toFixed(2)}" x2="${(x + w).toFixed(2)}" y2="${(y + h).toFixed(2)}" stroke="${stroke}" stroke-width="${LW.DIM}"/>`;
+      svg += `\n  <line x1="${x.toFixed(2)}" y1="${(y + h).toFixed(2)}" x2="${(x + w).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${stroke}" stroke-width="${LW.DIM}"/>`;
+    }
+
+    // Simplistic door frame presentation
+    if (p.node.type === 'Door') {
+      svg += `\n  <line x1="${(x + w / 2).toFixed(2)}" y1="${y.toFixed(2)}" x2="${(x + w / 2).toFixed(2)}" y2="${(y + h).toFixed(2)}" stroke="${stroke}" stroke-width="${LW.DIM}"/>`;
+    }
+  });
+
+  // Ground Line
+  svg += `\n  <line x1="${MARGIN}" y1="${groundSvgY.toFixed(2)}" x2="${MARGIN + drawW}" y2="${groundSvgY.toFixed(2)}" stroke="#000" stroke-width="${LW.WALL_CUT * 1.5}"/>`;
+  svg += `\n</g>`;
+
+  if (opts.include_dimensions) {
+    svg += `\n<g id="dimensions">`;
+    // Overall horizontal dimension
+    svg += dimLine(toSvgX(allMinH), groundSvgY + DIM_LEADER, toSvgX(allMaxH), groundSvgY + DIM_LEADER, toSvgX((allMinH + allMaxH) / 2), groundSvgY + DIM_LEADER - 2.5, formatDim(houseW) + ' WIDTH', dimStroke, false);
+
+    // Overall vertical dimension (Height)
+    svg += dimLine(toSvgX(allMinH) - DIM_LEADER, groundSvgY, toSvgX(allMinH) - DIM_LEADER, toSvgY(allMaxV), toSvgX(allMinH) - DIM_LEADER - 3, (groundSvgY + toSvgY(allMaxV)) / 2, formatDim(houseH) + ' HEIGHT', dimStroke, true);
+    svg += `\n</g>`;
+  }
+
+  // Title Block
+  const tbY = paper.height - TITLE_HEIGHT;
+  svg += `
+<g id="title-block">
+  <line x1="${MARGIN}" y1="${tbY}" x2="${paper.width - MARGIN}" y2="${tbY}" stroke="#000" stroke-width="0.5"/>
+  <text x="${MARGIN + 3}" y="${tbY + 6}" font-size="5" font-weight="800" fill="#000">${escapeXml(opts.title)}</text>
+  <text x="${MARGIN + 3}" y="${tbY + 12}" font-size="3.5" fill="#333">${escapeXml(project.name)}</text>
+  
+  <line x1="${paper.width - 80}" y1="${tbY}" x2="${paper.width - 80}" y2="${paper.height - MARGIN}" stroke="#000" stroke-width="0.3"/>
+  <text x="${paper.width - 40}" y="${tbY + 5}" text-anchor="middle" font-size="2.5" fill="#666">Drawn by:</text>
+  <text x="${paper.width - 40}" y="${tbY + 10}" text-anchor="middle" font-size="3" font-weight="600" fill="#000">${escapeXml(opts.drawn_by)}</text>
+  <line x1="${paper.width - 80}" y1="${tbY + 13}" x2="${paper.width - MARGIN}" y2="${tbY + 13}" stroke="#000" stroke-width="0.2"/>
+  <text x="${paper.width - 40}" y="${tbY + 17}" text-anchor="middle" font-size="2.5" fill="#666">Scale:</text>
+  <text x="${paper.width - 40}" y="${tbY + 22}" text-anchor="middle" font-size="3" font-weight="600" fill="#000">${opts.scale}  ${opts.paper}</text>
+</g>
+`;
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// =============================================================================
+// HTML EXPORT GENERATOR
+// =============================================================================
+
+export function generateProjectExportHTML(
+  project: PSGProject,
+  options: Partial<ExportOptions> = {}
+): string {
+  let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>${escapeXml(project.name)} - Architectural Plans</title>
+<style>
+  body { background: #525659; margin: 0; padding: 20px; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+  .page { 
+    background: white; 
+    margin: 0 0 20px 0; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+    width: 420mm; /* A3 landscape width */ 
+    height: 297mm; /* A3 landscape height */
+    page-break-after: always;
+    break-after: page;
+    position: relative;
+    overflow: hidden;
+  }
+  .page svg { width: 100%; height: 100%; }
+  @media print {
+    @page { size: A3 landscape; margin: 0; }
+    body { background: white; padding: 0; display: block; }
+    .page { box-shadow: none; margin: 0; width: 100%; height: 100vh; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+`;
+
+  // Find max Y of all nodes to determine number of floors
+  let maxWallY = 0;
+  Object.values(project.nodes).forEach(n => {
+    if (n.type === 'Wall' || n.type === 'Room') {
+      maxWallY = Math.max(maxWallY, n.position.y);
+    }
+  });
+
+  // Floor levels are typically every ~3m
+  let totalFloors = Math.max(1, Math.floor(maxWallY / 2.5) + 1);
+
+  for (let index = 0; index < totalFloors; index++) {
+    const title = index === 0 ? 'Ground Floor Plan' : `Level ${index} Plan`;
+    const svg = generateFloorPlanSVG(project, index, { ...options, title });
+    html += `<div class="page">${svg}</div>\n`;
+  }
+
+  const sides: ('North' | 'South' | 'East' | 'West')[] = ['North', 'South', 'East', 'West'];
+  sides.forEach(side => {
+    const svg = generateElevationSVG(project, side, { ...options, title: `${side} Elevation` });
+    html += `<div class="page">${svg}</div>\n`;
+  });
+
+  html += `
+  <script>
+    window.onload = () => {
+      // Trigger print after a short delay
+      setTimeout(() => window.print(), 500);
+    };
+  </script>
+</body>
+</html>`;
+  return html;
 }

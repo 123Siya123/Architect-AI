@@ -123,11 +123,10 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision }:
         () => buildWallWithOpenings(adjustedNode, allNodes),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [node.id, node.version, adjustedWidth, node.dimensions.y, node.dimensions.z,
-        node.children_ids.length,
-        ...node.children_ids.map(id => {
+        node.children_ids.map(id => {
             const child = allNodes[id];
             return child ? `${child.version}_${child.position.x}_${child.position.z}_${child.position.y}` : '';
-        })]
+        }).join('|')]
     );
 
     const material = useMemo(
