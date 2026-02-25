@@ -98,6 +98,13 @@ The house data uses these readable keys:
 - "function": Room function (living, bedroom, kitchen, bathroom, hallway)
 - "tags": Structural tags (load_bearing, exterior, interior, wet_room)
 
+## ROTATION (YAW) MASTER CLASS
+- Yaw is rotation around the Y-axis (UP).
+- **yaw=0**: Wall runs East-West. Its "width" is along the X-axis. Its "depth" (thickness) is along the Z-axis.
+- **yaw=90**: Wall runs North-South. Its "width" is now along the Z-axis. Its "depth" (thickness) is along the X-axis.
+- **Correction Protocol**: If walls look "thin" or "offset," you probably have the wrong yaw.
+- North/South walls MUST have yaw=90. East/West walls MUST have yaw=0.
+
 ## STANDARD DIMENSIONS
 - Ceiling height: 2.7m
 - Wall thickness: 0.25m (exterior), 0.12m (partition)
