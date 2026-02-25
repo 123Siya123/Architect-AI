@@ -1078,7 +1078,7 @@ async function callGroq(
         tools: AI_TOOLS,
         tool_choice: 'auto',
         temperature: 0.2,
-        max_tokens: 8192,
+        max_tokens: 1024,
     };
 
     const response = await fetch(url, {
@@ -1139,7 +1139,7 @@ async function callGroqNoTools(
         model: config.model,
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         temperature: 0.3,
-        max_tokens: 8192,
+        max_tokens: 1024,
     };
 
     const response = await fetch(url, {
