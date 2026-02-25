@@ -331,6 +331,60 @@ export function compilePartitionGeometry(node: PSGNode): THREE.BufferGeometry {
     return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
 }
 
+/** Balcony geometry — floor slab + simple railing */
+export function compileBalconyGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+    const railHeight = 1.1; // Standard railing height
+    const railThick = 0.04;
+
+    // 1. The floor slab
+    const slabGeom = new THREE.BoxGeometry(w, h, d);
+    const slab = new THREE.Mesh(slabGeom);
+    group.add(slab);
+
+    // 2. Railing posts (4 corners)
+    const postGeom = new THREE.BoxGeometry(railThick, railHeight, railThick);
+    const hw = w / 2 - railThick / 2;
+    const hd = d / 2 - railThick / 2;
+    const py = h / 2 + railHeight / 2;
+
+    const postPositions = [
+        [hw, py, hd], [-hw, py, hd], [hw, py, -hd], [-hw, py, -hd]
+    ];
+
+    postPositions.forEach(pos => {
+        const post = new THREE.Mesh(postGeom);
+        post.position.set(pos[0], pos[1], pos[2]);
+        group.add(post);
+    });
+
+    // 3. Top rails (horizontal)
+    const railY = h / 2 + railHeight;
+
+    // Long rails
+    const longRailGeom = new THREE.BoxGeometry(w, railThick, railThick);
+    const railFront = new THREE.Mesh(longRailGeom);
+    railFront.position.set(0, railY, hd);
+    group.add(railFront);
+
+    const railBack = new THREE.Mesh(longRailGeom);
+    railBack.position.set(0, railY, -hd);
+    group.add(railBack);
+
+    // Side rails
+    const sideRailGeom = new THREE.BoxGeometry(railThick, railThick, d);
+    const railLeft = new THREE.Mesh(sideRailGeom);
+    railLeft.position.set(-hw, railY, 0);
+    group.add(railLeft);
+
+    const railRight = new THREE.Mesh(sideRailGeom);
+    railRight.position.set(hw, railY, 0);
+    group.add(railRight);
+
+    return group;
+}
+
 /** Custom geometry — renders a box for now, will use cad_script in Phase 3 */
 export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry {
     return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
@@ -530,7 +584,7 @@ export const GEOMETRY_COMPILERS: Record<
     Stairs: compileStairsGeometry,
     Column: compileColumnGeometry,
     Beam: compileBeamGeometry,
-    Balcony: compileSlabGeometry,
+    Balcony: compileBalconyGeometry,
     Custom: compileCustomGeometry,
 };
 
