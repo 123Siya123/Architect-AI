@@ -43,7 +43,7 @@ export const AI_TOOLS = [
                     type: {
                         type: 'string',
                         enum: ['Wall', 'Window', 'Door', 'Room', 'Floor', 'Slab', 'Stairs', 'Roof',
-                            'Column', 'Beam', 'Foundation', 'Partition', 'Balcony',
+                            'Column', 'Beam', 'Foundation', 'Partition', 'Balcony', 'Custom',
                             'Toilet', 'Sink', 'Shower', 'Bathtub', 'LightSwitch', 'ElectricalOutlet', 'ElectricalPanel'],
                         description: 'Type of element to add',
                     },
@@ -81,6 +81,14 @@ export const AI_TOOLS = [
                         type: 'string',
                         enum: ['straight', 'l_shaped', 'u_shaped', 'spiral'],
                         description: 'Stair style (only for Stairs type)',
+                    },
+                    stair_riser_height: {
+                        type: 'number',
+                        description: 'Height of each step (default: 0.18m)',
+                    },
+                    stair_tread_depth: {
+                        type: 'number',
+                        description: 'Depth of each step (default: 0.28m)',
                     },
                 },
                 required: ['type', 'parent_id', 'name'],
@@ -200,6 +208,14 @@ export const AI_TOOLS = [
                         type: 'string',
                         enum: ['straight', 'l_shaped', 'u_shaped', 'spiral'],
                         description: 'New stair style (for Stairs nodes only)',
+                    },
+                    stair_riser_height: {
+                        type: 'number',
+                        description: 'New height of each step',
+                    },
+                    stair_tread_depth: {
+                        type: 'number',
+                        description: 'New depth of each step',
                     },
                     yaw: {
                         type: 'number',

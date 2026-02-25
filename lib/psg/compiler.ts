@@ -331,6 +331,11 @@ export function compilePartitionGeometry(node: PSGNode): THREE.BufferGeometry {
     return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
 }
 
+/** Custom geometry — renders a box for now, will use cad_script in Phase 3 */
+export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
 // =============================================================================
 // MATERIAL COMPILATION
 // =============================================================================
@@ -525,6 +530,8 @@ export const GEOMETRY_COMPILERS: Record<
     Stairs: compileStairsGeometry,
     Column: compileColumnGeometry,
     Beam: compileBeamGeometry,
+    Balcony: compileSlabGeometry,
+    Custom: compileCustomGeometry,
 };
 
 /**

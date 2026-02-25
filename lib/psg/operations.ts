@@ -414,6 +414,8 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         roll = 0,
         material_id = '',
         stair_style,
+        stair_riser_height,
+        stair_tread_depth,
         roof_style,
         roof_pitch_degrees,
         room_function,
@@ -481,6 +483,8 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         parent_id: (parent_id as string | null),
         children_ids: [],
         stair_style: stair_style as PSGNode['stair_style'],
+        stair_riser_height: stair_riser_height ? Number(stair_riser_height) : undefined,
+        stair_tread_depth: stair_tread_depth ? Number(stair_tread_depth) : undefined,
         roof_style: roof_style as PSGNode['roof_style'],
         roof_pitch_degrees: roof_pitch_degrees ? Number(roof_pitch_degrees) : undefined,
         room_function: room_function as string | undefined,
@@ -600,6 +604,8 @@ function replaceNode(project: PSGProject, operation: PSGOperation): PSGProject {
         new_type?: string;
         roof_style?: string;
         stair_style?: string;
+        stair_riser_height?: number;
+        stair_tread_depth?: number;
         roof_pitch_degrees?: number;
         preserve_children?: boolean;
         yaw?: number;
@@ -633,6 +639,8 @@ function replaceNode(project: PSGProject, operation: PSGOperation): PSGProject {
             ...(params.roof_pitch_degrees !== undefined && { roof_pitch_degrees: params.roof_pitch_degrees }),
             // Stair-specific overrides
             ...(params.stair_style !== undefined && { stair_style: params.stair_style as PSGNode['stair_style'] }),
+            ...(params.stair_riser_height !== undefined && { stair_riser_height: params.stair_riser_height }),
+            ...(params.stair_tread_depth !== undefined && { stair_tread_depth: params.stair_tread_depth }),
             // Rotation overrides
             rotation: {
                 yaw: params.yaw !== undefined ? params.yaw : oldNode.rotation.yaw,
@@ -709,7 +717,7 @@ function createCustomElement(project: PSGProject, operation: PSGOperation): PSGP
 
     const newNode: PSGNode = {
         id,
-        type: 'Wall', // Default type — rendererd as a box placeholder
+        type: 'Custom', // Properly set to Custom type
         name: name as string,
         position: snapVec3({
             x: Number(position_x),

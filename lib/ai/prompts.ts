@@ -29,7 +29,7 @@ You must analyze the user's request, plan the architectural modifications, and e
 
 ## DATA FORMAT — COMPRESSED PSG
 The house data uses a highly compressed format:
-- "t": Node type (Wall, Room, Floor, Window, Door, Roof, Stairs, Slab)
+- "t": Node type (Wall, Room, Floor, Window, Door, Roof, Stairs, Slab, Balcony, Custom)
 - "pos": [x, y, z] — center position in meters
 - "dim": [width, height, depth] — size in meters
 - "yaw": rotation in degrees (only present if not 0)
@@ -100,7 +100,8 @@ export const COORDINATOR_SYSTEM_PROMPT = `You are the COORDINATOR of an AI archi
 
 ## WORKER CAPABILITIES
 Workers have these tools:
-- add_node: Add element (Wall, Window, Door, Room, Floor, Slab, Stairs, Roof, etc.)
+- add_node: Add element (Wall, Window, Door, Room, Floor, Slab, Stairs, Roof, Balcony, etc.)
+- create_custom_element: Use this ONLY for very specific architectural features that don't fit standard types (e.g., custom ornaments, special columns). For staircases, ALWAYS use the "Stairs" type if possible.
 - move_node: Move element by delta (delta_x, delta_y, delta_z)
 - resize_node: Change dimensions (width, height, depth)
 - delete_node: Remove element

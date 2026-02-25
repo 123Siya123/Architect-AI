@@ -59,7 +59,7 @@ import type {
 } from '@/types';
 import { AI_TOOLS } from './tools';
 import { getProviderConfig, rotateKey, markKeyRateLimited, type AIProviderConfig } from './key-manager';
-import { validateOperation } from '@/lib/psg/validator';
+import { validateOperation, validateProject } from '@/lib/psg/validator';
 import { applyOperation } from '@/lib/psg/operations';
 import {
     prepareProjectContext,
@@ -87,7 +87,7 @@ You do NOT make tool calls yourself. You PLAN and DELEGATE.
 
 ## DATA FORMAT — PSG (Parametric Scene Graph)
 The house data uses these readable keys:
-- "type": Node type (Wall, Room, Floor, Window, Door, Roof, Stairs, Slab, etc.)
+- "type": Node type (Wall, Room, Floor, Window, Door, Roof, Stairs, Slab, Balcony, Custom, etc.)
 - "name": Human-readable name
 - "position": { x, y, z } — center position in meters
 - "dimensions": { width, height, depth } — size in meters
@@ -122,6 +122,7 @@ House
        │    └── Partition
        ├── Slab (floor/ceiling)
        ├── Stairs
+       ├── Balcony
        └── Foundation
   └── Roof
 
@@ -221,7 +222,7 @@ Execute the task described below. Make ALL necessary tool calls. Show your reaso
 Think step by step about positions, verify your math, and ensure everything fits together correctly.
 `;
 
-const CHECKER_SYSTEM_PROMPT = `You are a QUALITY CHECKER agent for an architecture AI team. Your job is to review the building state AFTER modifications were made, and verify that everything is spatially correct.
+const CHECKER_SYSTEM_PROMPT = `You are a QUALITY CHECKER agent for an architecture AI team. Your job is to review the building state AFTER modifications were made, and verify that everything is spatially correct. You have a ZERO TOLERANCE policy for overlaps and structural gaps.
 
 ## COORDINATE SYSTEM
 - X axis = East/West (positive X = East)
@@ -229,23 +230,27 @@ const CHECKER_SYSTEM_PROMPT = `You are a QUALITY CHECKER agent for an architectu
 - Z axis = North/South (positive Z = South)
 - All units are METERS. Positions are CENTER POINTS.
 
-## WHAT TO CHECK
-1. **Rotation correctness**: Do walls have the right yaw? A north/south wall should have yaw=90.
-2. **Height/Position alignment**: Are walls sitting at the right Y level? Ground floor walls at Y=1.35, first floor at Y=4.05, etc.
-3. **Slab placement**: Are slabs at the correct height (top of lower walls)?
-4. **Roof height**: Does the roof sit on top of the highest walls?
-5. **Wall connectivity**: Do exterior walls form a closed perimeter? Are corners connected?
-6. **Dimension consistency**: Are matching walls the same length? Are slabs the right size?
-7. **Parent-child relationships**: Are walls inside the correct rooms? Are windows in walls?
-8. **Overlap detection**: Are any elements overlapping incorrectly?
+## WHAT TO CHECK (ZERO TOLERANCE)
+1. **OVERLAP DETECTION**: Are any elements occupying the same physical space? Check centers and dimensions. Walls should NOT overlap; they should meet at corners.
+2. **WALL CONNECTIVITY**: Do exterior walls form a closed perimeter? Are corners connected? If a North-South wall (yaw=90) meets an East-West wall (yaw=0), their edges should align exactly.
+3. **ROTATION (YAW)**: A north/south wall MUST have yaw=90. An east/west wall MUST have yaw=0.
+4. **HEIGHT/POSITION ALIGNMENT**: Are walls sitting at the exact right Y level? Ground floor (Y=1.35), 1st floor (Y=4.05), 2nd floor (Y=6.75).
+5. **SLAB PLACEMENT**: Slabs must be at Y=0, Y=2.7, Y=5.4 etc. They should not float or be embedded inside walls.
+6. **ROOF ALIGNMENT**: Does the roof precisely cover the top of the highest walls?
+7. **PARENT-CHILD**: Are windows and doors correctly parented to the walls they are physically inside of?
+
+## AUDIT PROCEDURE
+1. Scan the "AUTOMATED SPATIAL WARNINGS" (if provided). These are geometric facts—if a warning says "Overlap detected," it is a mistake.
+2. Look at the ASCII plan to see the layout.
+3. Verify every node ID that was part of the recent task.
 
 ## OUTPUT FORMAT
-You MUST respond with a JSON object (and NOTHING else, no markdown, no backticks):
+You MUST respond with a JSON object (and NOTHING else):
 
 If everything is correct:
 {
   "status": "OK",
-  "message": "All modifications look correct. The building is structurally sound."
+  "message": "Audit passed. Structural integrity and spatial accuracy confirmed."
 }
 
 If mistakes are found:
@@ -253,16 +258,14 @@ If mistakes are found:
   "status": "MISTAKE_FOUND",
   "mistakes": [
     {
-      "node_id": "the ID of the problematic node (or 'general' if not node-specific)",
-      "description": "Detailed description of the mistake",
-      "expected": "What the correct value/state should be",
-      "actual": "What the current incorrect value/state is",
-      "fix_description": "Exactly what needs to be done to fix this"
+      "node_id": "ID of node",
+      "description": "Specific issue (e.g. 'Overlap with wall_2' or 'Mistyped Y position')",
+      "expected": "Numerical value expected (e.g. 'Y=4.05')",
+      "actual": "Numerical value found (e.g. 'Y=3.8')",
+      "fix_description": "Precise instruction for the Fixer (e.g. 'Move node up by 0.25m')"
     }
   ]
 }
-
-Be extremely thorough. Check EVERY node that was recently modified. Compare positions, dimensions, and rotations with what makes sense spatially.
 `;
 
 const FIXER_SYSTEM_PROMPT = `You are a FIXER agent for an architecture AI team. A quality checker has identified mistakes in the building. Your job is to FIX those mistakes using tool calls.
@@ -281,7 +284,13 @@ const FIXER_SYSTEM_PROMPT = `You are a FIXER agent for an architecture AI team. 
 5. Show your reasoning for each fix
 
 ## YOUR TASK
-Read the mistake descriptions below and make the corrective tool calls.
+Read the mistake descriptions below and make the corrective tool calls. Be EXTREMELY mathematically precise.
+
+## GUIDANCE FOR COMMON SPATIAL FIXES
+- **Overlaps at Corners**: If two walls (e.g. thickness 0.25m) meet at a corner and overlap, shorten one of the walls by 0.25m and move its center by 0.125m so they meet at the inner edge.
+- **Wall-Slab Alignment**: Walls should sit exactly ON TOP of slabs. If slab is at Y=2.7 and walls are 2.7m tall, wall centers must be at Y=4.05.
+- **Rotation Mistakes**: If a wall is "thin" or "pointing the wrong way," it likely has yaw=0 when it should be yaw=90.
+- **Node Parenting**: Ensure windows and doors are parented to the correct specific wall node ID.
 `;
 
 // =============================================================================
@@ -421,19 +430,94 @@ ${materialContext}
     }
 
     if (validatedOps.length === 0) {
-        progressLog.push('No valid operations found. Returning message only.');
+        progressLog.push('No valid operations found. Proceeding to audit anyway...');
+    }
+
+    // =========================================================================
+    // PHASE 2: AUDIT & FIX (The "Bulletproof" Accuracy Layer)
+    // =========================================================================
+    progressLog.push('\n───── 🔍 PHASE 2: AUDIT & CORRECTION ─────');
+    progressLog.push('Inspecting new building state for spatial inaccuracies...');
+
+    let projectAfterFixes = { ...projectAfterWorkers };
+    const fixerOps: PSGOperation[] = [];
+    let auditMessage = "";
+
+    try {
+        const checkerConfig = getProviderConfig();
+        const updatedSpecs = prepareProjectContext(projectAfterFixes);
+        const updatedAscii = generateASCIIFloorPlan(projectAfterFixes);
+
+        // Run a full project validation to find any overlaps or inconsistencies
+        // we missed during individual operation validation.
+        const structuralAudit = validateProject(projectAfterFixes);
+        let auditContext = "";
+        if (structuralAudit.warnings.length > 0) {
+            auditContext = "\n## AUTOMATED SPATIAL WARNINGS (POTENTIAL OVERLAPS/ERRORS):\n" +
+                structuralAudit.warnings.map((w: any) => `- ${w.message}`).join('\n');
+            progressLog.push(`   ⚠️ Found ${structuralAudit.warnings.length} potential spatial issues.`);
+        }
+
+        const checkerResult = await runChecker(
+            checkerConfig,
+            request.message,
+            updatedSpecs + auditContext, // Feed the automated warnings to the checker!
+            updatedAscii
+        );
+
+        if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
+            progressLog.push(`   ❌ Checker found ${checkerResult.mistakes.length} mistake(s). Calling Fixer...`);
+            for (const m of checkerResult.mistakes) {
+                progressLog.push(`      - [${m.node_id}] ${m.description}`);
+            }
+
+            const fixerConfig = getProviderConfig();
+            const fixerResult = await runFixer(fixerConfig, updatedSpecs, checkerResult.mistakes, updatedAscii);
+
+            if (fixerResult.operations.length > 0) {
+                progressLog.push(`   🔧 Fixer generated ${fixerResult.operations.length} corrective operation(s).`);
+                for (const op of fixerResult.operations) {
+                    const validation = validateOperation(op, projectAfterFixes);
+                    if (validation.valid) {
+                        try {
+                            const applied = applyOperation(projectAfterFixes, op);
+                            if (applied.success && applied.project) {
+                                projectAfterFixes = applied.project;
+                                fixerOps.push(op);
+                                progressLog.push(`      ✅ Applied fix: ${op.type}(${op.target_id})`);
+                            }
+                        } catch { /* skip */ }
+                    } else {
+                        progressLog.push(`      ⚠️ Fix failed validation: ${validation.errors.join(', ')}`);
+                    }
+                }
+            }
+            if (fixerResult.text) {
+                auditMessage = fixerResult.text;
+            }
+        } else {
+            progressLog.push('   ✨ Checker verdict: ALL GOOD. No spatial errors detected.');
+            if (checkerResult.message) auditMessage = checkerResult.message;
+        }
+
+    } catch (auditError) {
+        console.warn('[Orchestrator] Audit phase failed (non-critical):', auditError);
+        progressLog.push('   ⚠️ Audit phase skipped due to technical error.');
     }
 
     // =========================================================================
     // COMPOSE FINAL RESPONSE
     // =========================================================================
-    const allOps = [...validatedOps];
+    const allOps = [...validatedOps, ...fixerOps];
 
     progressLog.push('');
     progressLog.push(`═══ PIPELINE COMPLETE: ${allOps.length} total operation(s) ═══`);
 
     // Build the final message with progress log
     let finalMessage = agentMessage;
+    if (auditMessage) {
+        finalMessage += "\n\n### Audit Notes:\n" + auditMessage;
+    }
     finalMessage += '\n\n' + progressLog.join('\n');
 
     const warnings: AIChatResponse['warnings'] = [];
