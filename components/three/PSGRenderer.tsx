@@ -99,9 +99,10 @@ interface WallMeshProps {
     isHovered: boolean;
     allNodes: Record<string, PSGNode>;
     isSystemVision: boolean;
+    forcedOpacity?: number;
 }
 
-function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision }: WallMeshProps) {
+function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision, forcedOpacity }: WallMeshProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
 
@@ -180,8 +181,8 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision }:
                     <primitive
                         object={material}
                         attach="material"
-                        transparent={isSystemVision || node.opacity < 1}
-                        opacity={isSystemVision ? 0.3 : node.opacity}
+                        transparent={isSystemVision || node.opacity < 1 || forcedOpacity !== undefined}
+                        opacity={forcedOpacity !== undefined ? forcedOpacity : (isSystemVision ? 0.3 : node.opacity)}
                     />
                 )}
             </mesh>
@@ -197,6 +198,7 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision }:
                         parentWall={node}
                         parentPosition={position}
                         allNodes={allNodes}
+                        forcedOpacity={forcedOpacity}
                     />
                 );
             })}
@@ -213,9 +215,10 @@ interface OpeningGroupProps {
     parentWall: PSGNode;
     parentPosition: { x: number; y: number; z: number };
     allNodes: Record<string, PSGNode>;
+    forcedOpacity?: number;
 }
 
-function OpeningGroup({ node, parentWall, parentPosition, allNodes }: OpeningGroupProps) {
+function OpeningGroup({ node, parentWall, parentPosition, allNodes, forcedOpacity }: OpeningGroupProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
     const selection = useDesignStore((s) => s.selection);
@@ -276,7 +279,12 @@ function OpeningGroup({ node, parentWall, parentPosition, allNodes }: OpeningGro
                         castShadow
                         receiveShadow
                     >
-                        <primitive object={renderMat} attach="material" />
+                        <primitive
+                            object={renderMat}
+                            attach="material"
+                            transparent={forcedOpacity !== undefined || renderMat.transparent}
+                            opacity={forcedOpacity !== undefined ? forcedOpacity : renderMat.opacity}
+                        />
                     </mesh>
                 );
             })}
@@ -293,9 +301,10 @@ interface GenericMeshProps {
     isSelected: boolean;
     isHovered: boolean;
     isSystemVision: boolean;
+    forcedOpacity?: number;
 }
 
-function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision }: GenericMeshProps) {
+function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision, forcedOpacity }: GenericMeshProps) {
     const selectNode = useDesignStore((s) => s.selectNode);
     const hoverNode = useDesignStore((s) => s.hoverNode);
 
@@ -344,8 +353,8 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision }: Generi
                                 side={THREE.DoubleSide}
                                 emissive={isSelected ? SELECTION_EMISSIVE : isHovered ? HOVER_EMISSIVE : undefined}
                                 emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
-                                transparent={isSystemVision || node.opacity < 1}
-                                opacity={isSystemVision ? 0.2 : node.opacity}
+                                transparent={isSystemVision || node.opacity < 1 || forcedOpacity !== undefined}
+                                opacity={forcedOpacity !== undefined ? forcedOpacity : (isSystemVision ? 0.2 : node.opacity)}
                             />
                         </mesh>
                     );
@@ -371,8 +380,8 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision }: Generi
                 roughness={0.7}
                 metalness={0.1}
                 side={THREE.DoubleSide}
-                transparent={isSystemVision || node.opacity < 1}
-                opacity={isSystemVision ? 0.2 : node.opacity}
+                transparent={isSystemVision || node.opacity < 1 || forcedOpacity !== undefined}
+                opacity={forcedOpacity !== undefined ? forcedOpacity : (isSystemVision ? 0.2 : node.opacity)}
                 emissive={isSelected ? SELECTION_EMISSIVE : isHovered ? HOVER_EMISSIVE : undefined}
                 emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
             />
@@ -389,10 +398,40 @@ export default function PSGRenderer() {
     const selection = useDesignStore((s) => s.selection);
     const selectNode = useDesignStore((s) => s.selectNode);
     const visibleLayers = useDesignStore((s) => s.visibleLayers);
+    const viewMode = useDesignStore((s) => s.viewMode);
+    const activeFloorId = useDesignStore((s) => s.activeFloorId);
 
     const isSystemVision = visibleLayers.has('electrical') || visibleLayers.has('plumbing') || visibleLayers.has('thermal') || visibleLayers.has('hvac');
 
     const allNodes = project.nodes;
+
+    // Helper to find which floor a node belongs to
+    const nodeFloorMap = useMemo(() => {
+        const map = new Map<string, string>();
+        const findFloor = (node: PSGNode): string | null => {
+            if (node.type === 'Floor') return node.id;
+            if (!node.parent_id) return null;
+            const parent = allNodes[node.parent_id];
+            if (!parent) return null;
+            return findFloor(parent);
+        };
+
+        Object.values(allNodes).forEach((node) => {
+            const floorId = findFloor(node);
+            if (floorId) map.set(node.id, floorId);
+        });
+        return map;
+    }, [allNodes]);
+
+    // Floors sorted by height
+    const sortedFloors = useMemo(() =>
+        Object.values(allNodes)
+            .filter(n => n.type === 'Floor')
+            .sort((a, b) => a.position.y - b.position.y),
+        [allNodes]
+    );
+
+    const activeFloorIndex = activeFloorId ? sortedFloors.findIndex(f => f.id === activeFloorId) : -1;
 
     // Nodes that are the "top-level" renderable structural elements
     // Windows and Doors are rendered INSIDE their parent wall group
@@ -407,6 +446,29 @@ export default function PSGRenderer() {
         ),
         [allNodes]
     );
+
+    const getForcedOpacity = (node: PSGNode) => {
+        if (viewMode !== 'top_down') return undefined;
+
+        // Roof is always transparent in Plan mode
+        if (node.type === 'Roof') return 0.15;
+
+        if (activeFloorId) {
+            const floorId = nodeFloorMap.get(node.id);
+            if (!floorId) return undefined;
+
+            const floor = allNodes[floorId];
+            const floorIndex = sortedFloors.findIndex(f => f.id === floorId);
+
+            // If node is on a floor ABOVE the active one, make it transparent
+            if (floorIndex > activeFloorIndex) return 0.1;
+
+            // If node is ON the active floor or BELOW, keep solid
+            return undefined;
+        }
+
+        return undefined;
+    };
 
     return (
         <group
@@ -425,6 +487,7 @@ export default function PSGRenderer() {
                     isHovered={selection.hovered_node_id === node.id}
                     allNodes={allNodes}
                     isSystemVision={isSystemVision}
+                    forcedOpacity={getForcedOpacity(node)}
                 />
             ))}
 
@@ -436,6 +499,7 @@ export default function PSGRenderer() {
                     isSelected={selection.selected_node_id === node.id}
                     isHovered={selection.hovered_node_id === node.id}
                     isSystemVision={isSystemVision}
+                    forcedOpacity={getForcedOpacity(node)}
                 />
             ))}
         </group>
