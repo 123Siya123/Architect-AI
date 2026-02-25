@@ -51,6 +51,7 @@ interface DesignState {
     camera: CameraState;
     selection: SelectionState;
     activePanel: ActivePanel;
+    activeFloorId: string | null;
     isLoading: boolean;
     error: string | null;
     chatMessages: ChatMessage[];
@@ -69,6 +70,7 @@ interface DesignState {
     toggleLayer: (layer: ViewLayer) => void;
     setViewMode: (mode: ViewMode) => void;
     setActivePanel: (panel: ActivePanel) => void;
+    setActiveFloorId: (floorId: string | null) => void;
     addChatMessage: (message: ChatMessage) => void;
     setAIThinking: (thinking: boolean) => void;
     setLoading: (loading: boolean) => void;
@@ -103,6 +105,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     camera: defaultCamera,
     selection: defaultSelection,
     activePanel: 'chat',
+    activeFloorId: null,
     isLoading: false,
     error: null,
     chatMessages: [],
@@ -168,6 +171,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
 
     setViewMode: (mode) => set({ viewMode: mode, camera: { ...get().camera, mode } }),
     setActivePanel: (panel) => set({ activePanel: panel }),
+    setActiveFloorId: (id) => set({ activeFloorId: id }),
     addChatMessage: (message) => set({ chatMessages: [...get().chatMessages, message] }),
     setAIThinking: (thinking) => set({ isAIThinking: thinking }),
     setLoading: (loading) => set({ isLoading: loading }),

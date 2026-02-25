@@ -138,8 +138,17 @@ export default function SceneCanvas() {
                 style={{ background: '#0a0a1a' }}
             >
                 {/* Sky/Environment */}
-                <color attach="background" args={['#0a0a1a']} />
-                <fog attach="fog" args={['#0a0a1a', 40, 100]} />
+                {viewMode === 'front' ? (
+                    <>
+                        <Environment preset="forest" background />
+                        <fog attach="fog" args={['#87CEEB', 40, 100]} />
+                    </>
+                ) : (
+                    <>
+                        <color attach="background" args={['#0a0a1a']} />
+                        <fog attach="fog" args={['#0a0a1a', 40, 100]} />
+                    </>
+                )}
 
                 {/* Lighting */}
                 <SceneLighting />
@@ -166,7 +175,11 @@ export default function SceneCanvas() {
                 {/* Ground plane (receives shadows) */}
                 <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
                     <planeGeometry args={[100, 100]} />
-                    <shadowMaterial opacity={0.3} />
+                    {viewMode === 'front' ? (
+                        <meshStandardMaterial color="#3b5e2b" roughness={0.9} />
+                    ) : (
+                        <shadowMaterial opacity={0.3} />
+                    )}
                 </mesh>
 
                 {/* PSG Scene — wrapped in Suspense for async loads */}

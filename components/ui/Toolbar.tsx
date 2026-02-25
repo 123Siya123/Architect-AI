@@ -119,6 +119,20 @@ export default function Toolbar() {
             {/* Separator */}
             <div className="toolbar-separator" />
 
+            {/* Separator */}
+            <div className="toolbar-separator" />
+
+            {/* Floor Selector — only in Plan (top_down) mode */}
+            {viewMode === 'top_down' && (
+                <>
+                    <div className="toolbar-group">
+                        <span className="toolbar-label">Floor Plan</span>
+                        <FloorSelector />
+                    </div>
+                    <div className="toolbar-separator" />
+                </>
+            )}
+
             {/* Budget Display */}
             <div className="toolbar-group budget-group">
                 <span className="toolbar-label">Budget</span>
@@ -147,6 +161,38 @@ export default function Toolbar() {
             <div className="toolbar-group">
                 <ExportButton />
             </div>
+        </div>
+    );
+}
+
+function FloorSelector() {
+    const project = useDesignStore((s) => s.project);
+    const activeFloorId = useDesignStore((s) => s.activeFloorId);
+    const setActiveFloorId = useDesignStore((s) => s.setActiveFloorId);
+
+    const floors = Object.values(project.nodes)
+        .filter((n) => n.type === 'Floor')
+        .sort((a, b) => a.position.y - b.position.y);
+
+    return (
+        <div className="toolbar-buttons">
+            <button
+                className={`toolbar-btn ${activeFloorId === null ? 'active' : ''}`}
+                onClick={() => setActiveFloorId(null)}
+                title="All Floors"
+            >
+                🏠 All
+            </button>
+            {floors.map((floor) => (
+                <button
+                    key={floor.id}
+                    className={`toolbar-btn ${activeFloorId === floor.id ? 'active' : ''}`}
+                    onClick={() => setActiveFloorId(floor.id)}
+                    title={floor.name}
+                >
+                    {floor.name}
+                </button>
+            ))}
         </div>
     );
 }

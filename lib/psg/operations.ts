@@ -602,6 +602,9 @@ function replaceNode(project: PSGProject, operation: PSGOperation): PSGProject {
         stair_style?: string;
         roof_pitch_degrees?: number;
         preserve_children?: boolean;
+        yaw?: number;
+        pitch?: number;
+        roll?: number;
     };
 
     const preserve_children = params.preserve_children !== false; // default true
@@ -630,6 +633,12 @@ function replaceNode(project: PSGProject, operation: PSGOperation): PSGProject {
             ...(params.roof_pitch_degrees !== undefined && { roof_pitch_degrees: params.roof_pitch_degrees }),
             // Stair-specific overrides
             ...(params.stair_style !== undefined && { stair_style: params.stair_style as PSGNode['stair_style'] }),
+            // Rotation overrides
+            rotation: {
+                yaw: params.yaw !== undefined ? params.yaw : oldNode.rotation.yaw,
+                pitch: params.pitch !== undefined ? params.pitch : oldNode.rotation.pitch,
+                roll: params.roll !== undefined ? params.roll : oldNode.rotation.roll,
+            },
             // Preserve or discard children
             children_ids: preserve_children ? oldNode.children_ids : [],
             modified_at: new Date().toISOString(),

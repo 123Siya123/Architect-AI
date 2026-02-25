@@ -201,6 +201,18 @@ export const AI_TOOLS = [
                         enum: ['straight', 'l_shaped', 'u_shaped', 'spiral'],
                         description: 'New stair style (for Stairs nodes only)',
                     },
+                    yaw: {
+                        type: 'number',
+                        description: 'New rotation around Y axis in degrees',
+                    },
+                    pitch: {
+                        type: 'number',
+                        description: 'New rotation around X axis in degrees',
+                    },
+                    roll: {
+                        type: 'number',
+                        description: 'New rotation around Z axis in degrees',
+                    },
                     preserve_children: {
                         type: 'boolean',
                         description: 'Whether to keep child elements (default: true)',
