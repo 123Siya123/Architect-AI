@@ -53,6 +53,20 @@ export default function WalkthroughControls() {
     });
 
     const [isLocked, setIsLocked] = useState(false);
+    const controlsRef = useRef<any>(null);
+
+    // Manual lock handler with safety check
+    const handleLock = () => {
+        if (!controlsRef.current || isLocked) return;
+
+        // Some browsers require a fresh user gesture and might throw if 
+        // a previous request is still pending.
+        try {
+            controlsRef.current.lock();
+        } catch (err) {
+            console.warn('WalkthroughControls: Pointer lock request failed', err);
+        }
+    };
 
     // Setup keyboard listeners
     useEffect(() => {
@@ -121,6 +135,7 @@ export default function WalkthroughControls() {
     return (
         <>
             <PointerLockControls
+                ref={controlsRef}
                 onLock={() => setIsLocked(true)}
                 onUnlock={() => setIsLocked(false)}
             />
@@ -130,9 +145,9 @@ export default function WalkthroughControls() {
                 <Html fullscreen>
                     <div
                         className="walkthrough-overlay"
-                        onClick={() => {
-                            // PointerLockControls handles the locking automatically on click usually,
-                            // but we provide a fallback UI here.
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleLock();
                         }}
                     >
                         <div className="walkthrough-hint">

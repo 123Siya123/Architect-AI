@@ -20,7 +20,7 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, Environment, GizmoHelper, GizmoViewport } from '@react-three/drei';
+import { OrbitControls, Grid, Environment, GizmoHelper, GizmoViewport, Sky } from '@react-three/drei';
 import { useDesignStore } from '@/store/useDesignStore';
 import PSGRenderer from './PSGRenderer';
 
@@ -138,17 +138,20 @@ export default function SceneCanvas() {
                 style={{ background: '#0a0a1a' }}
             >
                 {/* Sky/Environment */}
-                {viewMode === 'front' ? (
-                    <>
-                        <Environment preset="forest" background />
-                        <fog attach="fog" args={['#87CEEB', 40, 100]} />
-                    </>
-                ) : (
-                    <>
-                        <color attach="background" args={['#0a0a1a']} />
-                        <fog attach="fog" args={['#0a0a1a', 40, 100]} />
-                    </>
-                )}
+                <Suspense fallback={<color attach="background" args={['#87CEEB']} />}>
+                    {viewMode === 'front' ? (
+                        <>
+                            <Sky sunPosition={[100, 20, 100]} turbidity={0.1} rayleigh={0.5} />
+                            <Environment preset="forest" background />
+                            <fog attach="fog" args={['#a0d0ff', 40, 150]} />
+                        </>
+                    ) : (
+                        <>
+                            <color attach="background" args={['#0a0a1a']} />
+                            <fog attach="fog" args={['#0a0a1a', 40, 100]} />
+                        </>
+                    )}
+                </Suspense>
 
                 {/* Lighting */}
                 <SceneLighting />
@@ -170,13 +173,17 @@ export default function SceneCanvas() {
                 {viewMode === 'walkthrough' && <WalkthroughControls />}
 
                 {/* Grid */}
-                <SceneGrid />
+                {viewMode !== 'front' && <SceneGrid />}
 
                 {/* Ground plane (receives shadows) */}
                 <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
-                    <planeGeometry args={[100, 100]} />
+                    <planeGeometry args={[200, 200]} />
                     {viewMode === 'front' ? (
-                        <meshStandardMaterial color="#3b5e2b" roughness={0.9} />
+                        <meshStandardMaterial
+                            color="#2d4a1e"
+                            roughness={0.8}
+                            metalness={0.05}
+                        />
                     ) : (
                         <shadowMaterial opacity={0.3} />
                     )}

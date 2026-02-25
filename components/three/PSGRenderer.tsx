@@ -257,20 +257,19 @@ function OpeningGroup({ node, parentWall, parentPosition, allNodes, forcedOpacit
             onPointerOver={handlePointerOver}
             onPointerOut={handlePointerOut}
         >
-            {group.children.map((child, i) => {
+            {useMemo(() => group.children.map((child, i) => {
                 const mesh = child as THREE.Mesh;
                 const mat = mesh.material as THREE.Material;
-                // Clone and apply selection/hover tint
-                let renderMat: THREE.Material;
+                let renderMat: THREE.Material = mat;
+
                 if (isSelected || isHovered) {
                     renderMat = mat.clone();
                     if (renderMat instanceof THREE.MeshStandardMaterial) {
                         renderMat.emissive = isSelected ? SELECTION_EMISSIVE : HOVER_EMISSIVE;
                         renderMat.emissiveIntensity = isSelected ? 0.2 : 0.1;
                     }
-                } else {
-                    renderMat = mat;
                 }
+
                 return (
                     <mesh
                         key={`${node.id}_frame_${i}`}
@@ -287,7 +286,7 @@ function OpeningGroup({ node, parentWall, parentPosition, allNodes, forcedOpacit
                         />
                     </mesh>
                 );
-            })}
+            }), [group.children, isSelected, isHovered, node.id, forcedOpacity])}
         </group>
     );
 }

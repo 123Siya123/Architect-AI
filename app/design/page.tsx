@@ -70,9 +70,13 @@ export default function DesignStudioPage() {
                 e.preventDefault();
                 useDesignStore.getState().redo();
             }
-            // Escape = Deselect
+            // Escape = Deselect + Reset Nature View
             if (e.key === 'Escape') {
-                useDesignStore.getState().selectNode(null);
+                const state = useDesignStore.getState();
+                state.selectNode(null);
+                if (state.viewMode === 'front') {
+                    state.setViewMode('orbit');
+                }
             }
             // 1-4 = View modes
             if (e.key === '1') useDesignStore.getState().setViewMode('orbit');

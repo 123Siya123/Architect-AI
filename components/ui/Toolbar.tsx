@@ -60,7 +60,10 @@ export default function Toolbar() {
                         <button
                             key={mode}
                             className={`toolbar-btn ${viewMode === mode ? 'active' : ''}`}
-                            onClick={() => setViewMode(mode)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setViewMode(mode);
+                            }}
                             title={label}
                         >
                             <span className="toolbar-btn-icon">{icon}</span>
