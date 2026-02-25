@@ -27,6 +27,14 @@ You must analyze the user's request, plan the architectural modifications, and e
 - Standard Window: 1.2m width, 1.4m height, 0.05m depth
 - Slab thickness: 0.15m to 0.2m
 
+## DATA FORMAT — COMPRESSED PSG
+The house data uses a highly compressed format:
+- "t": Node type (Wall, Room, Floor, Window, Door, Roof, Stairs, Slab)
+- "pos": [x, y, z] — center position in meters
+- "dim": [width, height, depth] — size in meters
+- "yaw": rotation in degrees (only present if not 0)
+- "p": Parent node ID (only present if it has one)
+
 ## COORDINATE SYSTEM (CRITICAL)
 - X axis: East/West (positive X = moving East, Width)
 - Y axis: Up/Down (positive Y = moving Up, Height)

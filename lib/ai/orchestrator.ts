@@ -298,10 +298,11 @@ export async function sendChatToAI(
 ${asciiPlan}
 \`\`\`
 
-### FULL NODE DATA (Readable Format)
+### COMPRESSED NODE DATA
 \`\`\`json
 ${buildingSpecs}
 \`\`\`
+
 
 ### AVAILABLE MATERIALS
 \`\`\`json

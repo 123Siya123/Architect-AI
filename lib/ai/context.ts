@@ -21,48 +21,18 @@ export function prepareProjectContext(project: PSGProject): string {
 
     for (const [id, node] of Object.entries(project.nodes)) {
         const readable: Record<string, unknown> = {
-            type: node.type,
-            name: node.name,
-            position: {
-                x: round(node.position.x, 2),
-                y: round(node.position.y, 2),
-                z: round(node.position.z, 2),
-            },
-            dimensions: {
-                width: round(node.dimensions.x, 2),
-                height: round(node.dimensions.y, 2),
-                depth: round(node.dimensions.z, 2),
-            },
-            rotation: {
-                yaw: node.rotation.yaw,
-                pitch: node.rotation.pitch,
-                roll: node.rotation.roll,
-            },
+            t: node.type,
+            pos: [round(node.position.x, 2), round(node.position.y, 2), round(node.position.z, 2)],
+            dim: [round(node.dimensions.x, 2), round(node.dimensions.y, 2), round(node.dimensions.z, 2)],
         };
 
-        // Material (only if set)
-        if (node.material_id) readable.material = node.material_id;
-        // Children IDs (only if has children)
-        if (node.children_ids.length > 0) readable.children = node.children_ids;
-        // Parent
-        if (node.parent_id) readable.parent = node.parent_id;
-        // Room function
-        if (node.room_function) readable.function = node.room_function;
-        // Tags (only if not empty)
-        if (node.tags.length > 0) readable.tags = node.tags;
-
-        // Type-specific properties
-        if (node.roof_style) readable.roof_style = node.roof_style;
-        if (node.roof_pitch_degrees !== undefined) readable.roof_pitch_degrees = node.roof_pitch_degrees;
-        if (node.stair_style) readable.stair_style = node.stair_style;
-        if (node.opening_width) readable.opening_width = node.opening_width;
-        if (node.opening_height) readable.opening_height = node.opening_height;
-        if (node.cad_script) readable.cad_script = node.cad_script;
+        if (node.rotation.yaw !== 0) readable.yaw = node.rotation.yaw;
+        if (node.parent_id) readable.p = node.parent_id;
 
         readableNodes[id] = readable;
     }
 
-    return JSON.stringify(readableNodes, null, 2);
+    return JSON.stringify(readableNodes);
 }
 
 /**
