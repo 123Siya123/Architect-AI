@@ -36,6 +36,10 @@ export const AI_TOOLS = [
             parameters: {
                 type: 'object',
                 properties: {
+                    id: {
+                        type: 'string',
+                        description: 'Optional. Use this to explicitly define a unique ID (e.g. "floor_1_new") so you can reference it as a parent_id in subsequent tool calls within the SAME response. If omitted, a random ID is generated.',
+                    },
                     type: {
                         type: 'string',
                         enum: ['Wall', 'Window', 'Door', 'Room', 'Floor', 'Slab', 'Stairs', 'Roof',

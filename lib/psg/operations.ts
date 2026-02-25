@@ -399,6 +399,7 @@ function replaceMaterial(project: PSGProject, operation: PSGOperation): PSGProje
  */
 function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
     const {
+        id: providedId,
         type = 'Wall',
         parent_id = null,
         name = 'New Element',
@@ -418,7 +419,7 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
     const now = new Date().toISOString();
     const nodeType = type as string;
     const shortId = Math.random().toString(36).slice(2, 10);
-    const id = `${nodeType.toLowerCase()}_${shortId}`;
+    const id = (providedId as string) || `${nodeType.toLowerCase()}_${shortId}`;
 
     // Type-specific sensible defaults — prevents zero-dimension nodes
     const typeDefaults: Record<string, { w: number; h: number; d: number }> = {
@@ -496,10 +497,9 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
 function addNode(project: PSGProject, operation: PSGOperation): PSGProject {
     const params = operation.params as Record<string, unknown>;
 
-    // Detect whether the AI sent flat args or a complete PSGNode.
-    // A complete node always has an `id` field set.
+    // A complete node always has an `id` field set AND an object `position`.
     let newNode: PSGNode;
-    if (params.id) {
+    if (params.id && params.position && typeof params.position === 'object') {
         // Already a full node (e.g. from old code paths)
         newNode = params as unknown as PSGNode;
     } else {
