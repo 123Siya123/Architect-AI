@@ -176,6 +176,7 @@ CRITICAL RULES:
 2. Each sub_task description MUST include ALL specific values: tool name, exact positions (x,y,z), exact dimensions (width,height,depth), rotation (yaw), parent_id, material_id.
 3. Workers run SEQUENTIALLY — later workers can reference nodes created by earlier workers. Put foundation tasks first (e.g., Floor node before walls).
 4. Use EXACT node IDs from the building data — never guess.
+5. **Double-check wall rotations**: After planning 4 walls, verify that 2 have yaw=0 and 2 have yaw=90.
 `;
 
 const WORKER_SYSTEM_PROMPT = `You are a WORKER agent in an architecture AI team. You receive a specific task and the full building specifications. Your job is to execute EXACTLY the task described using tool calls.
@@ -187,8 +188,9 @@ const WORKER_SYSTEM_PROMPT = `You are a WORKER agent in an architecture AI team.
 - All units are METERS. Positions are CENTER POINTS.
 
 ## WALL ORIENTATION
-- yaw=0: Wall runs East-West (width along X axis)
-- yaw=90: Wall runs North-South (width along Z axis)
+- **yaw=0**: Wall runs East-West (width along X axis).
+- **yaw=90**: Wall runs North-South (width along Z axis).
+- **CRITICAL**: If you are adding 4 walls for a room, CHECK that their yaws are not all the same. Two must be 90 and two must be 0.
 
 ## STANDARD DIMENSIONS
 - Ceiling height: 2.7m

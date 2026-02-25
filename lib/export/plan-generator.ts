@@ -362,38 +362,71 @@ export function generateFloorPlanSVG(
   if (opts.include_north_arrow) {
     const nax = MARGIN + drawW - 15;
     const nay = MARGIN + 15;
-    svg += `< !--North Arrow-- >
-      <g id="north-arrow" transform = "translate(${nax}, ${nay})" >
-        <circle cx="0" cy = "0" r = "8" fill = "white" stroke = "#000" stroke - width="0.4" />
-          <path d="M 0,-7 L 3,3 L 0,1 L -3,3 Z" fill = "#000" />
-            <path d="M 0,-7 L -3,3 L 0,1 L 3,3 Z" fill = "white" stroke = "#000" stroke - width="0.2" />
-              <text x="0" y = "-9" text - anchor="middle" font - size="3.5" font - weight="bold" fill = "#000" > N </text>
-                </g>
-                  `;
+    svg += `<!-- North Arrow -->
+<g id="north-arrow" transform="translate(${nax}, ${nay})">
+  <circle cx="0" cy="0" r="8" fill="white" stroke="#000" stroke-width="0.4"/>
+  <path d="M 0,-7 L 3,3 L 0,1 L -3,3 Z" fill="#000"/>
+  <path d="M 0,-7 L -3,3 L 0,1 L 3,3 Z" fill="white" stroke="#000" stroke-width="0.2"/>
+  <text x="0" y="-9" text-anchor="middle" font-size="3.5" font-weight="bold" fill="#000">N</text>
+</g>
+`;
+  }
+
+  // ─── 12.5. Legend ────────────────────────────────────────────────────────
+  if (opts.plan_type !== 'floor_plan') {
+    const lx = MARGIN + 5;
+    const ly = MARGIN + 5;
+    svg += `<!-- Legend -->
+<g id="legend" transform="translate(${lx}, ${ly})">
+  <rect x="0" y="0" width="40" height="${opts.plan_type === 'electrical' ? 25 : 30}" fill="white" fill-opacity="0.8" stroke="#000" stroke-width="0.2"/>
+  <text x="3" y="5" font-size="3.5" font-weight="bold">Legend</text>
+  ${opts.plan_type === 'electrical' ? `
+    <circle cx="6" cy="12" r="2.5" fill="none" stroke="#eab308" stroke-width="0.8"/>
+    <text x="6" y="13" text-anchor="middle" font-size="2.5" font-weight="bold" fill="#eab308">S</text>
+    <text x="12" y="13" font-size="3">Light Switch</text>
+    
+    <circle cx="6" cy="20" r="2.5" fill="none" stroke="#eab308" stroke-width="0.8"/>
+    <line x1="3.5" y1="20" x2="8.5" y2="20" stroke="#eab308" stroke-width="0.8"/>
+    <text x="12" y="21" font-size="3">Power Outlet</text>
+  ` : `
+    <ellipse cx="6" cy="12" rx="2" ry="2.5" fill="none" stroke="#3b82f6" stroke-width="0.7"/>
+    <rect x="4" y="8" width="4" height="2" fill="none" stroke="#3b82f6" stroke-width="0.7"/>
+    <text x="12" y="11" font-size="3">Toilet</text>
+    
+    <ellipse cx="6" cy="18" rx="2.5" ry="2.5" fill="none" stroke="#3b82f6" stroke-width="0.7"/>
+    <text x="12" y="19" font-size="3">Sink</text>
+    
+    <rect x="3.5" y="24" width="5" height="5" fill="none" stroke="#3b82f6" stroke-width="0.7"/>
+    <line x1="3.5" y1="24" x2="8.5" y2="29" stroke="#3b82f6" stroke-width="0.4"/>
+    <line x1="3.5" y1="29" x2="8.5" y2="24" stroke="#3b82f6" stroke-width="0.4"/>
+    <text x="12" y="27" font-size="3">Shower</text>
+  `}
+</g>
+`;
   }
 
   // ─── 13. Title Block ─────────────────────────────────────────────────────
   const tbY = paper.height - TITLE_HEIGHT;
-  svg += `< !--Title Block-- >
-      <g id="title-block" >
-        <line x1="${MARGIN}" y1 = "${tbY}" x2 = "${paper.width - MARGIN}" y2 = "${tbY}" stroke = "#000" stroke - width="0.5" />
+  svg += `<!-- Title Block -->
+<g id="title-block">
+  <line x1="${MARGIN}" y1="${tbY}" x2="${paper.width - MARGIN}" y2="${tbY}" stroke="#000" stroke-width="0.5"/>
+  
+  <!-- Project info -->
+  <text x="${MARGIN + 3}" y="${tbY + 6}" font-size="5" font-weight="800" fill="#000">${escapeXml(opts.title)}</text>
+  <text x="${MARGIN + 3}" y="${tbY + 12}" font-size="3.5" fill="#333">${escapeXml(project.name)}</text>
+  <text x="${MARGIN + 3}" y="${tbY + 18}" font-size="3" fill="#666">Floor ${floorLevel} — Total area: ${(houseW * houseD).toFixed(1)} m²</text>
 
-          <!--Project info-- >
-            <text x="${MARGIN + 3}" y = "${tbY + 6}" font - size="5" font - weight="800" fill = "#000" > ${escapeXml(opts.title)} </text>
-              < text x = "${MARGIN + 3}" y = "${tbY + 12}" font - size="3.5" fill = "#333" > ${escapeXml(project.name)} </text>
-                < text x = "${MARGIN + 3}" y = "${tbY + 18}" font - size="3" fill = "#666" > Floor ${floorLevel} — Total area: ${(houseW * houseD).toFixed(1)} m²</text>
-
-                  < !--Drawing info box-- >
-                    <line x1="${paper.width - 80}" y1 = "${tbY}" x2 = "${paper.width - 80}" y2 = "${paper.height - MARGIN}" stroke = "#000" stroke - width="0.3" />
-                      <text x="${paper.width - 40}" y = "${tbY + 5}" text - anchor="middle" font - size="2.5" fill = "#666" > Drawn by: </text>
-                        < text x = "${paper.width - 40}" y = "${tbY + 10}" text - anchor="middle" font - size="3" font - weight="600" fill = "#000" > ${escapeXml(opts.drawn_by)} </text>
-                          < line x1 = "${paper.width - 80}" y1 = "${tbY + 13}" x2 = "${paper.width - MARGIN}" y2 = "${tbY + 13}" stroke = "#000" stroke - width="0.2" />
-                            <text x="${paper.width - 40}" y = "${tbY + 17}" text - anchor="middle" font - size="2.5" fill = "#666" > Scale: </text>
-                              < text x = "${paper.width - 40}" y = "${tbY + 22}" text - anchor="middle" font - size="3" font - weight="600" fill = "#000" > ${opts.scale}  ${opts.paper} </text>
-                                < line x1 = "${paper.width - 80}" y1 = "${tbY + 24}" x2 = "${paper.width - MARGIN}" y2 = "${tbY + 24}" stroke = "#000" stroke - width="0.2" />
-                                  <text x="${paper.width - 75}" y = "${tbY + 28}" font - size="2.5" fill = "#666" > Date: ${opts.date} Rev: ${opts.revision} Dwg: ${opts.project_number} </text>
-                                    </g>
-                                      `;
+  <!-- Drawing info box -->
+  <line x1="${paper.width - 80}" y1="${tbY}" x2="${paper.width - 80}" y2="${paper.height - MARGIN}" stroke="#000" stroke-width="0.3"/>
+  <text x="${paper.width - 40}" y="${tbY + 5}" text-anchor="middle" font-size="2.5" fill="#666">Drawn by:</text>
+  <text x="${paper.width - 40}" y="${tbY + 10}" text-anchor="middle" font-size="3" font-weight="600" fill="#000">${escapeXml(opts.drawn_by)}</text>
+  <line x1="${paper.width - 80}" y1="${tbY + 13}" x2="${paper.width - MARGIN}" y2="${tbY + 13}" stroke="#000" stroke-width="0.2"/>
+  <text x="${paper.width - 40}" y="${tbY + 17}" text-anchor="middle" font-size="2.5" fill="#666">Scale:</text>
+  <text x="${paper.width - 40}" y="${tbY + 22}" text-anchor="middle" font-size="3" font-weight="600" fill="#000">${opts.scale}  ${opts.paper}</text>
+  <line x1="${paper.width - 80}" y1="${tbY + 24}" x2="${paper.width - MARGIN}" y2="${tbY + 24}" stroke="#000" stroke-width="0.2"/>
+  <text x="${paper.width - 75}" y="${tbY + 28}" font-size="2.5" fill="#666">Date: ${opts.date}   Rev: ${opts.revision}   Dwg: ${opts.project_number}</text>
+</g>
+`;
 
   svg += `</svg>`;
   return svg;
