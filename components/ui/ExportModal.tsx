@@ -10,7 +10,8 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useDesignStore } from '@/store/useDesignStore';
 import { generateFloorPlanSVG, generateMaterialScheduleHTML } from '@/lib/export/plan-generator';
 import { calculateProjectCost } from '@/lib/psg/cost-calculator';
@@ -32,9 +33,14 @@ const EXPORT_OPTIONS: { id: ExportFormat; title: string; desc: string; icon: str
 export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     const [selected, setSelected] = useState<ExportFormat>('floor_plans');
     const [isExporting, setIsExporting] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const project = useDesignStore((s) => s.project);
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!isOpen || !mounted) return null;
 
     const handleExport = async () => {
         setIsExporting(true);
@@ -67,7 +73,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         URL.revokeObjectURL(a.href);
     };
 
-    return (
+    return createPortal(
         <div className="export-modal-overlay" onClick={onClose}>
             <div className="export-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="chat-message-header">
@@ -103,6 +109,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     {isExporting ? '⏳ Generating...' : `Generate ${selected.replace(/_/g, ' ')}`}
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

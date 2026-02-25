@@ -25,6 +25,20 @@ import type {
 } from '@/types';
 import { applyOperation, applyBatchOperations, createUndoOperation } from '@/lib/psg/operations';
 import { createEmptyProject } from '@/lib/psg/schema';
+import { calculateProjectCost } from '@/lib/psg/cost-calculator';
+import materialsDatabase from '@/data/materials.json';
+import type { Material } from '@/types';
+
+// =============================================================================
+// HELPER FOR COST CALCULATION
+// =============================================================================
+function projectWithCalculatedCost(project: PSGProject): PSGProject {
+    const { updatedBudget } = calculateProjectCost(project, materialsDatabase as Record<string, Material>);
+    return {
+        ...project,
+        budget: updatedBudget,
+    };
+}
 
 // =============================================================================
 // STATE INTERFACE
@@ -83,7 +97,7 @@ const defaultSelection: SelectionState = {
 // =============================================================================
 
 export const useDesignStore = create<DesignState>((set, get) => ({
-    project: createEmptyProject(),
+    project: projectWithCalculatedCost(createEmptyProject()),
     viewMode: 'orbit',
     visibleLayers: new Set<ViewLayer>(['structure', 'grid', 'dimensions']),
     camera: defaultCamera,
@@ -96,13 +110,13 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     undoStack: [],
     redoStack: [],
 
-    loadProject: (project) => set({ project, selection: defaultSelection, undoStack: [], redoStack: [], error: null }),
+    loadProject: (project) => set({ project: projectWithCalculatedCost(project), selection: defaultSelection, undoStack: [], redoStack: [], error: null }),
 
     applyOp: (operation) => {
         const { project, undoStack } = get();
         const result = applyOperation(project, operation);
         if (result.success && result.project) {
-            set({ project: result.project, undoStack: [...undoStack, operation], redoStack: [] });
+            set({ project: projectWithCalculatedCost(result.project), undoStack: [...undoStack, operation], redoStack: [] });
         }
         return result;
     },
@@ -111,7 +125,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         const { project, undoStack } = get();
         const result = applyBatchOperations(project, operations);
         if (result.success && result.project) {
-            set({ project: result.project, undoStack: [...undoStack, ...operations], redoStack: [] });
+            set({ project: projectWithCalculatedCost(result.project), undoStack: [...undoStack, ...operations], redoStack: [] });
         }
         return result;
     },
@@ -124,7 +138,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         if (undoOp) {
             const result = applyOperation(project, undoOp);
             if (result.success && result.project) {
-                set({ project: result.project, undoStack: undoStack.slice(0, -1), redoStack: [...redoStack, lastOp] });
+                set({ project: projectWithCalculatedCost(result.project), undoStack: undoStack.slice(0, -1), redoStack: [...redoStack, lastOp] });
             }
         }
     },
@@ -135,7 +149,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         const redoOp = redoStack[redoStack.length - 1];
         const result = applyOperation(project, redoOp);
         if (result.success && result.project) {
-            set({ project: result.project, undoStack: [...undoStack, redoOp], redoStack: redoStack.slice(0, -1) });
+            set({ project: projectWithCalculatedCost(result.project), undoStack: [...undoStack, redoOp], redoStack: redoStack.slice(0, -1) });
         }
     },
 
