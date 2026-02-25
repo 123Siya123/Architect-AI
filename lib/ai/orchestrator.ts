@@ -67,6 +67,7 @@ import {
     prepareBudgetContext,
     generateASCIIFloorPlan
 } from './context';
+import { SINGLE_AGENT_SYSTEM_PROMPT } from './prompts';
 
 // =============================================================================
 // AGENT PROMPTS
@@ -318,134 +319,87 @@ ${budgetContext}
     console.log(`[Orchestrator] User request: "${request.message}"`);
 
     // =========================================================================
-    // PHASE 1: COORDINATOR — Analyze and plan
+    // PHASE 1: SINGLE AGENT EXECUTION
     // =========================================================================
-    progressLog.push('───── 🧠 PHASE 1: COORDINATOR ─────');
+    progressLog.push('───── 🧠 PHASE 1: SINGLE AGENT ─────');
+    progressLog.push('Analyzing request and executing all changes...');
 
-    let coordinatorPlan: CoordinatorOutput;
-    try {
-        // Each agent gets its OWN fresh API key
-        const coordConfig = getProviderConfig();
-        coordinatorPlan = await runCoordinator(coordConfig, request.message, fullContext, request.history || []);
-        progressLog.push(`Analysis: ${coordinatorPlan.analysis.substring(0, 300)}`);
-        progressLog.push(`Subtasks: ${coordinatorPlan.sub_tasks.length}`);
-        for (const task of coordinatorPlan.sub_tasks) {
-            progressLog.push(`  → [${task.id}] ${task.description.substring(0, 120)}...`);
-        }
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        console.error('[Orchestrator] Coordinator failed:', errMsg);
-        progressLog.push(`❌ Coordinator failed: ${errMsg}`);
-        // Retry with a different key
-        try {
-            rotateKey();
-            const retryConfig = getProviderConfig();
-            coordinatorPlan = await runCoordinator(retryConfig, request.message, fullContext, request.history || []);
-            progressLog.push(`✅ Coordinator retry succeeded with ${coordinatorPlan.sub_tasks.length} subtasks`);
-        } catch (retryErr) {
-            const retryMsg = retryErr instanceof Error ? retryErr.message : String(retryErr);
-            progressLog.push(`❌ Coordinator retry also failed: ${retryMsg}`);
-            progressLog.push('Falling back to simple mode...');
-            const fallbackConfig = getProviderConfig();
-            const fallback = await runSimpleFallback(fallbackConfig, request, materials, fullContext);
-            fallback.message = progressLog.join('\n') + '\n\n' + fallback.message;
-            return fallback;
-        }
-    }
-
-    console.log(`[Orchestrator] Coordinator plan: ${coordinatorPlan.sub_tasks.length} sub-tasks`);
-
-    // If coordinator produced no sub-tasks, it was a question — return the message
-    if (coordinatorPlan.sub_tasks.length === 0) {
-        progressLog.push('No changes needed — returning coordinator response.');
-        return {
-            message: progressLog.join('\n') + '\n\n' + (coordinatorPlan.user_message || coordinatorPlan.analysis),
-            operations: [],
-            warnings: [],
-            suggestions: coordinatorPlan.follow_up_suggestions || [],
-        };
-    }
-
-    // =========================================================================
-    // PHASE 2: WORKERS — Execute sub-tasks SEQUENTIALLY
-    // Each worker sees the UPDATED building state after previous workers.
-    // This ensures Worker 2 can see nodes created by Worker 1.
-    // =========================================================================
-    progressLog.push('');
-    progressLog.push('───── 👷 PHASE 2: WORKERS (Sequential) ─────');
-
+    let singleAgentResult: WorkerResult;
+    let projectAfterWorkers = { ...request.project, nodes: { ...request.project.nodes } };
     const validatedOps: PSGOperation[] = [];
     const validationErrors: string[] = [];
     const workerErrors: string[] = [];
+    let agentMessage = "I have processed your request.";
 
-    // Running copy of the project — updated after each worker
-    let projectAfterWorkers = { ...request.project, nodes: { ...request.project.nodes } };
-    // Running context — rebuilt after each worker so the next one sees updated state
-    let currentWorkerContext = fullContext;
+    try {
+        const agentConfig = getProviderConfig();
+        const systemMsg = { role: 'system', content: SINGLE_AGENT_SYSTEM_PROMPT };
+        const userMsg = {
+            role: 'user',
+            content: `
+USER REQUEST:
+${request.message}
 
-    for (let i = 0; i < coordinatorPlan.sub_tasks.length; i++) {
-        const task = coordinatorPlan.sub_tasks[i];
-        progressLog.push(`\n🔨 Worker ${i + 1}/${coordinatorPlan.sub_tasks.length} [${task.id}]...`);
-
-        try {
-            const workerConfig = getProviderConfig();
-            const result = await runWorker(workerConfig, task, currentWorkerContext, i);
-
-            const ops = result.operations;
-            const opNames = ops.map((o: PSGOperation) => `${o.type}(${o.target_id})`).join(', ');
-            progressLog.push(`   ✅ ${ops.length} operation(s): ${opNames || 'none'}`);
-
-            if (result.text) {
-                progressLog.push(`   💭 ${result.text.substring(0, 120)}`);
-            }
-
-            // Validate and apply each operation immediately
-            for (const op of ops) {
-                const validation = validateOperation(op, projectAfterWorkers);
-                if (validation.valid) {
-                    validatedOps.push(op);
-                    try {
-                        const applied = applyOperation(projectAfterWorkers, op);
-                        if (applied.success && applied.project) {
-                            projectAfterWorkers = applied.project;
-                        }
-                    } catch { /* keep op, apply had minor issue */ }
-                } else {
-                    validationErrors.push(
-                        `${op.type}(${op.target_id}): ${validation.errors.join(', ')}`
-                    );
-                    progressLog.push(`   ⚠️ Validation failed: ${validation.errors.join(', ')}`);
-                }
-            }
-
-            if (result.errors.length > 0) {
-                workerErrors.push(...result.errors);
-                progressLog.push(`   ⚠️ Parse errors: ${result.errors.join('; ')}`);
-            }
-
-            // CRITICAL: Rebuild context for the NEXT worker with updated building state
-            const updatedSpecs = prepareProjectContext(projectAfterWorkers);
-            currentWorkerContext = `
-## CURRENT BUILDING STATE (after ${i + 1} worker(s))
-
-### FULL NODE DATA (Readable Format)
+## CURRENT BUILDING STATE
 \`\`\`json
-${updatedSpecs}
+${fullContext}
 \`\`\`
 
-### AVAILABLE MATERIALS
+## AVAILABLE MATERIALS
 \`\`\`json
 ${materialContext}
 \`\`\`
-`;
+`,
+        };
 
-        } catch (error) {
-            const errMsg = error instanceof Error ? error.message : String(error);
-            console.error(`[Worker ${i + 1}] FAILED:`, errMsg);
-            workerErrors.push(`Worker "${task.id}" failed: ${errMsg}`);
-            progressLog.push(`   ❌ FAILED: ${errMsg.substring(0, 200)}`);
-            // Continue to the next worker — don't abort the whole pipeline
+        const response = await callProviderWithTools(agentConfig, [systemMsg, userMsg]);
+
+        singleAgentResult = {
+            operations: (response.toolCalls || []).map(tc => toolCallToOperation(tc.name, tc.args as Record<string, unknown>)),
+            text: response.text,
+            errors: []
+        };
+
+        if (singleAgentResult.text) {
+            progressLog.push(`   💭 ${singleAgentResult.text.substring(0, 200)}...`);
+            agentMessage = singleAgentResult.text;
         }
+
+        const ops = singleAgentResult.operations;
+        const opNames = ops.map((o: PSGOperation) => `${o.type}(${o.target_id})`).join(', ');
+        progressLog.push(`   ✅ ${ops.length} operation(s) generated: ${opNames || 'none'}`);
+
+        // Validate and apply each operation sequentially
+        for (const op of ops) {
+            const validation = validateOperation(op, projectAfterWorkers);
+            if (validation.valid) {
+                validatedOps.push(op);
+                try {
+                    const applied = applyOperation(projectAfterWorkers, op);
+                    if (applied.success && applied.project) {
+                        projectAfterWorkers = applied.project;
+                    }
+                } catch { /* keep op, apply had minor issue */ }
+            } else {
+                validationErrors.push(
+                    `${op.type}(${op.target_id}): ${validation.errors.join(', ')}`
+                );
+                progressLog.push(`   ⚠️ Validation failed: ${validation.errors.join(', ')}`);
+            }
+        }
+
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        console.error(`[Single Agent] FAILED:`, errMsg);
+        workerErrors.push(`Agent failed: ${errMsg}`);
+        progressLog.push(`   ❌ FAILED: ${errMsg}`);
+
+        // Attempt fallback
+        progressLog.push('Agent failed completely, trying simple fallback...');
+        const fbConfig = getProviderConfig();
+        const fallback = await runSimpleFallback(fbConfig, request, materials, fullContext);
+        fallback.message = progressLog.join('\n') + '\n\n' + fallback.message;
+        return fallback;
     }
 
     progressLog.push(`\nTotal validated: ${validatedOps.length} operations`);
@@ -456,55 +410,60 @@ ${materialContext}
         }
     }
 
-    if (validatedOps.length === 0 && coordinatorPlan.sub_tasks.length > 0) {
-        progressLog.push('All worker ops failed, trying simple fallback...');
-        const fbConfig = getProviderConfig();
-        const fallback = await runSimpleFallback(fbConfig, request, materials, fullContext);
-        fallback.message = progressLog.join('\n') + '\n\n' + fallback.message;
-        return fallback;
+    if (validatedOps.length === 0) {
+        progressLog.push('No valid operations found. Returning message only.');
     }
 
     // =========================================================================
-    // PHASE 3: CHECKER — Verify the result
+    // PHASE 3 & 4: CHECKER & FIXER LOOP — Verify and fix multiple times if needed
     // =========================================================================
-    progressLog.push('');
-    progressLog.push('───── 🔍 PHASE 3: CHECKER ─────');
-
-    const updatedSpecs = prepareProjectContext(projectAfterWorkers);
-    let checkerResult: CheckerOutput;
-
-    try {
-        const checkerConfig = getProviderConfig();
-        checkerResult = await runChecker(
-            checkerConfig,
-            request.message,
-            updatedSpecs,
-            generateASCIIFloorPlan(projectAfterWorkers)
-        );
-        progressLog.push(`Verdict: ${checkerResult.status}`);
-        if (checkerResult.message) {
-            progressLog.push(`Message: ${checkerResult.message}`);
-        }
-        if (checkerResult.mistakes && checkerResult.mistakes.length > 0) {
-            for (const m of checkerResult.mistakes) {
-                progressLog.push(`   ⚠️ ${m.node_id}: ${m.description}`);
-            }
-        }
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        console.warn('[Orchestrator] Checker failed:', errMsg);
-        progressLog.push(`⚠️ Checker failed (skipping QA): ${errMsg.substring(0, 150)}`);
-        checkerResult = { status: 'OK', message: 'Checker unavailable, skipping QA.' };
-    }
-
-    // =========================================================================
-    // PHASE 4: FIXER — Correct mistakes (if any)
-    // =========================================================================
+    let fixIterations = 0;
+    const MAX_FIX_ITERATIONS = 3;
     const fixerOps: PSGOperation[] = [];
 
-    if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
+    while (fixIterations < MAX_FIX_ITERATIONS) {
         progressLog.push('');
-        progressLog.push('───── 🔧 PHASE 4: FIXER ─────');
+        progressLog.push(`───── 🔍 PHASE 3: CHECKER (Iteration ${fixIterations + 1}) ─────`);
+
+        const updatedSpecs = prepareProjectContext(projectAfterWorkers);
+        let checkerResult: CheckerOutput;
+
+        try {
+            const checkerConfig = getProviderConfig();
+            checkerResult = await runChecker(
+                checkerConfig,
+                request.message,
+                updatedSpecs,
+                generateASCIIFloorPlan(projectAfterWorkers)
+            );
+            progressLog.push(`Verdict: ${checkerResult.status}`);
+            if (checkerResult.message) {
+                progressLog.push(`Message: ${checkerResult.message}`);
+            }
+            if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
+                for (const m of checkerResult.mistakes) {
+                    progressLog.push(`   ⚠️ ${m.node_id}: ${m.description}`);
+                }
+            }
+        } catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            console.warn('[Orchestrator] Checker failed:', errMsg);
+            progressLog.push(`⚠️ Checker failed (skipping QA): ${errMsg.substring(0, 150)}`);
+            checkerResult = { status: 'OK', message: 'Checker unavailable, skipping QA.' };
+        }
+
+        if (checkerResult.status === 'OK' || !checkerResult.mistakes || checkerResult.mistakes.length === 0) {
+            progressLog.push('');
+            if (fixIterations === 0) {
+                progressLog.push('───── ✅ PHASE 4: FIXER — Skipped (no mistakes) ─────');
+            } else {
+                progressLog.push(`───── ✅ CHECKER PASSED — All mistakes fixed! ─────`);
+            }
+            break;
+        }
+
+        progressLog.push('');
+        progressLog.push(`───── 🔧 PHASE 4: FIXER (Iteration ${fixIterations + 1}) ─────`);
 
         try {
             const fixerConfig = getProviderConfig();
@@ -515,6 +474,7 @@ ${materialContext}
                 generateASCIIFloorPlan(projectAfterWorkers)
             );
 
+            let appliedFixCount = 0;
             for (const op of fixResult.operations) {
                 const validation = validateOperation(op, projectAfterWorkers);
                 if (validation.valid) {
@@ -523,23 +483,29 @@ ${materialContext}
                         const applied = applyOperation(projectAfterWorkers, op);
                         if (applied.success && applied.project) {
                             projectAfterWorkers = applied.project;
+                            appliedFixCount++;
                         }
                     } catch { /* continue */ }
                 }
             }
 
-            progressLog.push(`✅ Fixer applied ${fixerOps.length} correction(s)`);
-            for (const op of fixerOps) {
+            progressLog.push(`✅ Fixer applied ${appliedFixCount} correction(s)`);
+            for (const op of fixResult.operations) {
                 progressLog.push(`   → ${op.type}(${op.target_id})`);
+            }
+
+            if (appliedFixCount === 0) {
+                progressLog.push(`⚠️ Fixer did not process any corrections. Stopping loop to prevent infinite retry.`);
+                break;
             }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             console.warn('[Orchestrator] Fixer failed:', errMsg);
             progressLog.push(`❌ Fixer failed: ${errMsg.substring(0, 150)}`);
+            break; // Stop loop on error
         }
-    } else {
-        progressLog.push('');
-        progressLog.push('───── ✅ PHASE 4: FIXER — Skipped (no mistakes) ─────');
+
+        fixIterations++;
     }
 
     // =========================================================================
@@ -551,7 +517,7 @@ ${materialContext}
     progressLog.push(`═══ PIPELINE COMPLETE: ${allOps.length} total operation(s) ═══`);
 
     // Build the final message with progress log
-    let finalMessage = coordinatorPlan.user_message || 'I processed your request.';
+    let finalMessage = agentMessage;
     finalMessage += '\n\n' + progressLog.join('\n');
 
     const warnings: AIChatResponse['warnings'] = [];
@@ -566,7 +532,7 @@ ${materialContext}
         message: finalMessage,
         operations: allOps,
         warnings,
-        suggestions: coordinatorPlan.follow_up_suggestions || [],
+        suggestions: [],
     };
 }
 
@@ -1010,6 +976,7 @@ async function callProviderNoTools(
                 case 'gemini': return await callGeminiNoTools(config, messages);
                 case 'groq': return await callGroqNoTools(config, messages);
                 case 'openai': return await callOpenAINoTools(config, messages);
+                case 'github': return await callGithubNoTools(config, messages);
                 default: throw new Error(`Unknown provider: ${config.provider}`);
             }
         } catch (error) {
@@ -1049,6 +1016,7 @@ async function callProviderWithTools(
                 case 'gemini': return await callGemini(config, messages);
                 case 'groq': return await callGroq(config, messages);
                 case 'openai': return await callOpenAI(config, messages);
+                case 'github': return await callGithub(config, messages);
                 default: throw new Error(`Unknown provider: ${config.provider}`);
             }
         } catch (error) {
@@ -1107,7 +1075,7 @@ async function callGemini(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.2, max_output_tokens: 4096 },
+        generation_config: { temperature: 0.2, max_output_tokens: 8192 },
     };
 
     const response = await fetch(url, {
@@ -1161,7 +1129,7 @@ async function callGeminiNoTools(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.3, max_output_tokens: 4096 },
+        generation_config: { temperature: 0.3, max_output_tokens: 8192 },
     };
 
     const response = await fetch(url, {
@@ -1203,7 +1171,7 @@ async function callGroq(
         tools: AI_TOOLS,
         tool_choice: 'auto',
         temperature: 0.2,
-        max_tokens: 4096,
+        max_tokens: 8192,
     };
 
     const response = await fetch(url, {
@@ -1264,7 +1232,7 @@ async function callGroqNoTools(
         model: config.model,
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         temperature: 0.3,
-        max_tokens: 4096,
+        max_tokens: 8192,
     };
 
     const response = await fetch(url, {
@@ -1304,7 +1272,7 @@ async function callOpenAI(
         tools: AI_TOOLS,
         tool_choice: 'auto',
         temperature: 0.2,
-        max_tokens: 4096,
+        max_tokens: 8192,
     };
 
     const response = await fetch(url, {
@@ -1345,7 +1313,7 @@ async function callOpenAINoTools(
         model: config.model,
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         temperature: 0.3,
-        max_tokens: 4096,
+        max_tokens: 8192,
     };
 
     const response = await fetch(url, {
@@ -1365,6 +1333,87 @@ async function callOpenAINoTools(
     const data = await response.json();
     const msg = data.choices?.[0]?.message;
     if (!msg) throw new Error('OpenAI returned no message');
+
+    return { text: msg.content || '' };
+}
+
+// =============================================================================
+// GITHUB MODELS
+// =============================================================================
+
+async function callGithub(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>
+): Promise<LLMCallResult> {
+    const url = 'https://models.inference.ai.azure.com/chat/completions';
+
+    const body = {
+        model: config.model,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        tools: AI_TOOLS,
+        tool_choice: 'auto',
+        temperature: 0.2,
+        max_tokens: 8192,
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`GitHub Models API error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    const msg = data.choices?.[0]?.message;
+    if (!msg) throw new Error('GitHub Models returned no message');
+
+    const toolCalls: ToolCall[] = (msg.tool_calls || []).map(
+        (tc: { function: { name: string; arguments: string } }) => ({
+            name: tc.function.name,
+            args: safeParse(tc.function.arguments),
+        })
+    );
+
+    return { text: msg.content || '', toolCalls };
+}
+
+async function callGithubNoTools(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>
+): Promise<LLMCallResult> {
+    const url = 'https://models.inference.ai.azure.com/chat/completions';
+
+    const body = {
+        model: config.model,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        temperature: 0.3,
+        max_tokens: 8192,
+    };
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`GitHub Models API error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    const msg = data.choices?.[0]?.message;
+    if (!msg) throw new Error('GitHub Models returned no message');
 
     return { text: msg.content || '' };
 }

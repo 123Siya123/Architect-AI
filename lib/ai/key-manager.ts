@@ -181,7 +181,7 @@ export function getKeyPoolStatus(): Array<{
 
 /** Configuration object that the orchestrator uses to call an LLM provider. */
 export interface AIProviderConfig {
-    provider: 'gemini' | 'groq' | 'openai';
+    provider: 'gemini' | 'groq' | 'openai' | 'github';
     model: string;
     apiKey: string;
 }
@@ -200,6 +200,7 @@ export function getProviderConfig(): AIProviderConfig {
         gemini: 'gemini-2.0-flash',
         groq: 'llama-3.3-70b-versatile',
         openai: 'gpt-4o',
+        github: 'gpt-4o',
     };
     const model = process.env.AI_MODEL || defaultModels[provider] || 'gemini-2.0-flash';
     const apiKey = getNextKey();
