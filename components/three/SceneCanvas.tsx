@@ -20,7 +20,7 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, Environment, GizmoHelper, GizmoViewport, Sky } from '@react-three/drei';
+import { OrbitControls, Grid, Environment, GizmoHelper, GizmoViewport, Sky, OrthographicCamera } from '@react-three/drei';
 import { useDesignStore } from '@/store/useDesignStore';
 import PSGRenderer from './PSGRenderer';
 
@@ -137,6 +137,17 @@ export default function SceneCanvas() {
                 }}
                 style={{ background: '#0a0a1a' }}
             >
+                {/* Cameras */}
+                {viewMode === 'top_down' && (
+                    <OrthographicCamera
+                        makeDefault
+                        position={[camera.position.x, 50, camera.position.z]}
+                        zoom={20}
+                        near={0.1}
+                        far={200}
+                    />
+                )}
+
                 {/* Sky/Environment */}
                 <Suspense fallback={<color attach="background" args={['#87CEEB']} />}>
                     {viewMode === 'front' ? (

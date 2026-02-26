@@ -434,7 +434,7 @@ export default function PSGRenderer() {
 
     // Nodes that are the "top-level" renderable structural elements
     // Windows and Doors are rendered INSIDE their parent wall group
-    const wallAndPartitionNodes = useMemo(
+    const wallsAndPartitions = useMemo(
         () => Object.values(allNodes).filter((n) => n.type === 'Wall' || n.type === 'Partition'),
         [allNodes]
     );
@@ -446,27 +446,41 @@ export default function PSGRenderer() {
         [allNodes]
     );
 
-    const getForcedOpacity = (node: PSGNode) => {
-        if (viewMode !== 'top_down') return undefined;
-
-        // Roof is always transparent in Plan mode
-        if (node.type === 'Roof') return 0.15;
+    const isNodeVisible = (node: PSGNode): boolean => {
+        if (viewMode !== 'top_down') return true;
 
         if (activeFloorId) {
             const floorId = nodeFloorMap.get(node.id);
-            if (!floorId) return undefined;
+            // Non-floor elements like Foundation are visible
+            if (!floorId) {
+                if (node.type === 'Roof') return false;
+                // If it's foundation and we are looking at ground floor, let's keep it visible or hide?
+                // For exact mathematical plan, just show the current floor. We can hide foundation unless it's the ground floor?
+                // Actually, if it has no floor, let's just make it visible, maybe it's terrain. 
+                // But let's hide roof anyway.
+                return true;
+            }
 
-            const floor = allNodes[floorId];
             const floorIndex = sortedFloors.findIndex(f => f.id === floorId);
 
-            // If node is on a floor ABOVE the active one, make it transparent
-            if (floorIndex > activeFloorIndex) return 0.1;
+            // Exactly show ONLY the active floor items
+            if (floorIndex !== activeFloorIndex) return false;
 
-            // If node is ON the active floor or BELOW, keep solid
-            return undefined;
+            // Even if on active floor (e.g., roof on top floor), hide the roof to see the plan
+            if (node.type === 'Roof') return false;
+
+            return true;
         }
 
-        return undefined;
+        // Top down mode but NO active floor selected:
+        // Hide roofs to see all floors inside
+        if (node.type === 'Roof') return false;
+
+        return true;
+    };
+
+    const getForcedOpacity = (node: PSGNode) => {
+        return undefined; // We are hiding entirely instead of changing opacity
     };
 
     return (
@@ -478,7 +492,7 @@ export default function PSGRenderer() {
             }}
         >
             {/* Walls with carved openings */}
-            {wallAndPartitionNodes.map((node) => (
+            {wallsAndPartitions.filter(isNodeVisible).map((node) => (
                 <WallMeshNode
                     key={node.id}
                     node={node}
@@ -491,7 +505,7 @@ export default function PSGRenderer() {
             ))}
 
             {/* All other structural + architectural nodes */}
-            {otherNodes.map((node) => (
+            {otherNodes.filter(isNodeVisible).map((node) => (
                 <GenericNodeMesh
                     key={node.id}
                     node={node}
