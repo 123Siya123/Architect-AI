@@ -425,6 +425,8 @@ export interface ChatMessage {
   operations?: PSGOperation[];
   // If the user uploaded reference images
   image_urls?: string[];
+  // State snapshot for "go back" functionality
+  snapshot?: PSGProject;
 }
 
 /** Request to the AI chat endpoint */

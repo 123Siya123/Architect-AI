@@ -72,6 +72,7 @@ interface DesignState {
     setActivePanel: (panel: ActivePanel) => void;
     setActiveFloorId: (floorId: string | null) => void;
     addChatMessage: (message: ChatMessage) => void;
+    revertToMessage: (messageId: string) => void;
     setAIThinking: (thinking: boolean) => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
@@ -173,6 +174,26 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     setActivePanel: (panel) => set({ activePanel: panel }),
     setActiveFloorId: (id) => set({ activeFloorId: id }),
     addChatMessage: (message) => set({ chatMessages: [...get().chatMessages, message] }),
+    revertToMessage: (messageId) => {
+        const { chatMessages } = get();
+        const msgIndex = chatMessages.findIndex((m) => m.id === messageId);
+        if (msgIndex === -1) return;
+
+        const targetMessage = chatMessages[msgIndex];
+        if (targetMessage.snapshot) {
+            // Restore project state
+            const restoredProject = JSON.parse(JSON.stringify(targetMessage.snapshot));
+            set({
+                project: projectWithCalculatedCost(restoredProject),
+                selection: defaultSelection,
+                undoStack: [],
+                redoStack: [],
+                error: null,
+                // Remove all messages strictly AFTER the one we revert to
+                chatMessages: chatMessages.slice(0, msgIndex + 1)
+            });
+        }
+    },
     setAIThinking: (thinking) => set({ isAIThinking: thinking }),
     setLoading: (loading) => set({ isLoading: loading }),
     setError: (error) => set({ error }),

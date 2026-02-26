@@ -38,7 +38,7 @@ const SUGGESTIONS = [
 // MESSAGE BUBBLE
 // =============================================================================
 
-function MessageBubble({ msg }: { msg: ChatMessage }) {
+function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onRevert?: (id: string) => void, showRevert?: boolean }) {
     const isUser = msg.role === 'user';
 
     return (
@@ -67,6 +67,15 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
                         </span>
                     ))}
                 </div>
+            )}
+            {isUser && showRevert && onRevert && (
+                <button
+                    onClick={() => onRevert(msg.id)}
+                    title="Revert the house back to how it was when you sent this message"
+                    style={{ fontSize: '0.75em', padding: '4px 8px', marginTop: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', width: 'fit-content' }}
+                >
+                    ↩️ Go back
+                </button>
             )}
         </div>
     );
@@ -134,6 +143,7 @@ export default function ChatPanel() {
     const setAIThinking = useDesignStore((s) => s.setAIThinking);
     const project = useDesignStore((s) => s.project);
     const applyOp = useDesignStore((s) => s.applyOp);
+    const revertToMessage = useDesignStore((s) => s.revertToMessage);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom on new messages
@@ -144,12 +154,16 @@ export default function ChatPanel() {
     const sendMessage = useCallback(async (text: string) => {
         if (!text.trim() || isAIThinking) return;
 
+        // Deep clone current project state as a snapshot before AI makes changes
+        const projectSnapshot = JSON.parse(JSON.stringify(project));
+
         // Add user message
         const userMsg: ChatMessage = {
             id: `msg_${Date.now()}`,
             role: 'user',
             content: text.trim(),
             timestamp: new Date().toISOString(),
+            snapshot: projectSnapshot,
         };
         addChatMessage(userMsg);
         setInput('');
@@ -284,8 +298,13 @@ export default function ChatPanel() {
                     </div>
                 )}
 
-                {chatMessages.map((msg) => (
-                    <MessageBubble key={msg.id} msg={msg} />
+                {chatMessages.map((msg, index) => (
+                    <MessageBubble
+                        key={msg.id}
+                        msg={msg}
+                        onRevert={revertToMessage}
+                        showRevert={!!msg.snapshot && index < chatMessages.length - 1}
+                    />
                 ))}
 
                 {isAIThinking && <PipelineStatus />}
