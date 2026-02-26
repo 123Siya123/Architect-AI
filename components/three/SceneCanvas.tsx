@@ -141,10 +141,10 @@ export default function SceneCanvas() {
                 {viewMode === 'top_down' && (
                     <OrthographicCamera
                         makeDefault
-                        position={[camera.position.x, 50, camera.position.z]}
-                        zoom={20}
+                        position={[camera.target.x, 100, camera.target.z]}
+                        zoom={40}
                         near={0.1}
-                        far={200}
+                        far={500}
                     />
                 )}
 
@@ -159,7 +159,7 @@ export default function SceneCanvas() {
                     ) : (
                         <>
                             <color attach="background" args={['#0a0a1a']} />
-                            <fog attach="fog" args={['#0a0a1a', 40, 100]} />
+                            {viewMode !== 'top_down' && <fog attach="fog" args={['#0a0a1a', 40, 100]} />}
                         </>
                     )}
                 </Suspense>

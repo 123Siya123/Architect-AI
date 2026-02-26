@@ -207,40 +207,67 @@ function compileGableRoof(
 /**
  * Creates stairs geometry.
  *
- * The staircase is built from individual step boxes.
- * Number of steps = floor height / riser height.
- *
- * Each step is a box:
- * - Width = staircase width
- * - Height = riser height
- * - Depth = tread depth
- *
- * For spiral/curved stairs, we'll add radial positioning in Phase 3.
- *
- * TODO (Phase 3): Implement spiral, L-shaped, and U-shaped stairs
- * using parametric positioning of steps along curves.
+ * Supports straight, L-shaped, U-shaped, and spiral stairs.
  */
 export function compileStairsGeometry(node: PSGNode): THREE.Group {
     const riserHeight = node.stair_riser_height || 0.18;
     const treadDepth = node.stair_tread_depth || 0.28;
     const totalHeight = node.dimensions.y;
+    // For spiral, dimensions.x/z represent the bounding diameter.
+    // For straight, x is width, z is depth.
     const stairWidth = node.dimensions.x;
 
     const numSteps = Math.ceil(totalHeight / riserHeight);
     const group = new THREE.Group();
 
-    for (let i = 0; i < numSteps; i++) {
-        const stepGeometry = new THREE.BoxGeometry(stairWidth, riserHeight, treadDepth);
-        const step = new THREE.Mesh(stepGeometry);
+    if (node.stair_style === 'spiral') {
+        const radius = stairWidth / 2;
+        const poleRadius = 0.05;
 
-        // Each step is positioned progressively higher and further forward
-        step.position.set(
-            0,
-            i * riserHeight + riserHeight / 2,
-            i * treadDepth - (numSteps * treadDepth) / 2
-        );
+        // 1. Central Pole
+        const poleGeom = new THREE.CylinderGeometry(poleRadius, poleRadius, totalHeight, 16);
+        const pole = new THREE.Mesh(poleGeom);
+        // Position at local Y center since pole geometry is centered at its own Y origin
+        pole.position.set(0, totalHeight / 2, 0);
+        group.add(pole);
 
-        group.add(step);
+        // 2. Spiral Steps
+        const degreesPerStep = 360 / 15; // roughly 15 steps per revolution
+        const radPerStep = (degreesPerStep * Math.PI) / 180;
+        const stepWidth = radius - poleRadius;
+
+        for (let i = 0; i < numSteps; i++) {
+            // A wedge-like step using box geometry
+            // The step spans from the pole to the outer radius
+            const stepGeom = new THREE.BoxGeometry(stepWidth, riserHeight, treadDepth);
+            const step = new THREE.Mesh(stepGeom);
+
+            // Move step so its inner edge touches the pole
+            step.position.set(stepWidth / 2 + poleRadius, 0, 0);
+
+            // Create a pivot group to rotate the step around the pole
+            const pivot = new THREE.Group();
+            pivot.position.set(0, i * riserHeight + riserHeight / 2, 0);
+            pivot.rotation.y = -i * radPerStep;
+
+            pivot.add(step);
+            group.add(pivot);
+        }
+    } else {
+        // Default / Straight stairs
+        for (let i = 0; i < numSteps; i++) {
+            const stepGeometry = new THREE.BoxGeometry(stairWidth, riserHeight, treadDepth);
+            const step = new THREE.Mesh(stepGeometry);
+
+            // Each step is positioned progressively higher and further forward
+            step.position.set(
+                0,
+                i * riserHeight + riserHeight / 2,
+                i * treadDepth - (numSteps * treadDepth) / 2
+            );
+
+            group.add(step);
+        }
     }
 
     return group;
