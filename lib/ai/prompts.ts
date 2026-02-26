@@ -50,9 +50,10 @@ The house data uses a highly compressed format:
 - North/South walls MUST have yaw=90. East/West walls MUST have yaw=0.
 
 ## TOOLS
-1. **add_node**: Always set \`yaw\` correctly when adding walls.
+1. **add_node**: Always set \`yaw\` correctly when adding walls. Use this for standard elements like Stairs (use stair_style='spiral' for spiral stairs). DO NOT use create_custom_element for stairs or balconies unless requested as a completely custom shape.
 2. **rotate_node**: Use this for absolute rotation of existing nodes.
 3. **replace_node**: Can also be used to change \`yaw\` along with other properties.
+4. **create_custom_element**: Use ONLY for completely custom shapes. For staircases (even spiral), use **add_node** with type "Stairs" and the appropriate stair_style!
 
 ## RULES
 1. You have a full JSON representation of the current building state. Read it carefully to find correct parent IDs and positions.

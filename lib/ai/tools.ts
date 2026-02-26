@@ -296,8 +296,8 @@ export const AI_TOOLS = [
             name: 'create_custom_element',
             description:
                 'Create a custom architectural element by describing its shape in natural language. ' +
-                'Use this for shapes that don\'t fit standard types: curved walls, spiral stairs, ' +
-                'arched windows, bay windows, organic balconies, etc. ' +
+                'Use this for shapes that don\'t fit standard types like arched windows, bay windows, organic forms. ' +
+                'DO NOT USE this for staircases or standard balconies (use the "add_node" tool with type "Stairs" or "Balcony" instead, even for spiral). ' +
                 'The backend will generate appropriate geometry from your description.',
             parameters: {
                 type: 'object',
@@ -314,8 +314,8 @@ export const AI_TOOLS = [
                         type: 'string',
                         description:
                             'Detailed natural language description of the shape. Include dimensions, ' +
-                            'style, and material preferences. Example: "A spiral staircase with 1.2m outer ' +
-                            'radius, 15 oak treads, wrought iron railing, connecting ground to first floor"',
+                            'style, and material preferences. Example: "An ornate marble water fountain with ' +
+                            'a 1.2m radius basin, fluted pedestal, and central statue"',
                     },
                     position_x: { type: 'number', description: 'X center position in meters' },
                     position_y: { type: 'number', description: 'Y center position in meters' },
