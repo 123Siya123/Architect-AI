@@ -70,7 +70,7 @@ export const AI_TOOLS = [
                     },
                     roof_style: {
                         type: 'string',
-                        enum: ['flat', 'gable', 'hip', 'shed'],
+                        enum: ['flat', 'gable', 'hip', 'shed', 'mansard', 'gambrel', 'butterfly', 'dome', 'conical', 'saltbox', 'pyramid', 'skillion', 'jerkinhead', 'bonnet', 'cross_gable', 'cross_hip', 'round'],
                         description: 'Roof style (only for Roof type)',
                     },
                     roof_pitch_degrees: {
@@ -79,8 +79,18 @@ export const AI_TOOLS = [
                     },
                     stair_style: {
                         type: 'string',
-                        enum: ['straight', 'l_shaped', 'u_shaped', 'spiral'],
+                        enum: ['straight', 'l_shaped', 'u_shaped', 'spiral', 'curved', 'winder', 'bifurcated', 'circular', 'half_turn', 'quarter_turn'],
                         description: 'Stair style (only for Stairs type)',
+                    },
+                    wall_style: {
+                        type: 'string',
+                        enum: ['straight', 'curved', 'round', 'wavy', 'sloped'],
+                        description: 'Wall style/shape (only for Wall type)',
+                    },
+                    balcony_style: {
+                        type: 'string',
+                        enum: ['projecting', 'recessed', 'juliet', 'loggia', 'wrap_around', 'mezzanine', 'deck', 'veranda'],
+                        description: 'Balcony style (only for Balcony type)',
                     },
                     stair_riser_height: {
                         type: 'number',
@@ -197,7 +207,7 @@ export const AI_TOOLS = [
                     },
                     roof_style: {
                         type: 'string',
-                        enum: ['flat', 'gable', 'hip', 'shed'],
+                        enum: ['flat', 'gable', 'hip', 'shed', 'mansard', 'gambrel', 'butterfly', 'dome', 'conical', 'saltbox', 'pyramid', 'skillion', 'jerkinhead', 'bonnet', 'cross_gable', 'cross_hip', 'round'],
                         description: 'New roof style (for Roof nodes only)',
                     },
                     roof_pitch_degrees: {
@@ -206,8 +216,18 @@ export const AI_TOOLS = [
                     },
                     stair_style: {
                         type: 'string',
-                        enum: ['straight', 'l_shaped', 'u_shaped', 'spiral'],
+                        enum: ['straight', 'l_shaped', 'u_shaped', 'spiral', 'curved', 'winder', 'bifurcated', 'circular', 'half_turn', 'quarter_turn'],
                         description: 'New stair style (for Stairs nodes only)',
+                    },
+                    wall_style: {
+                        type: 'string',
+                        enum: ['straight', 'curved', 'round', 'wavy', 'sloped'],
+                        description: 'New wall style/shape (for Wall nodes only)',
+                    },
+                    balcony_style: {
+                        type: 'string',
+                        enum: ['projecting', 'recessed', 'juliet', 'loggia', 'wrap_around', 'mezzanine', 'deck', 'veranda'],
+                        description: 'New balcony style (for Balcony nodes only)',
                     },
                     stair_riser_height: {
                         type: 'number',

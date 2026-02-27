@@ -224,14 +224,20 @@ export interface PSGNode {
   opening_height?: number;
 
   /** Stairs: configuration */
-  stair_style?: 'straight' | 'l_shaped' | 'u_shaped' | 'spiral' | 'curved';
+  stair_style?: 'straight' | 'l_shaped' | 'u_shaped' | 'spiral' | 'curved' | 'winder' | 'bifurcated' | 'circular' | 'half_turn' | 'quarter_turn';
   stair_riser_height?: number;  // Height of each step
   stair_tread_depth?: number;   // Depth of each step
 
   /** Roof: configuration */
-  roof_style?: 'gable' | 'hip' | 'flat' | 'mansard' | 'shed' | 'gambrel';
+  roof_style?: 'gable' | 'hip' | 'flat' | 'mansard' | 'shed' | 'gambrel' | 'butterfly' | 'dome' | 'conical' | 'saltbox' | 'pyramid' | 'skillion' | 'jerkinhead' | 'bonnet' | 'cross_gable' | 'cross_hip' | 'round';
   roof_pitch_degrees?: number;  // Angle of the roof slope
   roof_overhang?: number;       // How far the roof extends past walls
+
+  /** Wall: configuration */
+  wall_style?: 'straight' | 'curved' | 'round' | 'wavy' | 'sloped';
+
+  /** Balcony: configuration */
+  balcony_style?: 'projecting' | 'recessed' | 'juliet' | 'loggia' | 'wrap_around' | 'mezzanine' | 'deck' | 'veranda';
 
   /** Room: metadata */
   room_function?: string;       // "bedroom", "kitchen", "bathroom", etc.

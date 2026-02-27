@@ -50,7 +50,7 @@ The house data uses a highly compressed format:
 - North/South walls MUST have yaw=90. East/West walls MUST have yaw=0.
 
 ## TOOLS
-1. **add_node**: Always set \`yaw\` correctly when adding walls. Use this for standard elements like Stairs (use stair_style='spiral' for spiral stairs). DO NOT use create_custom_element for stairs or balconies unless requested as a completely custom shape.
+1. **add_node**: Always set \`yaw\` correctly when adding walls. Use this for standard elements like Stairs (use stair_style='spiral' for spiral stairs). DO NOT use create_custom_element for stairs or balconies unless requested as a completely custom shape. You can also specify \`roof_style\` (e.g., dome, pyramid, butterfly), \`wall_style\` (e.g., curved, round), \`stair_style\` (e.g., winder, curved), and \`balcony_style\` (e.g., wrap_around, loggia).
 2. **rotate_node**: Use this for absolute rotation of existing nodes.
 3. **replace_node**: Can also be used to change \`yaw\` along with other properties.
 4. **create_custom_element**: Use ONLY for completely custom shapes. For staircases (even spiral), use **add_node** with type "Stairs" and the appropriate stair_style!
@@ -101,7 +101,7 @@ export const COORDINATOR_SYSTEM_PROMPT = `You are the COORDINATOR of an AI archi
 
 ## WORKER CAPABILITIES
 Workers have these tools:
-- add_node: Add element (Wall, Window, Door, Room, Floor, Slab, Stairs, Roof, Balcony, etc.)
+- add_node: Add element (Wall, Window, Door, Room, Floor, Slab, Stairs, Roof, Balcony, etc.). Provide styles using \`stair_style\`, \`roof_style\`, \`wall_style\`, \`balcony_style\`.
 - create_custom_element: Use this ONLY for very specific architectural features that don't fit standard types (e.g., custom ornaments, special columns). For staircases, ALWAYS use the "Stairs" type if possible.
 - move_node: Move element by delta (delta_x, delta_y, delta_z)
 - resize_node: Change dimensions (width, height, depth)
