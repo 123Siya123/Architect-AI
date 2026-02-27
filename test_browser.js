@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
     await page.goto('http://localhost:3001/design', { waitUntil: 'networkidle2' });
 
     console.log('Wait 2s for 3D load...');
-    await page.waitForTimeout(2000);
+    await new Promise(r => setTimeout(r, 2000));
 
     console.log('Clicking "Plan" View...');
     // Find the button with text Plan
@@ -23,7 +23,18 @@ const puppeteer = require('puppeteer');
     });
 
     console.log('Wait 2s after click...');
-    await page.waitForTimeout(2000);
+    await new Promise(r => setTimeout(r, 2000));
+
+    console.log('Clicking "All Floors" View...');
+    // Find the floor selector buttons
+    await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const allBtn = buttons.find(b => b.textContent && b.textContent.includes('All'));
+        if (allBtn) allBtn.click();
+    });
+
+    console.log('Wait 2s after second click...');
+    await new Promise(r => setTimeout(r, 2000));
 
     console.log('Done.');
     await browser.close();

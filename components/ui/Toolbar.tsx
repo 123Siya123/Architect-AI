@@ -162,6 +162,7 @@ export default function Toolbar() {
 
             {/* Export Action */}
             <div className="toolbar-group">
+                <ImageTo3DButton />
                 <ExportButton />
             </div>
         </div>
@@ -201,6 +202,7 @@ function FloorSelector() {
 }
 
 import ExportModal from './ExportModal';
+import ImageTo3DModal from './ImageTo3DModal';
 import { useState } from 'react';
 
 function ExportButton() {
@@ -215,6 +217,23 @@ function ExportButton() {
                 📥 Export Plans
             </button>
             <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+        </>
+    );
+}
+
+function ImageTo3DButton() {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <>
+            <button
+                className="toolbar-btn export-btn"
+                onClick={() => setIsOpen(true)}
+                style={{ background: 'var(--accent-secondary)' }}
+            >
+                📸 Photo to 3D
+            </button>
+            <ImageTo3DModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
         </>
     );
 }

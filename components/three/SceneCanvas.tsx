@@ -141,7 +141,7 @@ export default function SceneCanvas() {
                 {viewMode === 'top_down' && (
                     <OrthographicCamera
                         makeDefault
-                        position={[camera.target.x, 100, camera.target.z]}
+                        position={[camera.target.x, 100, camera.target.z + 0.1]}
                         zoom={50}
                         near={0.1}
                         far={1000}

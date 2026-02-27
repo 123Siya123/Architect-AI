@@ -1433,9 +1433,10 @@ button:disabled {
 }
 
 /* =============================================================================
-   11. PROFESSIONAL EXPORT UI
+   11. PROFESSIONAL EXPORT UI & MODALS
    ============================================================================= */
 
+.modal-overlay,
 .export-modal-overlay {
   position: fixed;
   inset: 0;
@@ -1447,8 +1448,10 @@ button:disabled {
   z-index: 1000;
 }
 
+.modal-content,
 .export-modal {
   width: 500px;
+  max-width: 90vw;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -1456,8 +1459,41 @@ button:disabled {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: var(--space-6);
   animation: modalIn var(--transition-normal);
+}
+
+.export-modal {
+  padding: var(--space-6);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  color: var(--text-muted);
+  font-size: var(--text-lg);
+  padding: var(--space-1);
+  transition: color var(--transition-fast);
+}
+
+.modal-close:hover {
+  color: var(--accent-danger);
+}
+
+.modal-body {
+  padding: var(--space-4);
+  overflow-y: auto;
 }
 
 @keyframes modalIn {
