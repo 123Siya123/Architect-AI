@@ -240,18 +240,17 @@ export function compileStairsGeometry(node: PSGNode): THREE.Group {
             // A wedge-like step using box geometry
             // The step spans from the pole to the outer radius
             const stepGeom = new THREE.BoxGeometry(stepWidth, riserHeight, treadDepth);
+
+            // Transform the geometry directly:
+            // 1. Move step outward so its inner edge touches the pole
+            stepGeom.translate(stepWidth / 2 + poleRadius, 0, 0);
+            // 2. Rotate it around the central Y axis
+            stepGeom.rotateY(-i * radPerStep);
+            // 3. Move it vertically to its correct height
+            stepGeom.translate(0, i * riserHeight + riserHeight / 2, 0);
+
             const step = new THREE.Mesh(stepGeom);
-
-            // Move step so its inner edge touches the pole
-            step.position.set(stepWidth / 2 + poleRadius, 0, 0);
-
-            // Create a pivot group to rotate the step around the pole
-            const pivot = new THREE.Group();
-            pivot.position.set(0, i * riserHeight + riserHeight / 2, 0);
-            pivot.rotation.y = -i * radPerStep;
-
-            pivot.add(step);
-            group.add(pivot);
+            group.add(step);
         }
     } else {
         // Default / Straight stairs
