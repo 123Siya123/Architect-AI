@@ -141,41 +141,31 @@ export default function SceneCanvas() {
                 {viewMode === 'top_down' && (
                     <OrthographicCamera
                         makeDefault
-                        position={[camera.target.x, 100, camera.target.z]}
-                        up={[0, 0, -1]}
-                        zoom={50}
+                        position={[camera.position.x, 50, camera.position.z]}
+                        zoom={20}
                         near={0.1}
-                        far={1000}
+                        far={200}
                     />
                 )}
 
-                {/* Background Color */}
-                <color attach="background" args={[viewMode === 'top_down' ? '#ffffff' : '#0a0a1a']} />
-
-                {/* Sky/Environment (Only for perspectives) */}
-                {viewMode !== 'top_down' && (
-                    <Suspense fallback={null}>
-                        {viewMode === 'front' ? (
-                            <>
-                                <Sky sunPosition={[100, 20, 100]} turbidity={0.1} rayleigh={0.5} />
-                                <Environment preset="forest" background />
-                                <fog attach="fog" args={['#a0d0ff', 40, 150]} />
-                            </>
-                        ) : (
+                {/* Sky/Environment */}
+                <Suspense fallback={<color attach="background" args={['#87CEEB']} />}>
+                    {viewMode === 'front' ? (
+                        <>
+                            <Sky sunPosition={[100, 20, 100]} turbidity={0.1} rayleigh={0.5} />
+                            <Environment preset="forest" background />
+                            <fog attach="fog" args={['#a0d0ff', 40, 150]} />
+                        </>
+                    ) : (
+                        <>
+                            <color attach="background" args={['#0a0a1a']} />
                             <fog attach="fog" args={['#0a0a1a', 40, 100]} />
-                        )}
-                    </Suspense>
-                )}
+                        </>
+                    )}
+                </Suspense>
 
                 {/* Lighting */}
-                {viewMode === 'top_down' ? (
-                    <>
-                        <ambientLight intensity={1.5} />
-                        <directionalLight position={[0, 100, 0]} intensity={0.5} />
-                    </>
-                ) : (
-                    <SceneLighting />
-                )}
+                <SceneLighting />
 
                 {/* Controls - Conditional based on ViewMode */}
                 {viewMode === 'orbit' || viewMode === 'top_down' || viewMode === 'front' ? (
@@ -184,10 +174,9 @@ export default function SceneCanvas() {
                         target={[camera.target.x, camera.target.y, camera.target.z]}
                         enableDamping
                         dampingFactor={0.1}
-                        enableRotate={viewMode !== 'top_down'}
                         minDistance={2}
                         maxDistance={80}
-                        maxPolarAngle={viewMode === 'top_down' ? 0 : Math.PI / 2 + 0.1}
+                        maxPolarAngle={viewMode === 'top_down' ? 0.01 : Math.PI / 2 + 0.1}
                         minPolarAngle={viewMode === 'top_down' ? 0 : 0}
                     />
                 ) : null}
@@ -198,20 +187,18 @@ export default function SceneCanvas() {
                 {viewMode !== 'front' && <SceneGrid />}
 
                 {/* Ground plane (receives shadows) */}
-                {viewMode !== 'top_down' && (
-                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
-                        <planeGeometry args={[200, 200]} />
-                        {viewMode === 'front' ? (
-                            <meshStandardMaterial
-                                color="#2d4a1e"
-                                roughness={0.8}
-                                metalness={0.05}
-                            />
-                        ) : (
-                            <shadowMaterial opacity={0.3} />
-                        )}
-                    </mesh>
-                )}
+                <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+                    <planeGeometry args={[200, 200]} />
+                    {viewMode === 'front' ? (
+                        <meshStandardMaterial
+                            color="#2d4a1e"
+                            roughness={0.8}
+                            metalness={0.05}
+                        />
+                    ) : (
+                        <shadowMaterial opacity={0.3} />
+                    )}
+                </mesh>
 
                 {/* PSG Scene — wrapped in Suspense for async loads */}
                 <Suspense fallback={<LoadingFallback />}>

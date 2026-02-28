@@ -49,6 +49,8 @@ function getPipeTransform(from: { x: number; y: number; z: number }, to: { x: nu
 export default function SystemsRenderer() {
     const project = useDesignStore((s) => s.project);
     const visibleLayers = useDesignStore((s) => s.visibleLayers);
+    const viewMode = useDesignStore((s) => s.viewMode);
+    const activeFloorId = useDesignStore((s) => s.activeFloorId);
 
     // --- 1. Electrical Layer ---
     const electricalData = useMemo(() => {
@@ -70,6 +72,45 @@ export default function SystemsRenderer() {
 
     // Thermal material
     const thermalMaterial = useMemo(() => createThermalShaderMaterial(), []);
+
+    // Filter for top_down viewing
+    const isNodeVisible = useMemo(() => {
+        const map = new Map<string, string>();
+        const findFloor = (nodeId: string): string | null => {
+            const node = project.nodes[nodeId];
+            if (!node) return null;
+            if (node.type === 'Floor') return node.id;
+            if (!node.parent_id) return null;
+            return findFloor(node.parent_id);
+        };
+        Object.values(project.nodes).forEach(n => {
+            const fId = findFloor(n.id);
+            if (fId) map.set(n.id, fId);
+        });
+
+        const sortedFloors = Object.values(project.nodes).filter(n => n.type === 'Floor').sort((a, b) => a.position.y - b.position.y);
+        const activeFloorIndex = activeFloorId ? sortedFloors.findIndex(f => f.id === activeFloorId) : -1;
+
+        return (nodeId: string) => {
+            if (viewMode !== 'top_down') return true;
+            const node = project.nodes[nodeId];
+            if (!node) return false;
+
+            if (activeFloorId) {
+                const floorId = map.get(nodeId);
+                if (!floorId) {
+                    if (node.type === 'Roof') return false;
+                    return true;
+                }
+                const floorIndex = sortedFloors.findIndex(f => f.id === floorId);
+                if (floorIndex !== activeFloorIndex) return false;
+                if (node.type === 'Roof') return false;
+                return true;
+            }
+            if (node.type === 'Roof') return false;
+            return true;
+        };
+    }, [project.nodes, viewMode, activeFloorId]);
 
     return (
         <group>
@@ -145,6 +186,9 @@ export default function SystemsRenderer() {
                         // Don't render "neutral" internal elements in heatmap
                         if (tempValue > 0.49 && tempValue < 0.51 && !node.tags.includes('exterior')) return null;
 
+                        // Only render thermal for currently visible nodes in Plan view
+                        if (!isNodeVisible(id)) return null;
+
                         return (
                             <mesh
                                 key={`thermal_${id}`}
@@ -193,6 +237,7 @@ export default function SystemsRenderer() {
                 <group name="layer-dimensions">
                     {Object.values(project.nodes).map((node) => {
                         if (node.type !== 'Wall' && node.type !== 'Partition' && node.type !== 'Window' && node.type !== 'Door') return null;
+                        if (!isNodeVisible(node.id)) return null;
 
                         // dimensions.x is always the "length" of the element (along its local axis)
                         const lengthM = node.dimensions.x;
@@ -214,7 +259,7 @@ export default function SystemsRenderer() {
                                 key={`dim_${node.id}_${lengthM}_${heightM}`}
                                 position={[node.position.x, labelY, node.position.z]}
                             >
-                                <Html center distanceFactor={12}>
+                                <Html center distanceFactor={viewMode === 'top_down' ? undefined : 12}>
                                     <div style={{
                                         background: 'rgba(0,0,0,0.85)',
                                         color: '#00f0ff',

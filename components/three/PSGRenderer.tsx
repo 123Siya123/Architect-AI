@@ -451,9 +451,13 @@ export default function PSGRenderer() {
 
         if (activeFloorId) {
             const floorId = nodeFloorMap.get(node.id);
-            // If the node isn't explicitly tied to a floor, just let it render (except Roofs).
+            // Non-floor elements like Foundation are visible
             if (!floorId) {
                 if (node.type === 'Roof') return false;
+                // If it's foundation and we are looking at ground floor, let's keep it visible or hide?
+                // For exact mathematical plan, just show the current floor. We can hide foundation unless it's the ground floor?
+                // Actually, if it has no floor, let's just make it visible, maybe it's terrain. 
+                // But let's hide roof anyway.
                 return true;
             }
 
