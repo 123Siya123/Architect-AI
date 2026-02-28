@@ -141,7 +141,8 @@ export default function SceneCanvas() {
                 {viewMode === 'top_down' && (
                     <OrthographicCamera
                         makeDefault
-                        position={[camera.target.x, 100, camera.target.z + 0.1]}
+                        position={[camera.target.x, 100, camera.target.z]}
+                        up={[0, 0, -1]}
                         zoom={50}
                         near={0.1}
                         far={1000}
@@ -183,9 +184,10 @@ export default function SceneCanvas() {
                         target={[camera.target.x, camera.target.y, camera.target.z]}
                         enableDamping
                         dampingFactor={0.1}
+                        enableRotate={viewMode !== 'top_down'}
                         minDistance={2}
                         maxDistance={80}
-                        maxPolarAngle={viewMode === 'top_down' ? 0.01 : Math.PI / 2 + 0.1}
+                        maxPolarAngle={viewMode === 'top_down' ? 0 : Math.PI / 2 + 0.1}
                         minPolarAngle={viewMode === 'top_down' ? 0 : 0}
                     />
                 ) : null}
