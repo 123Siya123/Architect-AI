@@ -39,18 +39,10 @@ export function prepareProjectContext(project: PSGProject): string {
  * Prepares a concise material library for the LLM context.
  */
 export function prepareMaterialContext(materials: Record<string, Material>): string {
-    const compact: Record<string, unknown> = {};
-    for (const [id, mat] of Object.entries(materials)) {
-        compact[id] = {
-            name: mat.name,
-            category: mat.category,
-            color: mat.color_hex,
-            price_m3: mat.price_per_m3,
-            density: mat.density_kg_m3,
-            thermal: mat.thermal_conductivity,
-        };
-    }
-    return JSON.stringify(compact, null, 2);
+    const lines = Object.entries(materials).map(([id, mat]) => {
+        return `${id}: ${mat.name} (${mat.category}, €${mat.price_per_m3}/m3)`;
+    });
+    return lines.join(' | ');
 }
 
 /**

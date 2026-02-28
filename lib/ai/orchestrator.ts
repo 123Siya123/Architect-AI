@@ -315,9 +315,7 @@ ${buildingSpecs}
 
 
 ### AVAILABLE MATERIALS
-\`\`\`json
 ${materialContext}
-\`\`\`
 
 ### BUDGET STATUS
 ${budgetContext}
@@ -357,9 +355,7 @@ ${fullContext}
 \`\`\`
 
 ## AVAILABLE MATERIALS
-\`\`\`json
 ${materialContext}
-\`\`\`
 `,
         };
 
@@ -1004,7 +1000,7 @@ async function callGemini(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.2, max_output_tokens: 8192 },
+        generation_config: { temperature: 0.2, max_output_tokens: 4000 },
     };
 
     const response = await fetch(url, {
@@ -1058,7 +1054,7 @@ async function callGeminiNoTools(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.3, max_output_tokens: 8192 },
+        generation_config: { temperature: 0.3, max_output_tokens: 4000 },
     };
 
     const response = await fetch(url, {
@@ -1201,7 +1197,7 @@ async function callOpenAI(
         tools: AI_TOOLS,
         tool_choice: 'auto',
         temperature: 0.2,
-        max_tokens: 8192,
+        max_tokens: 4000,
     };
 
     const response = await fetch(url, {
@@ -1242,7 +1238,7 @@ async function callOpenAINoTools(
         model: config.model,
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         temperature: 0.3,
-        max_tokens: 8192,
+        max_tokens: 4000,
     };
 
     const response = await fetch(url, {
@@ -1282,7 +1278,7 @@ async function callGithub(
         tools: AI_TOOLS,
         tool_choice: 'auto',
         temperature: 0.2,
-        max_tokens: 8192,
+        max_tokens: 4000,
     };
 
     const response = await fetch(url, {
@@ -1323,7 +1319,7 @@ async function callGithubNoTools(
         model: config.model,
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         temperature: 0.3,
-        max_tokens: 8192,
+        max_tokens: 4000,
     };
 
     const response = await fetch(url, {
