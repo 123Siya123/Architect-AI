@@ -14,7 +14,6 @@ import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import type { PSGOperation, ImageTo3DRequest, ImageTo3DResponse } from '@/types';
 import { getProviderConfig } from './key-manager';
 import { toolCallToOperation } from './orchestrator';
-import { toolCallToOperation } from './orchestrator';
 
 const VISION_SYSTEM_PROMPT = `You are an Expert AI Architect specialized in reverse-engineering 3D models from 2D images.
 The user has provided an image of a house and a "reference measurement" string (e.g., "The front door is 2.1m high" or "The front wall is 10m wide").

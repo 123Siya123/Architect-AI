@@ -148,23 +148,23 @@ export default function SceneCanvas() {
                     />
                 )}
 
-                {/* Sky/Environment/Background */}
-                <Suspense fallback={<color attach="background" args={['#87CEEB']} />}>
-                    {viewMode === 'top_down' ? (
-                        <color attach="background" args={['#ffffff']} />
-                    ) : viewMode === 'front' ? (
-                        <>
-                            <Sky sunPosition={[100, 20, 100]} turbidity={0.1} rayleigh={0.5} />
-                            <Environment preset="forest" background />
-                            <fog attach="fog" args={['#a0d0ff', 40, 150]} />
-                        </>
-                    ) : (
-                        <>
-                            <color attach="background" args={['#0a0a1a']} />
+                {/* Background Color */}
+                <color attach="background" args={[viewMode === 'top_down' ? '#ffffff' : '#0a0a1a']} />
+
+                {/* Sky/Environment (Only for perspectives) */}
+                {viewMode !== 'top_down' && (
+                    <Suspense fallback={null}>
+                        {viewMode === 'front' ? (
+                            <>
+                                <Sky sunPosition={[100, 20, 100]} turbidity={0.1} rayleigh={0.5} />
+                                <Environment preset="forest" background />
+                                <fog attach="fog" args={['#a0d0ff', 40, 150]} />
+                            </>
+                        ) : (
                             <fog attach="fog" args={['#0a0a1a', 40, 100]} />
-                        </>
-                    )}
-                </Suspense>
+                        )}
+                    </Suspense>
+                )}
 
                 {/* Lighting */}
                 {viewMode === 'top_down' ? (
