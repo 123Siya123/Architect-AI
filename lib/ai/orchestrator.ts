@@ -113,98 +113,78 @@ export async function sendChatToAI(
     for (let i = 1; i <= maxIterations; i++) {
         progressLog.push(`\n───── 🌀 LOOP ITERATION ${i}/${maxIterations} ─────`);
 
-        // Prepare context for this specific iteration
-        const buildingSpecs = prepareProjectContext(currentProject);
-        const materialContext = prepareMaterialContext(materials);
-        const asciiPlan = generateASCIIFloorPlan(currentProject);
-        const budgetContext = prepareBudgetContext(currentProject);
-
-        const iterationContext = `
-## CURRENT BUILDING STATE (READ ONLY)
-### ASCII FLOOR PLAN
-\`\`\`
-${asciiPlan}
-\`\`\`
-### COMPRESSED NODE DATA
-\`\`\`json
-${buildingSpecs}
-\`\`\`
-### AVAILABLE MATERIALS
-${materialContext}
-### BUDGET STATUS
-${budgetContext}
-`;
-
-        // We merge the building context into a unified observation message.
-        // We use 'user' role for these observations to ensure visibility and prevent 
-        // consecutive role overlap issues that crash Gemini/Groq.
-        loopMessages.push({
-            role: 'user',
-            content: `### SYSTEM OBSERVATION (Iteration ${i})\n${iterationContext}\n\nReview the building state above and proceed with your task using tools if needed.`
-        });
-
         try {
+            const buildingSpecs = prepareProjectContext(currentProject);
+            const asciiPlan = generateASCIIFloorPlan(currentProject);
+            const materialContext = prepareMaterialContext(materials);
+            const budgetContext = prepareBudgetContext(currentProject);
+
+            // Add building context as a system observation
+            loopMessages.push({
+                role: 'user',
+                content: `### SYSTEM OBSERVATION ${i}\nAscii Plan:\n${asciiPlan}\n\nBudget: ${budgetContext}\nNode State:\n${buildingSpecs}\n\nPlease proceed with design operations.`
+            });
+
             const config = getProviderConfig();
-            // Normalize messages to ensure alternating roles before calling the provider
-            const normalizedHistory = normalizeMessages(loopMessages);
-            const result = await callProviderWithTools(config, normalizedHistory);
+            const normalized = normalizeMessages(loopMessages);
+            const result = await callProviderWithTools(config, normalized);
 
             if (result.text) {
-                progressLog.push(`   💭 ${result.text.substring(0, 150)}...`);
-                finalMessage = result.text; // Store text for final response
+                finalMessage = result.text;
                 loopMessages.push({ role: 'assistant', content: result.text });
+                progressLog.push(`   💭 Reasoning: "${result.text.substring(0, 80)}..."`);
             }
 
-            if (!result.toolCalls || result.toolCalls.length === 0) {
-                // Planning check: if the AI just gave text but no tools on iteration 1, nudge it to ACT.
+            if (result.toolCalls && result.toolCalls.length > 0) {
+                progressLog.push(`   🛠️ EXECUTION: Processing ${result.toolCalls.length} structural operation(s)...`);
+                const resultsForObservation: string[] = [];
+                let turnSuccessCount = 0;
+
+                for (const tc of result.toolCalls) {
+                    try {
+                        const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
+                        const validation = validateOperation(op, currentProject);
+
+                        if (validation.valid) {
+                            allValidatedOps.push(op);
+                            const applied = applyOperation(currentProject, op);
+                            if (applied.project) {
+                                currentProject = applied.project;
+                                turnSuccessCount++;
+                                resultsForObservation.push(`✅ ${tc.name} applied on ${op.target_id}`);
+                            }
+                        } else {
+                            resultsForObservation.push(`❌ ${tc.name} validation failed: ${validation.errors.join(', ')}`);
+                            progressLog.push(`   ⚠️ Rejected: ${tc.name} failed constraints.`);
+                        }
+                    } catch (e) {
+                        resultsForObservation.push(`❌ ${tc.name} runtime error`);
+                    }
+                }
+
+                progressLog.push(`   ✅ Added ${turnSuccessCount} valid operations to the architecture.`);
+                loopMessages.push({
+                    role: 'user',
+                    content: `### OBSERVATION ${i} RESULTS\n${resultsForObservation.join('\n')}\n\nContinue building or finalize if complete.`
+                });
+
+            } else {
+                // No tools called
                 if (i === 1) {
-                    progressLog.push(`   💬 Analysis complete. Nudging for execution...`);
+                    progressLog.push(`   💬 No-Action detected on iteration 1. Forcing building mindset...`);
                     loopMessages.push({
                         role: 'user',
-                        content: `### SYSTEM NUDGE\nThank you for your analysis. Now, please execute the necessary tool calls to proceed with the design. DO NOT just describe the changes—apply them.`
+                        content: "SYSTEM WARNING: You provided no tool calls. You MUST use add_node or other tools to build the house. Natural language is not enough."
                     });
                     continue;
                 }
-                progressLog.push(`   ✨ No more operations needed. Finishing.`);
+                progressLog.push(`   ✨ Design objectives finalized. No further actions required.`);
                 break;
             }
 
-            progressLog.push(`   🛠️ Executing ${result.toolCalls.length} operation(s)...`);
-
-            const resultsForObservation: string[] = [];
-
-            for (const tc of result.toolCalls) {
-                try {
-                    const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
-                    const validation = validateOperation(op, currentProject);
-
-                    if (validation.valid) {
-                        allValidatedOps.push(op);
-                        const applied = applyOperation(currentProject, op);
-                        if (applied.success && applied.project) {
-                            currentProject = applied.project;
-                            resultsForObservation.push(`SUCCESS: ${op.type} on ${op.target_id}`);
-                        } else {
-                            resultsForObservation.push(`FAILED: Application error for ${op.type} on ${op.target_id}`);
-                        }
-                    } else {
-                        resultsForObservation.push(`FAILED: Validation error for ${op.type}: ${validation.errors.join(', ')}`);
-                        progressLog.push(`   ⚠️ Tool ${tc.name} failed: ${validation.errors[0]}`);
-                    }
-                } catch (err) {
-                    resultsForObservation.push(`FAILED: Tool ${tc.name} error: ${err instanceof Error ? err.message : String(err)}`);
-                }
-            }
-
-            // Feed results back to the agent as an observation
-            loopMessages.push({
-                role: 'user',
-                content: `### OBSERVATION (Step ${i})\n${resultsForObservation.join('\n')}\n\nPlease review the updated state and continue if necessary.`
-            });
-
         } catch (error) {
             console.error(`[Orchestrator] Loop Iteration ${i} FAILED:`, error);
-            progressLog.push(`   ❌ FAILED: ${error instanceof Error ? error.message : String(error)}`);
+            progressLog.push(`   ❌ CRITICAL LOOP ERROR: ${error instanceof Error ? error.message : String(error)}`);
             break;
         }
     }
@@ -252,7 +232,6 @@ ${budgetContext}
         }
     } catch (e) { }
     */
-
 
     progressLog.push(`\n═══ ANTIGRAVITY PIPELINE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
 

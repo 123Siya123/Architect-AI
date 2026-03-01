@@ -76,17 +76,41 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 
             {/* Pipeline Log Toggle */}
             {!isUser && msg.pipeline_log && msg.pipeline_log.length > 0 && (
-                <div className="chat-pipeline-log-container" style={{ marginTop: '8px' }}>
-                    <button
-                        onClick={() => setShowPipeline(!showPipeline)}
-                        style={{ fontSize: '0.7em', color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
-                    >
-                        {showPipeline ? 'Hide' : 'Show'} technical pipeline log
-                    </button>
+                <div className="chat-pipeline-log-container" style={{ marginTop: '12px', borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.75em', fontWeight: 'bold', color: 'var(--accent)' }}>ENGINE REASONING LOGS</span>
+                        <button
+                            onClick={() => setShowPipeline(!showPipeline)}
+                            style={{ fontSize: '0.7em', color: 'var(--accent)', background: 'rgba(var(--accent-rgb), 0.1)', border: '1px solid var(--accent)', borderRadius: '4px', cursor: 'pointer', padding: '2px 8px' }}
+                        >
+                            {showPipeline ? 'CLOSE LOGS ×' : 'VIEW LOGS 📋'}
+                        </button>
+                    </div>
+
                     {showPipeline && (
-                        <div className="chat-pipeline-log" style={{ marginTop: '8px', padding: '10px', background: 'rgba(0,0,0,0.1)', borderRadius: '6px', fontSize: '0.85em', border: '1px solid var(--border)' }}>
+                        <div className="chat-pipeline-log" style={{
+                            marginTop: '8px',
+                            padding: '12px',
+                            background: '#0a0a0a',
+                            color: '#00ff41', // Terminal green
+                            borderRadius: '6px',
+                            fontSize: '0.8em',
+                            border: '1px solid #333',
+                            maxHeight: '300px',
+                            overflowY: 'auto',
+                            boxShadow: 'inset 0 0 10px #000',
+                            lineHeight: '1.4'
+                        }}>
+                            <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px' }}>
+                                [SYSTEM] Antigravity ReAct v3.1 Logic Stream
+                            </div>
                             {msg.pipeline_log.map((line, i) => (
-                                <div key={i} style={{ marginBottom: '4px', fontFamily: 'monospace', opacity: line.startsWith('   ') ? 0.7 : 1 }}>
+                                <div key={i} style={{
+                                    marginBottom: '4px',
+                                    fontFamily: '"Fira Code", "Courier New", monospace',
+                                    opacity: line.startsWith('   ') ? 0.8 : 1,
+                                    color: line.includes('❌') ? '#ff4d4d' : line.includes('✅') ? '#4dff4d' : '#00ff41'
+                                }}>
                                     {line}
                                 </div>
                             ))}
@@ -194,19 +218,33 @@ export default function ChatPanel() {
     return (
         <div className="chat-panel">
             {/* Chat Header */}
-            <div className="chat-header">
-                <div>
-                    <h3>🏗️ AI Architect <span style={{ fontSize: '0.65em', opacity: 0.6 }}>ReAct Loop</span></h3>
-                    <button
-                        onClick={handleDownloadSpecs}
-                        style={{ fontSize: '0.7em', marginTop: '4px', background: 'var(--accent)', color: 'white', padding: '2px 6px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
-                    >
-                        ↓ Download Debug Specs
-                    </button>
+            <div className="chat-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px', marginBottom: '16px' }}>
+                <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        🏗️ AI Architect
+                        <span style={{ fontSize: '0.6em', background: 'var(--accent)', color: 'white', padding: '2px 6px', borderRadius: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            ReAct v3.1
+                        </span>
+                    </h3>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                        <button
+                            onClick={handleDownloadSpecs}
+                            className="debug-btn"
+                            title="Download raw geometry and ASCII logic maps"
+                            style={{ fontSize: '0.65em', background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border)', cursor: 'pointer', transition: 'all 0.2s' }}
+                        >
+                            📥 EXPORT LOGS
+                        </button>
+                    </div>
                 </div>
-                <span className="chat-status">
-                    {isAIThinking ? '⏳ Processing...' : '🟢 Ready'}
-                </span>
+                <div style={{ textAlign: 'right' }}>
+                    <div className="chat-status" style={{ fontSize: '0.7em', fontWeight: 'bold', color: isAIThinking ? 'var(--accent)' : '#4dff4d' }}>
+                        {isAIThinking ? '🌀 COMPUTING...' : '● AGENT READY'}
+                    </div>
+                    <div style={{ fontSize: '0.6em', opacity: 0.5, marginTop: '2px' }}>
+                        Gemini 3.1 Pro High-Thinking
+                    </div>
+                </div>
             </div>
 
             {/* Messages Area */}
