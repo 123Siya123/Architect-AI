@@ -368,7 +368,7 @@ export function createStairsNode(
         id: `stairs_${uuidv4().slice(0, 8)}`,
         type: 'Stairs',
         name,
-        position: { ...defaultPosition(), ...position },
+        position: { x: 0, y: DEFAULTS.WALL_HEIGHT / 2, z: 0, ...position },
         dimensions: { x: 1.0, y: DEFAULTS.WALL_HEIGHT, z: 3.0 },
         rotation: defaultRotation(),
         material_id: 'mat_wood_oak',

@@ -95,6 +95,10 @@ export default function WalkthroughControls() {
         };
     }, [viewMode]);
 
+    // Reusable objects to avoid per-frame allocations
+    const raycaster = useRef(new THREE.Raycaster());
+    const downDirection = useRef(new THREE.Vector3(0, -1, 0));
+
     // Handle frame-based movement
     useFrame((state, delta) => {
         if (viewMode !== 'walkthrough' || !isLocked) return;
@@ -116,15 +120,33 @@ export default function WalkthroughControls() {
         if (left || right) velocity.x -= direction.x * speed * delta;
 
         // 4. Apply velocity to camera position (local space)
-        // We move the camera relative to its current rotation, but only on the XZ plane
         state.camera.translateX(-velocity.x * delta);
         state.camera.translateZ(velocity.z * delta);
 
-        // 5. Lock Y to eye level (Ground height + walk_height)
-        // TODO: Phase 4: Use Raycasting to find ground height (for stairs/hills)
-        state.camera.position.y = cameraState.walk_height;
+        // 5. Vertical Raycasting (Gravity/Stairs)
+        // We cast a ray down from slightly above the camera to find the "active ground"
+        const rayOrigin = state.camera.position.clone();
+        rayOrigin.y += 0.1;
 
-        // 6. Simple Boundary Collision (don't wander too far from 0,0)
+        raycaster.current.set(rayOrigin, downDirection.current);
+
+        // Only check for "walkable" objects
+        const intersects = raycaster.current.intersectObjects(state.scene.children, true);
+        const walkableIntersect = intersects.find(intersect =>
+            intersect.object.userData.isWalkable === true
+        );
+
+        let targetFloorY = 0;
+        if (walkableIntersect) {
+            targetFloorY = walkableIntersect.point.y;
+        }
+
+        // Smooth vertical transition
+        const targetCameraY = targetFloorY + cameraState.walk_height;
+        const verticalSmoothing = 10.0;
+        state.camera.position.y += (targetCameraY - state.camera.position.y) * verticalSmoothing * delta;
+
+        // 6. Simple Boundary Collision (don't wander too far)
         const LIMIT = 100;
         state.camera.position.x = THREE.MathUtils.clamp(state.camera.position.x, -LIMIT, LIMIT);
         state.camera.position.z = THREE.MathUtils.clamp(state.camera.position.z, -LIMIT, LIMIT);

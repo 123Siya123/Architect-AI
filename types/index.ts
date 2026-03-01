@@ -445,6 +445,8 @@ export interface ChatMessage {
   image_urls?: string[];
   // State snapshot for "go back" functionality
   snapshot?: PSGProject;
+  // Internal pipeline logs for transparency (optional)
+  pipeline_log?: string[];
 }
 
 /** Request to the AI chat endpoint */
@@ -461,6 +463,7 @@ export interface AIChatResponse {
   operations: PSGOperation[];  // Edits to apply
   warnings: OperationWarning[];
   suggestions?: string[];      // Follow-up suggestions
+  progress_log?: string[];     // Internal steps taken by the AI team
 }
 
 /** Request to generate initial house from description */

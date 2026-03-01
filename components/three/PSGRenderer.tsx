@@ -165,6 +165,7 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision, f
                 onPointerOut={handlePointerOut}
                 castShadow
                 receiveShadow
+                userData={{ psgNodeId: node.id, type: 'Wall' }}
             >
                 {isSelected || isHovered ? (
                     <meshStandardMaterial
@@ -344,6 +345,11 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision, forcedOp
                             onPointerOut={handlePointerOut}
                             castShadow
                             receiveShadow
+                            userData={{
+                                psgNodeId: node.id,
+                                isWalkable: true,
+                                type: node.type
+                            }}
                         >
                             <meshStandardMaterial
                                 color={(material as THREE.MeshStandardMaterial).color}
@@ -373,6 +379,11 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision, forcedOp
             onPointerOut={handlePointerOut}
             castShadow
             receiveShadow
+            userData={{
+                psgNodeId: node.id,
+                isWalkable: ['Slab', 'Floor', 'Foundation', 'Balcony', 'Roof'].includes(node.type),
+                type: node.type
+            }}
         >
             <meshStandardMaterial
                 color={(material as THREE.MeshStandardMaterial).color || '#888888'}

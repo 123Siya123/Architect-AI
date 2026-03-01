@@ -32,7 +32,7 @@ export const AI_TOOLS = [
                 'Add a new architectural element to the house. IMPORTANT: Use the correct parent_id — ' +
                 'walls go inside rooms, windows/doors go inside walls, rooms go inside floors. ' +
                 'Position is the CENTER POINT of the element in meters. ' +
-                'For a wall at ground level, position_y should be wall_height/2 (e.g. 1.35 for 2.7m wall).',
+                'Example: For a 2.7m wall at ground level, position_y=1.35. For stairs spanning 2.7m height at ground level, position_y=1.35.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -56,7 +56,7 @@ export const AI_TOOLS = [
                         description: 'Human-readable name (e.g. "North Kitchen Wall", "Master Bedroom Window")',
                     },
                     position_x: { type: 'number', description: 'X center position in meters (East/West)' },
-                    position_y: { type: 'number', description: 'Y center position in meters (Up/Down). For ground-floor walls: height/2' },
+                    position_y: { type: 'number', description: 'Y center position in meters (Up/Down). For ground-floor walls or stairs: height/2' },
                     position_z: { type: 'number', description: 'Z center position in meters (North/South)' },
                     width: { type: 'number', description: 'Width in meters (X dimension, or length for rotated walls)' },
                     height: { type: 'number', description: 'Height in meters (Y dimension)' },

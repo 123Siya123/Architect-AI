@@ -180,6 +180,11 @@ export default function ChatPanel() {
                 }),
             });
 
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `API error ${response.status}`);
+            }
+
             const data = await response.json();
 
             // ✅ Apply AI operations to the 3D scene one-by-one so a single
@@ -215,11 +220,11 @@ export default function ChatPanel() {
                 operations: allOps,
             };
             addChatMessage(aiMsg);
-        } catch {
+        } catch (err: any) {
             const errMsg: ChatMessage = {
                 id: `msg_${Date.now()}_err`,
                 role: 'assistant',
-                content: 'Sorry, I couldn\'t process that request. The AI backend may not be connected yet.',
+                content: `Sorry, I encountered an error: ${err.message || 'The AI backend may not be connected yet.'}`,
                 timestamp: new Date().toISOString(),
             };
             addChatMessage(errMsg);

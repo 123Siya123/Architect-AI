@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
             operations: aiResponse.operations,
             warnings: aiResponse.warnings || [],
             suggestions: aiResponse.suggestions || [],
+            progress_log: aiResponse.progress_log || [],
         });
     } catch (error) {
         console.error('[API /ai/chat] Error:', error);
