@@ -47,7 +47,8 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
         const apiKey = process.env.GEMINI_API_KEY || config.apiKey;
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-pro', // Hardcoding pro for optimal vision capabilities, falling back to flash if needed
+            model: 'gemini-2.0-flash', // Switching to gemini-2.0-flash as it is widely available and performs excellently with vision
+            systemInstruction: VISION_SYSTEM_PROMPT,
         });
 
         // The image data is expected to be a base64 string
@@ -74,7 +75,6 @@ Please analyze this image and generate the 3D model nodes.
             generationConfig: {
                 temperature: 0.2, // Low temperature for more deterministic structural parsing
             },
-            systemInstruction: VISION_SYSTEM_PROMPT,
             tools: [{
                 functionDeclarations: [
                     {
