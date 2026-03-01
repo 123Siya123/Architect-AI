@@ -291,28 +291,31 @@ Read the mistake descriptions below and make the corrective tool calls.
 
 export async function sendChatToAI(
     request: AIChatRequest,
-    materials: Record<string, Material>,
-    _retryCount: number = 0
+    materials: Record<string, Material>
 ): Promise<AIChatResponse> {
-    // Build full readable context (same for all agents)
-    const buildingSpecs = prepareProjectContext(request.project);
+    const progressLog: string[] = [];
     const materialContext = prepareMaterialContext(materials);
-    const asciiPlan = generateASCIIFloorPlan(request.project);
     const budgetContext = prepareBudgetContext(request.project);
+
+    // Initial state context
+    let currentBuildingSpecs = prepareProjectContext(request.project);
+    let currentAsciiPlan = generateASCIIFloorPlan(request.project);
+
+    console.log('[Orchestrator] ═══ MULTI-AGENT PIPELINE STARTING ═══');
+    console.log(`[Orchestrator] User request: "${request.message}"`);
 
     const fullContext = `
 ## CURRENT BUILDING STATE
 
 ### ASCII FLOOR PLAN
 \`\`\`
-${asciiPlan}
+${currentAsciiPlan}
 \`\`\`
 
 ### COMPRESSED NODE DATA
 \`\`\`json
-${buildingSpecs}
+${currentBuildingSpecs}
 \`\`\`
-
 
 ### AVAILABLE MATERIALS
 ${materialContext}
@@ -321,152 +324,108 @@ ${materialContext}
 ${budgetContext}
 `;
 
-    // Progress log — each phase appends its output here for chat visibility
-    const progressLog: string[] = [];
-
-    console.log('[Orchestrator] ═══ MULTI-AGENT PIPELINE STARTING ═══');
-    console.log(`[Orchestrator] User request: "${request.message}"`);
+    const config = getProviderConfig();
+    const chatHistory = (request.history || []).map(m => ({
+        role: m.role as string,
+        content: m.content
+    }));
 
     // =========================================================================
-    // PHASE 1: SINGLE AGENT EXECUTION
+    // PHASE 1: COORDINATOR (PLANNIG)
     // =========================================================================
-    progressLog.push('───── 🧠 PHASE 1: SINGLE AGENT ─────');
-    progressLog.push('Analyzing request and executing all changes...');
+    console.log('[Orchestrator] Phase 1: Coordinator (Planning)');
+    progressLog.push('🧠 Coordinator: Analyzing building and planning modifications...');
 
-    let singleAgentResult: WorkerResult;
-    let projectAfterWorkers = { ...request.project, nodes: { ...request.project.nodes } };
+    const coordination = await runCoordinator(config, request.message, fullContext, chatHistory);
+    progressLog.push(`   💭 ${coordination.user_message}`);
+    coordination.sub_tasks.forEach((t, i) => progressLog.push(`   - ${i + 1}. ${t.description}`));
+
+    // =========================================================================
+    // PHASE 2: WORKER (EXECUTION)
+    // =========================================================================
+    console.log('[Orchestrator] Phase 2: Worker (Execution)');
+    progressLog.push('⚡ Worker: Executing tool calls based on plan...');
+
+    let projectAfterWorker = { ...request.project, nodes: { ...request.project.nodes } };
     const validatedOps: PSGOperation[] = [];
-    const validationErrors: string[] = [];
-    const workerErrors: string[] = [];
-    let agentMessage = "I have processed your request.";
+    const workerWarnings: string[] = [];
 
-    try {
-        const agentConfig = getProviderConfig();
-        const systemMsg = {
-            role: 'system',
-            content: SINGLE_AGENT_SYSTEM_PROMPT
-        };
+    // Combine all subtasks into 1 prompt for efficiency (Worker can multi-tool call)
+    const combinedTask: SubTask = {
+        id: 'combined_worker_task',
+        description: coordination.sub_tasks.map(t => t.description).join('\n'),
+        priority: 1
+    };
 
-        // Prepare proper multi-turn history
-        const messages: Array<{ role: string; content: string }> = [systemMsg];
+    const workerResult = await runWorker(config, combinedTask, fullContext, 0);
 
-        if (request.history && request.history.length > 0) {
-            // Include last 6 messages to keep context window clean
-            for (const msg of request.history.slice(-6)) {
-                // Remove very large JSON states from history to prevent context overflow
-                const content = msg.content.split('## CURRENT BUILDING STATE')[0].trim();
-                messages.push({
-                    role: msg.role === 'assistant' ? 'assistant' : 'user',
-                    content: content
-                });
+    if (workerResult.text) progressLog.push(`   ⚡ ${workerResult.text.substring(0, 150)}...`);
+
+    for (const op of workerResult.operations) {
+        const validation = validateOperation(op, projectAfterWorker);
+        if (validation.valid) {
+            validatedOps.push(op);
+            const applyResult = applyOperation(projectAfterWorker, op);
+            if (applyResult.success && applyResult.project) {
+                projectAfterWorker = applyResult.project;
+                progressLog.push(`   ✅ Added ${op.type} (${op.target_id})`);
             }
+        } else {
+            workerWarnings.push(`Worker skipped ${op.type}: ${validation.errors[0]}`);
+            progressLog.push(`   ⚠️ Skipped ${op.type}: ${validation.errors[0]}`);
         }
+    }
 
-        // Add the current user request with ALL necessary data for the current turn
-        messages.push({
-            role: 'user',
-            content: `
-## CURRENT BUILDING STATE
-\`\`\`json
-${fullContext}
-\`\`\`
+    if (validatedOps.length === 0 && coordination.sub_tasks.length > 0) {
+        progressLog.push('   ❌ Worker failed to generate valid operations.');
+    }
 
-## AVAILABLE MATERIALS
-${materialContext}
+    // =========================================================================
+    // PHASE 3: CHECKER (VERIFICATION)
+    // =========================================================================
+    console.log('[Orchestrator] Phase 3: Checker (Verification)');
+    progressLog.push('🔍 Checker: Verifying spatial alignment and architectural logic...');
 
-USER REQUEST: ${request.message}
+    const postWorkerSpecs = prepareProjectContext(projectAfterWorker);
+    const postWorkerAscii = generateASCIIFloorPlan(projectAfterWorker);
 
-INSTRUCTION: Analyze the state, find structural errors, and execute fixes using tools. Keep verbal reasoning to under 3 sentences to lead directly to tool calls.
-`
-        });
+    const verification = await runChecker(config, request.message, postWorkerSpecs, postWorkerAscii);
 
-        const response = await callProviderWithTools(agentConfig, messages);
+    if (verification.status === 'OK') {
+        progressLog.push('   ✅ Verification passed: Building looks structurally sound.');
+    } else {
+        progressLog.push(`   ⚠️ Verification found ${verification.mistakes?.length || 0} mistake(s).`);
+        (verification.mistakes || []).forEach(m => progressLog.push(`     - ${m.description}`));
 
-        singleAgentResult = {
-            operations: (response.toolCalls || []).map(tc => toolCallToOperation(tc.name, tc.args as Record<string, unknown>)),
-            text: response.text,
-            errors: []
-        };
+        // =========================================================================
+        // PHASE 4: FIXER (CORRECTION)
+        // =========================================================================
+        console.log('[Orchestrator] Phase 4: Fixer (Correction)');
+        progressLog.push('🔧 Fixer: Applying corrective measures...');
 
-        if (singleAgentResult.text) {
-            progressLog.push(`   💭 ${singleAgentResult.text.substring(0, 200)}...`);
-            agentMessage = singleAgentResult.text;
-        }
+        const fixerResult = await runFixer(config, postWorkerSpecs, verification.mistakes || [], postWorkerAscii);
 
-        const ops = singleAgentResult.operations;
-        const opNames = ops.map((o: PSGOperation) => `${o.type}(${o.target_id})`).join(', ');
-        progressLog.push(`   ✅ ${ops.length} operation(s) generated: ${opNames || 'none'}`);
-
-        // Validate and apply each operation sequentially
-        for (const op of ops) {
-            const validation = validateOperation(op, projectAfterWorkers);
+        for (const op of fixerResult.operations) {
+            const validation = validateOperation(op, projectAfterWorker);
             if (validation.valid) {
                 validatedOps.push(op);
-                try {
-                    const applied = applyOperation(projectAfterWorkers, op);
-                    if (applied.success && applied.project) {
-                        projectAfterWorkers = applied.project;
-                    }
-                } catch { /* keep op, apply had minor issue */ }
-            } else {
-                validationErrors.push(
-                    `${op.type}(${op.target_id}): ${validation.errors.join(', ')}`
-                );
-                progressLog.push(`   ⚠️ Validation failed: ${validation.errors.join(', ')}`);
+                const applyResult = applyOperation(projectAfterWorker, op);
+                if (applyResult.success && applyResult.project) {
+                    projectAfterWorker = applyResult.project;
+                    progressLog.push(`   🛠️ Fixed: ${op.type} (${op.target_id})`);
+                }
             }
         }
-
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        console.error(`[Single Agent] FAILED:`, errMsg);
-        workerErrors.push(`Agent failed: ${errMsg}`);
-        progressLog.push(`   ❌ FAILED: ${errMsg}`);
-
-        // Attempt fallback
-        progressLog.push('Agent failed completely, trying simple fallback...');
-        const fbConfig = getProviderConfig();
-        const fallback = await runSimpleFallback(fbConfig, request, materials, fullContext);
-        fallback.message = progressLog.join('\n') + '\n\n' + fallback.message;
-        return fallback;
     }
 
-    progressLog.push(`\nTotal validated: ${validatedOps.length} operations`);
-    if (validationErrors.length > 0) {
-        progressLog.push(`⚠️ ${validationErrors.length} operation(s) failed validation:`);
-        for (const ve of validationErrors) {
-            progressLog.push(`   - ${ve}`);
-        }
-    }
-
-    if (validatedOps.length === 0) {
-        progressLog.push('No valid operations found. Returning message only.');
-    }
-
-    // =========================================================================
-    // COMPOSE FINAL RESPONSE
-    // =========================================================================
-    const allOps = [...validatedOps];
-
-    progressLog.push('');
-    progressLog.push(`═══ PIPELINE COMPLETE: ${allOps.length} total operation(s) ═══`);
-
-    // Build the final message with progress log
-    let finalMessage = agentMessage;
-    finalMessage += '\n\n' + progressLog.join('\n');
-
-    const warnings: AIChatResponse['warnings'] = [];
-    if (workerErrors.length > 0) {
-        warnings.push({ severity: 'warning', message: workerErrors.join('; ') });
-    }
-
-    console.log('[Orchestrator] ═══ PIPELINE COMPLETE ═══');
-    console.log(`[Orchestrator] Final: ${allOps.length} operations, ${warnings.length} warnings`);
+    progressLog.push('═══ PIPELINE COMPLETE ═══');
 
     return {
-        message: finalMessage,
-        operations: allOps,
-        warnings,
-        suggestions: [],
+        message: coordination.user_message || 'I have completed the architectural modifications.',
+        operations: validatedOps,
+        warnings: workerWarnings.map(m => ({ severity: 'warning', message: m })),
+        suggestions: coordination.follow_up_suggestions || [],
+        progress_log: progressLog
     };
 }
 

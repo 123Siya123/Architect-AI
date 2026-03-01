@@ -40,6 +40,7 @@ const SUGGESTIONS = [
 
 function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onRevert?: (id: string) => void, showRevert?: boolean }) {
     const isUser = msg.role === 'user';
+    const [showPipeline, setShowPipeline] = useState(false);
 
     return (
         <div className={`chat-message ${isUser ? 'chat-message-user' : 'chat-message-ai'}`}>
@@ -55,6 +56,7 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                 </span>
             </div>
             <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
+
             {/* Operation badges — show when AI made edits */}
             {msg.operations && msg.operations.length > 0 && (
                 <div className="chat-operations">
@@ -68,6 +70,28 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                     ))}
                 </div>
             )}
+
+            {/* Pipeline Log Toggle */}
+            {!isUser && msg.pipeline_log && msg.pipeline_log.length > 0 && (
+                <div className="chat-pipeline-log-container" style={{ marginTop: '8px' }}>
+                    <button
+                        onClick={() => setShowPipeline(!showPipeline)}
+                        style={{ fontSize: '0.7em', color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                    >
+                        {showPipeline ? 'Hide' : 'Show'} technical pipeline log
+                    </button>
+                    {showPipeline && (
+                        <div className="chat-pipeline-log" style={{ marginTop: '8px', padding: '10px', background: 'rgba(0,0,0,0.1)', borderRadius: '6px', fontSize: '0.85em', border: '1px solid var(--border)' }}>
+                            {msg.pipeline_log.map((line, i) => (
+                                <div key={i} style={{ marginBottom: '4px', fontFamily: 'monospace', opacity: line.startsWith('   ') ? 0.7 : 1 }}>
+                                    {line}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
             {isUser && showRevert && onRevert && (
                 <button
                     onClick={() => onRevert(msg.id)}
@@ -218,6 +242,7 @@ export default function ChatPanel() {
                 content: data.message || 'I processed your request.',
                 timestamp: new Date().toISOString(),
                 operations: allOps,
+                pipeline_log: data.progress_log || [],
             };
             addChatMessage(aiMsg);
         } catch (err: any) {

@@ -95,21 +95,21 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
                         parameters: {
                             type: "object",
                             properties: {
-                                parent_id: { type: "string", description: "The ID of the parent node" },
-                                type: { type: "string", description: "The type of node" },
-                                id: { type: "string", description: "A unique identifier" },
+                                parent_id: { type: "string", description: "The ID of the parent node (e.g. 'house_root', or a floor/room ID)" },
+                                type: { type: "string", description: "The type of node (Wall, Room, Floor, Slab, Window, Door, Roof)" },
+                                id: { type: "string", description: "A unique identifier (e.g. 'floor_1')" },
                                 name: { type: "string", description: "Human readable name" },
                                 position_x: { type: "number" },
                                 position_y: { type: "number" },
                                 position_z: { type: "number" },
-                                dimension_w: { type: "number" },
-                                dimension_h: { type: "number" },
-                                dimension_d: { type: "number" },
+                                width: { type: "number" },
+                                height: { type: "number" },
+                                depth: { type: "number" },
                                 yaw: { type: "number" },
                                 material_id: { type: "string" },
                                 roof_style: { type: "string" }
                             },
-                            required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "dimension_w", "dimension_h", "dimension_d"]
+                            required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "width", "height", "depth"]
                         }
                     }]
                 }
@@ -189,14 +189,14 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
                                 position_x: { type: "number" },
                                 position_y: { type: "number" },
                                 position_z: { type: "number" },
-                                dimension_w: { type: "number" },
-                                dimension_h: { type: "number" },
-                                dimension_d: { type: "number" },
+                                width: { type: "number" },
+                                height: { type: "number" },
+                                depth: { type: "number" },
                                 yaw: { type: "number" },
                                 material_id: { type: "string" },
                                 roof_style: { type: "string" }
                             },
-                            required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "dimension_w", "dimension_h", "dimension_d"]
+                            required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "width", "height", "depth"]
                         }
                     }
                 }],
@@ -245,15 +245,16 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
                 try {
                     const args = JSON.parse(tc.function.arguments);
                     const opParams = {
-                        new_id: args.id,
+                        id: args.id,
                         type: args.type,
+                        parent_id: args.parent_id,
                         name: args.name,
                         position_x: args.position_x,
                         position_y: args.position_y,
                         position_z: args.position_z,
-                        width: args.dimension_w,
-                        height: args.dimension_h,
-                        depth: args.dimension_d,
+                        width: args.width,
+                        height: args.height,
+                        depth: args.depth,
                         yaw: args.yaw || 0,
                         material_id: args.material_id || 'mat_default',
                         roof_style: args.roof_style
