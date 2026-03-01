@@ -589,6 +589,79 @@ export function createMinimalistStudioTemplate(
 // TEMPLATE REGISTRY
 // =============================================================================
 
+// =============================================================================
+// TEMPLATE: Neoclassical Mansion (White House Style)
+// =============================================================================
+
+/**
+ * Creates a grand Neoclassical mansion inspired by the White House.
+ * Features a central 3-storey block with symmetrical wings.
+ */
+export function createWhiteHouseTemplate(
+    budget: number = 10000000,
+    currency: string = 'USD'
+): PSGProject {
+    const project = createEmptyProject('The White House', budget, currency);
+    const rootId = project.root_node_id;
+
+    const H = 4.0; // Grand ceiling height
+    const T = 0.5; // Thick neoclassical walls
+    const halfH = H / 2;
+    const halfT = T / 2;
+
+    // Dimensions
+    const CENTER_W = 25; // Central block width
+    const CENTER_D = 20; // Central block depth
+    const WING_W = 15;   // Side wing width
+    const WING_D = 12;   // Side wing depth
+
+    // ─── Floors ──────────────────────────────────────────────────────
+    const gf = add(project, createFloorNode(rootId, 0, 'Ground Floor'));
+    const ff = add(project, createFloorNode(rootId, 1, 'First Floor'));
+    const sf = add(project, createFloorNode(rootId, 2, 'Second Floor'));
+
+    // ─── Central Block ───────────────────────────────────────────────
+    // Start with a grand main room to hold the front/back walls
+    const centralHall = add(project, createRoomNode(gf.id, 'Grand Entry Hall',
+        { x: 0, y: 0, z: 0 }, { x: CENTER_W, y: H, z: CENTER_D }, 'hallway'));
+
+    // Central Slab
+    add(project, createSlabNode(gf.id, 'Main Foundation', { x: 0, y: 0, z: 0 }, { x: CENTER_W + 40, y: 0.5, z: CENTER_D + 10 }));
+
+    // Central Walls
+    addWall(project, centralHall.id, 'Front Portico Wall', { x: 0, y: halfH, z: -CENTER_D / 2 + halfT }, CENTER_W, H, T, ['exterior']);
+    addWall(project, centralHall.id, 'Back Wall', { x: 0, y: halfH, z: CENTER_D / 2 - halfT }, CENTER_W, H, T, ['exterior']);
+    addWall(project, centralHall.id, 'Left Wall', { x: -CENTER_W / 2 + halfT, y: halfH, z: 0 }, CENTER_D - 2 * T, H, T, ['exterior'], 90);
+    addWall(project, centralHall.id, 'Right Wall', { x: CENTER_W / 2 - halfT, y: halfH, z: 0 }, CENTER_D - 2 * T, H, T, ['exterior'], 90);
+
+    // Iconic Columns (Custom Elements)
+    for (let i = -3; i <= 3; i++) {
+        const x = i * 3;
+        if (x === 0) continue; // Skip center for front door area
+        add(project, {
+            ...createWallNode(centralHall.id, `Column ${i}`, { x, y: H * 1.5, z: -CENTER_D / 2 - 2 }, 0.8, H * 3, 0.8, ['custom']),
+            type: 'Column'
+        } as PSGNode);
+    }
+
+    // ─── West Wing ──────────────────────────────────────────────────
+    const westWing = add(project, createRoomNode(gf.id, 'West Wing',
+        { x: -CENTER_W / 2 - WING_W / 2, y: 0, z: 0 }, { x: WING_W, y: H, z: WING_D }, 'office'));
+    addWall(project, westWing.id, 'West Wing Outer', { x: -CENTER_W / 2 - WING_W + halfT, y: halfH, z: 0 }, WING_D, H, T, ['exterior'], 90);
+
+    // ─── East Wing ──────────────────────────────────────────────────
+    const eastWing = add(project, createRoomNode(gf.id, 'East Wing',
+        { x: CENTER_W / 2 + WING_W / 2, y: 0, z: 0 }, { x: WING_W, y: H, z: WING_D }, 'office'));
+    addWall(project, eastWing.id, 'East Wing Outer', { x: CENTER_W / 2 + WING_W - halfT, y: halfH, z: 0 }, WING_D, H, T, ['exterior'], 90);
+
+    // ─── Roof ────────────────────────────────────────────────────────
+    const mainRoof = add(project, createRoofNode(rootId, 'Central Parapet', 'flat', 0, { x: CENTER_W + 2, y: 0.5, z: CENTER_D + 2 }));
+    mainRoof.position = { x: 0, y: H * 3, z: 0 };
+    mainRoof.material_id = 'mat_marble_white';
+
+    return project;
+}
+
 export interface TemplateInfo {
     slug: string;
     name: string;
@@ -634,6 +707,17 @@ export const TEMPLATES: TemplateInfo[] = [
         style: 'Minimalist',
         preview_image: '/templates/studio.png',
         create: createMinimalistStudioTemplate,
+    },
+    {
+        slug: 'white_house',
+        name: 'The White House',
+        description: 'A grand Neoclassical mansion with a central portico, wings, and iconic columns. 3 floors, grand ceilings. Symmetrical design.',
+        bedrooms: 6,
+        floors: 3,
+        approx_area_m2: 5100,
+        style: 'Neoclassical',
+        preview_image: '/templates/white_house.jpg',
+        create: createWhiteHouseTemplate,
     },
     {
         slug: 'empty',

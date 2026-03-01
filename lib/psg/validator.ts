@@ -65,6 +65,7 @@ export function validateOperation(
 ): ValidationResult {
     const errors: string[] = [];
     const warnings: OperationWarning[] = [];
+    const isProjectOp = operation.type === 'solve_precision' || operation.type === 'set_precision_level';
 
     // --- Layer 1: Schema Validation ---
     // Check that the target node exists and the operation type is valid
@@ -74,7 +75,7 @@ export function validateOperation(
 
     // --- Layer 2: Constraint Validation ---
     // Check min/max dimensions, fixed positions, connections
-    if (errors.length === 0) {
+    if (errors.length === 0 && !isProjectOp) {
         const constraintResult = validateConstraints(operation, project);
         errors.push(...constraintResult.errors);
         warnings.push(...constraintResult.warnings);
@@ -82,7 +83,7 @@ export function validateOperation(
 
     // --- Layer 3: Structural Validation ---
     // Check load-bearing dependencies
-    if (errors.length === 0) {
+    if (errors.length === 0 && !isProjectOp) {
         const structuralResult = validateStructural(operation, project);
         errors.push(...structuralResult.errors);
         warnings.push(...structuralResult.warnings);
@@ -95,7 +96,7 @@ export function validateOperation(
 
     // --- Layer 5: Physics Validation ---
     // Check spatial impossibilities
-    if (errors.length === 0) {
+    if (errors.length === 0 && !isProjectOp) {
         const physicsResult = validatePhysics(operation, project);
         errors.push(...physicsResult.errors);
         warnings.push(...physicsResult.warnings);
@@ -136,8 +137,8 @@ function validateSchema(
     const errors: string[] = [];
     const warnings: OperationWarning[] = [];
 
-    // Check target node exists (except for add_node, which creates a new one)
-    if (operation.type !== 'add_node') {
+    // Check target node exists (except for add_node and project-level operations)
+    if (operation.type !== 'add_node' && !(operation.type === 'solve_precision' || operation.type === 'set_precision_level')) {
         if (!project.nodes[operation.target_id]) {
             errors.push(
                 `Node "${operation.target_id}" not found in project. ` +
