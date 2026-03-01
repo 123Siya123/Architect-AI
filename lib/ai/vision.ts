@@ -146,11 +146,11 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
             if (!candidate) throw new Error('Gemini returned no candidates');
 
             const contentParts = candidate.content?.parts || [];
-            const toolCallParts = contentParts.filter((p: any) => p.functionCall);
+            const toolCallParts = contentParts.filter((p: { functionCall?: unknown }) => p.functionCall);
 
             msg = {
-                content: contentParts.find((p: any) => p.text)?.text || "",
-                tool_calls: toolCallParts.map((p: any) => ({
+                content: (contentParts.find((p: { text?: string }) => p.text) as { text?: string })?.text || "",
+                tool_calls: toolCallParts.map((p: { functionCall: { name: string; args: object } }) => ({
                     function: {
                         name: p.functionCall.name,
                         arguments: JSON.stringify(p.functionCall.args)

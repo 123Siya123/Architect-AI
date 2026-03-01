@@ -247,8 +247,8 @@ export function compileStairsGeometry(node: PSGNode): THREE.Group {
         // 1. Central Pole
         const poleGeom = new THREE.CylinderGeometry(poleRadius, poleRadius, totalHeight, 16);
         const pole = new THREE.Mesh(poleGeom);
-        // Position at local Y center since pole geometry is centered at its own Y origin
-        pole.position.set(0, totalHeight / 2, 0);
+        // Position at 0 since pole geometry is already centered at its own Y origin
+        pole.position.set(0, 0, 0);
         group.add(pole);
 
         // 2. Spiral Steps
@@ -266,8 +266,8 @@ export function compileStairsGeometry(node: PSGNode): THREE.Group {
             stepGeom.translate(stepWidth / 2 + poleRadius, 0, 0);
             // 2. Rotate it around the central Y axis
             stepGeom.rotateY(-i * radPerStep);
-            // 3. Move it vertically to its correct height
-            stepGeom.translate(0, i * riserHeight + riserHeight / 2, 0);
+            // 3. Move it vertically to its correct height, centered on Y
+            stepGeom.translate(0, i * riserHeight + riserHeight / 2 - totalHeight / 2, 0);
 
             const step = new THREE.Mesh(stepGeom);
             group.add(step);
@@ -279,9 +279,10 @@ export function compileStairsGeometry(node: PSGNode): THREE.Group {
             const step = new THREE.Mesh(stepGeometry);
 
             // Each step is positioned progressively higher and further forward
+            // We subtract totalHeight / 2 to center the entire staircase on the Y axis
             step.position.set(
                 0,
-                i * riserHeight + riserHeight / 2,
+                i * riserHeight + riserHeight / 2 - totalHeight / 2,
                 i * treadDepth - (numSteps * treadDepth) / 2
             );
 

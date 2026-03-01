@@ -53,8 +53,7 @@ export default function WalkthroughControls() {
     });
 
     const [isLocked, setIsLocked] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const controlsRef = useRef<any>(null);
+    const controlsRef = useRef<any>(null); // Still using any because Drei's PointerLockControls type is complex to import directly here without potentially breaking, but removing the lint warning comment as I will fix the type if possible or just suppress it more specifically.
 
     // Manual lock handler with safety check
     const handleLock = () => {

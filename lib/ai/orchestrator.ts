@@ -344,26 +344,40 @@ ${budgetContext}
         const agentConfig = getProviderConfig();
         const systemMsg = {
             role: 'system',
-            content: `${SINGLE_AGENT_SYSTEM_PROMPT}\n\n## CURRENT BUILDING STATE (READ ONLY)\n${fullContext}`
+            content: SINGLE_AGENT_SYSTEM_PROMPT
         };
 
         // Prepare proper multi-turn history
         const messages: Array<{ role: string; content: string }> = [systemMsg];
 
         if (request.history && request.history.length > 0) {
-            // Include last 10 messages for full context
-            for (const msg of request.history.slice(-10)) {
+            // Include last 6 messages to keep context window clean
+            for (const msg of request.history.slice(-6)) {
+                // Remove very large JSON states from history to prevent context overflow
+                const content = msg.content.split('## CURRENT BUILDING STATE')[0].trim();
                 messages.push({
                     role: msg.role === 'assistant' ? 'assistant' : 'user',
-                    content: msg.content
+                    content: content
                 });
             }
         }
 
-        // Add the current user request
+        // Add the current user request with ALL necessary data for the current turn
         messages.push({
             role: 'user',
-            content: `USER REQUEST: ${request.message}`
+            content: `
+## CURRENT BUILDING STATE
+\`\`\`json
+${fullContext}
+\`\`\`
+
+## AVAILABLE MATERIALS
+${materialContext}
+
+USER REQUEST: ${request.message}
+
+INSTRUCTION: Analyze the state, find structural errors, and execute fixes using tools. Keep verbal reasoning to under 3 sentences to lead directly to tool calls.
+`
         });
 
         const response = await callProviderWithTools(agentConfig, messages);
