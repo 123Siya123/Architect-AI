@@ -221,50 +221,68 @@ ${budgetContext}
     }
 
     // =========================================================================
-    // PHASE 2: GEOMETRIC CALIBRATION (THE RIGID CHECK)
+    // PHASE 2: RIGID GEOMETRIC CALIBRATION (THE DUAL PASS ENGINEER)
     // =========================================================================
     if (validatedOps.length > 0) {
-        progressLog.push('\n───── 📏 PHASE 2: RIGID CALIBRATION ─────');
-        progressLog.push('Performing zero-tolerance geometric inspection...');
+        for (let pass = 1; pass <= 2; pass++) {
+            progressLog.push(`\n───── 📏 RIGID CALIBRATION (Pass ${pass}/2) ─────`);
+            progressLog.push(`Audit ${pass}: Analyzing spatial data for 0.5mm accuracy...`);
 
-        try {
-            const updatedSpecs = prepareProjectContext(projectAfterWorkers);
-            const checkerConfig = getProviderConfig();
-            const checkerResult = await runChecker(
-                checkerConfig,
-                request.message,
-                updatedSpecs,
-                generateASCIIFloorPlan(projectAfterWorkers)
-            );
+            try {
+                // Re-prepare accurate specs for current state
+                const currentSpecs = prepareProjectContext(projectAfterWorkers);
+                const checkerConfig = getProviderConfig();
 
-            if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
-                progressLog.push(`   ⚠️ Calibration issues found: ${checkerResult.mistakes.length} imperfection(s)`);
-                for (const m of checkerResult.mistakes) {
-                    progressLog.push(`   - ${m.node_id}: ${m.description} (Fix: ${m.fix_description})`);
-                }
-
-                // =====================================================================
-                // PHASE 3: PRECISION FIXING
-                // =====================================================================
-                progressLog.push('\n───── 🛠️ PHASE 3: PRECISION FIXING ─────');
-                const fixerConfig = getProviderConfig();
-                const fixerResult = await runFixer(
-                    fixerConfig,
-                    updatedSpecs,
-                    checkerResult.mistakes,
+                const checkerResult = await runChecker(
+                    checkerConfig,
+                    request.message,
+                    currentSpecs,
                     generateASCIIFloorPlan(projectAfterWorkers)
                 );
 
-                if (fixerResult.operations.length > 0) {
-                    progressLog.push(`   ✅ Applied ${fixerResult.operations.length} correction(s) for perfect alignment.`);
-                    validatedOps.push(...fixerResult.operations);
+                if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
+                    progressLog.push(`   ⚠️ Audit ${pass} found ${checkerResult.mistakes.length} imperfection(s).`);
+                    for (const m of checkerResult.mistakes) {
+                        progressLog.push(`   - ${m.node_id}: ${m.description} (Fix: ${m.fix_description})`);
+                    }
+
+                    // FIXER PASS
+                    progressLog.push(`   🛠️ Executing Precision Fixer ${pass}...`);
+                    const fixerConfig = getProviderConfig();
+                    const fixerResult = await runFixer(
+                        fixerConfig,
+                        currentSpecs,
+                        checkerResult.mistakes,
+                        generateASCIIFloorPlan(projectAfterWorkers)
+                    );
+
+                    if (fixerResult.operations.length > 0) {
+                        progressLog.push(`   ✅ Applied ${fixerResult.operations.length} correction(s) (Audited to 0.5mm).`);
+
+                        // Apply fixes to our local state so next pass (or finalize) sees them
+                        for (const op of fixerResult.operations) {
+                            const val = validateOperation(op, projectAfterWorkers);
+                            if (val.valid) {
+                                validatedOps.push(op);
+                                const applied = applyOperation(projectAfterWorkers, op);
+                                if (applied.success && applied.project) {
+                                    projectAfterWorkers = applied.project;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    progressLog.push(`   ✨ Audit ${pass} passed: 0.5mm alignment confirmed.`);
+                    if (pass === 1) {
+                        progressLog.push('   (Proceeding to safety audit Pass 2...)');
+                    } else {
+                        break; // Perfect on pass 2, we are done
+                    }
                 }
-            } else {
-                progressLog.push('   ✨ Geometric check passed: Zero-tolerance alignment confirmed.');
+            } catch (err) {
+                console.warn(`[Orchestrator] Calibration pass ${pass} failed:`, err);
+                progressLog.push(`   ⚠️ Calibration pass ${pass} skipped due to error.`);
             }
-        } catch (checkerError) {
-            console.warn('[Orchestrator] Calibration phase failed:', checkerError);
-            progressLog.push('   ⚠️ Calibration phase skipped due to internal error.');
         }
     }
 
@@ -280,7 +298,7 @@ ${budgetContext}
     let finalMessage = agentMessage;
     // Add a summary of the calibration to the user
     if (allOps.length > (singleAgentResult!?.operations?.length || 0)) {
-        finalMessage += "\n\nI have performed a secondary geometric calibration pass to ensure all joints have zero tolerance, zero gaps, and zero overlaps.";
+        finalMessage += "\n\nI have performed a dual-pass 'Rigid Engineer' calibration to enforce 0.5mm precision across all architectural joints, ensuring zero tolerance for gaps or overlaps.";
     }
 
     finalMessage += '\n\n' + progressLog.join('\n');

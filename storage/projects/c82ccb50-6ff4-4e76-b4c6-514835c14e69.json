@@ -1,0 +1,64 @@
+{
+  "id": "c82ccb50-6ff4-4e76-b4c6-514835c14e69",
+  "name": "New Project",
+  "description": "",
+  "created_at": "2026-03-01T17:37:09.054Z",
+  "modified_at": "2026-03-01T17:37:09.054Z",
+  "version": 1,
+  "root_node_id": "house_ba1e37c6",
+  "nodes": {
+    "house_ba1e37c6": {
+      "id": "house_ba1e37c6",
+      "type": "House",
+      "name": "New Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-01T17:37:09.054Z",
+      "modified_at": "2026-03-01T17:37:09.054Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 250000,
+    "spent": 0,
+    "remaining": 250000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}
