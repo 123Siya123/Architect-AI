@@ -79,6 +79,8 @@ interface DesignState {
     setError: (error: string | null) => void;
     getNode: (id: string) => PSGNode | undefined;
     getNodesByType: (type: string) => PSGNode[];
+    saveToServer: () => Promise<void>;
+    loadFromServer: (id: string) => Promise<void>;
 }
 
 // Defaults
@@ -278,4 +280,37 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     setError: (error) => set({ error }),
     getNode: (id) => get().project.nodes[id],
     getNodesByType: (type) => Object.values(get().project.nodes).filter((n) => n.type === type),
+
+    saveToServer: async () => {
+        const { project, setLoading, setError } = get();
+        setLoading(true);
+        try {
+            const res = await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(project)
+            });
+            if (!res.ok) throw new Error('Failed to save project');
+            console.log('[Store] Project saved to server');
+        } catch (err) {
+            setError((err as Error).message);
+        } finally {
+            setLoading(false);
+        }
+    },
+
+    loadFromServer: async (id: string) => {
+        const { setLoading, setError, loadProject } = get();
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/projects/${id}`);
+            if (!res.ok) throw new Error('Failed to load project');
+            const project = await res.json();
+            loadProject(project);
+        } catch (err) {
+            setError((err as Error).message);
+        } finally {
+            setLoading(false);
+        }
+    },
 }));

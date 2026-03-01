@@ -27,6 +27,7 @@ import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useDesignStore } from '@/store/useDesignStore';
 import { createSimple3BedTemplate } from '@/lib/psg/templates';
+import { useSearchParams } from 'next/navigation';
 import Toolbar from '@/components/ui/Toolbar';
 import InspectorPanel from '@/components/ui/InspectorPanel';
 import ChatPanel from '@/components/chat/ChatPanel';
@@ -47,15 +48,24 @@ const SceneCanvas = dynamic(
 
 export default function DesignStudioPage() {
     const loadProject = useDesignStore((s) => s.loadProject);
+    const loadFromServer = useDesignStore((s) => s.loadFromServer);
     const activePanel = useDesignStore((s) => s.activePanel);
     const setActivePanel = useDesignStore((s) => s.setActivePanel);
     const isLoading = useDesignStore((s) => s.isLoading);
+    const project = useDesignStore((s) => s.project);
+    const searchParams = useSearchParams();
 
-    // Load a default template on first mount
+    // Load from server if ID is present
     useEffect(() => {
-        const defaultProject = createSimple3BedTemplate(200000, 'EUR');
-        loadProject(defaultProject);
-    }, [loadProject]);
+        const projectId = searchParams.get('id');
+        if (projectId) {
+            loadFromServer(projectId);
+        } else if (Object.keys(project.nodes).length <= 1) {
+            // Only load default if project is basically empty (only root node)
+            const defaultProject = createSimple3BedTemplate(200000, 'EUR');
+            loadProject(defaultProject);
+        }
+    }, [searchParams, loadFromServer, loadProject]);
 
     // Keyboard shortcuts
     useEffect(() => {

@@ -162,10 +162,33 @@ export default function Toolbar() {
 
             {/* Export Action */}
             <div className="toolbar-group">
+                <SaveButton />
                 <ImageTo3DButton />
                 <ExportButton />
             </div>
         </div>
+    );
+}
+
+function SaveButton() {
+    const saveToServer = useDesignStore((s) => s.saveToServer);
+    const isLoading = useDesignStore((s) => s.isLoading);
+    const [saved, setSaved] = useState(false);
+
+    const handleSave = async () => {
+        await saveToServer();
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    return (
+        <button
+            className={`toolbar-btn save-btn ${saved ? 'saved' : ''}`}
+            onClick={handleSave}
+            disabled={isLoading}
+        >
+            {isLoading ? '⌛ Saving...' : saved ? '✅ Saved' : '💾 Save to Cloud'}
+        </button>
     );
 }
 

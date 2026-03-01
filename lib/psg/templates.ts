@@ -533,6 +533,59 @@ export function createModern4BedTemplate(
 }
 
 // =============================================================================
+// TEMPLATE: Minimalist Studio Apartment
+// =============================================================================
+
+/**
+ * Creates a minimalist studio apartment.
+ * 
+ * LAYOUT (8m x 6m):
+ * One open space with defined zones.
+ */
+export function createMinimalistStudioTemplate(
+    budget: number = 85000,
+    currency: string = 'EUR'
+): PSGProject {
+    const project = createEmptyProject('Minimalist Studio', budget, currency);
+    const rootId = project.root_node_id;
+
+    const H = DEFAULTS.WALL_HEIGHT;
+    const T = DEFAULTS.WALL_THICKNESS;
+    const halfH = H / 2;
+    const halfT = T / 2;
+
+    const W = 8;
+    const D = 6;
+
+    // Foundation & Slab
+    add(project, createFoundationNode(rootId, 'Foundation', { x: W / 2, y: -0.15, z: D / 2 }, { x: W + T, y: 0.3, z: D + T }));
+    const floor = add(project, createFloorNode(rootId, 0, 'Ground Floor'));
+    add(project, createSlabNode(floor.id, 'Slab', { x: W / 2, y: 0, z: D / 2 }, { x: W, y: 0.15, z: D }));
+
+    // Main Room
+    const studio = add(project, createRoomNode(floor.id, 'Studio Space', { x: W / 2, y: 0, z: D / 2 }, { x: W, y: H, z: D }, 'living'));
+
+    // Exterior Walls
+    addWall(project, studio.id, 'North Wall', { x: W / 2, y: halfH, z: halfT }, W, H, T, ['load_bearing', 'exterior']);
+    addWall(project, studio.id, 'South Wall', { x: W / 2, y: halfH, z: D - halfT }, W, H, T, ['load_bearing', 'exterior']);
+    addWall(project, studio.id, 'West Wall', { x: halfT, y: halfH, z: D / 2 }, D - 2 * T, H, T, ['load_bearing', 'exterior'], 90);
+    const eastWall = addWall(project, studio.id, 'East Wall', { x: W - halfT, y: halfH, z: D / 2 }, D - 2 * T, H, T, ['load_bearing', 'exterior'], 90);
+
+    // Large window on East
+    add(project, createWindowNode(eastWall.id, 'Picture Window', { x: 7, y: 1.5, z: 3 }, 3.0, 2.0));
+
+    // Bathroom Pod
+    addPartition(project, floor.id, 'Bath Divider N', { x: 1.5, y: halfH, z: 3 }, 3, H, 0.1);
+    addPartition(project, floor.id, 'Bath Divider E', { x: 3, y: halfH, z: 1.5 }, 3, H, 0.1, 90);
+
+    // Flat Roof
+    const roof = add(project, createRoofNode(rootId, 'Flat Roof', 'flat', 0, { x: W + 0.5, y: 0.3, z: D + 0.5 }));
+    roof.position = { x: W / 2, y: H, z: D / 2 };
+
+    return project;
+}
+
+// =============================================================================
 // TEMPLATE REGISTRY
 // =============================================================================
 
@@ -557,7 +610,7 @@ export const TEMPLATES: TemplateInfo[] = [
         floors: 1,
         approx_area_m2: 120,
         style: 'Traditional',
-        preview_image: '/templates/simple_3bed.jpg',
+        preview_image: '/templates/simple_3bed.png',
         create: createSimple3BedTemplate,
     },
     {
@@ -568,7 +621,29 @@ export const TEMPLATES: TemplateInfo[] = [
         floors: 2,
         approx_area_m2: 240,
         style: 'Modern',
-        preview_image: '/templates/modern_4bed.jpg',
+        preview_image: '/templates/modern_4bed.png',
         create: createModern4BedTemplate,
+    },
+    {
+        slug: 'minimalist_studio',
+        name: 'Minimalist Studio',
+        description: 'A space-efficient open-plan studio apartment ideal for urban living. Minimalist design with high-impact windows. ~48 m².',
+        bedrooms: 1,
+        floors: 1,
+        approx_area_m2: 48,
+        style: 'Minimalist',
+        preview_image: '/templates/studio.png',
+        create: createMinimalistStudioTemplate,
+    },
+    {
+        slug: 'empty',
+        name: 'Empty Environment',
+        description: 'Start with a blank canvas. No pre-built walls, just an infinite grid and your imagination.',
+        bedrooms: 0,
+        floors: 0,
+        approx_area_m2: 0,
+        style: 'Custom',
+        preview_image: '/templates/empty.jpg',
+        create: (budget) => createEmptyProject('New Project', budget),
     },
 ];

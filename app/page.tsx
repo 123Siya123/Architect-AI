@@ -25,7 +25,7 @@ export default function HomePage() {
           Walk through every room. Refine every detail with AI.
           Get professional building plans when you&apos;re ready.
         </p>
-        <Link href="/design" className="landing-cta">
+        <Link href="/start" className="landing-cta">
           🏠 Start Designing →
         </Link>
       </section>
