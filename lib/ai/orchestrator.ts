@@ -88,7 +88,7 @@ export async function sendChatToAI(
 
     let currentProject = { ...request.project, nodes: { ...request.project.nodes } };
     const allValidatedOps: PSGOperation[] = [];
-    const maxIterations = 5;
+    const maxIterations = 15;
     let finalMessage = "";
 
     // The message history for this specific turn's ReAct loop
@@ -209,48 +209,63 @@ ${budgetContext}
         }
     }
 
-    /*
     // =========================================================================
-    // FINAL RIGID AUDIT (Emergency Correction)
+    // FINAL RIGID AUDIT (Advanced Correction Phase)
     // =========================================================================
     progressLog.push(`\n───── 🛡️ FINAL GEOMETRIC AUDIT ─────`);
     try {
         const auditConfig = getProviderConfig();
+        // Use the absolute best reasoning for the audit
         const auditResult = await callProviderNoTools(auditConfig, [
             { role: 'system', content: GEOMETRIC_AUDIT_PROMPT },
-            { role: 'user', content: `NODE DATA:\n${prepareProjectContext(currentProject)}` }
+            { role: 'user', content: `FULL ARCHITECTURAL STATE:\n${prepareProjectContext(currentProject)}` }
         ]);
 
         const auditData = extractJSON<{ status: string, mistakes: any[] }>(auditResult.text);
         if (auditData?.status === 'MISTAKE_FOUND' && auditData.mistakes?.length > 0) {
-            progressLog.push(`   ⚠️ Audit found ${auditData.mistakes.length} imperfection(s). Applying emergency fix...`);
-            // Run a one-time "Fixer" turn
-            const fixerConfig = getProviderConfig();
-            const fixMsgs = [
-                { role: 'system', content: 'You are the EMERGENCY FIXER. Apply tool calls to fix these specific issues immediately.' },
-                { role: 'user', content: `STATE:\n${prepareProjectContext(currentProject)}\n\nMISTAKES:\n${JSON.stringify(auditData.mistakes)}` }
-            ];
-            const fixResult = await callProviderWithTools(fixerConfig, fixMsgs);
-            if (fixResult.toolCalls) {
-                for (const tc of fixResult.toolCalls) {
-                    try {
-                        const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
-                        if (validateOperation(op, currentProject).valid) {
-                            allValidatedOps.push(op);
-                            const applied = applyOperation(currentProject, op);
-                            if (applied.project) currentProject = applied.project;
-                        }
-                    } catch { / * skip * / }
+            progressLog.push(`   ⚠️ Audit IDENTIFIED ${auditData.mistakes.length} imperfection(s). Deploying FIXER AGENT...`);
+
+            // Allow the Fixer up to 3 dedicated correction turns
+            for (let fixTurn = 1; fixTurn <= 3; fixTurn++) {
+                progressLog.push(`   🔧 Fixer Turn ${fixTurn}/3...`);
+                const fixerConfig = getProviderConfig();
+                const currentMistakes = fixTurn === 1 ? auditData.mistakes : "Review the latest state and finalize remaining micro-adjustments.";
+
+                const fixMsgs = [
+                    { role: 'system', content: 'You are the ELITE FIXER AGENT. Use the new Gemini 3.1 HIGH THINKING mode to perfectly align all elements. Zero gaps allowed. Use solve_precision and set_precision_level tools.' },
+                    { role: 'user', content: `STATE:\n${prepareProjectContext(currentProject)}\n\nREPORTED MISTAKES:\n${JSON.stringify(currentMistakes)}` }
+                ];
+
+                const fixResult = await callProviderWithTools(fixerConfig, fixMsgs);
+                if (fixResult.toolCalls && fixResult.toolCalls.length > 0) {
+                    let turnSuccesses = 0;
+                    for (const tc of fixResult.toolCalls) {
+                        try {
+                            const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
+                            const validation = validateOperation(op, currentProject);
+                            if (validation.valid) {
+                                allValidatedOps.push(op);
+                                const applied = applyOperation(currentProject, op);
+                                if (applied.project) {
+                                    currentProject = applied.project;
+                                    turnSuccesses++;
+                                }
+                            }
+                        } catch { /* skip individual tool fail */ }
+                    }
+                    progressLog.push(`   ✅ Fixer applied ${turnSuccesses} corrective operation(s).`);
+                    if (turnSuccesses === 0) break; // If no more ops could be applied, stop
+                } else {
+                    progressLog.push(`   ✨ Fixer confirms state is now optimized.`);
+                    break;
                 }
-                progressLog.push(`   ✅ Emergency fixes applied.`);
             }
         } else {
-            progressLog.push(`   ✨ Audit passed: 0.5mm alignment confirmed.`);
+            progressLog.push(`   ✨ Audit passed: 0.5mm alignment confirmed by Gemini 3.1.`);
         }
     } catch (e) {
-        progressLog.push(`   ⚠️ Audit skipped: ${e instanceof Error ? e.message : 'Unknown error'}`);
+        progressLog.push(`   ⚠️ Audit skipped or failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
     }
-    */
 
     progressLog.push(`\n═══ ANTIGRAVITY PIPELINE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
 
@@ -551,7 +566,11 @@ async function callGemini(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.1, max_output_tokens: 4000 },
+        generation_config: {
+            temperature: 0.1,
+            max_output_tokens: 64000,
+            thinking_level: 'HIGH'
+        },
     };
 
     const response = await fetch(url, {
@@ -605,7 +624,11 @@ async function callGeminiNoTools(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.3, max_output_tokens: 4000 },
+        generation_config: {
+            temperature: 0.3,
+            max_output_tokens: 64000,
+            thinking_level: 'HIGH'
+        },
     };
 
     const response = await fetch(url, {

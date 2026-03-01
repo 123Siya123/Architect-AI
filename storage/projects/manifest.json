@@ -34,5 +34,35 @@
     "name": "New Project",
     "modified_at": "2026-03-01T18:02:58.350Z",
     "preview_summary": "1 elements"
+  },
+  {
+    "id": "a8901eec-d8cb-4b8c-ac85-2af2c69f45b4",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-01T21:12:16.471Z",
+    "preview_summary": "35 elements"
+  },
+  {
+    "id": "26443b10-3d38-4a2c-97b9-317339d0c701",
+    "name": "Modern 4-Bedroom Home",
+    "modified_at": "2026-03-01T21:17:15.206Z",
+    "preview_summary": "68 elements"
+  },
+  {
+    "id": "e615b1b1-981e-45ae-bee8-638dc8e4c7ef",
+    "name": "New Project",
+    "modified_at": "2026-03-01T21:19:14.656Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "dfde9671-7eac-4684-a937-9ead41445a48",
+    "name": "Minimalist Studio",
+    "modified_at": "2026-03-01T22:01:45.582Z",
+    "preview_summary": "13 elements"
+  },
+  {
+    "id": "6be0afe3-cf6d-41b3-8e5c-ef56a47b8572",
+    "name": "Simple 3-Bedroom Home",
+    "modified_at": "2026-03-01T22:14:07.445Z",
+    "preview_summary": "27 elements"
   }
 ]

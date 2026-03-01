@@ -1,0 +1,1474 @@
+{
+  "id": "a8901eec-d8cb-4b8c-ac85-2af2c69f45b4",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-01T21:01:06.910Z",
+  "modified_at": "2026-03-01T21:12:16.471Z",
+  "version": 174,
+  "root_node_id": "house_d9adbfbe",
+  "nodes": {
+    "house_d9adbfbe": {
+      "id": "house_d9adbfbe",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_1",
+        "roof_main",
+        "custom_lg8cyqld",
+        "custom_ak5798t4",
+        "custom_op64e9g1",
+        "custom_ulawd68j",
+        "custom_4k5xky3g",
+        "custom_x7j2wsr8",
+        "custom_v7aayf3r",
+        "custom_825mdkft",
+        "custom_v8jyot5y",
+        "custom_kpuccsei",
+        "custom_dmlut0me"
+      ],
+      "created_at": "2026-03-01T21:01:06.910Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 16
+    },
+    "floor_1": {
+      "id": "floor_1",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [
+        "room_living",
+        "slab_foundation",
+        "porch_room"
+      ],
+      "created_at": "2026-03-01T21:03:04.404Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 16
+    },
+    "room_living": {
+      "id": "room_living",
+      "type": "Room",
+      "name": "Great Room",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [
+        "wall_31emjkya",
+        "wall_norzbxqu",
+        "wall_vqtzdffj",
+        "wall_qt2xtum5",
+        "custom_cqv8fx45",
+        "slab_ngcxm45p"
+      ],
+      "room_function": "living",
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 16
+    },
+    "wall_31emjkya": {
+      "id": "wall_31emjkya",
+      "type": "Wall",
+      "name": "North Wall Living",
+      "position": {
+        "x": 0,
+        "y": 1.35,
+        "z": -3.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [
+        "window_tf637k9i"
+      ],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 20
+    },
+    "wall_norzbxqu": {
+      "id": "wall_norzbxqu",
+      "type": "Wall",
+      "name": "South Wall Living",
+      "position": {
+        "x": 0,
+        "y": 1.35,
+        "z": 3.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [
+        "door_dw4w27ln"
+      ],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 19
+    },
+    "wall_vqtzdffj": {
+      "id": "wall_vqtzdffj",
+      "type": "Wall",
+      "name": "West Wall Living",
+      "position": {
+        "x": -4.875,
+        "y": 1.35,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.75,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [
+        "window_fx6xt3ff"
+      ],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 24
+    },
+    "wall_qt2xtum5": {
+      "id": "wall_qt2xtum5",
+      "type": "Wall",
+      "name": "East Wall Living",
+      "position": {
+        "x": 4.875,
+        "y": 1.35,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.75,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [
+        "window_13nc5vf5"
+      ],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 24
+    },
+    "slab_foundation": {
+      "id": "slab_foundation",
+      "type": "Slab",
+      "name": "Foundation Slab",
+      "position": {
+        "x": 0,
+        "y": -0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.5,
+        "y": 0.2,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_granite",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "porch_room": {
+      "id": "porch_room",
+      "type": "Room",
+      "name": "Front Porch",
+      "position": {
+        "x": -2,
+        "y": 0,
+        "z": 4.75
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [
+        "wall_smivjgc7",
+        "wall_h35mq4if",
+        "wall_wm4cdugc",
+        "custom_hl05hc22",
+        "custom_xkqnyslc",
+        "custom_qy54tlt6",
+        "custom_m3yn6m78",
+        "slab_z9w50ugm"
+      ],
+      "room_function": "living",
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 16
+    },
+    "wall_smivjgc7": {
+      "id": "wall_smivjgc7",
+      "type": "Wall",
+      "name": "Porch Base South",
+      "position": {
+        "x": -2,
+        "y": 0.25,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 6.25,
+        "y": 0.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "wall_h35mq4if": {
+      "id": "wall_h35mq4if",
+      "type": "Wall",
+      "name": "Porch Base West",
+      "position": {
+        "x": -5,
+        "y": 0.25,
+        "z": 4.75
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 0.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "wall_wm4cdugc": {
+      "id": "wall_wm4cdugc",
+      "type": "Wall",
+      "name": "Porch Base East",
+      "position": {
+        "x": 1,
+        "y": 0.25,
+        "z": 4.75
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 0.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "custom_hl05hc22": {
+      "id": "custom_hl05hc22",
+      "type": "Custom",
+      "name": "Porch Column West",
+      "position": {
+        "x": -4.995,
+        "y": 1.6,
+        "z": 5.995
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 2.2,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "custom_geometry": {
+        "radius": 0.2,
+        "type": "cylinder"
+      },
+      "cad_script": "# Custom element: Porch Column West\n# Description: Tapered Craftsman column with a stone base and wooden top. 2.2m tall.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 19
+    },
+    "custom_xkqnyslc": {
+      "id": "custom_xkqnyslc",
+      "type": "Custom",
+      "name": "Porch Column East",
+      "position": {
+        "x": 0.995,
+        "y": 1.6,
+        "z": 5.995
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 2.2,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "cylinder",
+        "radius": 0.2
+      },
+      "cad_script": "# Custom element: Porch Column East\n# Description: Tapered Craftsman column with a stone base and wooden top. 2.2m tall.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.405Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 19
+    },
+    "roof_main": {
+      "id": "roof_main",
+      "type": "Roof",
+      "name": "Main Gable Roof",
+      "position": {
+        "x": 0,
+        "y": 2.85,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.3,
+        "z": 9
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_tile_slate",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "roof_style": "gable",
+      "roof_pitch_degrees": 25,
+      "created_at": "2026-03-01T21:03:04.406Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 27
+    },
+    "custom_qy54tlt6": {
+      "id": "custom_qy54tlt6",
+      "type": "Custom",
+      "name": "Porch Pedestal West",
+      "position": {
+        "x": -4.995,
+        "y": 0.4,
+        "z": 5.995
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "custom_geometry": {
+        "height": 0.8,
+        "type": "box",
+        "depth": 0.6,
+        "width": 0.6
+      },
+      "cad_script": "# Custom element: Porch Pedestal West\n# Description: Stone pedestal for porch column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.408Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "custom_m3yn6m78": {
+      "id": "custom_m3yn6m78",
+      "type": "Custom",
+      "name": "Porch Pedestal East",
+      "position": {
+        "x": 0.995,
+        "y": 0.4,
+        "z": 5.995
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "custom_geometry": {
+        "depth": 0.6,
+        "type": "box",
+        "width": 0.6,
+        "height": 0.8
+      },
+      "cad_script": "# Custom element: Porch Pedestal East\n# Description: Stone pedestal for porch column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.408Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "custom_cqv8fx45": {
+      "id": "custom_cqv8fx45",
+      "type": "Custom",
+      "name": "Stone Chimney",
+      "position": {
+        "x": -5.925,
+        "y": 2.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 5,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [],
+      "cad_script": "# Custom element: Stone Chimney\n# Description: Large stone chimney on the exterior wall, tapering slightly at the top.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.410Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 19
+    },
+    "custom_lg8cyqld": {
+      "id": "custom_lg8cyqld",
+      "type": "Custom",
+      "name": "Eave Bracket NW",
+      "position": {
+        "x": -5,
+        "y": 2.45,
+        "z": -3.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 0.5,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const shape = new THREE.Shape();\nshape.moveTo(0, 0);\nshape.lineTo(0.5, 0);\nshape.lineTo(0, 0.5);\nshape.closePath();\nreturn new THREE.ExtrudeGeometry(shape, {depth: 0.1});",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Eave Bracket NW\n# Description: Decorative wooden bracket for roof eaves.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.410Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 19
+    },
+    "custom_ak5798t4": {
+      "id": "custom_ak5798t4",
+      "type": "Custom",
+      "name": "Eave Bracket NE",
+      "position": {
+        "x": 5,
+        "y": 2.45,
+        "z": -3.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 0.5,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const shape = new THREE.Shape();\nshape.moveTo(0, 0);\nshape.lineTo(0.5, 0);\nshape.lineTo(0, 0.5);\nshape.closePath();\nreturn new THREE.ExtrudeGeometry(shape, {depth: 0.1});"
+      },
+      "cad_script": "# Custom element: Eave Bracket NE\n# Description: Decorative wooden bracket for roof eaves.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.410Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 19
+    },
+    "slab_ngcxm45p": {
+      "id": "slab_ngcxm45p",
+      "type": "Slab",
+      "name": "Living Room Floor",
+      "position": {
+        "x": 0,
+        "y": 0.01,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 9.75,
+        "y": 0.2,
+        "z": 6.75
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_wood",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:03:04.410Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "custom_op64e9g1": {
+      "id": "custom_op64e9g1",
+      "type": "Custom",
+      "name": "Eave Bracket NW",
+      "position": {
+        "x": -5,
+        "y": 2.45,
+        "z": 3.5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const shape = new THREE.Shape();\nshape.moveTo(0, 0);\nshape.lineTo(0.4, 0);\nshape.lineTo(0, 0.4);\nshape.closePath();\nreturn new THREE.ExtrudeGeometry(shape, {depth: 0.1});"
+      },
+      "cad_script": "# Custom element: Eave Bracket NW\n# Description: Decorative wooden bracket for the roof eaves.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.412Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "custom_ulawd68j": {
+      "id": "custom_ulawd68j",
+      "type": "Custom",
+      "name": "Eave Bracket NE",
+      "position": {
+        "x": 5,
+        "y": 2.45,
+        "z": 3.5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const shape = new THREE.Shape();\nshape.moveTo(0, 0);\nshape.lineTo(0.4, 0);\nshape.lineTo(0, 0.4);\nshape.closePath();\nreturn new THREE.ExtrudeGeometry(shape, {depth: 0.1});"
+      },
+      "cad_script": "# Custom element: Eave Bracket NE\n# Description: Decorative wooden bracket for the roof eaves.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.412Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 18
+    },
+    "custom_4k5xky3g": {
+      "id": "custom_4k5xky3g",
+      "type": "Custom",
+      "name": "Eave Bracket West -3",
+      "position": {
+        "x": -5,
+        "y": 2.5,
+        "z": -3
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 0.4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Eave Bracket West -3\n# Description: Decorative oak bracket for roof eaves\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.413Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 17
+    },
+    "custom_x7j2wsr8": {
+      "id": "custom_x7j2wsr8",
+      "type": "Custom",
+      "name": "Eave Bracket East -3",
+      "position": {
+        "x": 5,
+        "y": 2.5,
+        "z": -3
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 0.4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Eave Bracket East -3\n# Description: Decorative oak bracket for roof eaves\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.413Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 17
+    },
+    "custom_v7aayf3r": {
+      "id": "custom_v7aayf3r",
+      "type": "Custom",
+      "name": "Eave Bracket West 0",
+      "position": {
+        "x": -5,
+        "y": 2.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 0.4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Eave Bracket West 0\n# Description: Decorative oak bracket for roof eaves\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.413Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 17
+    },
+    "custom_825mdkft": {
+      "id": "custom_825mdkft",
+      "type": "Custom",
+      "name": "Eave Bracket East 0",
+      "position": {
+        "x": 5,
+        "y": 2.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 0.4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Eave Bracket East 0\n# Description: Decorative oak bracket for roof eaves\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.413Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 17
+    },
+    "custom_v8jyot5y": {
+      "id": "custom_v8jyot5y",
+      "type": "Custom",
+      "name": "Eave Bracket West 3",
+      "position": {
+        "x": -5,
+        "y": 2.5,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 0.4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Eave Bracket West 3\n# Description: Decorative oak bracket for roof eaves\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.413Z",
+      "modified_at": "2026-03-01T21:12:16.470Z",
+      "version": 17
+    },
+    "custom_kpuccsei": {
+      "id": "custom_kpuccsei",
+      "type": "Custom",
+      "name": "Eave Bracket East 3",
+      "position": {
+        "x": 5,
+        "y": 2.5,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 0.4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_timber_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Eave Bracket East 3\n# Description: Decorative oak bracket for roof eaves\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.413Z",
+      "modified_at": "2026-03-01T21:12:16.471Z",
+      "version": 17
+    },
+    "custom_dmlut0me": {
+      "id": "custom_dmlut0me",
+      "type": "Custom",
+      "name": "Chimney Stack",
+      "position": {
+        "x": -5.705,
+        "y": 4.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.8,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_d9adbfbe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Chimney Stack\n# Description: Exterior stone chimney stack\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-01T21:03:04.413Z",
+      "modified_at": "2026-03-01T21:12:16.471Z",
+      "version": 16
+    },
+    "door_dw4w27ln": {
+      "id": "door_dw4w27ln",
+      "type": "Door",
+      "name": "Front Door",
+      "position": {
+        "x": -2,
+        "y": 1.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 2.1,
+        "z": 0.1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_norzbxqu",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:08:14.888Z",
+      "modified_at": "2026-03-01T21:12:16.471Z",
+      "version": 11
+    },
+    "window_fx6xt3ff": {
+      "id": "window_fx6xt3ff",
+      "type": "Window",
+      "name": "Living Room Window West",
+      "position": {
+        "x": 0.125,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 1.4000000000000001,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_vqtzdffj",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:08:14.888Z",
+      "modified_at": "2026-03-01T21:12:16.471Z",
+      "version": 12
+    },
+    "window_13nc5vf5": {
+      "id": "window_13nc5vf5",
+      "type": "Window",
+      "name": "Living Room Window East",
+      "position": {
+        "x": -0.125,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 1.4000000000000001,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_qt2xtum5",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:08:14.888Z",
+      "modified_at": "2026-03-01T21:12:16.471Z",
+      "version": 12
+    },
+    "window_tf637k9i": {
+      "id": "window_tf637k9i",
+      "type": "Window",
+      "name": "Living Room Window North",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 1.4000000000000001,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_31emjkya",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:08:14.888Z",
+      "modified_at": "2026-03-01T21:12:16.471Z",
+      "version": 12
+    },
+    "slab_z9w50ugm": {
+      "id": "slab_z9w50ugm",
+      "type": "Slab",
+      "name": "Porch Floor Finish",
+      "position": {
+        "x": -2,
+        "y": 0.01,
+        "z": 4.75
+      },
+      "dimensions": {
+        "x": 5.75,
+        "y": 0.2,
+        "z": 2.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_wood",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "porch_room",
+      "children_ids": [],
+      "created_at": "2026-03-01T21:08:14.889Z",
+      "modified_at": "2026-03-01T21:12:16.471Z",
+      "version": 10
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 467072.21,
+    "remaining": -267072.21,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}
