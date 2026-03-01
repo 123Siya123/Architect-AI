@@ -156,7 +156,24 @@ export type StructuralTag =
   | 'party_wall'      // Shared wall with neighbor
   | 'perimeter'       // Part of the building's outer boundary
   | 'insulated'       // Has insulation layer
+  | 'precise_joint'   // Has mathematically solved 0.5mm corner
   | 'custom';         // Custom/freeform geometry
+
+/** Detailed layer in a composite wall/slab/roof assembly */
+export interface AssemblyLayer {
+  material_id: string;               // Reference to Material
+  thickness: number;                 // Thickness of this layer in meters
+  role: 'structural' | 'finish' | 'insulation' | 'substrate' | 'air_gap' | 'membrane';
+  order: number;                     // 0 = outermost (exterior face), higher = further in
+}
+
+/** Metadata for precise geometric joints between elements */
+export interface JunctionMetadata {
+  junction_type: 'butt' | 'miter' | 'corner' | 't-junction' | 'cross';
+  target_id: string;                 // ID of the node we are joining with
+  offset: number;                    // 0.5mm precision offset for the joint
+  is_precise: boolean;               // Whether this joint has been solved to 0.5mm
+}
 
 /** Constraints prevent the AI from making structurally invalid edits */
 export interface NodeConstraints {
@@ -254,6 +271,12 @@ export interface PSGNode {
     code?: string;               // JavaScript code for universally generating the shape (for type="code")
   };
 
+  /** Wall/Slab/Roof: Composite assembly of layers */
+  assembly?: AssemblyLayer[];
+
+  /** Wall/Beam/Column: Precise junction data for corner intersections */
+  junctions?: JunctionMetadata[];
+
   /** Legacy Custom geometry: CadQuery script or shape description (Phase 3) */
   cad_script?: string;          // Python CadQuery code or natural language
 
@@ -297,6 +320,8 @@ export interface PSGProject {
 export interface ProjectSettings {
   unit: 'metric' | 'imperial';     // Meters or feet
   grid_size: number;                // Snap-to-grid increment (meters)
+  precision_level: 0 | 1 | 2;       // 0=Conceptual (5cm), 1=Standard (1cm), 2=Construction (0.5mm)
+  building_standard: 'eurocode' | 'ibc' | 'asce' | 'custom'; // Structural ruleset
   default_wall_height: number;      // Default wall height for new walls
   default_wall_thickness: number;   // Default wall thickness
   locale: string;                   // For currency formatting
@@ -332,6 +357,8 @@ export type OperationType =
   | 'set_constraint'
   | 'batch_edit'
   | 'move_room'             // Compound: move room + all children
+  | 'solve_precision'       // Architectural precision solver
+  | 'set_precision_level'   // Toggle precision (Conceptual/Standard/Construction)
   | 'create_custom_element'; // Custom shape from description
 
 /**

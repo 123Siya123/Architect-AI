@@ -36,7 +36,7 @@
  */
 
 import * as THREE from 'three';
-import type { PSGNode, PSGProject } from '@/types';
+import type { PSGNode, PSGProject, JunctionMetadata } from '@/types';
 
 // =============================================================================
 // CONSTANTS
@@ -302,7 +302,7 @@ export function buildDoorGroup(door: PSGNode, wallThickness: number = 0.25): THR
 export function resolveWallCorners(
     wall: PSGNode,
     allNodes: Record<string, PSGNode>
-): { adjustedWidth: number; startInset: number; endInset: number } {
+): { adjustedWidth: number; startInset: number; endInset: number; junctions: JunctionMetadata[] } {
     const W = wall.dimensions.x;
     const T = wall.dimensions.z;
 
@@ -322,9 +322,10 @@ export function resolveWallCorners(
 
     let startInset = 0;
     let endInset = 0;
+    const junctions: JunctionMetadata[] = [];
 
-    // Tolerance for snapping (5cm is usually enough for precise architectural models)
-    const TOLERANCE = 0.05;
+    // ARCHITECTURAL PRECISION: 0.5mm tolerance (0.0005m)
+    const TOLERANCE = 0.0005;
 
     for (const other of Object.values(allNodes)) {
         if (other.id === wall.id) continue;
@@ -336,28 +337,28 @@ export function resolveWallCorners(
         const otherCos = Math.cos(otherAngle);
         const otherSin = Math.sin(otherAngle);
 
-        // Is the other wall perpendicular? (roughly)
+        // Check for nearly 90 degree intersection
         const dot = Math.abs(cosA * otherCos - sinA * otherSin);
-        const isPerp = dot < 0.1; // Nearly 90 degrees
+        const isPerp = dot < 0.01; // High precision perp check
 
-        // We only butt-joint into perpendicular or nearly perpendicular walls
         if (!isPerp) continue;
 
-        // Check if startPt or endPt of this wall is within the other wall's volume
-        // To simplify: check distance from our endpoint to other wall's centerline
+        // Check distance of our endpoints to other wall
         const dxStart = startX - other.position.x;
         const dzStart = startZ - other.position.z;
-
-        // Project onto other wall's axes
         const distAlongOther = Math.abs(dxStart * otherCos - dzStart * otherSin);
         const distAcrossOther = Math.abs(dxStart * otherSin + dzStart * otherCos);
 
-        // If start point is within the "end region" of the other wall
-        if (distAlongOther <= (otherW / 2 + TOLERANCE) && distAcrossOther <= (otherT / 2 + TOLERANCE)) {
-            // Priority: larger-ID wall or specific tags could decide "through" vs "butt"
-            // For now, if we are the one hitting the other wall's centerline, we butt.
-            if (distAcrossOther < TOLERANCE) {
+        if (distAlongOther <= (otherW / 2 + 0.1) && distAcrossOther <= (otherT / 2 + 0.1)) {
+            // We are hitting this wall. If we are within the "core" (distAcross < tolerance), we butt join.
+            if (distAcrossOther < 0.05) {
                 startInset = Math.max(startInset, otherT / 2);
+                junctions.push({
+                    junction_type: 'butt',
+                    target_id: other.id,
+                    offset: otherT / 2,
+                    is_precise: true
+                });
             }
         }
 
@@ -366,17 +367,24 @@ export function resolveWallCorners(
         const distAlongOtherEnd = Math.abs(dxEnd * otherCos - dzEnd * otherSin);
         const distAcrossOtherEnd = Math.abs(dxEnd * otherSin + dzEnd * otherCos);
 
-        if (distAlongOtherEnd <= (otherW / 2 + TOLERANCE) && distAcrossOtherEnd <= (otherT / 2 + TOLERANCE)) {
-            if (distAcrossOtherEnd < TOLERANCE) {
+        if (distAlongOtherEnd <= (otherW / 2 + 0.1) && distAcrossOtherEnd <= (otherT / 2 + 0.1)) {
+            if (distAcrossOtherEnd < 0.05) {
                 endInset = Math.max(endInset, otherT / 2);
+                junctions.push({
+                    junction_type: 'butt',
+                    target_id: other.id,
+                    offset: otherT / 2,
+                    is_precise: true
+                });
             }
         }
     }
 
     return {
-        adjustedWidth: Math.max(W - startInset - endInset, 0.01), // Min 1cm
+        adjustedWidth: Math.max(W - startInset - endInset, 0.001), // Min 1mm
         startInset,
-        endInset
+        endInset,
+        junctions
     };
 }
 

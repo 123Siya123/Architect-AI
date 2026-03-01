@@ -602,6 +602,8 @@ function createDefaultSettings(): ProjectSettings {
     return {
         unit: 'metric',
         grid_size: DEFAULTS.GRID_SIZE,
+        precision_level: 1, // Standard
+        building_standard: 'eurocode',
         default_wall_height: DEFAULTS.WALL_HEIGHT,
         default_wall_thickness: DEFAULTS.WALL_THICKNESS,
         locale: 'en-US',

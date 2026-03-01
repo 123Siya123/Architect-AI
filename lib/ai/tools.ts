@@ -100,6 +100,31 @@ export const AI_TOOLS = [
                         type: 'number',
                         description: 'Depth of each step (default: 0.28m)',
                     },
+                    assembly: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                material_id: { type: 'string' },
+                                thickness: { type: 'number', description: 'Thickness in meters' },
+                                role: { type: 'string', enum: ['structural', 'finish', 'insulation', 'substrate', 'air_gap', 'membrane'] },
+                                order: { type: 'number', description: '0 = exterior face' }
+                            }
+                        },
+                        description: 'Detailed structural layers of the wall/slab (Construction Mode)'
+                    },
+                    junctions: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                junction_type: { type: 'string', enum: ['butt', 'miter', 'corner', 't-junction', 'cross'] },
+                                target_id: { type: 'string', description: 'ID of the node to join with' },
+                                offset: { type: 'number', description: 'Join offset in meters (0.5mm precision)' }
+                            }
+                        },
+                        description: 'Precise corner connections (Advanced Architecture)'
+                    }
                 },
                 required: ['type', 'parent_id', 'name'],
             },
@@ -253,6 +278,31 @@ export const AI_TOOLS = [
                         type: 'boolean',
                         description: 'Whether to keep child elements (default: true)',
                     },
+                    assembly: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                material_id: { type: 'string' },
+                                thickness: { type: 'number' },
+                                role: { type: 'string', enum: ['structural', 'finish', 'insulation', 'substrate', 'air_gap', 'membrane'] },
+                                order: { type: 'number' }
+                            }
+                        },
+                        description: 'New structural assembly layers'
+                    },
+                    junctions: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                junction_type: { type: 'string', enum: ['butt', 'miter', 'corner', 't-junction', 'cross'] },
+                                target_id: { type: 'string' },
+                                offset: { type: 'number' }
+                            }
+                        },
+                        description: 'New precise corner connections'
+                    }
                 },
                 required: ['target_id'],
             },
@@ -396,6 +446,42 @@ export const AI_TOOLS = [
                     roll: { type: 'number', description: 'Rotation around Z axis in degrees. Bank/twist.' },
                 },
                 required: ['target_id'],
+            },
+        },
+    },
+    // ─── TOOL 10: Solve architectural precision ──────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'solve_precision',
+            description:
+                'Execute the architectural precision solver. This will iterate through all walls, ' +
+                'slabs, and corners, and mathematically align them to a 0.5mm tolerance (Construction level). ' +
+                'Call this after major structural changes to "harden" the design.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    reasoning: { type: 'string', description: 'Briefly explain why you are refining precision now.' }
+                }
+            },
+        },
+    },
+    // ─── TOOL 11: Set project precision level ────────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'set_precision_level',
+            description:
+                'Set the architectural precision level of the project. ' +
+                'Level 0 (Conceptual): 5cm grid snapping. ' +
+                'Level 1 (Standard): 1cm grid snapping. ' +
+                'Level 2 (Construction): 0.5mm grid snapping + detailed junctions enabled.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    level: { type: 'integer', enum: [0, 1, 2], description: 'Target precision level' }
+                },
+                required: ['level']
             },
         },
     },
