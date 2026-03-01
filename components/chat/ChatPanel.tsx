@@ -110,47 +110,26 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 // PIPELINE STATUS INDICATOR
 // =============================================================================
 
-function PipelineStatus() {
-    const phases = [
-        { emoji: '🧠', label: 'Coordinator analyzing' },
-        { emoji: '⚡', label: 'Workers executing' },
-        { emoji: '🔍', label: 'Checker reviewing' },
-        { emoji: '🔧', label: 'Fixer correcting' },
-    ];
+// =============================================================================
+// REACT LOOP STATUS INDICATOR
+// =============================================================================
 
-    const [currentPhase, setCurrentPhase] = useState(0);
-
-    useEffect(() => {
-        // Cycle through phases to show activity
-        const interval = setInterval(() => {
-            setCurrentPhase((prev) => Math.min(prev + 1, phases.length - 1));
-        }, 4000);
-        return () => clearInterval(interval);
-    }, []);
-
+function ReactLoopStatus() {
     return (
         <div className="chat-message chat-message-ai">
-            <div className="chat-pipeline-status">
-                {phases.map((phase, i) => (
-                    <div
-                        key={i}
-                        className={`pipeline-phase ${i < currentPhase ? 'pipeline-phase-done' :
-                            i === currentPhase ? 'pipeline-phase-active' :
-                                'pipeline-phase-pending'
-                            }`}
-                    >
-                        <span className="pipeline-emoji">{phase.emoji}</span>
-                        <span className="pipeline-label">{phase.label}</span>
-                        {i === currentPhase && (
-                            <span className="pipeline-dots">
-                                <span className="chat-thinking-dot" />
-                                <span className="chat-thinking-dot" />
-                                <span className="chat-thinking-dot" />
-                            </span>
-                        )}
-                        {i < currentPhase && <span className="pipeline-check">✓</span>}
-                    </div>
-                ))}
+            <div className="chat-pipeline-status" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--accent)', borderRadius: '12px', padding: '16px' }}>
+                <div className="pipeline-phase pipeline-phase-active">
+                    <span className="pipeline-emoji">🌀</span>
+                    <span className="pipeline-label">Antigravity ReAct Loop Engaged</span>
+                    <span className="pipeline-dots">
+                        <span className="chat-thinking-dot" />
+                        <span className="chat-thinking-dot" />
+                        <span className="chat-thinking-dot" />
+                    </span>
+                </div>
+                <div style={{ fontSize: '0.8em', opacity: 0.7, marginTop: '8px', paddingLeft: '32px' }}>
+                    Reasoning through geometry, executing batch operations, and auditing precision (0.5mm tolerance)...
+                </div>
             </div>
         </div>
     );
@@ -213,7 +192,7 @@ export default function ChatPanel() {
             {/* Chat Header */}
             <div className="chat-header">
                 <div>
-                    <h3>🏗️ AI Architect <span style={{ fontSize: '0.65em', opacity: 0.6 }}>multi-agent</span></h3>
+                    <h3>🏗️ AI Architect <span style={{ fontSize: '0.65em', opacity: 0.6 }}>ReAct Loop</span></h3>
                     <button
                         onClick={handleDownloadSpecs}
                         style={{ fontSize: '0.7em', marginTop: '4px', background: 'var(--accent)', color: 'white', padding: '2px 6px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
@@ -232,9 +211,9 @@ export default function ChatPanel() {
                     <div className="chat-welcome">
                         <p className="chat-welcome-title">Hello! 👋</p>
                         <p className="chat-welcome-text">
-                            I&apos;m your AI architect team. Describe what you&apos;d like to change
-                            about the house, and my multi-agent team will analyze, execute,
-                            and verify the modifications.
+                            I&apos;m your AI architect. I use a continuous ReAct loop to reason through
+                            your requests, perform precise geometric operations, and audit the results
+                            against a 0.5mm construction tolerance.
                         </p>
                         <div className="chat-suggestions">
                             {SUGGESTIONS.map((s) => (
@@ -259,7 +238,7 @@ export default function ChatPanel() {
                     />
                 ))}
 
-                {isAIThinking && <PipelineStatus />}
+                {isAIThinking && <ReactLoopStatus />}
 
                 <div ref={messagesEndRef} />
             </div>

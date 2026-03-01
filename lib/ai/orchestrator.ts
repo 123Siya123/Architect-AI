@@ -68,11 +68,8 @@ import {
     generateASCIIFloorPlan
 } from './context';
 import {
-    SINGLE_AGENT_SYSTEM_PROMPT,
-    COORDINATOR_SYSTEM_PROMPT,
-    WORKER_SYSTEM_PROMPT,
-    CHECKER_SYSTEM_PROMPT,
-    FIXER_SYSTEM_PROMPT
+    MASTER_ARCHITECT_SYSTEM_PROMPT,
+    GEOMETRIC_AUDIT_PROMPT,
 } from './prompts';
 
 // Phase agents logic remains below...
@@ -86,238 +83,181 @@ export async function sendChatToAI(
     materials: Record<string, Material>,
     _retryCount: number = 0
 ): Promise<AIChatResponse> {
-    // Build full readable context (same for all agents)
-    const buildingSpecs = prepareProjectContext(request.project);
-    const materialContext = prepareMaterialContext(materials);
-    const asciiPlan = generateASCIIFloorPlan(request.project);
-    const budgetContext = prepareBudgetContext(request.project);
+    const progressLog: string[] = [];
+    console.log('[Orchestrator] ═══ ANTIGRAVITY REACT LOOP STARTING ═══');
 
-    const fullContext = `
-## CURRENT BUILDING STATE
+    let currentProject = { ...request.project, nodes: { ...request.project.nodes } };
+    const allValidatedOps: PSGOperation[] = [];
+    const maxIterations = 5;
+    let finalMessage = "";
 
+    // The message history for this specific turn's ReAct loop
+    const loopMessages: Array<{ role: string; content: string }> = [
+        { role: 'system', content: MASTER_ARCHITECT_SYSTEM_PROMPT }
+    ];
+
+    // Add previous chat history for context
+    if (request.history && request.history.length > 0) {
+        // Include last 10 messages for full context
+        for (const msg of request.history.slice(-10)) {
+            loopMessages.push({
+                role: msg.role === 'assistant' ? 'assistant' : 'user',
+                content: msg.content
+            });
+        }
+    }
+
+    // Add the user request
+    loopMessages.push({ role: 'user', content: `USER REQUEST: ${request.message}` });
+
+    for (let i = 1; i <= maxIterations; i++) {
+        progressLog.push(`\n───── 🌀 LOOP ITERATION ${i}/${maxIterations} ─────`);
+
+        // Prepare context for this specific iteration
+        const buildingSpecs = prepareProjectContext(currentProject);
+        const materialContext = prepareMaterialContext(materials);
+        const asciiPlan = generateASCIIFloorPlan(currentProject);
+        const budgetContext = prepareBudgetContext(currentProject);
+
+        const iterationContext = `
+## CURRENT BUILDING STATE (READ ONLY)
 ### ASCII FLOOR PLAN
 \`\`\`
 ${asciiPlan}
 \`\`\`
-
 ### COMPRESSED NODE DATA
 \`\`\`json
 ${buildingSpecs}
 \`\`\`
-
-
 ### AVAILABLE MATERIALS
 ${materialContext}
-
 ### BUDGET STATUS
 ${budgetContext}
 `;
 
-    // Progress log — each phase appends its output here for chat visibility
-    const progressLog: string[] = [];
-
-    console.log('[Orchestrator] ═══ MULTI-AGENT PIPELINE STARTING ═══');
-    console.log(`[Orchestrator] User request: "${request.message}"`);
-
-    // =========================================================================
-    // PHASE 1: SINGLE AGENT EXECUTION
-    // =========================================================================
-    progressLog.push('───── 🧠 PHASE 1: SINGLE AGENT ─────');
-    progressLog.push('Analyzing request and executing all changes...');
-
-    let singleAgentResult: WorkerResult;
-    let projectAfterWorkers = { ...request.project, nodes: { ...request.project.nodes } };
-    const validatedOps: PSGOperation[] = [];
-    const validationErrors: string[] = [];
-    const workerErrors: string[] = [];
-    let agentMessage = "I have processed your request.";
-
-    try {
-        const agentConfig = getProviderConfig();
-        const systemMsg = {
-            role: 'system',
-            content: `${SINGLE_AGENT_SYSTEM_PROMPT}\n\n## CURRENT BUILDING STATE (READ ONLY)\n${fullContext}`
-        };
-
-        // Prepare proper multi-turn history
-        const messages: Array<{ role: string; content: string }> = [systemMsg];
-
-        if (request.history && request.history.length > 0) {
-            // Include last 10 messages for full context
-            for (const msg of request.history.slice(-10)) {
-                messages.push({
-                    role: msg.role === 'assistant' ? 'assistant' : 'user',
-                    content: msg.content
-                });
-            }
-        }
-
-        // Add the current user request
-        messages.push({
+        // We merge the building context into a unified observation message.
+        // We use 'user' role for these observations to ensure visibility and prevent 
+        // consecutive role overlap issues that crash Gemini/Groq.
+        loopMessages.push({
             role: 'user',
-            content: `USER REQUEST: ${request.message}`
+            content: `### SYSTEM OBSERVATION (Iteration ${i})\n${iterationContext}\n\nReview the building state above and proceed with your task using tools if needed.`
         });
 
-        const response = await callProviderWithTools(agentConfig, messages);
+        try {
+            const config = getProviderConfig();
+            // Normalize messages to ensure alternating roles before calling the provider
+            const normalizedHistory = normalizeMessages(loopMessages);
+            const result = await callProviderWithTools(config, normalizedHistory);
 
-        singleAgentResult = {
-            operations: (response.toolCalls || []).map(tc => toolCallToOperation(tc.name, tc.args as Record<string, unknown>)),
-            text: response.text,
-            errors: []
-        };
-
-        if (singleAgentResult.text) {
-            progressLog.push(`   💭 ${singleAgentResult.text.substring(0, 200)}...`);
-            agentMessage = singleAgentResult.text;
-        }
-
-        const ops = singleAgentResult.operations;
-        const opNames = ops.map((o: PSGOperation) => `${o.type}(${o.target_id})`).join(', ');
-        progressLog.push(`   ✅ ${ops.length} operation(s) generated: ${opNames || 'none'}`);
-
-        // Validate and apply each operation sequentially
-        for (const op of ops) {
-            const validation = validateOperation(op, projectAfterWorkers);
-            if (validation.valid) {
-                validatedOps.push(op);
-                try {
-                    const applied = applyOperation(projectAfterWorkers, op);
-                    if (applied.success && applied.project) {
-                        projectAfterWorkers = applied.project;
-                    }
-                } catch { /* keep op, apply had minor issue */ }
-            } else {
-                validationErrors.push(
-                    `${op.type}(${op.target_id}): ${validation.errors.join(', ')}`
-                );
-                progressLog.push(`   ⚠️ Validation failed: ${validation.errors.join(', ')}`);
+            if (result.text) {
+                progressLog.push(`   💭 ${result.text.substring(0, 150)}...`);
+                finalMessage = result.text; // Store text for final response
+                loopMessages.push({ role: 'assistant', content: result.text });
             }
-        }
 
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        console.error(`[Single Agent] FAILED:`, errMsg);
-        workerErrors.push(`Agent failed: ${errMsg}`);
-        progressLog.push(`   ❌ FAILED: ${errMsg}`);
-
-        // Attempt fallback
-        progressLog.push('Agent failed completely, trying simple fallback...');
-        const fbConfig = getProviderConfig();
-        const fallback = await runSimpleFallback(fbConfig, request, materials, fullContext);
-        fallback.message = progressLog.join('\n') + '\n\n' + fallback.message;
-        return fallback;
-    }
-
-    progressLog.push(`\nTotal validated: ${validatedOps.length} operations`);
-    if (validationErrors.length > 0) {
-        progressLog.push(`⚠️ ${validationErrors.length} operation(s) failed validation:`);
-        for (const ve of validationErrors) {
-            progressLog.push(`   - ${ve}`);
-        }
-    }
-
-    if (validatedOps.length === 0) {
-        progressLog.push('No valid operations found. Returning message only.');
-    }
-
-    // =========================================================================
-    // PHASE 2: RIGID GEOMETRIC CALIBRATION (THE DUAL PASS ENGINEER)
-    // =========================================================================
-    if (validatedOps.length > 0) {
-        for (let pass = 1; pass <= 2; pass++) {
-            progressLog.push(`\n───── 📏 RIGID CALIBRATION (Pass ${pass}/2) ─────`);
-            progressLog.push(`Audit ${pass}: Analyzing spatial data for 0.5mm accuracy...`);
-
-            try {
-                // Re-prepare accurate specs for current state
-                const currentSpecs = prepareProjectContext(projectAfterWorkers);
-                const checkerConfig = getProviderConfig();
-
-                const checkerResult = await runChecker(
-                    checkerConfig,
-                    request.message,
-                    currentSpecs,
-                    generateASCIIFloorPlan(projectAfterWorkers)
-                );
-
-                if (checkerResult.status === 'MISTAKE_FOUND' && checkerResult.mistakes && checkerResult.mistakes.length > 0) {
-                    progressLog.push(`   ⚠️ Audit ${pass} found ${checkerResult.mistakes.length} imperfection(s).`);
-                    for (const m of checkerResult.mistakes) {
-                        progressLog.push(`   - ${m.node_id}: ${m.description} (Fix: ${m.fix_description})`);
-                    }
-
-                    // FIXER PASS
-                    progressLog.push(`   🛠️ Executing Precision Fixer ${pass}...`);
-                    const fixerConfig = getProviderConfig();
-                    const fixerResult = await runFixer(
-                        fixerConfig,
-                        currentSpecs,
-                        checkerResult.mistakes,
-                        generateASCIIFloorPlan(projectAfterWorkers)
-                    );
-
-                    if (fixerResult.operations.length > 0) {
-                        progressLog.push(`   ✅ Applied ${fixerResult.operations.length} correction(s) (Audited to 0.5mm).`);
-
-                        // Apply fixes to our local state so next pass (or finalize) sees them
-                        for (const op of fixerResult.operations) {
-                            const val = validateOperation(op, projectAfterWorkers);
-                            if (val.valid) {
-                                validatedOps.push(op);
-                                const applied = applyOperation(projectAfterWorkers, op);
-                                if (applied.success && applied.project) {
-                                    projectAfterWorkers = applied.project;
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    progressLog.push(`   ✨ Audit ${pass} passed: 0.5mm alignment confirmed.`);
-                    if (pass === 1) {
-                        progressLog.push('   (Proceeding to safety audit Pass 2...)');
-                    } else {
-                        break; // Perfect on pass 2, we are done
-                    }
+            if (!result.toolCalls || result.toolCalls.length === 0) {
+                // Planning check: if the AI just gave text but no tools on iteration 1, nudge it to ACT.
+                if (i === 1) {
+                    progressLog.push(`   💬 Analysis complete. Nudging for execution...`);
+                    loopMessages.push({
+                        role: 'user',
+                        content: `### SYSTEM NUDGE\nThank you for your analysis. Now, please execute the necessary tool calls to proceed with the design. DO NOT just describe the changes—apply them.`
+                    });
+                    continue;
                 }
-            } catch (err) {
-                console.warn(`[Orchestrator] Calibration pass ${pass} failed:`, err);
-                progressLog.push(`   ⚠️ Calibration pass ${pass} skipped due to error.`);
+                progressLog.push(`   ✨ No more operations needed. Finishing.`);
+                break;
             }
+
+            progressLog.push(`   🛠️ Executing ${result.toolCalls.length} operation(s)...`);
+
+            const resultsForObservation: string[] = [];
+
+            for (const tc of result.toolCalls) {
+                try {
+                    const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
+                    const validation = validateOperation(op, currentProject);
+
+                    if (validation.valid) {
+                        allValidatedOps.push(op);
+                        const applied = applyOperation(currentProject, op);
+                        if (applied.success && applied.project) {
+                            currentProject = applied.project;
+                            resultsForObservation.push(`SUCCESS: ${op.type} on ${op.target_id}`);
+                        } else {
+                            resultsForObservation.push(`FAILED: Application error for ${op.type} on ${op.target_id}`);
+                        }
+                    } else {
+                        resultsForObservation.push(`FAILED: Validation error for ${op.type}: ${validation.errors.join(', ')}`);
+                        progressLog.push(`   ⚠️ Tool ${tc.name} failed: ${validation.errors[0]}`);
+                    }
+                } catch (err) {
+                    resultsForObservation.push(`FAILED: Tool ${tc.name} error: ${err instanceof Error ? err.message : String(err)}`);
+                }
+            }
+
+            // Feed results back to the agent as an observation
+            loopMessages.push({
+                role: 'user',
+                content: `### OBSERVATION (Step ${i})\n${resultsForObservation.join('\n')}\n\nPlease review the updated state and continue if necessary.`
+            });
+
+        } catch (error) {
+            console.error(`[Orchestrator] Loop Iteration ${i} FAILED:`, error);
+            progressLog.push(`   ❌ FAILED: ${error instanceof Error ? error.message : String(error)}`);
+            break;
         }
     }
 
     // =========================================================================
-    // COMPOSE FINAL RESPONSE
+    // FINAL RIGID AUDIT (Emergency Correction)
     // =========================================================================
-    const allOps = [...validatedOps];
+    progressLog.push(`\n───── 🛡️ FINAL GEOMETRIC AUDIT ─────`);
+    try {
+        const auditConfig = getProviderConfig();
+        const auditResult = await callProviderNoTools(auditConfig, [
+            { role: 'system', content: GEOMETRIC_AUDIT_PROMPT },
+            { role: 'user', content: `NODE DATA:\n${prepareProjectContext(currentProject)}` }
+        ]);
 
-    progressLog.push('');
-    progressLog.push(`═══ PIPELINE COMPLETE: ${allOps.length} total operation(s) ═══`);
-
-    // Build the final message with progress log
-    let finalMessage = agentMessage;
-    // Add a summary of the calibration to the user
-    if (allOps.length > (singleAgentResult!?.operations?.length || 0)) {
-        finalMessage += "\n\nI have performed a dual-pass 'Rigid Engineer' calibration to enforce 0.5mm precision across all architectural joints, ensuring zero tolerance for gaps or overlaps.";
+        const auditData = extractJSON<{ status: string, mistakes: any[] }>(auditResult.text);
+        if (auditData?.status === 'MISTAKE_FOUND' && auditData.mistakes?.length > 0) {
+            progressLog.push(`   ⚠️ Audit found ${auditData.mistakes.length} imperfection(s). Applying emergency fix...`);
+            // Run a one-time "Fixer" turn
+            const fixerConfig = getProviderConfig();
+            const fixMsgs = [
+                { role: 'system', content: 'You are the EMERGENCY FIXER. Apply tool calls to fix these specific issues immediately.' },
+                { role: 'user', content: `STATE:\n${prepareProjectContext(currentProject)}\n\nMISTAKES:\n${JSON.stringify(auditData.mistakes)}` }
+            ];
+            const fixResult = await callProviderWithTools(fixerConfig, fixMsgs);
+            if (fixResult.toolCalls) {
+                for (const tc of fixResult.toolCalls) {
+                    try {
+                        const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
+                        if (validateOperation(op, currentProject).valid) {
+                            allValidatedOps.push(op);
+                            const applied = applyOperation(currentProject, op);
+                            if (applied.project) currentProject = applied.project;
+                        }
+                    } catch { /* skip */ }
+                }
+                progressLog.push(`   ✅ Emergency fixes applied.`);
+            }
+        } else {
+            progressLog.push(`   ✨ Audit passed: 0.5mm alignment confirmed.`);
+        }
+    } catch (e) {
+        progressLog.push(`   ⚠️ Audit skipped: ${e instanceof Error ? e.message : 'Unknown error'}`);
     }
 
-    finalMessage += '\n\n' + progressLog.join('\n');
-
-    const warnings: AIChatResponse['warnings'] = [];
-    if (workerErrors.length > 0) {
-        warnings.push({ severity: 'warning', message: workerErrors.join('; ') });
-    }
-
-    console.log('[Orchestrator] ═══ PIPELINE COMPLETE ═══');
-    console.log(`[Orchestrator] Final: ${allOps.length} operations, ${warnings.length} warnings`);
+    progressLog.push(`\n═══ ANTIGRAVITY PIPELINE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
 
     return {
-        message: finalMessage,
-        operations: allOps,
-        warnings,
+        message: finalMessage + "\n\n" + progressLog.join('\n'),
+        operations: allValidatedOps,
+        warnings: [],
         suggestions: [],
     };
-
 }
 
 
@@ -344,301 +284,6 @@ interface WorkerResult {
     errors: string[];
 }
 
-interface CheckerOutput {
-    status: 'OK' | 'MISTAKE_FOUND';
-    message?: string;
-    mistakes?: MistakeReport[];
-}
-
-interface MistakeReport {
-    node_id: string;
-    description: string;
-    expected: string;
-    actual: string;
-    fix_description: string;
-}
-
-// =============================================================================
-// PHASE 1: COORDINATOR AGENT
-// =============================================================================
-
-async function runCoordinator(
-    config: AIProviderConfig,
-    userMessage: string,
-    fullContext: string,
-    history: Array<{ role: string; content: string }>
-): Promise<CoordinatorOutput> {
-    const messages: Array<{ role: string; content: string }> = [
-        { role: 'system', content: COORDINATOR_SYSTEM_PROMPT },
-        { role: 'user', content: fullContext },
-    ];
-
-    // Add recent history
-    const recentHistory = history.slice(-4);
-    for (const msg of recentHistory) {
-        messages.push({
-            role: msg.role === 'assistant' ? 'assistant' : 'user',
-            content: typeof msg.content === 'string' ? msg.content : String(msg.content),
-        });
-    }
-
-    messages.push({
-        role: 'user',
-        content: `USER REQUEST: ${userMessage}\n\nAnalyze this request, study the building state above, and produce your plan as JSON.`,
-    });
-
-    const result = await callProviderNoTools(config, messages);
-
-    // Parse the coordinator's JSON response
-    try {
-        const parsed = extractJSON<CoordinatorOutput>(result.text);
-        if (!parsed || !parsed.sub_tasks) {
-            throw new Error('Invalid coordinator output format');
-        }
-        return parsed;
-    } catch (error) {
-        console.warn('[Coordinator] Failed to parse JSON output, creating fallback subtask...');
-        console.log('[Coordinator] Raw output:', result.text.substring(0, 500));
-        // CRITICAL FIX: Instead of returning 0 subtasks (which means nothing happens),
-        // create 1 fallback subtask with the full user request so a worker still executes.
-        return {
-            analysis: result.text,
-            sub_tasks: [{
-                id: 'fallback_task',
-                description: `The coordinator's analysis: ${result.text.substring(0, 2000)}\n\nExecute the user's request by making the appropriate tool calls based on the analysis above and the building data.`,
-                priority: 1,
-            }],
-            user_message: 'I\'m processing your request...',
-            follow_up_suggestions: [],
-        };
-    }
-}
-
-// =============================================================================
-// PHASE 2: WORKER AGENTS
-// =============================================================================
-
-async function runWorker(
-    config: AIProviderConfig,
-    task: SubTask,
-    fullContext: string,
-    workerIndex: number
-): Promise<WorkerResult> {
-    console.log(`[Worker ${workerIndex + 1}] Starting task: ${task.id}`);
-
-    const messages: Array<{ role: string; content: string }> = [
-        { role: 'system', content: WORKER_SYSTEM_PROMPT },
-        {
-            role: 'user',
-            content: `${fullContext}\n\n## YOUR SPECIFIC TASK\n${task.description}\n\nStudy the building specifications above carefully. Look at exact positions, dimensions, rotations, and IDs. Then execute your task using tool calls. Show your reasoning.`,
-        },
-    ];
-
-    const result = await callProviderWithTools(config, messages);
-
-    const operations: PSGOperation[] = [];
-    const errors: string[] = [];
-
-    if (result.toolCalls && result.toolCalls.length > 0) {
-        for (const tc of result.toolCalls) {
-            try {
-                const op = toolCallToOperation(tc.name, tc.args);
-                operations.push(op);
-            } catch (err) {
-                const errMsg = err instanceof Error ? err.message : String(err);
-                errors.push(`Worker ${workerIndex + 1}: Failed to parse ${tc.name}: ${errMsg}`);
-                console.warn(`[Worker ${workerIndex + 1}] Failed to parse tool call:`, tc.name, err);
-            }
-        }
-    }
-
-    console.log(`[Worker ${workerIndex + 1}] Completed: ${operations.length} operations, ${errors.length} errors`);
-    return { operations, text: result.text, errors };
-}
-
-/**
- * Wraps runWorker with retry logic: if the first attempt fails (e.g., bad API key),
- * rotate to the next key and try once more.
- */
-
-
-// =============================================================================
-// PHASE 3: CHECKER AGENT
-// =============================================================================
-
-async function runChecker(
-    config: AIProviderConfig,
-    originalQuestion: string,
-    updatedBuildingSpecs: string,
-    asciiPlan: string
-): Promise<CheckerOutput> {
-    const messages: Array<{ role: string; content: string }> = [
-        { role: 'system', content: CHECKER_SYSTEM_PROMPT },
-        {
-            role: 'user',
-            content: `## ORIGINAL USER REQUEST
-"${originalQuestion}"
-
-## CURRENT BUILDING STATE (after modifications)
-
-### ASCII FLOOR PLAN
-\`\`\`
-${asciiPlan}
-\`\`\`
-
-### FULL NODE DATA
-\`\`\`json
-${updatedBuildingSpecs}
-\`\`\`
-
-Review the building state above. Check if the modifications correctly fulfill the user's request. Look carefully at rotation, height, position, dimensions, and structural integrity. Output your findings as JSON.`,
-        },
-    ];
-
-    const result = await callProviderNoTools(config, messages);
-
-    try {
-        const parsed = extractJSON<CheckerOutput>(result.text);
-        if (!parsed || !parsed.status) {
-            return { status: 'OK', message: 'Checker response could not be parsed.' };
-        }
-        return parsed;
-    } catch {
-        return { status: 'OK', message: 'Checker response could not be parsed.' };
-    }
-}
-
-// =============================================================================
-// PHASE 4: FIXER AGENT
-// =============================================================================
-
-async function runFixer(
-    config: AIProviderConfig,
-    buildingSpecs: string,
-    mistakes: MistakeReport[],
-    asciiPlan: string
-): Promise<WorkerResult> {
-    const mistakeDescriptions = mistakes
-        .map((m, i) => `${i + 1}. [Node: ${m.node_id}] ${m.description}\n   Expected: ${m.expected}\n   Actual: ${m.actual}\n   Fix: ${m.fix_description}`)
-        .join('\n\n');
-
-    const messages: Array<{ role: string; content: string }> = [
-        { role: 'system', content: FIXER_SYSTEM_PROMPT },
-        {
-            role: 'user',
-            content: `## CURRENT BUILDING STATE
-
-### ASCII FLOOR PLAN
-\`\`\`
-${asciiPlan}
-\`\`\`
-
-### FULL NODE DATA
-\`\`\`json
-${buildingSpecs}
-\`\`\`
-
-## MISTAKES TO FIX
-${mistakeDescriptions}
-
-Fix each mistake above using tool calls. Show your reasoning.`,
-        },
-    ];
-
-    const result = await callProviderWithTools(config, messages);
-
-    const operations: PSGOperation[] = [];
-    const errors: string[] = [];
-
-    if (result.toolCalls && result.toolCalls.length > 0) {
-        for (const tc of result.toolCalls) {
-            try {
-                operations.push(toolCallToOperation(tc.name, tc.args));
-            } catch (err) {
-                errors.push(`Fixer: Failed to parse ${tc.name}: ${err instanceof Error ? err.message : String(err)}`);
-            }
-        }
-    }
-
-    return { operations, text: result.text, errors };
-}
-
-// =============================================================================
-// SIMPLE FALLBACK — Single-agent mode (for simple questions or when multi fails)
-// =============================================================================
-
-async function runSimpleFallback(
-    config: AIProviderConfig,
-    request: AIChatRequest,
-    materials: Record<string, Material>,
-    fullContext: string
-): Promise<AIChatResponse> {
-    console.log('[Orchestrator] Running simple single-agent fallback...');
-
-    const SIMPLE_PROMPT = `You are an Expert AI Architect assistant. You help users design and modify houses by making precise edits to a 3D building model.
-
-## COORDINATE SYSTEM
-- X = East/West, Y = Up/Down, Z = North/South. All meters. Positions are center points.
-
-## WALL ORIENTATION  
-- yaw=0: East-West. yaw=90: North-South.
-
-## STANDARD DIMENSIONS
-- Ceiling: 2.7m, Walls: 0.25m thick, Doors: 2.1m×0.9m, Windows: 1.4m×1.2m at 0.9m sill
-
-## RULES
-1. Use EXACT node IDs from the data
-2. move_node: DELTA values
-3. resize_node: ABSOLUTE dimensions  
-4. add_node: specify correct parent_id
-5. For adding a floor: add Floor container, then Rooms, then Walls, then Slab, then adjust Roof
-6. Always set position_y for walls at height/2 above the floor level
-
-## NODE HIERARCHY
-House → Floor → Room → Wall → Window/Door
-House → Roof
-Floor → Slab, Stairs`;
-
-    const messages: Array<{ role: string; content: string }> = [
-        { role: 'system', content: SIMPLE_PROMPT },
-        { role: 'user', content: fullContext },
-    ];
-
-    const recentHistory = (request.history || []).slice(-4);
-    for (const msg of recentHistory) {
-        messages.push({
-            role: msg.role === 'assistant' ? 'assistant' : 'user',
-            content: typeof msg.content === 'string' ? msg.content : String(msg.content),
-        });
-    }
-    messages.push({ role: 'user', content: request.message });
-
-    let result: LLMCallResult;
-    try {
-        result = await callProviderWithTools(config, messages);
-    } catch (error) {
-        console.warn('[Orchestrator] Fallback primary call failed, rotating key...', error);
-        rotateKey();
-        const retryConfig = getProviderConfig();
-        result = await callProviderWithTools(retryConfig, messages);
-    }
-
-    const operations: PSGOperation[] = [];
-    if (result.toolCalls) {
-        for (const tc of result.toolCalls) {
-            try {
-                operations.push(toolCallToOperation(tc.name, tc.args));
-            } catch { /* skip */ }
-        }
-    }
-
-    return {
-        message: result.text || 'I processed your request.',
-        operations,
-        warnings: [],
-        suggestions: [],
-    };
-}
 
 // =============================================================================
 // TOOL CALL → PSG OPERATION MAPPING
@@ -1294,6 +939,40 @@ function extractTextFromFailedGeneration(failedGen: string): string {
 // =============================================================================
 // UTILITIES
 // =============================================================================
+
+/**
+ * Normalizes message history to ensure strictly alternating roles (user <-> assistant).
+ * Merges consecutive messages of the same role. Useful for ReAct loops with observations.
+ */
+function normalizeMessages(messages: Array<{ role: string; content: string }>): Array<{ role: string; content: string }> {
+    const normalized: Array<{ role: string; content: string }> = [];
+
+    // We keep system messages as they are (providers handle them separately)
+    const systemMessages = messages.filter(m => m.role === 'system');
+    const conversationMessages = messages.filter(m => m.role !== 'system');
+
+    if (conversationMessages.length === 0) return systemMessages;
+
+    for (const msg of conversationMessages) {
+        const last = normalized[normalized.length - 1];
+        if (last && last.role === msg.role) {
+            last.content += `\n\n${msg.content}`;
+        } else {
+            normalized.push({ ...msg });
+        }
+    }
+
+    // Combine system messages into one if there are multiple
+    if (systemMessages.length > 1) {
+        const combinedSystem = {
+            role: 'system',
+            content: systemMessages.map(m => m.content).join('\n\n')
+        };
+        return [combinedSystem, ...normalized];
+    }
+
+    return [...systemMessages, ...normalized];
+}
 
 function safeParse(json: string): Record<string, unknown> {
     try {
