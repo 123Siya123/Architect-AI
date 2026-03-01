@@ -202,12 +202,12 @@ export interface AIProviderConfig {
 export function getProviderConfig(): AIProviderConfig {
     const provider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'gemini') as AIProviderConfig['provider'];
     const defaultModels: Record<string, string> = {
-        gemini: 'gemini-3-flash',
+        gemini: 'gemini-3-flash-preview',
         groq: 'llama-3.3-70b-versatile',
         openai: 'gpt-4o',
         github: 'gpt-4o',
     };
-    const model = process.env.AI_MODEL || defaultModels[provider] || 'gemini-3-flash';
+    const model = process.env.AI_MODEL || defaultModels[provider] || 'gemini-3-flash-preview';
     const apiKey = getNextKey();
 
     return { provider, model, apiKey };
