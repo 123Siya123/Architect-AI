@@ -555,10 +555,10 @@ async function callGemini(
         }),
         generation_config: {
             temperature: 0.1,
-            max_output_tokens: 64000,
-            thinking_config: {
-                thinking_level: 'HIGH'
-            }
+            max_output_tokens: 64000
+        },
+        thinking_config: {
+            thinking_level: 'HIGH'
         },
     };
 
@@ -615,10 +615,10 @@ async function callGeminiNoTools(
         }),
         generation_config: {
             temperature: 0.3,
-            max_output_tokens: 64000,
-            thinking_config: {
-                thinking_level: 'HIGH'
-            }
+            max_output_tokens: 64000
+        },
+        thinking_config: {
+            thinking_level: 'HIGH'
         },
     };
 
