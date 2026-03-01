@@ -72,6 +72,7 @@ interface DesignState {
     setActivePanel: (panel: ActivePanel) => void;
     setActiveFloorId: (floorId: string | null) => void;
     addChatMessage: (message: ChatMessage) => void;
+    sendMessageToAI: (text: string) => Promise<void>;
     revertToMessage: (messageId: string) => void;
     setAIThinking: (thinking: boolean) => void;
     setLoading: (loading: boolean) => void;
@@ -174,6 +175,84 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     setActivePanel: (panel) => set({ activePanel: panel }),
     setActiveFloorId: (id) => set({ activeFloorId: id }),
     addChatMessage: (message) => set({ chatMessages: [...get().chatMessages, message] }),
+    sendMessageToAI: async (text: string) => {
+        const { isAIThinking, project, chatMessages, addChatMessage, setAIThinking } = get();
+        if (!text.trim() || isAIThinking) return;
+
+        const projectSnapshot = JSON.parse(JSON.stringify(project));
+
+        const userMsg: ChatMessage = {
+            id: `msg_${Date.now()}`,
+            role: 'user',
+            content: text.trim(),
+            timestamp: new Date().toISOString(),
+            snapshot: projectSnapshot,
+        };
+        addChatMessage(userMsg);
+        setAIThinking(true);
+
+        try {
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: text.trim(),
+                    project,
+                    history: chatMessages,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `API error ${response.status}`);
+            }
+
+            const data = await response.json();
+            const allOps = data.operations || [];
+
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const op of allOps) {
+                try {
+                    const result = get().applyOp(op);
+                    if (result.success) {
+                        successCount++;
+                    } else {
+                        failCount++;
+                        console.warn('[Store] Op failed validation:', op.type, op.target_id, result.errors);
+                    }
+                } catch (opErr) {
+                    failCount++;
+                    console.warn('[Store] Op threw at runtime:', op.type, op.target_id, opErr);
+                }
+            }
+
+            if (allOps.length > 0) {
+                console.log(`[Store] Applied ${successCount}/${allOps.length} operations (${failCount} failed)`);
+            }
+
+            const aiMsg: ChatMessage = {
+                id: `msg_${Date.now()}_ai`,
+                role: 'assistant',
+                content: data.message || 'I processed your request.',
+                timestamp: new Date().toISOString(),
+                operations: allOps,
+                pipeline_log: data.progress_log || [],
+            };
+            get().addChatMessage(aiMsg);
+        } catch (err) {
+            const error = err as Error;
+            get().addChatMessage({
+                id: `msg_${Date.now()}_err`,
+                role: 'assistant',
+                content: `Sorry, I encountered an error: ${error.message || 'The AI backend may not be connected yet.'}`,
+                timestamp: new Date().toISOString(),
+            });
+        } finally {
+            get().setAIThinking(false);
+        }
+    },
     revertToMessage: (messageId) => {
         const { chatMessages } = get();
         const msgIndex = chatMessages.findIndex((m) => m.id === messageId);

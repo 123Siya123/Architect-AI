@@ -291,31 +291,28 @@ Read the mistake descriptions below and make the corrective tool calls.
 
 export async function sendChatToAI(
     request: AIChatRequest,
-    materials: Record<string, Material>
+    materials: Record<string, Material>,
+    _retryCount: number = 0
 ): Promise<AIChatResponse> {
-    const progressLog: string[] = [];
+    // Build full readable context (same for all agents)
+    const buildingSpecs = prepareProjectContext(request.project);
     const materialContext = prepareMaterialContext(materials);
+    const asciiPlan = generateASCIIFloorPlan(request.project);
     const budgetContext = prepareBudgetContext(request.project);
-
-    // Initial state context
-    const currentBuildingSpecs = prepareProjectContext(request.project);
-    const currentAsciiPlan = generateASCIIFloorPlan(request.project);
-
-    console.log('[Orchestrator] ═══ MULTI-AGENT PIPELINE STARTING ═══');
-    console.log(`[Orchestrator] User request: "${request.message}"`);
 
     const fullContext = `
 ## CURRENT BUILDING STATE
 
 ### ASCII FLOOR PLAN
 \`\`\`
-${currentAsciiPlan}
+${asciiPlan}
 \`\`\`
 
 ### COMPRESSED NODE DATA
 \`\`\`json
-${currentBuildingSpecs}
+${buildingSpecs}
 \`\`\`
+
 
 ### AVAILABLE MATERIALS
 ${materialContext}
@@ -324,108 +321,138 @@ ${materialContext}
 ${budgetContext}
 `;
 
-    const config = getProviderConfig();
-    const chatHistory = (request.history || []).map(m => ({
-        role: m.role as string,
-        content: m.content
-    }));
+    // Progress log — each phase appends its output here for chat visibility
+    const progressLog: string[] = [];
+
+    console.log('[Orchestrator] ═══ MULTI-AGENT PIPELINE STARTING ═══');
+    console.log(`[Orchestrator] User request: "${request.message}"`);
 
     // =========================================================================
-    // PHASE 1: COORDINATOR (PLANNIG)
+    // PHASE 1: SINGLE AGENT EXECUTION
     // =========================================================================
-    console.log('[Orchestrator] Phase 1: Coordinator (Planning)');
-    progressLog.push('🧠 Coordinator: Analyzing building and planning modifications...');
+    progressLog.push('───── 🧠 PHASE 1: SINGLE AGENT ─────');
+    progressLog.push('Analyzing request and executing all changes...');
 
-    const coordination = await runCoordinator(config, request.message, fullContext, chatHistory);
-    progressLog.push(`   💭 ${coordination.user_message}`);
-    coordination.sub_tasks.forEach((t, i) => progressLog.push(`   - ${i + 1}. ${t.description}`));
-
-    // =========================================================================
-    // PHASE 2: WORKER (EXECUTION)
-    // =========================================================================
-    console.log('[Orchestrator] Phase 2: Worker (Execution)');
-    progressLog.push('⚡ Worker: Executing tool calls based on plan...');
-
-    let projectAfterWorker = { ...request.project, nodes: { ...request.project.nodes } };
+    let singleAgentResult: WorkerResult;
+    let projectAfterWorkers = { ...request.project, nodes: { ...request.project.nodes } };
     const validatedOps: PSGOperation[] = [];
-    const workerWarnings: string[] = [];
+    const validationErrors: string[] = [];
+    const workerErrors: string[] = [];
+    let agentMessage = "I have processed your request.";
 
-    // Combine all subtasks into 1 prompt for efficiency (Worker can multi-tool call)
-    const combinedTask: SubTask = {
-        id: 'combined_worker_task',
-        description: coordination.sub_tasks.map(t => t.description).join('\n'),
-        priority: 1
-    };
+    try {
+        const agentConfig = getProviderConfig();
+        const systemMsg = {
+            role: 'system',
+            content: `${SINGLE_AGENT_SYSTEM_PROMPT}\n\n## CURRENT BUILDING STATE (READ ONLY)\n${fullContext}`
+        };
 
-    const workerResult = await runWorker(config, combinedTask, fullContext, 0);
+        // Prepare proper multi-turn history
+        const messages: Array<{ role: string; content: string }> = [systemMsg];
 
-    if (workerResult.text) progressLog.push(`   ⚡ ${workerResult.text.substring(0, 150)}...`);
-
-    for (const op of workerResult.operations) {
-        const validation = validateOperation(op, projectAfterWorker);
-        if (validation.valid) {
-            validatedOps.push(op);
-            const applyResult = applyOperation(projectAfterWorker, op);
-            if (applyResult.success && applyResult.project) {
-                projectAfterWorker = applyResult.project;
-                progressLog.push(`   ✅ Added ${op.type} (${op.target_id})`);
+        if (request.history && request.history.length > 0) {
+            // Include last 10 messages for full context
+            for (const msg of request.history.slice(-10)) {
+                messages.push({
+                    role: msg.role === 'assistant' ? 'assistant' : 'user',
+                    content: msg.content
+                });
             }
-        } else {
-            workerWarnings.push(`Worker skipped ${op.type}: ${validation.errors[0]}`);
-            progressLog.push(`   ⚠️ Skipped ${op.type}: ${validation.errors[0]}`);
         }
-    }
 
-    if (validatedOps.length === 0 && coordination.sub_tasks.length > 0) {
-        progressLog.push('   ❌ Worker failed to generate valid operations.');
-    }
+        // Add the current user request
+        messages.push({
+            role: 'user',
+            content: `USER REQUEST: ${request.message}`
+        });
 
-    // =========================================================================
-    // PHASE 3: CHECKER (VERIFICATION)
-    // =========================================================================
-    console.log('[Orchestrator] Phase 3: Checker (Verification)');
-    progressLog.push('🔍 Checker: Verifying spatial alignment and architectural logic...');
+        const response = await callProviderWithTools(agentConfig, messages);
 
-    const postWorkerSpecs = prepareProjectContext(projectAfterWorker);
-    const postWorkerAscii = generateASCIIFloorPlan(projectAfterWorker);
+        singleAgentResult = {
+            operations: (response.toolCalls || []).map(tc => toolCallToOperation(tc.name, tc.args as Record<string, unknown>)),
+            text: response.text,
+            errors: []
+        };
 
-    const verification = await runChecker(config, request.message, postWorkerSpecs, postWorkerAscii);
+        if (singleAgentResult.text) {
+            progressLog.push(`   💭 ${singleAgentResult.text.substring(0, 200)}...`);
+            agentMessage = singleAgentResult.text;
+        }
 
-    if (verification.status === 'OK') {
-        progressLog.push('   ✅ Verification passed: Building looks structurally sound.');
-    } else {
-        progressLog.push(`   ⚠️ Verification found ${verification.mistakes?.length || 0} mistake(s).`);
-        (verification.mistakes || []).forEach(m => progressLog.push(`     - ${m.description}`));
+        const ops = singleAgentResult.operations;
+        const opNames = ops.map((o: PSGOperation) => `${o.type}(${o.target_id})`).join(', ');
+        progressLog.push(`   ✅ ${ops.length} operation(s) generated: ${opNames || 'none'}`);
 
-        // =========================================================================
-        // PHASE 4: FIXER (CORRECTION)
-        // =========================================================================
-        console.log('[Orchestrator] Phase 4: Fixer (Correction)');
-        progressLog.push('🔧 Fixer: Applying corrective measures...');
-
-        const fixerResult = await runFixer(config, postWorkerSpecs, verification.mistakes || [], postWorkerAscii);
-
-        for (const op of fixerResult.operations) {
-            const validation = validateOperation(op, projectAfterWorker);
+        // Validate and apply each operation sequentially
+        for (const op of ops) {
+            const validation = validateOperation(op, projectAfterWorkers);
             if (validation.valid) {
                 validatedOps.push(op);
-                const applyResult = applyOperation(projectAfterWorker, op);
-                if (applyResult.success && applyResult.project) {
-                    projectAfterWorker = applyResult.project;
-                    progressLog.push(`   🛠️ Fixed: ${op.type} (${op.target_id})`);
-                }
+                try {
+                    const applied = applyOperation(projectAfterWorkers, op);
+                    if (applied.success && applied.project) {
+                        projectAfterWorkers = applied.project;
+                    }
+                } catch { /* keep op, apply had minor issue */ }
+            } else {
+                validationErrors.push(
+                    `${op.type}(${op.target_id}): ${validation.errors.join(', ')}`
+                );
+                progressLog.push(`   ⚠️ Validation failed: ${validation.errors.join(', ')}`);
             }
+        }
+
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        console.error(`[Single Agent] FAILED:`, errMsg);
+        workerErrors.push(`Agent failed: ${errMsg}`);
+        progressLog.push(`   ❌ FAILED: ${errMsg}`);
+
+        // Attempt fallback
+        progressLog.push('Agent failed completely, trying simple fallback...');
+        const fbConfig = getProviderConfig();
+        const fallback = await runSimpleFallback(fbConfig, request, materials, fullContext);
+        fallback.message = progressLog.join('\n') + '\n\n' + fallback.message;
+        return fallback;
+    }
+
+    progressLog.push(`\nTotal validated: ${validatedOps.length} operations`);
+    if (validationErrors.length > 0) {
+        progressLog.push(`⚠️ ${validationErrors.length} operation(s) failed validation:`);
+        for (const ve of validationErrors) {
+            progressLog.push(`   - ${ve}`);
         }
     }
 
-    progressLog.push('═══ PIPELINE COMPLETE ═══');
+    if (validatedOps.length === 0) {
+        progressLog.push('No valid operations found. Returning message only.');
+    }
+
+    // =========================================================================
+    // COMPOSE FINAL RESPONSE
+    // =========================================================================
+    const allOps = [...validatedOps];
+
+    progressLog.push('');
+    progressLog.push(`═══ PIPELINE COMPLETE: ${allOps.length} total operation(s) ═══`);
+
+    // Build the final message with progress log
+    let finalMessage = agentMessage;
+    finalMessage += '\n\n' + progressLog.join('\n');
+
+    const warnings: AIChatResponse['warnings'] = [];
+    if (workerErrors.length > 0) {
+        warnings.push({ severity: 'warning', message: workerErrors.join('; ') });
+    }
+
+    console.log('[Orchestrator] ═══ PIPELINE COMPLETE ═══');
+    console.log(`[Orchestrator] Final: ${allOps.length} operations, ${warnings.length} warnings`);
 
     return {
-        message: coordination.user_message || 'I have completed the architectural modifications.',
-        operations: validatedOps,
-        warnings: workerWarnings.map(m => ({ severity: 'warning', message: m })),
-        suggestions: coordination.follow_up_suggestions || [],
-        progress_log: progressLog
+        message: finalMessage,
+        operations: allOps,
+        warnings,
+        suggestions: [],
     };
 }
 
@@ -964,16 +991,15 @@ async function callGemini(
     const systemMsg = messages.find((m) => m.role === 'system');
 
     // Helper to recursively uppercase property types for Gemini
-    const formatForGemini = (obj: Record<string, unknown> | unknown[] | unknown): unknown => {
+    const formatForGemini = (obj: any): any => {
         if (Array.isArray(obj)) return obj.map(formatForGemini);
         if (obj !== null && typeof obj === 'object') {
-            const result: Record<string, unknown> = {};
-            const record = obj as Record<string, unknown>;
-            for (const key in record) {
-                if (key === 'type' && typeof record[key] === 'string') {
-                    result[key] = (record[key] as string).toUpperCase();
+            const result: any = {};
+            for (const key in obj) {
+                if (key === 'type' && typeof obj[key] === 'string') {
+                    result[key] = obj[key].toUpperCase();
                 } else {
-                    result[key] = formatForGemini(record[key]);
+                    result[key] = formatForGemini(obj[key]);
                 }
             }
             return result;
@@ -1052,7 +1078,7 @@ async function callGeminiNoTools(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.1, max_output_tokens: 4000, response_mime_type: 'application/json' },
+        generation_config: { temperature: 0.3, max_output_tokens: 4000 },
     };
 
     const response = await fetch(url, {

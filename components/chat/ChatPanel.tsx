@@ -163,12 +163,10 @@ function PipelineStatus() {
 export default function ChatPanel() {
     const [input, setInput] = useState('');
     const chatMessages = useDesignStore((s) => s.chatMessages);
-    const addChatMessage = useDesignStore((s) => s.addChatMessage);
     const isAIThinking = useDesignStore((s) => s.isAIThinking);
-    const setAIThinking = useDesignStore((s) => s.setAIThinking);
     const project = useDesignStore((s) => s.project);
-    const applyOp = useDesignStore((s) => s.applyOp);
     const revertToMessage = useDesignStore((s) => s.revertToMessage);
+    const sendMessageToAI = useDesignStore((s) => s.sendMessageToAI);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom on new messages
@@ -176,89 +174,11 @@ export default function ChatPanel() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chatMessages.length, isAIThinking]);
 
-    const sendMessage = useCallback(async (text: string) => {
+    const sendMessage = useCallback((text: string) => {
         if (!text.trim() || isAIThinking) return;
-
-        // Deep clone current project state as a snapshot before AI makes changes
-        const projectSnapshot = JSON.parse(JSON.stringify(project));
-
-        // Add user message
-        const userMsg: ChatMessage = {
-            id: `msg_${Date.now()}`,
-            role: 'user',
-            content: text.trim(),
-            timestamp: new Date().toISOString(),
-            snapshot: projectSnapshot,
-        };
-        addChatMessage(userMsg);
         setInput('');
-        setAIThinking(true);
-
-        try {
-            const response = await fetch('/api/ai/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: text.trim(),
-                    project,
-                    history: chatMessages,
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `API error ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // ✅ Apply AI operations to the 3D scene one-by-one so a single
-            // bad op (e.g. hallucinated node ID) doesn't crash the whole batch.
-            const allOps: typeof data.operations = data.operations || [];
-            let successCount = 0;
-            let failCount = 0;
-
-            for (const op of allOps) {
-                try {
-                    const result = applyOp(op);
-                    if (result.success) {
-                        successCount++;
-                    } else {
-                        failCount++;
-                        console.warn('[ChatPanel] Op failed validation:', op.type, op.target_id, result.errors);
-                    }
-                } catch (opErr) {
-                    failCount++;
-                    console.warn('[ChatPanel] Op threw at runtime:', op.type, op.target_id, opErr);
-                }
-            }
-
-            if (allOps.length > 0) {
-                console.log(`[ChatPanel] Applied ${successCount}/${allOps.length} operations (${failCount} failed)`);
-            }
-
-            const aiMsg: ChatMessage = {
-                id: `msg_${Date.now()}_ai`,
-                role: 'assistant',
-                content: data.message || 'I processed your request.',
-                timestamp: new Date().toISOString(),
-                operations: allOps,
-                pipeline_log: data.progress_log || [],
-            };
-            addChatMessage(aiMsg);
-        } catch (err) {
-            const error = err as Error;
-            const errMsg: ChatMessage = {
-                id: `msg_${Date.now()}_err`,
-                role: 'assistant',
-                content: `Sorry, I encountered an error: ${error.message || 'The AI backend may not be connected yet.'}`,
-                timestamp: new Date().toISOString(),
-            };
-            addChatMessage(errMsg);
-        } finally {
-            setAIThinking(false);
-        }
-    }, [input, isAIThinking, project, chatMessages, addChatMessage, setAIThinking, applyOp]);
+        sendMessageToAI(text);
+    }, [isAIThinking, sendMessageToAI]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
