@@ -35,6 +35,8 @@ const LAYERS: { layer: ViewLayer; label: string; icon: string; color: string }[]
     { layer: 'grid', label: 'Grid', icon: '📊', color: '#6666aa' },
 ];
 
+import Link from 'next/link';
+
 export default function Toolbar() {
     const viewMode = useDesignStore((s) => s.viewMode);
     const setViewMode = useDesignStore((s) => s.setViewMode);
@@ -52,6 +54,14 @@ export default function Toolbar() {
 
     return (
         <div className="toolbar">
+            {/* Logo/Home */}
+            <div className="toolbar-logo-group">
+                <Link href="/" className="toolbar-logo" title="Back to Dashboard">
+                    🏠
+                </Link>
+                <div className="toolbar-separator" />
+            </div>
+
             {/* View Mode Selector */}
             <div className="toolbar-group">
                 <span className="toolbar-label">View</span>

@@ -1,0 +1,1179 @@
+{
+  "id": "09842474-6e6a-4909-80dc-c933845e83ac",
+  "name": "Simple 3-Bedroom Home",
+  "description": "",
+  "created_at": "2026-03-01T17:25:59.790Z",
+  "modified_at": "2026-03-01T17:25:59.790Z",
+  "version": 1,
+  "root_node_id": "house_a4b99774",
+  "nodes": {
+    "house_a4b99774": {
+      "id": "house_a4b99774",
+      "type": "House",
+      "name": "Simple 3-Bedroom Home",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_0_810726de",
+        "roof_339c3261"
+      ],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "floor_0_810726de": {
+      "id": "floor_0_810726de",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0,
+        "y": 0.3,
+        "z": 0
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_a4b99774",
+      "children_ids": [
+        "foundation_eb1e6ec7",
+        "slab_784a25fb",
+        "room_living_room_7b5a36ca",
+        "room_kitchen_841b2917",
+        "room_bathroom_53f6c861",
+        "room_bedroom_1_146437fb",
+        "room_bedroom_2_a0da08b0",
+        "partition_de489e3d",
+        "partition_058f7e92",
+        "partition_8dffc7f7",
+        "partition_1e6012e9"
+      ],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "foundation_eb1e6ec7": {
+      "id": "foundation_eb1e6ec7",
+      "type": "Foundation",
+      "name": "Foundation",
+      "position": {
+        "x": 5,
+        "y": -0.15,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 10.25,
+        "y": 0.3,
+        "z": 12.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "slab_784a25fb": {
+      "id": "slab_784a25fb",
+      "type": "Slab",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 5,
+        "y": 0,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.15,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "room_living_room_7b5a36ca": {
+      "id": "room_living_room_7b5a36ca",
+      "type": "Room",
+      "name": "Living Room",
+      "position": {
+        "x": 5,
+        "y": 0,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 2.7,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [
+        "wall_north_wall_5da844a1",
+        "wall_west_wall_79d233b0"
+      ],
+      "room_function": "living",
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "room_kitchen_841b2917": {
+      "id": "room_kitchen_841b2917",
+      "type": "Room",
+      "name": "Kitchen",
+      "position": {
+        "x": 2.5,
+        "y": 0,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.7,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [],
+      "room_function": "kitchen",
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "room_bathroom_53f6c861": {
+      "id": "room_bathroom_53f6c861",
+      "type": "Room",
+      "name": "Bathroom",
+      "position": {
+        "x": 7.5,
+        "y": 0,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.7,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "wet_room"
+      ],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [
+        "wall_east_wall_e5b01183"
+      ],
+      "room_function": "bathroom",
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "room_bedroom_1_146437fb": {
+      "id": "room_bedroom_1_146437fb",
+      "type": "Room",
+      "name": "Bedroom 1",
+      "position": {
+        "x": 2.5,
+        "y": 0,
+        "z": 10.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.7,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [
+        "wall_south_wall_43aba7af"
+      ],
+      "room_function": "bedroom",
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "room_bedroom_2_a0da08b0": {
+      "id": "room_bedroom_2_a0da08b0",
+      "type": "Room",
+      "name": "Bedroom 2",
+      "position": {
+        "x": 7.5,
+        "y": 0,
+        "z": 10.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.7,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [],
+      "room_function": "bedroom",
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "wall_north_wall_5da844a1": {
+      "id": "wall_north_wall_5da844a1",
+      "type": "Wall",
+      "name": "North Wall",
+      "position": {
+        "x": 5,
+        "y": 1.35,
+        "z": 0.125
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing",
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living_room_7b5a36ca",
+      "children_ids": [
+        "window_3574ad8c",
+        "window_50ad66d2",
+        "door_5c361f87"
+      ],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "window_3574ad8c": {
+      "id": "window_3574ad8c",
+      "type": "Window",
+      "name": "Living Window L",
+      "position": {
+        "x": 3,
+        "y": 1.6,
+        "z": 0.125
+      },
+      "dimensions": {
+        "x": 1.8,
+        "y": 1.4,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_wall_5da844a1"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_wall_5da844a1",
+      "children_ids": [],
+      "opening_width": 1.8,
+      "opening_height": 1.4,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "window_50ad66d2": {
+      "id": "window_50ad66d2",
+      "type": "Window",
+      "name": "Living Window R",
+      "position": {
+        "x": 7,
+        "y": 1.6,
+        "z": 0.125
+      },
+      "dimensions": {
+        "x": 1.8,
+        "y": 1.4,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_wall_5da844a1"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_wall_5da844a1",
+      "children_ids": [],
+      "opening_width": 1.8,
+      "opening_height": 1.4,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "door_5c361f87": {
+      "id": "door_5c361f87",
+      "type": "Door",
+      "name": "Front Door",
+      "position": {
+        "x": 5,
+        "y": 1.05,
+        "z": 0.125
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 2.1,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.7,
+        "max_width": 1.8,
+        "min_height": 1.9,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_wall_5da844a1"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_wall_5da844a1",
+      "children_ids": [],
+      "opening_width": 1,
+      "opening_height": 2.1,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "wall_south_wall_43aba7af": {
+      "id": "wall_south_wall_43aba7af",
+      "type": "Wall",
+      "name": "South Wall",
+      "position": {
+        "x": 5,
+        "y": 1.35,
+        "z": 11.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing",
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_bedroom_1_146437fb",
+      "children_ids": [
+        "window_6721008a",
+        "window_69d24857"
+      ],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "window_6721008a": {
+      "id": "window_6721008a",
+      "type": "Window",
+      "name": "Bed 1 Window",
+      "position": {
+        "x": 2.5,
+        "y": 1.6,
+        "z": 11.875
+      },
+      "dimensions": {
+        "x": 1.4,
+        "y": 1.4,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_south_wall_43aba7af"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_south_wall_43aba7af",
+      "children_ids": [],
+      "opening_width": 1.4,
+      "opening_height": 1.4,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "window_69d24857": {
+      "id": "window_69d24857",
+      "type": "Window",
+      "name": "Bed 2 Window",
+      "position": {
+        "x": 7.5,
+        "y": 1.6,
+        "z": 11.875
+      },
+      "dimensions": {
+        "x": 1.4,
+        "y": 1.4,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_south_wall_43aba7af"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_south_wall_43aba7af",
+      "children_ids": [],
+      "opening_width": 1.4,
+      "opening_height": 1.4,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "wall_west_wall_79d233b0": {
+      "id": "wall_west_wall_79d233b0",
+      "type": "Wall",
+      "name": "West Wall",
+      "position": {
+        "x": 0.125,
+        "y": 1.35,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 11.5,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing",
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living_room_7b5a36ca",
+      "children_ids": [],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "wall_east_wall_e5b01183": {
+      "id": "wall_east_wall_e5b01183",
+      "type": "Wall",
+      "name": "East Wall",
+      "position": {
+        "x": 9.875,
+        "y": 1.35,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 11.5,
+        "y": 2.7,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing",
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_bathroom_53f6c861",
+      "children_ids": [
+        "window_2d3a4997"
+      ],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "window_2d3a4997": {
+      "id": "window_2d3a4997",
+      "type": "Window",
+      "name": "Bathroom Window",
+      "position": {
+        "x": 9.875,
+        "y": 1.6,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 0.8,
+        "y": 0.6,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_east_wall_e5b01183"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_east_wall_e5b01183",
+      "children_ids": [],
+      "opening_width": 0.8,
+      "opening_height": 0.6,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "partition_de489e3d": {
+      "id": "partition_de489e3d",
+      "type": "Partition",
+      "name": "Living-Kitchen Divider",
+      "position": {
+        "x": 5,
+        "y": 1.35,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 2.7,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_plasterboard",
+      "opacity": 1,
+      "tags": [
+        "interior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.05,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [
+        "door_ecc79622"
+      ],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "door_ecc79622": {
+      "id": "door_ecc79622",
+      "type": "Door",
+      "name": "Kitchen Door",
+      "position": {
+        "x": 2.5,
+        "y": 1.05,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 0.9,
+        "y": 2.1,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.7,
+        "max_width": 1.8,
+        "min_height": 1.9,
+        "max_height": 2.4,
+        "connected_to": [
+          "partition_de489e3d"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "partition_de489e3d",
+      "children_ids": [],
+      "opening_width": 0.9,
+      "opening_height": 2.1,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "partition_058f7e92": {
+      "id": "partition_058f7e92",
+      "type": "Partition",
+      "name": "Mid Floor Divider",
+      "position": {
+        "x": 5,
+        "y": 1.35,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 2.7,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_plasterboard",
+      "opacity": 1,
+      "tags": [
+        "interior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.05,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [
+        "door_74963ca8",
+        "door_4fe1a258"
+      ],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "door_74963ca8": {
+      "id": "door_74963ca8",
+      "type": "Door",
+      "name": "Bed 1 Door",
+      "position": {
+        "x": 2.5,
+        "y": 1.05,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 0.9,
+        "y": 2.1,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.7,
+        "max_width": 1.8,
+        "min_height": 1.9,
+        "max_height": 2.4,
+        "connected_to": [
+          "partition_058f7e92"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "partition_058f7e92",
+      "children_ids": [],
+      "opening_width": 0.9,
+      "opening_height": 2.1,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "door_4fe1a258": {
+      "id": "door_4fe1a258",
+      "type": "Door",
+      "name": "Bed 2 Door",
+      "position": {
+        "x": 7.5,
+        "y": 1.05,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 0.9,
+        "y": 2.1,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.7,
+        "max_width": 1.8,
+        "min_height": 1.9,
+        "max_height": 2.4,
+        "connected_to": [
+          "partition_058f7e92"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "partition_058f7e92",
+      "children_ids": [],
+      "opening_width": 0.9,
+      "opening_height": 2.1,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "partition_8dffc7f7": {
+      "id": "partition_8dffc7f7",
+      "type": "Partition",
+      "name": "Kitchen-Bath Partition",
+      "position": {
+        "x": 5,
+        "y": 1.35,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 2.85,
+        "y": 2.7,
+        "z": 0.12
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_plasterboard",
+      "opacity": 1,
+      "tags": [
+        "interior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.05,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "partition_1e6012e9": {
+      "id": "partition_1e6012e9",
+      "type": "Partition",
+      "name": "Bedroom Partition",
+      "position": {
+        "x": 5,
+        "y": 1.35,
+        "z": 10.5
+      },
+      "dimensions": {
+        "x": 2.85,
+        "y": 2.7,
+        "z": 0.12
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_plasterboard",
+      "opacity": 1,
+      "tags": [
+        "interior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.05,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_810726de",
+      "children_ids": [],
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    },
+    "roof_339c3261": {
+      "id": "roof_339c3261",
+      "type": "Roof",
+      "name": "Main Roof",
+      "position": {
+        "x": 5,
+        "y": 2.7,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 11,
+        "y": 0.3,
+        "z": 13
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_tile_clay",
+      "opacity": 1,
+      "tags": [
+        "exterior"
+      ],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_a4b99774",
+      "children_ids": [],
+      "roof_style": "gable",
+      "roof_pitch_degrees": 35,
+      "roof_overhang": 0.5,
+      "created_at": "2026-03-01T17:25:59.790Z",
+      "modified_at": "2026-03-01T17:25:59.790Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 91602.39,
+    "remaining": 108397.61,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

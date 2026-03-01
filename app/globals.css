@@ -212,7 +212,31 @@ button:disabled {
 .toolbar-group {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 12px;
+}
+
+.toolbar-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-logo {
+  font-size: 1.5rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.toolbar-logo:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
 }
 
 .toolbar-label {
