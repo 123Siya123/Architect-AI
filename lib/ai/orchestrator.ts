@@ -209,13 +209,14 @@ ${budgetContext}
         }
     }
 
+    /*
     // =========================================================================
     // FINAL RIGID AUDIT (Advanced Correction Phase)
     // =========================================================================
+    // This section is currently disabled. The main ReAct loop handles all design logic.
     progressLog.push(`\n───── 🛡️ FINAL GEOMETRIC AUDIT ─────`);
     try {
         const auditConfig = getProviderConfig();
-        // Use the absolute best reasoning for the audit
         const auditResult = await callProviderNoTools(auditConfig, [
             { role: 'system', content: GEOMETRIC_AUDIT_PROMPT },
             { role: 'user', content: `FULL ARCHITECTURAL STATE:\n${prepareProjectContext(currentProject)}` }
@@ -224,48 +225,34 @@ ${budgetContext}
         const auditData = extractJSON<{ status: string, mistakes: any[] }>(auditResult.text);
         if (auditData?.status === 'MISTAKE_FOUND' && auditData.mistakes?.length > 0) {
             progressLog.push(`   ⚠️ Audit IDENTIFIED ${auditData.mistakes.length} imperfection(s). Deploying FIXER AGENT...`);
-
-            // Allow the Fixer up to 3 dedicated correction turns
             for (let fixTurn = 1; fixTurn <= 3; fixTurn++) {
                 progressLog.push(`   🔧 Fixer Turn ${fixTurn}/3...`);
                 const fixerConfig = getProviderConfig();
-                const currentMistakes = fixTurn === 1 ? auditData.mistakes : "Review the latest state and finalize remaining micro-adjustments.";
-
+                const currentMistakes = fixTurn === 1 ? auditData.mistakes : "Review state and finalize.";
                 const fixMsgs = [
-                    { role: 'system', content: 'You are the ELITE FIXER AGENT. Use the new Gemini 3.1 HIGH THINKING mode to perfectly align all elements. Zero gaps allowed. Use solve_precision and set_precision_level tools.' },
-                    { role: 'user', content: `STATE:\n${prepareProjectContext(currentProject)}\n\nREPORTED MISTAKES:\n${JSON.stringify(currentMistakes)}` }
+                    { role: 'system', content: 'You are the ELITE FIXER AGENT. Use Gemini 3.1 HIGH THINKING.' },
+                    { role: 'user', content: `STATE:\n${prepareProjectContext(currentProject)}\n\nMISTAKES:\n${JSON.stringify(currentMistakes)}` }
                 ];
-
                 const fixResult = await callProviderWithTools(fixerConfig, fixMsgs);
                 if (fixResult.toolCalls && fixResult.toolCalls.length > 0) {
                     let turnSuccesses = 0;
                     for (const tc of fixResult.toolCalls) {
                         try {
                             const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
-                            const validation = validateOperation(op, currentProject);
-                            if (validation.valid) {
+                            if (validateOperation(op, currentProject).valid) {
                                 allValidatedOps.push(op);
                                 const applied = applyOperation(currentProject, op);
-                                if (applied.project) {
-                                    currentProject = applied.project;
-                                    turnSuccesses++;
-                                }
+                                if (applied.project) { currentProject = applied.project; turnSuccesses++; }
                             }
-                        } catch { /* skip individual tool fail */ }
+                        } catch { }
                     }
-                    progressLog.push(`   ✅ Fixer applied ${turnSuccesses} corrective operation(s).`);
-                    if (turnSuccesses === 0) break; // If no more ops could be applied, stop
-                } else {
-                    progressLog.push(`   ✨ Fixer confirms state is now optimized.`);
-                    break;
-                }
+                    if (turnSuccesses === 0) break;
+                } else { break; }
             }
-        } else {
-            progressLog.push(`   ✨ Audit passed: 0.5mm alignment confirmed by Gemini 3.1.`);
         }
-    } catch (e) {
-        progressLog.push(`   ⚠️ Audit skipped or failed: ${e instanceof Error ? e.message : 'Unknown error'}`);
-    }
+    } catch (e) { }
+    */
+
 
     progressLog.push(`\n═══ ANTIGRAVITY PIPELINE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
 
