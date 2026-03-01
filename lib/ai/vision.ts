@@ -44,7 +44,8 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
 
         // Ensure we are using a model capable of vision.
         // Assuming Gemini 1.5 Pro for vision tasks if specifically needed, but we rely on the provider config.
-        const genAI = new GoogleGenerativeAI(config.apiKey);
+        const apiKey = process.env.GEMINI_API_KEY || config.apiKey;
+        const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
             model: 'gemini-1.5-pro', // Hardcoding pro for optimal vision capabilities, falling back to flash if needed
         });
