@@ -343,9 +343,22 @@ ${budgetContext}
     try {
         const agentConfig = getProviderConfig();
         const systemMsg = { role: 'system', content: SINGLE_AGENT_SYSTEM_PROMPT };
+
+        // Summarize recent history to give context
+        let historySummary = "No previous history.";
+        if (request.history && request.history.length > 0) {
+            historySummary = request.history
+                .slice(-6)
+                .map(msg => `[${msg.role.toUpperCase()}]: ${msg.content.substring(0, 300)}${msg.content.length > 300 ? '...' : ''}`)
+                .join('\\n');
+        }
+
         const userMsg = {
             role: 'user',
             content: `
+## RECENT CHAT HISTORY
+${historySummary}
+
 USER REQUEST:
 ${request.message}
 
