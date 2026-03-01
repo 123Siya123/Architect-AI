@@ -17,6 +17,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import * as THREE from 'three';
 import { useDesignStore } from '@/store/useDesignStore';
 import type { ChatMessage } from '@/types';
 import { prepareProjectContext, generateASCIIFloorPlan } from '@/lib/ai/context';
@@ -245,11 +246,12 @@ export default function ChatPanel() {
                 pipeline_log: data.progress_log || [],
             };
             addChatMessage(aiMsg);
-        } catch (err: any) {
+        } catch (err) {
+            const error = err as Error;
             const errMsg: ChatMessage = {
                 id: `msg_${Date.now()}_err`,
                 role: 'assistant',
-                content: `Sorry, I encountered an error: ${err.message || 'The AI backend may not be connected yet.'}`,
+                content: `Sorry, I encountered an error: ${error.message || 'The AI backend may not be connected yet.'}`,
                 timestamp: new Date().toISOString(),
             };
             addChatMessage(errMsg);

@@ -106,6 +106,7 @@ export const COORDINATOR_SYSTEM_PROMPT = `You are the COORDINATOR of an AI archi
 - Ground floor: base Y=0, wall centers at Y=1.35
 - First floor: base Y=2.7, wall centers at Y=4.05
 - Second floor: base Y=5.4, wall centers at Y=6.75
+- STAIRCASE ALIGNMENT: Stairs spanning a 2.7m floor height MUST be centered at Y_base + 1.35. For ground floor, position_y=1.35.
 
 ## WORKER CAPABILITIES
 Workers have these tools:
@@ -209,6 +210,7 @@ Execute the task using the available tools. Be EXTREMELY precise.
 - Slab: height=0.2
 - Window: width=1.2, height=1.4
 - Door: width=0.9, height=2.1
+- STAIRCASE Y-CENTER: For a 2.7m span, position_y = floor_base_y + 1.35.
 
 ## NODE HIERARCHY
 - Wall, Window, Door → parent is a Room

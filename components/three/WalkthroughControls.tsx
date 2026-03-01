@@ -21,6 +21,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { PointerLockControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { PointerLockControls as PointerLockControlsImpl } from 'three-stdlib';
 import { useDesignStore } from '@/store/useDesignStore';
 
 /**
@@ -53,7 +54,7 @@ export default function WalkthroughControls() {
     });
 
     const [isLocked, setIsLocked] = useState(false);
-    const controlsRef = useRef<any>(null); // Still using any because Drei's PointerLockControls type is complex to import directly here without potentially breaking, but removing the lint warning comment as I will fix the type if possible or just suppress it more specifically.
+    const controlsRef = useRef<PointerLockControlsImpl | null>(null);
 
     // Manual lock handler with safety check
     const handleLock = () => {

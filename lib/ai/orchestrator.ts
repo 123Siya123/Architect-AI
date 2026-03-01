@@ -298,8 +298,8 @@ export async function sendChatToAI(
     const budgetContext = prepareBudgetContext(request.project);
 
     // Initial state context
-    let currentBuildingSpecs = prepareProjectContext(request.project);
-    let currentAsciiPlan = generateASCIIFloorPlan(request.project);
+    const currentBuildingSpecs = prepareProjectContext(request.project);
+    const currentAsciiPlan = generateASCIIFloorPlan(request.project);
 
     console.log('[Orchestrator] ═══ MULTI-AGENT PIPELINE STARTING ═══');
     console.log(`[Orchestrator] User request: "${request.message}"`);
@@ -964,15 +964,16 @@ async function callGemini(
     const systemMsg = messages.find((m) => m.role === 'system');
 
     // Helper to recursively uppercase property types for Gemini
-    const formatForGemini = (obj: any): any => {
+    const formatForGemini = (obj: Record<string, unknown> | unknown[] | unknown): unknown => {
         if (Array.isArray(obj)) return obj.map(formatForGemini);
         if (obj !== null && typeof obj === 'object') {
-            const result: any = {};
-            for (const key in obj) {
-                if (key === 'type' && typeof obj[key] === 'string') {
-                    result[key] = obj[key].toUpperCase();
+            const result: Record<string, unknown> = {};
+            const record = obj as Record<string, unknown>;
+            for (const key in record) {
+                if (key === 'type' && typeof record[key] === 'string') {
+                    result[key] = (record[key] as string).toUpperCase();
                 } else {
-                    result[key] = formatForGemini(obj[key]);
+                    result[key] = formatForGemini(record[key]);
                 }
             }
             return result;
