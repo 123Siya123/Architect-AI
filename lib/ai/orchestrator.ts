@@ -446,10 +446,20 @@ async function callProviderNoTools(
 
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
-            if (isUnavailable && config.model.includes('gemini-3.1')) {
-                console.warn('[Orchestrator] Gemini 3.1 unavailable. Switching to STABLE FALLBACK: gemini-1.5-pro');
-                config = { ...config, model: 'gemini-1.5-pro' };
-                continue; // Retry immediately with fallback
+            if (isUnavailable && config.provider === 'gemini') {
+                if (config.model === 'gemini-3.1-pro-preview') {
+                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
+                    config = { ...config, model: 'gemini-3-pro-preview' };
+                    continue;
+                } else if (config.model === 'gemini-3-pro-preview') {
+                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Falling back to Gemini 3 Flash...');
+                    config = { ...config, model: 'gemini-3-flash-preview' };
+                    continue;
+                } else if (config.model === 'gemini-3-flash-preview') {
+                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
+                    config = { ...config, model: 'gemini-1.5-pro' };
+                    continue;
+                }
             }
 
             if (errMsg.includes('429')) {
@@ -494,10 +504,20 @@ async function callProviderWithTools(
 
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
-            if (isUnavailable && config.model.includes('gemini-3.1')) {
-                console.warn('[Orchestrator] Gemini 3.1 unavailable. Switching to STABLE FALLBACK: gemini-1.5-pro');
-                config = { ...config, model: 'gemini-1.5-pro' };
-                continue; // Retry immediately with fallback
+            if (isUnavailable && config.provider === 'gemini') {
+                if (config.model === 'gemini-3.1-pro-preview') {
+                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
+                    config = { ...config, model: 'gemini-3-pro-preview' };
+                    continue;
+                } else if (config.model === 'gemini-3-pro-preview') {
+                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Falling back to Gemini 3 Flash...');
+                    config = { ...config, model: 'gemini-3-flash-preview' };
+                    continue;
+                } else if (config.model === 'gemini-3-flash-preview') {
+                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
+                    config = { ...config, model: 'gemini-1.5-pro' };
+                    continue;
+                }
             }
 
             if (errMsg.includes('429')) {
