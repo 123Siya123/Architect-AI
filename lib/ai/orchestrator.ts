@@ -736,6 +736,22 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
                 timestamp,
             };
 
+        case 'solve_precision':
+            return {
+                type: 'solve_precision' as OperationType,
+                target_id: 'project',
+                params: { ...args },
+                timestamp,
+            };
+
+        case 'set_precision_level':
+            return {
+                type: 'set_precision_level' as OperationType,
+                target_id: 'project',
+                params: { ...args },
+                timestamp,
+            };
+
         default:
             throw new Error(`Unknown tool name: ${name}`);
     }
