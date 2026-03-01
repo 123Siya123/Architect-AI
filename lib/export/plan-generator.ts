@@ -1001,7 +1001,7 @@ export function generateElevationSVG(
 
   archNodes.forEach(node => {
     let sizeX = node.dimensions.x;
-    let sizeY = node.dimensions.y;
+    const sizeY = node.dimensions.y;
     let sizeZ = node.dimensions.z;
     const yaw = Math.round(node.rotation.yaw) % 180;
     if (yaw === 90 || yaw === -90) {
@@ -1099,7 +1099,7 @@ export function generateElevationSVG(
     const h = Math.max(0.1, toMm(p.maxV - p.minV));
 
     let fill = '#fff';
-    let stroke = '#000';
+    const stroke = '#000';
     let strokeW: number = LW.WALL_CUT;
 
     if (p.node.type === 'Roof') { fill = '#bbbbbb'; strokeW = LW.WALL_CUT; }
@@ -1202,7 +1202,7 @@ export function generateProjectExportHTML(
   });
 
   // Floor levels are typically every ~3m
-  let totalFloors = Math.max(1, Math.floor(maxWallY / 2.5) + 1);
+  const totalFloors = Math.max(1, Math.floor(maxWallY / 2.5) + 1);
 
   for (let index = 0; index < totalFloors; index++) {
     const title = index === 0 ? 'Ground Floor Plan' : `Level ${index} Plan`;

@@ -55,6 +55,14 @@ import type { PSGNode, PSGProject, Material } from '@/types';
  */
 export function compileWallGeometry(node: PSGNode): THREE.BufferGeometry {
     const { x: width, y: height, z: thickness } = node.dimensions;
+
+    // Perfectly round walls bridge the gap for organic or circular elements
+    if (node.wall_style === 'round' || node.wall_style === 'curved') {
+        const radius = Math.max(width, thickness) / 2;
+        // high segment count (64) ensures perfect curve visually
+        return new THREE.CylinderGeometry(radius, radius, height, 64);
+    }
+
     const geometry = new THREE.BoxGeometry(width, height, thickness);
     return geometry;
 }
@@ -123,6 +131,18 @@ export function compileDoorGeometry(node: PSGNode): THREE.BufferGeometry {
 export function compileRoofGeometry(node: PSGNode): THREE.BufferGeometry {
     const { x: width, y: thickness, z: depth } = node.dimensions;
     const pitch = node.roof_pitch_degrees || 0;
+
+    // Perfect custom standard roof styles
+    if (node.roof_style === 'dome') {
+        const radius = Math.max(width, depth) / 2;
+        // Half sphere perfectly rendered
+        return new THREE.SphereGeometry(radius, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+    }
+    if (node.roof_style === 'conical') {
+        const radius = Math.max(width, depth) / 2;
+        const height = (pitch > 0) ? radius * Math.tan((pitch * Math.PI) / 180) : thickness;
+        return new THREE.ConeGeometry(radius, height, 64);
+    }
 
     if (node.roof_style === 'flat' || pitch === 0) {
         return new THREE.BoxGeometry(width, thickness, depth);
@@ -411,8 +431,64 @@ export function compileBalconyGeometry(node: PSGNode): THREE.Group {
     return group;
 }
 
-/** Custom geometry — renders a box for now, will use cad_script in Phase 3 */
+/** Custom geometry — parses parametric instructions from AI for perfect custom objects */
 export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry {
+    if (node.custom_geometry) {
+        const cg = node.custom_geometry;
+        const segs = cg.segments || 32;
+        try {
+            switch (cg.type) {
+                case 'sphere':
+                    return new THREE.SphereGeometry(
+                        cg.radius || Math.max(node.dimensions.x, node.dimensions.z) / 2,
+                        segs, Math.ceil(segs / 2)
+                    );
+                case 'cylinder':
+                    return new THREE.CylinderGeometry(
+                        cg.radius || node.dimensions.x / 2,
+                        cg.radius || node.dimensions.x / 2,
+                        cg.height || node.dimensions.y,
+                        segs
+                    );
+                case 'cone':
+                    return new THREE.ConeGeometry(
+                        cg.radius || node.dimensions.x / 2,
+                        cg.height || node.dimensions.y,
+                        segs
+                    );
+                case 'lathe':
+                    if (cg.profile_points && cg.profile_points.length > 0) {
+                        const points = cg.profile_points.map(p => new THREE.Vector2(p[0], p[1]));
+                        return new THREE.LatheGeometry(points, segs);
+                    }
+                    break;
+                case 'extrusion':
+                    if (cg.profile_points && cg.profile_points.length > 0) {
+                        const shape = new THREE.Shape();
+                        shape.moveTo(cg.profile_points[0][0], cg.profile_points[0][1]);
+                        for (let i = 1; i < cg.profile_points.length; i++) {
+                            shape.lineTo(cg.profile_points[i][0], cg.profile_points[i][1]);
+                        }
+                        const extrudeSettings = {
+                            depth: cg.depth || node.dimensions.z,
+                            bevelEnabled: false
+                        };
+                        return new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                    }
+                    break;
+                case 'plane':
+                    return new THREE.PlaneGeometry(node.dimensions.x, node.dimensions.z);
+                case 'box':
+                default:
+                    // Fallthrough to generic box
+                    break;
+            }
+        } catch (e) {
+            console.error("Failed to compile custom parametric geometry", e);
+        }
+    }
+
+    // Fallback if no valid custom instructions exist
     return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
 }
 

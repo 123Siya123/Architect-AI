@@ -10,7 +10,7 @@
  * =============================================================================
  */
 
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType, FunctionCallingMode } from '@google/generative-ai';
 import type { PSGOperation, ImageTo3DRequest, ImageTo3DResponse } from '@/types';
 import { getProviderConfig } from './key-manager';
 import { toolCallToOperation } from './orchestrator';
@@ -100,7 +100,13 @@ Please analyze this image and generate the 3D model nodes.
                         }
                     }
                 ]
-            }]
+            }],
+            toolConfig: {
+                functionCallingConfig: {
+                    mode: FunctionCallingMode.ANY,
+                    allowedFunctionNames: ["add_node"]
+                }
+            }
         });
 
         const result = await chatSession.sendMessage([
@@ -124,6 +130,7 @@ Please analyze this image and generate the 3D model nodes.
             if (call.name === 'add_node') {
                 try {
                     // Map the simplified tool args back to our PSG operation format
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const args = call.args as Record<string, any>;
                     const opParams = {
                         new_id: args.id,
@@ -160,10 +167,16 @@ Please analyze this image and generate the 3D model nodes.
 
     } catch (error) {
         console.error("[Image-to-3D] Vision processing error:", error);
+
+        let errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes("API_KEY_INVALID") || errorMessage.includes("API key not valid")) {
+            errorMessage = "Google Gemini API Key is invalid or missing. To use 'Photo to 3D', you MUST get a free API key from Google AI Studio (aistudio.google.com/app/apikey) and put it in your `.env.local` file as `AI_API_KEY=your_key_here`. The GitHub Models API key you are using does not support the generative vision setup used here.";
+        }
+
         return {
-            message: "Sorry, I encountered an error while processing the image: " + (error instanceof Error ? error.message : String(error)),
+            message: errorMessage,
             operations: [],
-            warnings: [{ severity: 'critical', message: String(error) }]
+            warnings: [{ severity: 'critical', message: errorMessage }]
         };
     }
 }

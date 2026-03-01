@@ -242,7 +242,17 @@ export interface PSGNode {
   /** Room: metadata */
   room_function?: string;       // "bedroom", "kitchen", "bathroom", etc.
 
-  /** Custom geometry: CadQuery script or shape description (Phase 3) */
+  /** Custom geometry: bridge between AI structural generation and 3D Engine */
+  custom_geometry?: {
+    type: 'extrusion' | 'lathe' | 'sphere' | 'box' | 'cylinder' | 'cone' | 'plane';
+    profile_points?: number[][]; // Array of [x, y] coordinates for extrusion (2D shape) or lathe (profile)
+    depth?: number;              // Extrusion depth
+    radius?: number;             // Radius for sphere/lathe/cylinder/cone
+    height?: number;             // Height for cylinder/cone
+    segments?: number;           // Smoothness/segments
+  };
+
+  /** Legacy Custom geometry: CadQuery script or shape description (Phase 3) */
   cad_script?: string;          // Python CadQuery code or natural language
 
   // --- Metadata ---

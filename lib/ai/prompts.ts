@@ -53,7 +53,12 @@ The house data uses a highly compressed format:
 1. **add_node**: Always set \`yaw\` correctly when adding walls. Use this for standard elements like Stairs (use stair_style='spiral' for spiral stairs). DO NOT use create_custom_element for stairs or balconies unless requested as a completely custom shape. You can also specify \`roof_style\` (e.g., dome, pyramid, butterfly), \`wall_style\` (e.g., curved, round), \`stair_style\` (e.g., winder, curved), and \`balcony_style\` (e.g., wrap_around, loggia).
 2. **rotate_node**: Use this for absolute rotation of existing nodes.
 3. **replace_node**: Can also be used to change \`yaw\` along with other properties.
-4. **create_custom_element**: Use ONLY for completely custom shapes. For staircases (even spiral), use **add_node** with type "Stairs" and the appropriate stair_style!
+4. **create_custom_element**: Use this for perfect, mathematically precise custom parametric elements that cannot be constructed with standard nodes! This bridges the gap between text AI and 3D modeling. 
+   - Instead of outputting generic boxes, you MUST use the \`custom_geometry\` parameter to provide exact mathematical definitions.
+   - For a perfect spherical/domed object: use \`type: 'sphere'\` and provide \`radius\` and \`segments: 64\`.
+   - For a sink or bowl: use \`type: 'lathe'\` and provide a 2D profile curve (array of [x, y] coords) that will be rotated 360 degrees around the Y axis. E.g., \`[[0,0], [0.5,0], [0.6,0.3], [0.6,0.5]]\`.
+   - For an extruded complex shape (like an irregular pool, custom shaped countertop): use \`type: 'extrusion'\` and provide the 2D polygon path in \`profile_points\` and an \`extrusion_depth\`.
+   - For perfect columns: use \`cylinder\` and provide \`radius\`, \`height\`. Provide high \`segments\` for perfectly round elements.
 
 ## RULES
 1. You have a full JSON representation of the current building state. Read it carefully to find correct parent IDs and positions.

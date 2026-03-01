@@ -347,6 +347,27 @@ export const AI_TOOLS = [
                         type: 'string',
                         description: 'Primary material ID',
                     },
+                    custom_geometry: {
+                        type: 'object',
+                        description: 'The exact mathematical geometry definition. THIS IS CRITICAL for perfect objects. Instead of a block, you can define perfect spheres, cones, cylinders, or even complex lathed profiles and extruded 2D shapes by providing [x,y] coordinates!',
+                        properties: {
+                            type: {
+                                type: 'string',
+                                enum: ['extrusion', 'lathe', 'sphere', 'box', 'cylinder', 'cone', 'plane'],
+                                description: 'The primitive operation used to construct the shape.'
+                            },
+                            profile_points: {
+                                type: 'array',
+                                items: { type: 'array', items: { type: 'number' } },
+                                description: 'Array of [x, y] coordinates. MANDATORY for "extrusion" (defines 2D shape to extrude) or "lathe" (defines 2D curve to rotate around Y-axis). Example: [[0,0], [1,0], [1,1], [0,1]]'
+                            },
+                            depth: { type: 'number', description: 'Extrusion depth (Z axis length) for "extrusion" type.' },
+                            radius: { type: 'number', description: 'Radius for sphere, cylinder, cone, or lathe.' },
+                            height: { type: 'number', description: 'Height for cylinder or cone.' },
+                            segments: { type: 'number', description: 'Number of segments for smooth curves (default 32, use 64 for perfect curves).' }
+                        },
+                        required: ['type']
+                    },
                 },
                 required: ['parent_id', 'name', 'description'],
             },

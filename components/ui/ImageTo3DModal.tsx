@@ -8,7 +8,8 @@
  * =============================================================================
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useDesignStore } from '@/store/useDesignStore';
 import type { PSGOperation } from '@/types';
 
@@ -28,8 +29,13 @@ export default function ImageTo3DModal({ isOpen, onClose }: Props) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const project = useDesignStore((s) => s.project);
     const applyOp = useDesignStore((s) => s.applyOp);
+    const [mounted, setMounted] = useState(false);
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!isOpen || !mounted) return null;
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -84,6 +90,11 @@ export default function ImageTo3DModal({ isOpen, onClose }: Props) {
 
             const ops: PSGOperation[] = data.operations || [];
 
+            if (ops.length === 0) {
+                // Throwing the message will display it in the modal's error banner
+                throw new Error(data.message || 'The AI could not identify any 3D structure in this image, or an error occurred.');
+            }
+
             // Apply operations sequentially
             let successCount = 0;
             for (const op of ops) {
@@ -103,7 +114,7 @@ export default function ImageTo3DModal({ isOpen, onClose }: Props) {
         }
     };
 
-    return (
+    return createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
                 <div className="modal-header">
@@ -196,6 +207,7 @@ export default function ImageTo3DModal({ isOpen, onClose }: Props) {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

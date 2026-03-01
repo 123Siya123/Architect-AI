@@ -737,6 +737,8 @@ function createCustomElement(project: PSGProject, operation: PSGOperation): PSGP
         systems: { electrical: [], plumbing: [], hvac: [] },
         parent_id: (parent_id as string | null),
         children_ids: [],
+        // Mathematical geometry definition
+        custom_geometry: params.custom_geometry as PSGNode['custom_geometry'],
         // Store the natural language description for future CAD processing
         cad_script: `# Custom element: ${name}\n# Description: ${description}\n# TODO: Replace with CadQuery script when backend is ready`,
         created_at: now,

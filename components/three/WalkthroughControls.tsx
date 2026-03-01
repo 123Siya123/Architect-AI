@@ -53,6 +53,7 @@ export default function WalkthroughControls() {
     });
 
     const [isLocked, setIsLocked] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const controlsRef = useRef<any>(null);
 
     // Manual lock handler with safety check
