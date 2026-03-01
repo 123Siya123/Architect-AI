@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     try {
         const project = await request.json();
         await saveProject(project);
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true, id: project.id });
     } catch (error) {
         console.error('Save error:', error);
         return NextResponse.json({ error: 'Failed to save project' }, { status: 500 });

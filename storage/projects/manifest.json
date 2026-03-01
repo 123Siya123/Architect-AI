@@ -4,5 +4,23 @@
     "name": "Simple 3-Bedroom Home",
     "modified_at": "2026-03-01T17:25:59.790Z",
     "preview_summary": "27 elements"
+  },
+  {
+    "id": "c41265aa-5a21-4669-912d-343f0ec7c58a",
+    "name": "Modern 4-Bedroom Home",
+    "modified_at": "2026-03-01T17:30:27.874Z",
+    "preview_summary": "47 elements"
+  },
+  {
+    "id": "be258e53-fcb1-44f5-84ae-c248688132e7",
+    "name": "Minimalist Studio",
+    "modified_at": "2026-03-01T17:31:43.724Z",
+    "preview_summary": "13 elements"
+  },
+  {
+    "id": "8675fd92-90c7-4f7e-863c-620709a18790",
+    "name": "New Project",
+    "modified_at": "2026-03-01T17:32:17.230Z",
+    "preview_summary": "1 elements"
   }
 ]

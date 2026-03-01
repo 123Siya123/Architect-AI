@@ -60,12 +60,8 @@ export default function DesignStudioPage() {
         const projectId = searchParams.get('id');
         if (projectId) {
             loadFromServer(projectId);
-        } else if (Object.keys(project.nodes).length <= 1) {
-            // Only load default if project is basically empty (only root node)
-            const defaultProject = createSimple3BedTemplate(200000, 'EUR');
-            loadProject(defaultProject);
         }
-    }, [searchParams, loadFromServer, loadProject]);
+    }, [searchParams, loadFromServer]);
 
     // Keyboard shortcuts
     useEffect(() => {

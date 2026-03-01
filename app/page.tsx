@@ -34,13 +34,20 @@ export default function HomePage() {
     if (template) {
       const project = template.create(250000, 'EUR');
       loadProject(project);
-      // Save initial state persistently
-      await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(project)
-      });
-      router.push('/design');
+
+      try {
+        const res = await fetch('/api/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(project)
+        });
+        const data = await res.json();
+        const idToLoad = data.id || project.id;
+        router.push(`/design?id=${idToLoad}`);
+      } catch (err) {
+        console.error('Failed to create project:', err);
+        router.push('/design');
+      }
     }
   };
 
