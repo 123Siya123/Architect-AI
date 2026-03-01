@@ -51,19 +51,24 @@ let cursor = 0;
 function initKeyPool(): KeyEntry[] {
     const multiKeys = process.env.AI_API_KEYS || '';
     const singleKey = process.env.AI_API_KEY || '';
+    const geminiKey = process.env.GEMINI_API_KEY || '';
 
     // Combine both sources, split by comma, filter empty strings
     // AND aggressively clean each key of quotes, whitespace, or hidden symbols
-    const allKeys = [
-        ...multiKeys.split(',').map(k => k.trim().replace(/^["']|["']$/g, '').trim()).filter(Boolean),
-    ];
+    const allKeysFiltered = multiKeys.split(',').map(k => k.trim().replace(/^["']|["']$/g, '').trim()).filter(Boolean);
+
+    const allKeys = [...allKeysFiltered];
 
     if (singleKey && !allKeys.includes(singleKey)) {
         allKeys.push(singleKey.trim().replace(/^["']|["']$/g, '').trim());
     }
 
+    if (geminiKey && !allKeys.includes(geminiKey)) {
+        allKeys.push(geminiKey.trim().replace(/^["']|["']$/g, '').trim());
+    }
+
     if (allKeys.length === 0) {
-        console.warn('[KeyManager] No API keys found. Set AI_API_KEYS or AI_API_KEY in .env.local');
+        console.warn('[KeyManager] No API keys found. Set AI_API_KEYS, AI_API_KEY or GEMINI_API_KEY in .env.local');
     }
 
     console.log(`[KeyManager] Initialized with ${allKeys.length} key(s)`);
@@ -195,7 +200,7 @@ export interface AIProviderConfig {
  * - AI_MODEL: model name (default depends on provider)
  */
 export function getProviderConfig(): AIProviderConfig {
-    const provider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'groq') as AIProviderConfig['provider'];
+    const provider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'gemini') as AIProviderConfig['provider'];
     const defaultModels: Record<string, string> = {
         gemini: 'gemini-2.0-flash',
         groq: 'llama-3.3-70b-versatile',

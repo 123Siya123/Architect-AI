@@ -63,7 +63,7 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
     try {
         const config = getProviderConfig();
 
-        // Format the image data as a proper Base64 Data URI for gpt-4o
+        // Format the image data
         let base64Data = request.image_data;
         let mimeType = 'image/jpeg';
 
@@ -75,91 +75,167 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
             }
         }
 
-        const dataUri = `data:${mimeType};base64,${base64Data}`;
+        const prompt = `USER REFERENCE MEASUREMENT: "${request.reference_measurement}"\n\nPlease analyze this image and generate the 3D model nodes.`;
 
-        const prompt = `
-USER REFERENCE MEASUREMENT: "${request.reference_measurement}"
-
-Please analyze this image and generate the 3D model nodes.
-`;
-
-        const body = {
-            model: 'gpt-4o',
-            messages: [
-                { role: 'system', content: VISION_SYSTEM_PROMPT },
-                {
-                    role: 'user',
-                    content: [
-                        { type: 'text', text: prompt },
-                        { type: 'image_url', image_url: { url: dataUri } }
-                    ]
-                }
-            ],
-            tools: [{
-                type: 'function',
-                function: {
-                    name: "add_node",
-                    description: "Add a new architectural node to the scene",
-                    parameters: {
-                        type: "object",
-                        properties: {
-                            parent_id: { type: "string", description: "The ID of the parent node (e.g., 'house_root', or a floor/room ID you create)" },
-                            type: { type: "string", description: "The type of node (Floor, Room, Wall, Roof, Window, Door)" },
-                            id: { type: "string", description: "A unique identifier you choose for this new node" },
-                            name: { type: "string", description: "Human readable name" },
-                            position_x: { type: "number", description: "Center X position in meters" },
-                            position_y: { type: "number", description: "Center Y position in meters" },
-                            position_z: { type: "number", description: "Center Z position in meters" },
-                            dimension_w: { type: "number", description: "Width in meters" },
-                            dimension_h: { type: "number", description: "Height in meters" },
-                            dimension_d: { type: "number", description: "Depth/Thickness in meters" },
-                            yaw: { type: "number", description: "Rotation around Y axis in degrees (0 or 90 for walls)" },
-                            material_id: { type: "string", description: "Material ID to map to (e.g. 'mat_brick_red', 'mat_wood_siding')" },
-                            roof_style: { type: "string", description: "If type is Roof, specify style (gable, hip, flat, etc.)" }
-                        },
-                        required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "dimension_w", "dimension_h", "dimension_d"]
-                    }
-                }
-            }],
-            tool_choice: 'required',
-            temperature: 0.2,
-            max_tokens: 4000
-        };
-
-        console.log(`[Image-to-3D] Sending payload to GitHub Models (gpt-4o). Image size approx: ${Math.round(base64Data.length / 1024)} KB`);
+        let data;
+        let msg;
 
         const controller = new AbortController();
         timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
 
-        const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${config.apiKey}`,
-            },
-            body: JSON.stringify(body),
-            signal: controller.signal
-        });
+        if (config.provider === 'gemini') {
+            console.log(`[Image-to-3D] Sending payload to Gemini (${config.model}).`);
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
+
+            const geminiTools = [
+                {
+                    function_declarations: [{
+                        name: "add_node",
+                        description: "Add a new architectural node to the scene",
+                        parameters: {
+                            type: "object",
+                            properties: {
+                                parent_id: { type: "string", description: "The ID of the parent node" },
+                                type: { type: "string", description: "The type of node" },
+                                id: { type: "string", description: "A unique identifier" },
+                                name: { type: "string", description: "Human readable name" },
+                                position_x: { type: "number" },
+                                position_y: { type: "number" },
+                                position_z: { type: "number" },
+                                dimension_w: { type: "number" },
+                                dimension_h: { type: "number" },
+                                dimension_d: { type: "number" },
+                                yaw: { type: "number" },
+                                material_id: { type: "string" },
+                                roof_style: { type: "string" }
+                            },
+                            required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "dimension_w", "dimension_h", "dimension_d"]
+                        }
+                    }]
+                }
+            ];
+
+            const body = {
+                contents: [{
+                    role: 'user',
+                    parts: [
+                        { text: prompt },
+                        { inline_data: { mime_type: mimeType, data: base64Data } }
+                    ]
+                }],
+                tools: geminiTools,
+                tool_config: { function_calling_config: { mode: 'ANY', allowed_function_names: ["add_node"] } },
+                system_instruction: { parts: [{ text: VISION_SYSTEM_PROMPT }] },
+                generation_config: { temperature: 0.2, max_output_tokens: 4000 }
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+                signal: controller.signal
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Gemini Vision API error ${response.status}: ${errorText}`);
+            }
+
+            data = await response.json();
+            const candidate = data.candidates?.[0];
+            if (!candidate) throw new Error('Gemini returned no candidates');
+
+            const contentParts = candidate.content?.parts || [];
+            const toolCallParts = contentParts.filter((p: any) => p.functionCall);
+
+            msg = {
+                content: contentParts.find((p: any) => p.text)?.text || "",
+                tool_calls: toolCallParts.map((p: any) => ({
+                    function: {
+                        name: p.functionCall.name,
+                        arguments: JSON.stringify(p.functionCall.args)
+                    }
+                }))
+            };
+        } else {
+            // Existing logic for non-gemini providers (like github)
+            console.log(`[Image-to-3D] Sending payload to ${config.provider} (${config.model}).`);
+
+            const dataUri = `data:${mimeType};base64,${base64Data}`;
+            const body = {
+                model: config.model,
+                messages: [
+                    { role: 'system', content: VISION_SYSTEM_PROMPT },
+                    {
+                        role: 'user',
+                        content: [
+                            { type: 'text', text: prompt },
+                            { type: 'image_url', image_url: { url: dataUri } }
+                        ]
+                    }
+                ],
+                tools: [{
+                    type: 'function',
+                    function: {
+                        name: "add_node",
+                        description: "Add a new architectural node to the scene",
+                        parameters: {
+                            type: "object",
+                            properties: {
+                                parent_id: { type: "string" },
+                                type: { type: "string" },
+                                id: { type: "string" },
+                                name: { type: "string" },
+                                position_x: { type: "number" },
+                                position_y: { type: "number" },
+                                position_z: { type: "number" },
+                                dimension_w: { type: "number" },
+                                dimension_h: { type: "number" },
+                                dimension_d: { type: "number" },
+                                yaw: { type: "number" },
+                                material_id: { type: "string" },
+                                roof_style: { type: "string" }
+                            },
+                            required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "dimension_w", "dimension_h", "dimension_d"]
+                        }
+                    }
+                }],
+                tool_choice: 'required',
+                temperature: 0.2,
+                max_tokens: 4000
+            };
+
+            const endpoint = config.provider === 'openai'
+                ? 'https://api.openai.com/v1/chat/completions'
+                : 'https://models.inference.ai.azure.com/chat/completions';
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${config.apiKey}`,
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Vision API error ${response.status}: ${errorText}`);
+            }
+
+            data = await response.json();
+            msg = data.choices?.[0]?.message;
+        }
 
         if (timeoutId) clearTimeout(timeoutId);
 
-        console.log(`[Image-to-3D] Received response (Status ${response.status}) in ${Date.now() - startTime}ms`);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Vision API error ${response.status}: ${errorText}`);
-        }
-
-        const data = await response.json();
-        const msg = data.choices?.[0]?.message;
+        console.log(`[Image-to-3D] Received response in ${Date.now() - startTime}ms`);
 
         if (!msg) {
             console.error('[Image-to-3D] Malformed API Data:', data);
             throw new Error('API returned no message');
         }
-
-        const finishReason = data.choices?.[0]?.finish_reason;
-        console.log(`[Image-to-3D] Generated ${msg.tool_calls?.length || 0} tool calls. Finish reason: ${finishReason}`);
 
         const toolCalls = msg.tool_calls || [];
         const operations: PSGOperation[] = [];
