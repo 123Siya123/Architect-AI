@@ -165,7 +165,7 @@ export default function HomePage() {
 
                 .dashboard-grid {
                     max-width: 1400px;
-                    margin: -60px auto 80px;
+                    margin: -80px auto 40px;
                     display: grid;
                     grid-template-columns: 1fr 400px;
                     gap: 32px;
@@ -199,6 +199,24 @@ export default function HomePage() {
                     display: grid;
                     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                     gap: 16px;
+                    max-height: 50vh;
+                    overflow-y: auto;
+                    padding-right: 8px;
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(108, 99, 255, 0.3) transparent;
+                }
+
+                .template-cards-mini::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                .template-cards-mini::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                .template-cards-mini::-webkit-scrollbar-thumb {
+                    background-color: rgba(108, 99, 255, 0.3);
+                    border-radius: 20px;
                 }
 
                 .template-card-mini {
@@ -253,6 +271,24 @@ export default function HomePage() {
                     display: flex;
                     flex-direction: column;
                     gap: 12px;
+                    max-height: 50vh;
+                    overflow-y: auto;
+                    padding-right: 8px;
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(0, 212, 170, 0.3) transparent;
+                }
+
+                .recent-projects-list::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                .recent-projects-list::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                .recent-projects-list::-webkit-scrollbar-thumb {
+                    background-color: rgba(0, 212, 170, 0.3);
+                    border-radius: 20px;
                 }
 
                 .recent-project-card {
