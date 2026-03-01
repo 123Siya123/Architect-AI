@@ -353,17 +353,18 @@ export const AI_TOOLS = [
                         properties: {
                             type: {
                                 type: 'string',
-                                enum: ['extrusion', 'lathe', 'sphere', 'box', 'cylinder', 'cone', 'plane'],
-                                description: 'The primitive operation used to construct the shape.'
+                                enum: ['extrusion', 'lathe', 'sphere', 'box', 'cylinder', 'cone', 'plane', 'arch'],
+                                description: 'The primitive operation used to construct the shape. Use "arch" for any arches or arched openings.'
                             },
                             profile_points: {
                                 type: 'array',
                                 items: { type: 'array', items: { type: 'number' } },
                                 description: 'Array of [x, y] coordinates. MANDATORY for "extrusion" (defines 2D shape to extrude) or "lathe" (defines 2D curve to rotate around Y-axis). Example: [[0,0], [1,0], [1,1], [0,1]]'
                             },
-                            depth: { type: 'number', description: 'Extrusion depth (Z axis length) for "extrusion" type.' },
+                            depth: { type: 'number', description: 'Extrusion length (Z axis) for "extrusion" or "arch" type.' },
                             radius: { type: 'number', description: 'Radius for sphere, cylinder, cone, or lathe.' },
-                            height: { type: 'number', description: 'Height for cylinder or cone.' },
+                            height: { type: 'number', description: 'Height for cylinder, cone or arch.' },
+                            thickness: { type: 'number', description: 'Wall/frame thickness for "arch" type.' },
                             segments: { type: 'number', description: 'Number of segments for smooth curves (default 32, use 64 for perfect curves).' }
                         },
                         required: ['type']

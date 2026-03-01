@@ -462,6 +462,41 @@ export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry {
                         return new THREE.LatheGeometry(points, segs);
                     }
                     break;
+                case 'arch': {
+                    const width = node.dimensions.x;
+                    const height = cg.height || node.dimensions.y;
+                    const thickness = cg.thickness || 0.2; // Width of the solid part of arch
+
+                    const archShape = new THREE.Shape();
+                    archShape.moveTo(-width / 2, 0);
+
+                    // Left leg outer
+                    archShape.lineTo(-width / 2, height - width / 2);
+                    // Outer arc
+                    archShape.absarc(0, height - width / 2, width / 2, Math.PI, 0, true);
+                    // Right leg outer
+                    archShape.lineTo(width / 2, 0);
+                    // Inner leg right
+                    archShape.lineTo(width / 2 - thickness, 0);
+                    // Inner leg right going up
+                    archShape.lineTo(width / 2 - thickness, height - width / 2);
+                    // Inner arc (notice we use counter-clockwise false, wait true is counter clockwise in threejs, false is clockwise for shapes)
+                    archShape.absarc(0, height - width / 2, width / 2 - thickness, 0, Math.PI, false);
+                    // Inner leg left
+                    archShape.lineTo(-width / 2 + thickness, 0);
+                    // Close at start
+                    archShape.lineTo(-width / 2, 0);
+
+                    const extrudeSettings = {
+                        depth: cg.depth || node.dimensions.z,
+                        curveSegments: segs,
+                        bevelEnabled: false
+                    };
+                    const geom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
+                    // Center the extrusion along Z
+                    geom.translate(0, 0, -(cg.depth || node.dimensions.z) / 2);
+                    return geom;
+                }
                 case 'extrusion':
                     if (cg.profile_points && cg.profile_points.length > 0) {
                         const shape = new THREE.Shape();

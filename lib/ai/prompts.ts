@@ -59,6 +59,7 @@ The house data uses a highly compressed format:
    - For a sink or bowl: use \`type: 'lathe'\` and provide a 2D profile curve (array of [x, y] coords) that will be rotated 360 degrees around the Y axis. E.g., \`[[0,0], [0.5,0], [0.6,0.3], [0.6,0.5]]\`.
    - For an extruded complex shape (like an irregular pool, custom shaped countertop): use \`type: 'extrusion'\` and provide the 2D polygon path in \`profile_points\` and an \`extrusion_depth\`.
    - For perfect columns: use \`cylinder\` and provide \`radius\`, \`height\`. Provide high \`segments\` for perfectly round elements.
+   - For an arch or arched entryway: use \`type: 'arch'\` and provide \`width\` (span), \`height\` (total height), \`thickness\` (frame/wall thickness), and \`depth\` (extrusion length).
 
 ## RULES
 1. You have a full JSON representation of the current building state. Read it carefully to find correct parent IDs and positions.

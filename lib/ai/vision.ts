@@ -10,10 +10,8 @@
  * =============================================================================
  */
 
-import { GoogleGenerativeAI, SchemaType, FunctionCallingMode } from '@google/generative-ai';
 import type { PSGOperation, ImageTo3DRequest, ImageTo3DResponse } from '@/types';
 import { getProviderConfig } from './key-manager';
-import { toolCallToOperation } from './orchestrator';
 
 const VISION_SYSTEM_PROMPT = `You are an Expert AI Architect specialized in reverse-engineering 3D models from 2D images.
 The user has provided an image of a house and a "reference measurement" string (e.g., "The front door is 2.1m high" or "The front wall is 10m wide").
@@ -42,20 +40,9 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
     try {
         const config = getProviderConfig();
 
-        // Ensure we are using a model capable of vision.
-        // Assuming Gemini 1.5 Pro for vision tasks if specifically needed, but we rely on the provider config.
-        const apiKey = process.env.GEMINI_API_KEY || config.apiKey;
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-            model: 'gemini-2.0-flash', // Switching to gemini-2.0-flash as it is widely available and performs excellently with vision
-            systemInstruction: VISION_SYSTEM_PROMPT,
-        });
-
-        // The image data is expected to be a base64 string
-        // We need to pass it to the Gemini API correctly.
-        // Assuming the image_data string format might include the data URI prefix: data:image/jpeg;base64,...
+        // Format the image data as a proper Base64 Data URI for gpt-4o
         let base64Data = request.image_data;
-        let mimeType = 'image/jpeg'; // default
+        let mimeType = 'image/jpeg';
 
         if (base64Data.startsWith('data:')) {
             const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
@@ -65,74 +52,81 @@ export async function processImageTo3D(request: ImageTo3DRequest): Promise<Image
             }
         }
 
+        const dataUri = `data:${mimeType};base64,${base64Data}`;
+
         const prompt = `
 USER REFERENCE MEASUREMENT: "${request.reference_measurement}"
 
 Please analyze this image and generate the 3D model nodes.
 `;
 
-        const chatSession = model.startChat({
-            generationConfig: {
-                temperature: 0.2, // Low temperature for more deterministic structural parsing
-            },
-            tools: [{
-                functionDeclarations: [
-                    {
-                        name: "add_node",
-                        description: "Add a new architectural node to the scene",
-                        parameters: {
-                            type: SchemaType.OBJECT,
-                            properties: {
-                                parent_id: { type: SchemaType.STRING, description: "The ID of the parent node (e.g., 'house_root', or a floor/room ID you create)" },
-                                type: { type: SchemaType.STRING, description: "The type of node (Floor, Room, Wall, Roof, Window, Door)" },
-                                id: { type: SchemaType.STRING, description: "A unique identifier you choose for this new node" },
-                                name: { type: SchemaType.STRING, description: "Human readable name" },
-                                position_x: { type: SchemaType.NUMBER, description: "Center X position in meters" },
-                                position_y: { type: SchemaType.NUMBER, description: "Center Y position in meters" },
-                                position_z: { type: SchemaType.NUMBER, description: "Center Z position in meters" },
-                                dimension_w: { type: SchemaType.NUMBER, description: "Width in meters" },
-                                dimension_h: { type: SchemaType.NUMBER, description: "Height in meters" },
-                                dimension_d: { type: SchemaType.NUMBER, description: "Depth/Thickness in meters" },
-                                yaw: { type: SchemaType.NUMBER, description: "Rotation around Y axis in degrees (0 or 90 for walls)" },
-                                material_id: { type: SchemaType.STRING, description: "Material ID to map to (e.g. 'mat_brick_red', 'mat_wood_siding')" },
-                                roof_style: { type: SchemaType.STRING, description: "If type is Roof, specify style (gable, hip, flat, etc.)" }
-                            },
-                            required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "dimension_w", "dimension_h", "dimension_d"]
-                        }
-                    }
-                ]
-            }],
-            toolConfig: {
-                functionCallingConfig: {
-                    mode: FunctionCallingMode.ANY,
-                    allowedFunctionNames: ["add_node"]
+        const body = {
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: VISION_SYSTEM_PROMPT },
+                {
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: prompt },
+                        { type: 'image_url', image_url: { url: dataUri } }
+                    ]
                 }
-            }
+            ],
+            tools: [{
+                type: 'function',
+                function: {
+                    name: "add_node",
+                    description: "Add a new architectural node to the scene",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            parent_id: { type: "string", description: "The ID of the parent node (e.g., 'house_root', or a floor/room ID you create)" },
+                            type: { type: "string", description: "The type of node (Floor, Room, Wall, Roof, Window, Door)" },
+                            id: { type: "string", description: "A unique identifier you choose for this new node" },
+                            name: { type: "string", description: "Human readable name" },
+                            position_x: { type: "number", description: "Center X position in meters" },
+                            position_y: { type: "number", description: "Center Y position in meters" },
+                            position_z: { type: "number", description: "Center Z position in meters" },
+                            dimension_w: { type: "number", description: "Width in meters" },
+                            dimension_h: { type: "number", description: "Height in meters" },
+                            dimension_d: { type: "number", description: "Depth/Thickness in meters" },
+                            yaw: { type: "number", description: "Rotation around Y axis in degrees (0 or 90 for walls)" },
+                            material_id: { type: "string", description: "Material ID to map to (e.g. 'mat_brick_red', 'mat_wood_siding')" },
+                            roof_style: { type: "string", description: "If type is Roof, specify style (gable, hip, flat, etc.)" }
+                        },
+                        required: ["parent_id", "type", "id", "name", "position_x", "position_y", "position_z", "dimension_w", "dimension_h", "dimension_d"]
+                    }
+                }
+            }],
+            tool_choice: 'required',
+            temperature: 0.2
+        };
+
+        const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${config.apiKey}`,
+            },
+            body: JSON.stringify(body),
         });
 
-        const result = await chatSession.sendMessage([
-            {
-                inlineData: {
-                    data: base64Data,
-                    mimeType: mimeType
-                }
-            },
-            {
-                text: prompt
-            }
-        ]);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Vision API error ${response.status}: ${errorText}`);
+        }
 
-        const responseText = result.response.text();
-        const functionCalls = result.response.functionCalls() || [];
+        const data = await response.json();
+        const msg = data.choices?.[0]?.message;
+        if (!msg) throw new Error('API returned no message');
 
+        const toolCalls = msg.tool_calls || [];
         const operations: PSGOperation[] = [];
 
-        for (const call of functionCalls) {
-            if (call.name === 'add_node') {
+        for (const tc of toolCalls) {
+            if (tc.function.name === 'add_node') {
                 try {
-                    // Map the simplified tool args back to our PSG operation format
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const args = call.args as Record<string, any>;
+                    const args = JSON.parse(tc.function.arguments);
                     const opParams = {
                         new_id: args.id,
                         type: args.type,
@@ -150,7 +144,7 @@ Please analyze this image and generate the 3D model nodes.
 
                     operations.push({
                         type: 'add_node',
-                        target_id: args.parent_id,
+                        target_id: args.parent_id || 'unknown',
                         params: opParams,
                         timestamp: new Date().toISOString()
                     });
@@ -161,7 +155,7 @@ Please analyze this image and generate the 3D model nodes.
         }
 
         return {
-            message: responseText || "I have analyzed the image and generated the 3D footprint.",
+            message: msg.content || "I have analyzed the image and generated the 3D footprint.",
             operations,
             warnings: []
         };
@@ -170,9 +164,6 @@ Please analyze this image and generate the 3D model nodes.
         console.error("[Image-to-3D] Vision processing error:", error);
 
         let errorMessage = error instanceof Error ? error.message : String(error);
-        if (errorMessage.includes("API_KEY_INVALID") || errorMessage.includes("API key not valid")) {
-            errorMessage = "Google Gemini API Key is invalid or missing. To use 'Photo to 3D', you MUST get a free API key from Google AI Studio (aistudio.google.com/app/apikey) and put it in your `.env.local` file as `AI_API_KEY=your_key_here`. The GitHub Models API key you are using does not support the generative vision setup used here.";
-        }
 
         return {
             message: errorMessage,

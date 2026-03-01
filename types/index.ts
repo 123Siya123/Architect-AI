@@ -244,12 +244,13 @@ export interface PSGNode {
 
   /** Custom geometry: bridge between AI structural generation and 3D Engine */
   custom_geometry?: {
-    type: 'extrusion' | 'lathe' | 'sphere' | 'box' | 'cylinder' | 'cone' | 'plane';
+    type: 'extrusion' | 'lathe' | 'sphere' | 'box' | 'cylinder' | 'cone' | 'plane' | 'arch';
     profile_points?: number[][]; // Array of [x, y] coordinates for extrusion (2D shape) or lathe (profile)
     depth?: number;              // Extrusion depth
     radius?: number;             // Radius for sphere/lathe/cylinder/cone
     height?: number;             // Height for cylinder/cone
     segments?: number;           // Smoothness/segments
+    thickness?: number;          // Thickness for arch
   };
 
   /** Legacy Custom geometry: CadQuery script or shape description (Phase 3) */

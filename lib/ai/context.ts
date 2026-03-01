@@ -28,6 +28,7 @@ export function prepareProjectContext(project: PSGProject): string {
 
         if (node.rotation.yaw !== 0) readable.yaw = node.rotation.yaw;
         if (node.parent_id) readable.p = node.parent_id;
+        if (node.custom_geometry) readable.cg = node.custom_geometry;
 
         readableNodes[id] = readable;
     }
