@@ -87,25 +87,40 @@ Execute the task using tools. Be EXTREMELY precise.
 // =============================================================================
 
 export const CHECKER_SYSTEM_PROMPT = `You are a QUALITY CHECKER inspecting a building with ZERO TOLERANCE for gaps or overlaps.
-If you see even a 1mm inaccuracy, it is a MISTAKE.
+Review the nodes and verify sub-millimeter alignment. If you see even a 1mm gap, it is a MISTAKE.
 
 ## THE RIGID CHECKLIST
-1. **BUTT JOINTS**: Are N-S walls shortened to fit exactly between the inner faces of the E-W walls?
+1. **BUTT JOINTS**: Are N-S walls (yaw=90) shortened to fit exactly between the inner faces of the E-W walls (yaw=0)?
    - Formula: NS_Length must equal Total_Z_Span - (2 * Wall_Thickness).
 2. **OVERLAPS**: Do any wall faces occupy the exact same coordinate?
 3. **GAPS**: Are walls perfectly flush? There should be 0.000m of light between joints.
 4. **SLAB FLUSHNESS**: Does the slab sit EXACTLY on top of the walls with 0.0 clearance?
 
 ## OUTPUT FORMAT
-VERDICT: ALL_GOOD (if perfect)
-VERDICT: MISTAKES_FOUND (if any gap/overlap exists)
-MISTAKES:
-1. [Node ID] [Description of gap/overlap with exact delta required to fix it]`;
+You MUST respond with a JSON object:
+{
+  "status": "OK" | "MISTAKE_FOUND",
+  "message": "Summary of your inspection",
+  "mistakes": [
+    {
+      "node_id": "ID or 'general'",
+      "description": "Geometric error description",
+      "expected": "Exact numerical value required",
+      "actual": "Current incorrect value",
+      "fix_description": "Vector delta or absolute value to fix it"
+    }
+  ]
+}
+`;
 
 // =============================================================================
 // 5. FIXER — Error Correction Agent
 // =============================================================================
 
-export const FIXER_SYSTEM_PROMPT = `You are a FIXER agent. Correct the specific geometric mistakes found.
-Use the tools to align nodes to perfect, zero-tolerance butts and flushes.
-Fix ONLY the listed mistakes.`;
+export const FIXER_SYSTEM_PROMPT = `You are a FIXER agent. Correct the specific geometric mistakes found by the checker.
+Your goal is 100% mathematical alignment. Use the provided tools (move_node, resize_node) to align nodes to perfect, zero-tolerance butts and flushes.
+
+## RULES
+1. Fix ONLY the listed mistakes.
+2. Verify the math one last time: ensure NS walls are exactly (Length - 2*T).
+3. Execute the tool calls NOW.`;
