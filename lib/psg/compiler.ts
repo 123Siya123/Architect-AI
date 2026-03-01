@@ -432,12 +432,34 @@ export function compileBalconyGeometry(node: PSGNode): THREE.Group {
 }
 
 /** Custom geometry — parses parametric instructions from AI for perfect custom objects */
-export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry {
+export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry | THREE.Group {
     if (node.custom_geometry) {
         const cg = node.custom_geometry;
         const segs = cg.segments || 32;
         try {
             switch (cg.type) {
+                case 'code': {
+                    if (cg.code) {
+                        try {
+                            // The true UNIVERSE SOLUTION: dynamically evaluate AI-generated Three.js script.
+                            // The script receives the THREE module, plus basic spatial bounds (width, height, depth, radius, segments).
+                            // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
+                            const customFunc = new Function('THREE', 'width', 'height', 'depth', 'radius', 'segments', cg.code);
+
+                            const radius = cg.radius || Math.max(node.dimensions.x, node.dimensions.z) / 2;
+                            // Execute the code script the AI provided.
+                            const result = customFunc(THREE, node.dimensions.x, node.dimensions.y, node.dimensions.z, radius, segs);
+
+                            if (result instanceof THREE.BufferGeometry || result instanceof THREE.Group) {
+                                return result;
+                            }
+                            console.warn('AI generated custom code did not return a valid THREE.BufferGeometry or THREE.Group.', result);
+                        } catch (err) {
+                            console.error('Failed to execute AI custom Three.js code:', err);
+                        }
+                    }
+                    break;
+                }
                 case 'sphere':
                     return new THREE.SphereGeometry(
                         cg.radius || Math.max(node.dimensions.x, node.dimensions.z) / 2,

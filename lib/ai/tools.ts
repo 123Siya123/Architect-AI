@@ -353,8 +353,8 @@ export const AI_TOOLS = [
                         properties: {
                             type: {
                                 type: 'string',
-                                enum: ['extrusion', 'lathe', 'sphere', 'box', 'cylinder', 'cone', 'plane', 'arch'],
-                                description: 'The primitive operation used to construct the shape. Use "arch" for any arches or arched openings.'
+                                enum: ['extrusion', 'lathe', 'sphere', 'box', 'cylinder', 'cone', 'plane', 'arch', 'code'],
+                                description: 'The primitive operation used to construct the shape. Use "arch" for arches, or use "code" for ANY OTHER fully procedural or highly complex 3D shape (THE UNIVERSAL SOLUTION).'
                             },
                             profile_points: {
                                 type: 'array',
@@ -365,7 +365,8 @@ export const AI_TOOLS = [
                             radius: { type: 'number', description: 'Radius for sphere, cylinder, cone, or lathe.' },
                             height: { type: 'number', description: 'Height for cylinder, cone or arch.' },
                             thickness: { type: 'number', description: 'Wall/frame thickness for "arch" type.' },
-                            segments: { type: 'number', description: 'Number of segments for smooth curves (default 32, use 64 for perfect curves).' }
+                            segments: { type: 'number', description: 'Number of segments for smooth curves (default 32, use 64 for perfect curves).' },
+                            code: { type: 'string', description: 'A Javascript code block (for type "code" only). Evaluates dynamically at runtime. The script MUST return a THREE.BufferGeometry or THREE.Group. You have access to variables: THREE, width, height, depth, radius, segments. Example: "return new THREE.TorusGeometry(radius, 0.4, 16, 100);" or "const shape = new THREE.Shape(); shape.moveTo(0,0); /*...*/ return new THREE.ExtrudeGeometry(shape, {depth});"' }
                         },
                         required: ['type']
                     },

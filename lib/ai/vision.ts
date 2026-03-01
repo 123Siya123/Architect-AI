@@ -163,7 +163,7 @@ Please analyze this image and generate the 3D model nodes.
     } catch (error) {
         console.error("[Image-to-3D] Vision processing error:", error);
 
-        let errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
 
         return {
             message: errorMessage,

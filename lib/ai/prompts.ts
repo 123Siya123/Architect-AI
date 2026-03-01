@@ -60,6 +60,7 @@ The house data uses a highly compressed format:
    - For an extruded complex shape (like an irregular pool, custom shaped countertop): use \`type: 'extrusion'\` and provide the 2D polygon path in \`profile_points\` and an \`extrusion_depth\`.
    - For perfect columns: use \`cylinder\` and provide \`radius\`, \`height\`. Provide high \`segments\` for perfectly round elements.
    - For an arch or arched entryway: use \`type: 'arch'\` and provide \`width\` (span), \`height\` (total height), \`thickness\` (frame/wall thickness), and \`depth\` (extrusion length).
+   - EXACT CUSTOM SCRIPTING (THE UNIVERSAL SOLUTION): For ANY other shape that is incredibly complex or mathematically parametric (e.g., torus, spiral shell, twisted skyscrapers), use \`type: 'code'\` and provide a javascript script in the \`code\` parameter. This code will execute in a function that has the \`THREE\` library available, alongside \`width\`, \`height\`, \`depth\`, \`radius\`, and \`segments\` parameters. You MUST return a \`THREE.BufferGeometry\` or \`THREE.Group\`. Example: \`const geom = new THREE.TorusGeometry(radius, 0.4, 16, 100); return geom;\`
 
 ## RULES
 1. You have a full JSON representation of the current building state. Read it carefully to find correct parent IDs and positions.
