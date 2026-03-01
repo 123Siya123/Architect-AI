@@ -868,15 +868,16 @@ function solvePrecision(project: PSGProject, operation: PSGOperation): PSGProjec
  * Level 2: Construction (0.5mm grid)
  */
 function setPrecisionLevel(project: PSGProject, operation: PSGOperation): PSGProject {
-    const { level } = operation.params as { level: 0 | 1 | 2 };
+    const { level } = operation.params as { level: number | string };
+    const levelInt = Number(level) as 0 | 1 | 2;
     const gridMap = { 0: 0.05, 1: 0.01, 2: 0.0005 };
-    const newGridSize = gridMap[level] || 0.05;
+    const newGridSize = gridMap[levelInt] || 0.05;
 
     return {
         ...project,
         settings: {
             ...project.settings,
-            precision_level: level,
+            precision_level: levelInt,
             grid_size: newGridSize,
         }
     };

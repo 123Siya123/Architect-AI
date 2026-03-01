@@ -479,7 +479,7 @@ export const AI_TOOLS = [
             parameters: {
                 type: 'object',
                 properties: {
-                    level: { type: 'integer', enum: [0, 1, 2], description: 'Target precision level' }
+                    level: { type: 'string', enum: ['0', '1', '2'], description: 'Target precision level: 0=Conceptual, 1=Standard, 2=Construction' }
                 },
                 required: ['level']
             },
