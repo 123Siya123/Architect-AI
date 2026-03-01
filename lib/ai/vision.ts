@@ -57,6 +57,9 @@ Ensure walls connect cleanly at the corners to form closed rooms.
 BE EXTREMELY METICULOUS WITH YOUR MATH AND POSITIONS.`;
 
 export async function processImageTo3D(request: ImageTo3DRequest): Promise<ImageTo3DResponse> {
+    const startTime = Date.now();
+    let timeoutId: NodeJS.Timeout | undefined;
+
     try {
         const config = getProviderConfig();
 
@@ -118,13 +121,15 @@ Please analyze this image and generate the 3D model nodes.
                     }
                 }
             }],
-            tool_choice: 'auto',
+            tool_choice: 'required',
             temperature: 0.2,
-            max_tokens: 4096
+            max_tokens: 4000
         };
 
         console.log(`[Image-to-3D] Sending payload to GitHub Models (gpt-4o). Image size approx: ${Math.round(base64Data.length / 1024)} KB`);
-        const startTime = Date.now();
+
+        const controller = new AbortController();
+        timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
 
         const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
             method: 'POST',
@@ -133,7 +138,10 @@ Please analyze this image and generate the 3D model nodes.
                 Authorization: `Bearer ${config.apiKey}`,
             },
             body: JSON.stringify(body),
+            signal: controller.signal
         });
+
+        if (timeoutId) clearTimeout(timeoutId);
 
         console.log(`[Image-to-3D] Received response (Status ${response.status}) in ${Date.now() - startTime}ms`);
 
@@ -189,7 +197,7 @@ Please analyze this image and generate the 3D model nodes.
 
         if (operations.length === 0 && msg.content) {
             console.warn("[Image-to-3D] The model returned content but NO operations:", msg.content);
-            throw new Error(`The AI responded but did not generate any 3D operations: ${msg.content.substring(0, 150)}... Make sure the image is a clear house photo.`);
+            throw new Error(`The AI responded but did not generate any 3D operations. Analysis: ${msg.content.substring(0, 100)}...`);
         }
 
         return {
@@ -198,10 +206,15 @@ Please analyze this image and generate the 3D model nodes.
             warnings: []
         };
 
-    } catch (error) {
+    } catch (error: unknown) {
+        if (timeoutId) clearTimeout(timeoutId);
+
         console.error("[Image-to-3D] Vision processing error:", error);
 
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        let errorMessage = error instanceof Error ? error.message : String(error);
+        if (error instanceof Error && error.name === 'AbortError') {
+            errorMessage = 'The vision analysis timed out. This can happen with large images or slow connections. Try a smaller/simpler photo.';
+        }
 
         return {
             message: errorMessage,
