@@ -118,9 +118,13 @@ Please analyze this image and generate the 3D model nodes.
                     }
                 }
             }],
-            tool_choice: 'required',
-            temperature: 0.2
+            tool_choice: 'auto',
+            temperature: 0.2,
+            max_tokens: 4096
         };
+
+        console.log(`[Image-to-3D] Sending payload to GitHub Models (gpt-4o). Image size approx: ${Math.round(base64Data.length / 1024)} KB`);
+        const startTime = Date.now();
 
         const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
             method: 'POST',
@@ -131,6 +135,8 @@ Please analyze this image and generate the 3D model nodes.
             body: JSON.stringify(body),
         });
 
+        console.log(`[Image-to-3D] Received response (Status ${response.status}) in ${Date.now() - startTime}ms`);
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Vision API error ${response.status}: ${errorText}`);
@@ -138,7 +144,14 @@ Please analyze this image and generate the 3D model nodes.
 
         const data = await response.json();
         const msg = data.choices?.[0]?.message;
-        if (!msg) throw new Error('API returned no message');
+
+        if (!msg) {
+            console.error('[Image-to-3D] Malformed API Data:', data);
+            throw new Error('API returned no message');
+        }
+
+        const finishReason = data.choices?.[0]?.finish_reason;
+        console.log(`[Image-to-3D] Generated ${msg.tool_calls?.length || 0} tool calls. Finish reason: ${finishReason}`);
 
         const toolCalls = msg.tool_calls || [];
         const operations: PSGOperation[] = [];
@@ -169,9 +182,14 @@ Please analyze this image and generate the 3D model nodes.
                         timestamp: new Date().toISOString()
                     });
                 } catch (e) {
-                    console.error("Failed to parse tool call:", e);
+                    console.error("Failed to parse tool call arguments:", tc.function.arguments, e);
                 }
             }
+        }
+
+        if (operations.length === 0 && msg.content) {
+            console.warn("[Image-to-3D] The model returned content but NO operations:", msg.content);
+            throw new Error(`The AI responded but did not generate any 3D operations: ${msg.content.substring(0, 150)}... Make sure the image is a clear house photo.`);
         }
 
         return {
