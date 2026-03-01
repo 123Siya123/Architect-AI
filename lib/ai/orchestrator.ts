@@ -209,6 +209,7 @@ ${budgetContext}
         }
     }
 
+    /*
     // =========================================================================
     // FINAL RIGID AUDIT (Emergency Correction)
     // =========================================================================
@@ -239,7 +240,7 @@ ${budgetContext}
                             const applied = applyOperation(currentProject, op);
                             if (applied.project) currentProject = applied.project;
                         }
-                    } catch { /* skip */ }
+                    } catch { / * skip * / }
                 }
                 progressLog.push(`   ✅ Emergency fixes applied.`);
             }
@@ -249,6 +250,7 @@ ${budgetContext}
     } catch (e) {
         progressLog.push(`   ⚠️ Audit skipped: ${e instanceof Error ? e.message : 'Unknown error'}`);
     }
+    */
 
     progressLog.push(`\n═══ ANTIGRAVITY PIPELINE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
 
