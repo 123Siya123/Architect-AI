@@ -342,37 +342,31 @@ ${budgetContext}
 
     try {
         const agentConfig = getProviderConfig();
-        const systemMsg = { role: 'system', content: SINGLE_AGENT_SYSTEM_PROMPT };
-
-        // Summarize recent history to give context
-        let historySummary = "No previous history.";
-        if (request.history && request.history.length > 0) {
-            historySummary = request.history
-                .slice(-6)
-                .map(msg => `[${msg.role.toUpperCase()}]: ${msg.content.substring(0, 300)}${msg.content.length > 300 ? '...' : ''}`)
-                .join('\\n');
-        }
-
-        const userMsg = {
-            role: 'user',
-            content: `
-## RECENT CHAT HISTORY
-${historySummary}
-
-USER REQUEST:
-${request.message}
-
-## CURRENT BUILDING STATE
-\`\`\`json
-${fullContext}
-\`\`\`
-
-## AVAILABLE MATERIALS
-${materialContext}
-`,
+        const systemMsg = {
+            role: 'system',
+            content: `${SINGLE_AGENT_SYSTEM_PROMPT}\n\n## CURRENT BUILDING STATE (READ ONLY)\n${fullContext}`
         };
 
-        const response = await callProviderWithTools(agentConfig, [systemMsg, userMsg]);
+        // Prepare proper multi-turn history
+        const messages: Array<{ role: string; content: string }> = [systemMsg];
+
+        if (request.history && request.history.length > 0) {
+            // Include last 10 messages for full context
+            for (const msg of request.history.slice(-10)) {
+                messages.push({
+                    role: msg.role === 'assistant' ? 'assistant' : 'user',
+                    content: msg.content
+                });
+            }
+        }
+
+        // Add the current user request
+        messages.push({
+            role: 'user',
+            content: `USER REQUEST: ${request.message}`
+        });
+
+        const response = await callProviderWithTools(agentConfig, messages);
 
         singleAgentResult = {
             operations: (response.toolCalls || []).map(tc => toolCallToOperation(tc.name, tc.args as Record<string, unknown>)),
@@ -996,12 +990,29 @@ async function callGemini(
 
     const systemMsg = messages.find((m) => m.role === 'system');
 
+    // Helper to recursively uppercase property types for Gemini
+    const formatForGemini = (obj: any): any => {
+        if (Array.isArray(obj)) return obj.map(formatForGemini);
+        if (obj !== null && typeof obj === 'object') {
+            const result: any = {};
+            for (const key in obj) {
+                if (key === 'type' && typeof obj[key] === 'string') {
+                    result[key] = obj[key].toUpperCase();
+                } else {
+                    result[key] = formatForGemini(obj[key]);
+                }
+            }
+            return result;
+        }
+        return obj;
+    };
+
     const geminiTools = [
         {
             function_declarations: AI_TOOLS.map((t) => ({
                 name: t.function.name,
                 description: t.function.description,
-                parameters: t.function.parameters,
+                parameters: formatForGemini(t.function.parameters),
             })),
         },
     ];
@@ -1013,7 +1024,7 @@ async function callGemini(
         ...(systemMsg && {
             system_instruction: { parts: [{ text: systemMsg.content }] },
         }),
-        generation_config: { temperature: 0.2, max_output_tokens: 4000 },
+        generation_config: { temperature: 0.1, max_output_tokens: 4000 },
     };
 
     const response = await fetch(url, {
