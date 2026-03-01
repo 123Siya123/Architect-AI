@@ -444,6 +444,14 @@ async function callProviderNoTools(
             const errMsg = error instanceof Error ? error.message : String(error);
             console.warn(`[callProviderNoTools] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, errMsg);
 
+            const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
+
+            if (isUnavailable && config.model.includes('gemini-3.1')) {
+                console.warn('[Orchestrator] Gemini 3.1 unavailable. Switching to STABLE FALLBACK: gemini-1.5-pro');
+                config = { ...config, model: 'gemini-1.5-pro' };
+                continue; // Retry immediately with fallback
+            }
+
             if (errMsg.includes('429')) {
                 markKeyRateLimited(config.apiKey);
             }
@@ -483,6 +491,14 @@ async function callProviderWithTools(
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             console.warn(`[callProviderWithTools] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, errMsg);
+
+            const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
+
+            if (isUnavailable && config.model.includes('gemini-3.1')) {
+                console.warn('[Orchestrator] Gemini 3.1 unavailable. Switching to STABLE FALLBACK: gemini-1.5-pro');
+                config = { ...config, model: 'gemini-1.5-pro' };
+                continue; // Retry immediately with fallback
+            }
 
             if (errMsg.includes('429')) {
                 markKeyRateLimited(config.apiKey);
@@ -546,6 +562,8 @@ async function callGemini(
         },
     ];
 
+    const isGemini3 = config.model.includes('gemini-3');
+
     const body = {
         contents,
         tools: geminiTools,
@@ -555,10 +573,12 @@ async function callGemini(
         }),
         generation_config: {
             temperature: 0.1,
-            max_output_tokens: 64000,
-            thinkingConfig: {
-                thinkingLevel: 'HIGH'
-            }
+            max_output_tokens: isGemini3 ? 64000 : 8192,
+            ...(isGemini3 && {
+                thinkingConfig: {
+                    thinkingLevel: 'HIGH'
+                }
+            })
         },
     };
 
@@ -608,6 +628,8 @@ async function callGeminiNoTools(
 
     const systemMsg = messages.find((m) => m.role === 'system');
 
+    const isGemini3 = config.model.includes('gemini-3');
+
     const body = {
         contents,
         ...(systemMsg && {
@@ -615,10 +637,12 @@ async function callGeminiNoTools(
         }),
         generation_config: {
             temperature: 0.3,
-            max_output_tokens: 64000,
-            thinkingConfig: {
-                thinkingLevel: 'HIGH'
-            }
+            max_output_tokens: isGemini3 ? 64000 : 8192,
+            ...(isGemini3 && {
+                thinkingConfig: {
+                    thinkingLevel: 'HIGH'
+                }
+            })
         },
     };
 
