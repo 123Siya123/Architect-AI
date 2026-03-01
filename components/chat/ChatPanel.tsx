@@ -56,7 +56,9 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                     })}
                 </span>
             </div>
-            <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
+            <div className="chat-message-content-scroll">
+                <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
+            </div>
 
             {/* Operation badges — show when AI made edits */}
             {msg.operations && msg.operations.length > 0 && (
@@ -127,8 +129,10 @@ function ReactLoopStatus() {
                         <span className="chat-thinking-dot" />
                     </span>
                 </div>
-                <div style={{ fontSize: '0.8em', opacity: 0.7, marginTop: '8px', paddingLeft: '32px' }}>
-                    Reasoning through geometry, executing batch operations, and auditing precision (0.5mm tolerance)...
+                <div className="chat-message-content-scroll" style={{ maxHeight: '120px' }}>
+                    <div style={{ fontSize: '0.8em', opacity: 0.7, marginTop: '8px', paddingLeft: '32px' }}>
+                        Reasoning through geometry, executing batch operations, and auditing precision (0.5mm tolerance)...
+                    </div>
                 </div>
             </div>
         </div>

@@ -1227,6 +1227,20 @@ button:disabled {
   background: var(--bg-input);
   align-self: flex-start;
   border-bottom-left-radius: 2px;
+  max-width: 90%;
+  border: 1px solid var(--border-color);
+}
+
+.chat-message-content-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: var(--space-2);
+  margin: var(--space-2) 0;
+  scrollbar-width: thin;
+}
+
+.chat-message-content-scroll::-webkit-scrollbar {
+  width: 4px;
 }
 
 .chat-message-header {
