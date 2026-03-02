@@ -65,7 +65,7 @@ export function validateOperation(
 ): ValidationResult {
     const errors: string[] = [];
     const warnings: OperationWarning[] = [];
-    const isProjectOp = operation.type === 'solve_precision' || operation.type === 'set_precision_level';
+    const isProjectOp = operation.type === 'solve_precision' || operation.type === 'set_precision_level' || operation.type === 'use_template';
 
     // --- Layer 1: Schema Validation ---
     // Check that the target node exists and the operation type is valid
@@ -138,7 +138,7 @@ function validateSchema(
     const warnings: OperationWarning[] = [];
 
     // Check target node exists (except for add_node and project-level operations)
-    if (operation.type !== 'add_node' && !(operation.type === 'solve_precision' || operation.type === 'set_precision_level')) {
+    if (operation.type !== 'add_node' && !(operation.type === 'solve_precision' || operation.type === 'set_precision_level' || operation.type === 'use_template')) {
         if (!project.nodes[operation.target_id]) {
             errors.push(
                 `Node "${operation.target_id}" not found in project. ` +
@@ -191,6 +191,12 @@ function validateSchema(
         }
         case 'delete_node': {
             // No additional params needed — just the target_id
+            break;
+        }
+        case 'use_template': {
+            if (!operation.params.template_slug) {
+                errors.push('use_template requires template_slug parameter');
+            }
             break;
         }
     }

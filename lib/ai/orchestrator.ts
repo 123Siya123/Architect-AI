@@ -449,7 +449,7 @@ async function callProviderNoTools(
                     continue;
                 } else if (config.model === 'gemini-3-flash-preview') {
                     console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
-                    config = { ...config, model: 'gemini-1.5-pro' };
+                    config = { ...config, model: 'gemini-1.5-pro-latest' };
                     continue;
                 }
             }
@@ -507,7 +507,7 @@ async function callProviderWithTools(
                     continue;
                 } else if (config.model === 'gemini-3-flash-preview') {
                     console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
-                    config = { ...config, model: 'gemini-1.5-pro' };
+                    config = { ...config, model: 'gemini-1.5-pro-latest' };
                     continue;
                 }
             }

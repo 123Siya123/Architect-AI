@@ -598,69 +598,100 @@ export function createMinimalistStudioTemplate(
  * Features a central 3-storey block with symmetrical wings.
  */
 export function createWhiteHouseTemplate(
-    budget: number = 10000000,
+    budget: number = 500000000, // $500M for total realism
     currency: string = 'USD'
 ): PSGProject {
-    const project = createEmptyProject('The White House', budget, currency);
+    const project = createEmptyProject('The White House (Executive Residence)', budget, currency);
     const rootId = project.root_node_id;
 
-    const H = 4.0; // Grand ceiling height
-    const T = 0.5; // Thick neoclassical walls
+    const H = 4.5; // Grand ceiling height
+    const T = 0.6; // Massive stone walls
     const halfH = H / 2;
     const halfT = T / 2;
+    const marble = 'mat_flooring_marble';
+    const stone = 'mat_stone_limestone';
 
-    // Dimensions
-    const CENTER_W = 25; // Central block width
-    const CENTER_D = 20; // Central block depth
-    const WING_W = 15;   // Side wing width
-    const WING_D = 12;   // Side wing depth
+    // Dimensions (Real world scale: Residence is ~51m x 26m)
+    const CENTER_W = 51;
+    const CENTER_D = 26;
+    const WING_W = 30;
+    const WING_D = 18;
 
     // ─── Floors ──────────────────────────────────────────────────────
     const gf = add(project, createFloorNode(rootId, 0, 'Ground Floor'));
-    const ff = add(project, createFloorNode(rootId, 1, 'First Floor'));
+    const ff = add(project, createFloorNode(rootId, 1, 'State Floor (First Floor)'));
+    ff.position.y = H;
     const sf = add(project, createFloorNode(rootId, 2, 'Second Floor'));
+    sf.position.y = H * 2;
 
-    // ─── Central Block ───────────────────────────────────────────────
-    // Start with a grand main room to hold the front/back walls
-    const centralHall = add(project, createRoomNode(gf.id, 'Grand Entry Hall',
-        { x: 0, y: 0, z: 0 }, { x: CENTER_W, y: H, z: CENTER_D }, 'hallway'));
+    // ─── Foundation & Main Slab ──────────────────────────────────────
+    add(project, createFoundationNode(rootId, 'Major Foundation',
+        { x: 0, y: -0.5, z: 0 },
+        { x: CENTER_W + WING_W * 2 + 10, y: 1.0, z: CENTER_D + 10 }));
 
-    // Central Slab
-    add(project, createSlabNode(gf.id, 'Main Foundation', { x: 0, y: 0, z: 0 }, { x: CENTER_W + 40, y: 0.5, z: CENTER_D + 10 }));
+    // ─── Central Block (Executive Residence) ─────────────────────────
+    const entHall = add(project, createRoomNode(ff.id, 'Entrance Hall', { x: 0, y: H + halfH, z: -5 }, { x: 15, y: H, z: 10 }, 'hallway'));
+    const blueRoom = add(project, createRoomNode(ff.id, 'Blue Room', { x: 0, y: H + halfH, z: 5 }, { x: 12, y: H, z: 12 }, 'living'));
+    const eastRoom = add(project, createRoomNode(ff.id, 'East Room', { x: 18, y: H + halfH, z: 0 }, { x: 14, y: H, z: 24 }, 'dining'));
+    const stateDining = add(project, createRoomNode(ff.id, 'State Dining Room', { x: -18, y: H + halfH, z: 0 }, { x: 14, y: H, z: 24 }, 'dining'));
 
-    // Central Walls
-    addWall(project, centralHall.id, 'Front Portico Wall', { x: 0, y: halfH, z: -CENTER_D / 2 + halfT }, CENTER_W, H, T, ['exterior']);
-    addWall(project, centralHall.id, 'Back Wall', { x: 0, y: halfH, z: CENTER_D / 2 - halfT }, CENTER_W, H, T, ['exterior']);
-    addWall(project, centralHall.id, 'Left Wall', { x: -CENTER_W / 2 + halfT, y: halfH, z: 0 }, CENTER_D - 2 * T, H, T, ['exterior'], 90);
-    addWall(project, centralHall.id, 'Right Wall', { x: CENTER_W / 2 - halfT, y: halfH, z: 0 }, CENTER_D - 2 * T, H, T, ['exterior'], 90);
+    // Main Slab for State Floor
+    add(project, createSlabNode(ff.id, 'State Floor Slab', { x: 0, y: H, z: 0 }, { x: CENTER_W, y: 0.3, z: CENTER_D }));
 
-    // Iconic Columns (Custom Elements)
-    for (let i = -3; i <= 3; i++) {
-        const x = i * 3;
-        if (x === 0) continue; // Skip center for front door area
+    // Exterior Walls (Central Block)
+    // North (Front) Facade
+    const northWall = addWall(project, ff.id, 'North Facade', { x: 0, y: H + halfH, z: -CENTER_D / 2 + halfT }, CENTER_W, H, T, ['exterior']);
+    northWall.material_id = stone;
+
+    // South (Back) Facade
+    const southWall = addWall(project, ff.id, 'South Facade', { x: 0, y: H + halfH, z: CENTER_D / 2 - halfT }, CENTER_W, H, T, ['exterior']);
+    southWall.material_id = stone;
+
+    // West Facade
+    const westWall = addWall(project, ff.id, 'West Facade', { x: -CENTER_W / 2 + halfT, y: H + halfH, z: 0 }, CENTER_D - 2 * T, H, T, ['exterior'], 90);
+    westWall.material_id = stone;
+
+    // East Facade
+    const eastWall = addWall(project, ff.id, 'East Facade', { x: CENTER_W / 2 - halfT, y: H + halfH, z: 0 }, CENTER_D - 2 * T, H, T, ['exterior'], 90);
+    eastWall.material_id = stone;
+
+    // ─── Iconic North Portico (Entrance) ─────────────────────────────
+    for (let i = -2; i <= 2; i++) {
+        const x = i * 4;
         add(project, {
-            ...createWallNode(centralHall.id, `Column ${i}`, { x, y: H * 1.5, z: -CENTER_D / 2 - 2 }, 0.8, H * 3, 0.8, ['custom']),
-            type: 'Column'
+            ...createWallNode(ff.id, `North Column ${i}`, { x, y: H + H, z: -CENTER_D / 2 - 4 }, 1.2, H * 2, 1.2, ['custom']),
+            type: 'Column',
+            material_id: marble
         } as PSGNode);
     }
 
-    // ─── West Wing ──────────────────────────────────────────────────
-    const westWing = add(project, createRoomNode(gf.id, 'West Wing',
-        { x: -CENTER_W / 2 - WING_W / 2, y: 0, z: 0 }, { x: WING_W, y: H, z: WING_D }, 'office'));
-    addWall(project, westWing.id, 'West Wing Outer', { x: -CENTER_W / 2 - WING_W + halfT, y: halfH, z: 0 }, WING_D, H, T, ['exterior'], 90);
+    // ─── South Portico (Circular Balcony) ───────────────────────────
+    add(project, createSlabNode(ff.id, 'South Balcony', { x: 0, y: H + H, z: CENTER_D / 2 + 3 }, { x: 12, y: 0.2, z: 6 }));
 
-    // ─── East Wing ──────────────────────────────────────────────────
-    const eastWing = add(project, createRoomNode(gf.id, 'East Wing',
-        { x: CENTER_W / 2 + WING_W / 2, y: 0, z: 0 }, { x: WING_W, y: H, z: WING_D }, 'office'));
-    addWall(project, eastWing.id, 'East Wing Outer', { x: CENTER_W / 2 + WING_W - halfT, y: halfH, z: 0 }, WING_D, H, T, ['exterior'], 90);
+    // ─── West Wing (Oval Office Area) ────────────────────────────────
+    const westWingCorridor = add(project, createRoomNode(gf.id, 'West Wing Corridor', { x: -CENTER_W / 2 - 10, y: halfH, z: 0 }, { x: 20, y: H, z: 6 }, 'hallway'));
+    const ovalOfficeArea = add(project, createRoomNode(gf.id, 'The Oval Office', { x: -CENTER_W / 2 - 25, y: halfH, z: 0 }, { x: 12, y: H, z: 15 }, 'office'));
+    ovalOfficeArea.material_id = 'mat_wood_walnut';
+
+    // ─── Windows & Doors ─────────────────────────────────────────────
+    // Grand windows along North and South facades
+    for (let x = -20; x <= 20; x += 8) {
+        if (Math.abs(x) < 5) continue; // Skip door area
+        add(project, createWindowNode(northWall.id, `Grand Window N ${x}`, { x, y: H + 2.5, z: -CENTER_D / 2 + halfT }, 2.5, 3.5));
+        add(project, createWindowNode(southWall.id, `Grand Window S ${x}`, { x, y: H + 2.5, z: CENTER_D / 2 - halfT }, 2.5, 3.5));
+    }
+
+    // Front Door (North)
+    add(project, createDoorNode(northWall.id, 'North Entrance Door', { x: 0, y: H + 1.5, z: -CENTER_D / 2 + halfT }, 3.0, 3.0));
 
     // ─── Roof ────────────────────────────────────────────────────────
-    const mainRoof = add(project, createRoofNode(rootId, 'Central Parapet', 'flat', 0, { x: CENTER_W + 2, y: 0.5, z: CENTER_D + 2 }));
+    const mainRoof = add(project, createRoofNode(rootId, 'Executive Roof', 'flat', 0, { x: CENTER_W + 4, y: 0.8, z: CENTER_D + 4 }));
     mainRoof.position = { x: 0, y: H * 3, z: 0 };
-    mainRoof.material_id = 'mat_marble_white';
+    mainRoof.material_id = 'mat_render_white';
 
     return project;
 }
+
 
 export interface TemplateInfo {
     slug: string;
