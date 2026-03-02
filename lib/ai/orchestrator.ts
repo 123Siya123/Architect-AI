@@ -68,8 +68,11 @@ import {
     generateASCIIFloorPlan
 } from './context';
 import {
-    MASTER_ARCHITECT_SYSTEM_PROMPT,
-    GEOMETRIC_AUDIT_PROMPT,
+    STRATEGY_AGENT_PROMPT,
+    BUILDER_AGENT_PROMPT,
+    GEOMETRICIAN_AGENT_PROMPT,
+    VISION_AUDIT_PROMPT,
+    QA_SUPERVISOR_PROMPT
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
 
@@ -92,16 +95,17 @@ export async function sendChatToAI(
     const maxIterations = 25; // High Thinking capacity — lots of rope.
     let finalMessage = "";
 
-    // The message history for this specific turn's ReAct loop
-    const loopMessages: Array<{ role: string; content: string }> = [
-        { role: 'system', content: MASTER_ARCHITECT_SYSTEM_PROMPT }
-    ];
+    const loopMessages: Array<{ role: string; content: string }> = [];
 
-    // Add previous chat history for context
-    if (request.history && request.history.length > 0) {
+    // Initial Blueprint Strategy
+    loopMessages.push({ role: 'system', content: STRATEGY_AGENT_PROMPT });
+
+    // Add history
+    if (request.history) {
         loopMessages.push(...request.history.slice(-10).map(m => ({ role: m.role, content: m.content })));
     }
 
+    loopMessages.push({ role: 'user', content: `USER REQUEST: ${request.message}` });
     clearLogs();
 
     for (let i = 1; i <= maxIterations; i++) {
@@ -120,21 +124,39 @@ export async function sendChatToAI(
                 const materialContext = prepareMaterialContext(materials);
                 const budgetContext = prepareBudgetContext(currentProject);
 
+                // --- MULTI-PHASE AGENTIC SCHEDULE ---
+                let currentSystemPrompt = BUILDER_AGENT_PROMPT;
+                let phaseName = "BUILDING";
+
+                if (i <= 3) {
+                    currentSystemPrompt = STRATEGY_AGENT_PROMPT;
+                    phaseName = "STRATEGY";
+                } else if (i >= 11 && i <= 14) {
+                    currentSystemPrompt = VISION_AUDIT_PROMPT;
+                    phaseName = "SPATIAL_VISION_AUDIT";
+                } else if (i >= 15 && i <= 21) {
+                    currentSystemPrompt = GEOMETRICIAN_AGENT_PROMPT;
+                    phaseName = "GEOMETRIC_PERFECTION";
+                } else if (i >= 22) {
+                    currentSystemPrompt = QA_SUPERVISOR_PROMPT;
+                    phaseName = "FINAL_QA";
+                }
+
                 // --- CONTEXT OPTIMIZATION ---
-                // We ONLY want the LATEST building state observation in our history.
-                // Keeping all previous ones makes the prompt grow quadratically,
-                // causing massive latency and token bloat.
                 const optimizedMessages = loopMessages.filter(m => !m.content.startsWith('### SYSTEM OBSERVATION'));
+
+                // Inject current phase prompt
+                optimizedMessages[0] = { role: 'system', content: currentSystemPrompt };
 
                 optimizedMessages.push({
                     role: 'user',
-                    content: `### SYSTEM OBSERVATION ${i}\nAscii Plan:\n${asciiPlan}\n\nBudget: ${budgetContext}\nNode State:\n${buildingSpecs}\n\nPlease proceed with design operations.`
+                    content: `### [PHASE: ${phaseName}] SYSTEM OBSERVATION ${i}\nAscii Plan:\n${asciiPlan}\n\nBudget: ${budgetContext}\nNode State:\n${buildingSpecs}\n\nPlease proceed with ${phaseName} operations.`
                 });
 
                 const normalized = normalizeMessages(optimizedMessages);
 
                 logAgentStep({
-                    phase: `LOOP_ITERATION_${i}`,
+                    phase: phaseName,
                     iteration: i,
                     model: config.model,
                     status: 'pending',
