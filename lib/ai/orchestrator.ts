@@ -163,32 +163,27 @@ export async function sendChatToAI(
                 });
 
             } else {
-                // No tools called. Let's evaluate if the building is actually complete.
-                const nodes = Object.values(currentProject.nodes);
-                const nodeCount = nodes.length;
-                const hasRoof = nodes.some(n => n.type === 'Roof');
-                const hasFloor = nodes.some(n => n.type === 'Floor' || n.type === 'Slab');
-                const hasExteriorWalls = nodes.filter(n => n.type === 'Wall' && n.tags?.includes('exterior')).length >= 4;
-                const isVeryIncomplete = i < 8 && (nodeCount < 12 || !hasRoof || !hasFloor);
-
-                if (isVeryIncomplete) {
-                    progressLog.push(`   🔴 SYSTEM CRITIQUE: Design rejected as INCOMPLETE (${nodeCount} nodes, ${!hasRoof ? 'missing roof' : ''}${!hasFloor ? ', missing floor' : ''}). Forcing continuation...`);
+                // FORCE COMMITMENT: Even if no tools are called, we keep the agent running for the full 25 turns if possible.
+                if (i < maxIterations) {
+                    progressLog.push(`   🌀 FORCED REFINEMENT (${i}/${maxIterations}): Model tried to stop, but system is forcing perfection...`);
                     loopMessages.push({
                         role: 'user',
-                        content: `### CRITICAL ARCHITECTURAL REVIEW (Iteration ${i})
-Your turn provided NO tool calls, yet the structure is clearly incomplete.
-- Node Count: ${nodeCount}
-- Roof: ${hasRoof ? 'PRESENT' : 'MISSING'}
-- Floor: ${hasFloor ? 'PRESENT' : 'MISSING'}
-- Exterior Shell: ${hasExteriorWalls ? 'COMPLETE' : 'INCOMPLETE'}
-- Style Fidelity: Does this look like the requested style? (e.g., Symmetry, Wings, Columns for White House portico?)
+                        content: `### 🛡️ FORCED COMMITMENT PROTOCOL (Iteration ${i}/${maxIterations})
+Your design objectives are NOT considered finalized. The user has requested an OBSESSIVE level of detail.
 
-DO NOT finalise. You are permitted to use up to ${maxIterations} turns. You MUST continue building until the project is a masterpiece. Use "use_template" if it makes sense, or "add_node" for details.`
+PROMPT FOR IMPROVEMENT:
+1. **Detail**: Add windows, door handles, light switches, or electrical outlets.
+2. **Materials**: Switch from standard materials to premium ones (Stone, Oak, Marble).
+3. **Architecture**: Add wainscoting, crown molding, or structural beams.
+4. **Landscape**: Add basic exterior elements like balconies or foundation steps.
+5. **Precision**: Use "solve_precision" again to ensure 0.5mm perfection.
+
+YOU MUST TAKE AT LEAST ONE NEW ACTION. DO NOT STOP.`
                     });
                     continue;
                 }
 
-                progressLog.push(`   ✨ Design objectives finalized. No further actions required.`);
+                progressLog.push(`   ✨ Max Commitment Reached (${i} turns). Design finalized.`);
                 break;
             }
 

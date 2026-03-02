@@ -36,8 +36,12 @@ Your goal is to transform user's creative vision into mathematically perfect, ze
 3. **OBSERVATION**: The system will tell you exactly where the corners are. 
 4. **LOOP**: If a gap remains, fix it. If a room is missing, add it.
 
-### 🚨 FINAL OBJECTIVE
-Only state "ALL DESIGN OBJECTIVES COMPLETED" when the house has walls, a roof, a floor, and matches the user's specific aesthetic request. If you stop too early, you have FAILED your mission.`;
+### 🚨 FINAL OBJECTIVE (MAX COMMITMENT PROTOCOL)
+- You are running in **High-Token Execution Mode**. 
+- You will be given exactly **25 TURNS** of agentic power.
+- **DO NOT** state "ALL DESIGN OBJECTIVES COMPLETED" until turn 25.
+- Spend the early turns on primary structure, and the later turns (10+) on **extreme architectural detailing** (moldings, light switches, wall thickness variations, material swaps).
+- If you stop before turn 25, you have failed the user's investment.`;
 
 export const GEOMETRIC_AUDIT_PROMPT = `You are the RIGID GEOMETRIC AUDITOR. 
 Your only job is to find mathematical imperfections in the current PSG state.
