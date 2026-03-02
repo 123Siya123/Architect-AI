@@ -71,6 +71,7 @@ import {
     MASTER_ARCHITECT_SYSTEM_PROMPT,
     GEOMETRIC_AUDIT_PROMPT,
 } from './prompts';
+import { logAgentStep, clearLogs } from './logger';
 
 // Phase agents logic remains below...
 
@@ -101,142 +102,132 @@ export async function sendChatToAI(
         loopMessages.push(...request.history.slice(-10).map(m => ({ role: m.role, content: m.content })));
     }
 
-    // Add the user request
-    loopMessages.push({ role: 'user', content: `USER REQUEST: ${request.message}` });
+    clearLogs();
 
     for (let i = 1; i <= maxIterations; i++) {
         progressLog.push(`\n───── 🌀 LOOP ITERATION ${i}/${maxIterations} ─────`);
 
-        try {
-            const buildingSpecs = prepareProjectContext(currentProject);
-            const asciiPlan = generateASCIIFloorPlan(currentProject);
-            const materialContext = prepareMaterialContext(materials);
-            const budgetContext = prepareBudgetContext(currentProject);
+        let iterationSuccess = false;
+        let iterationRetries = 0;
+        const MAX_ITERATION_RETRIES = 5;
 
-            // Add building context as a system observation
-            loopMessages.push({
-                role: 'user',
-                content: `### SYSTEM OBSERVATION ${i}\nAscii Plan:\n${asciiPlan}\n\nBudget: ${budgetContext}\nNode State:\n${buildingSpecs}\n\nPlease proceed with design operations.`
-            });
+        while (!iterationSuccess && iterationRetries < MAX_ITERATION_RETRIES) {
+            try {
+                const buildingSpecs = prepareProjectContext(currentProject);
+                const asciiPlan = generateASCIIFloorPlan(currentProject);
+                const materialContext = prepareMaterialContext(materials);
+                const budgetContext = prepareBudgetContext(currentProject);
 
-            const config = getProviderConfig();
-            const normalized = normalizeMessages(loopMessages);
-            const result = await callProviderWithTools(config, normalized);
-
-            if (result.text) {
-                finalMessage = result.text;
-                loopMessages.push({ role: 'assistant', content: result.text });
-                progressLog.push(`   💭 Reasoning: "${result.text.substring(0, 80)}..."`);
-            }
-
-            if (result.toolCalls && result.toolCalls.length > 0) {
-                progressLog.push(`   🛠️ EXECUTION: Processing ${result.toolCalls.length} structural operation(s)...`);
-                const resultsForObservation: string[] = [];
-                let turnSuccessCount = 0;
-
-                for (const tc of result.toolCalls) {
-                    try {
-                        const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
-                        const validation = validateOperation(op, currentProject);
-
-                        if (validation.valid) {
-                            allValidatedOps.push(op);
-                            const applied = applyOperation(currentProject, op);
-                            if (applied.project) {
-                                currentProject = applied.project;
-                                turnSuccessCount++;
-                                resultsForObservation.push(`✅ ${tc.name} applied on ${op.target_id}`);
-                            }
-                        } else {
-                            resultsForObservation.push(`❌ ${tc.name} validation failed: ${validation.errors.join(', ')}`);
-                            progressLog.push(`   ⚠️ Rejected: ${tc.name} failed constraints.`);
-                        }
-                    } catch (e) {
-                        resultsForObservation.push(`❌ ${tc.name} runtime error`);
-                    }
-                }
-
-                progressLog.push(`   ✅ Added ${turnSuccessCount} valid operations to the architecture.`);
                 loopMessages.push({
                     role: 'user',
-                    content: `### OBSERVATION ${i} RESULTS\n${resultsForObservation.join('\n')}\n\nReview the visual state. Continue building or finalize IF and ONLY IF the structure is complete and aesthetically precise.`
+                    content: `### SYSTEM OBSERVATION ${i}\nAscii Plan:\n${asciiPlan}\n\nBudget: ${budgetContext}\nNode State:\n${buildingSpecs}\n\nPlease proceed with design operations.`
                 });
 
-            } else {
-                // FORCE COMMITMENT: Even if no tools are called, we keep the agent running for the full 25 turns if possible.
-                if (i < maxIterations) {
-                    progressLog.push(`   🌀 FORCED REFINEMENT (${i}/${maxIterations}): Model tried to stop, but system is forcing perfection...`);
-                    loopMessages.push({
-                        role: 'user',
-                        content: `### 🛡️ FORCED COMMITMENT PROTOCOL (Iteration ${i}/${maxIterations})
-Your design objectives are NOT considered finalized. The user has requested an OBSESSIVE level of detail.
+                const config = getProviderConfig();
+                const normalized = normalizeMessages(loopMessages);
 
-PROMPT FOR IMPROVEMENT:
-1. **Detail**: Add windows, door handles, light switches, or electrical outlets.
-2. **Materials**: Switch from standard materials to premium ones (Stone, Oak, Marble).
-3. **Architecture**: Add wainscoting, crown molding, or structural beams.
-4. **Landscape**: Add basic exterior elements like balconies or foundation steps.
-5. **Precision**: Use "solve_precision" again to ensure 0.5mm perfection.
+                logAgentStep({
+                    phase: `LOOP_ITERATION_${i}`,
+                    iteration: i,
+                    model: config.model,
+                    status: 'pending',
+                    prompt: normalized[normalized.length - 1].content
+                });
 
-YOU MUST TAKE AT LEAST ONE NEW ACTION. DO NOT STOP.`
-                    });
-                    continue;
+                const result = await callProviderWithTools(config, normalized);
+
+                logAgentStep({
+                    phase: `LOOP_ITERATION_${i}`,
+                    iteration: i,
+                    model: config.model,
+                    status: 'success',
+                    response: result.text,
+                    toolCalls: result.toolCalls
+                });
+
+                if (result.text) {
+                    finalMessage = result.text;
+                    loopMessages.push({ role: 'assistant', content: result.text });
+                    progressLog.push(`   💭 Reasoning: "${result.text.substring(0, 80)}..."`);
                 }
 
-                progressLog.push(`   ✨ Max Commitment Reached (${i} turns). Design finalized.`);
-                break;
-            }
+                if (result.toolCalls && result.toolCalls.length > 0) {
+                    progressLog.push(`   🛠️ EXECUTION: Processing ${result.toolCalls.length} structural operation(s)...`);
+                    const resultsForObservation: string[] = [];
+                    let turnSuccessCount = 0;
 
-        } catch (error) {
-            console.error(`[Orchestrator] Loop Iteration ${i} FAILED:`, error);
-            progressLog.push(`   ❌ CRITICAL LOOP ERROR: ${error instanceof Error ? error.message : String(error)}`);
-            break;
-        }
-    }
-
-    /*
-    // =========================================================================
-    // FINAL RIGID AUDIT (Advanced Correction Phase)
-    // =========================================================================
-    // This section is currently disabled. The main ReAct loop handles all design logic.
-    progressLog.push(`\n───── 🛡️ FINAL GEOMETRIC AUDIT ─────`);
-    try {
-        const auditConfig = getProviderConfig();
-        const auditResult = await callProviderNoTools(auditConfig, [
-            { role: 'system', content: GEOMETRIC_AUDIT_PROMPT },
-            { role: 'user', content: `FULL ARCHITECTURAL STATE:\n${prepareProjectContext(currentProject)}` }
-        ]);
-
-        const auditData = extractJSON<{ status: string, mistakes: any[] }>(auditResult.text);
-        if (auditData?.status === 'MISTAKE_FOUND' && auditData.mistakes?.length > 0) {
-            progressLog.push(`   ⚠️ Audit IDENTIFIED ${auditData.mistakes.length} imperfection(s). Deploying FIXER AGENT...`);
-            for (let fixTurn = 1; fixTurn <= 3; fixTurn++) {
-                progressLog.push(`   🔧 Fixer Turn ${fixTurn}/3...`);
-                const fixerConfig = getProviderConfig();
-                const currentMistakes = fixTurn === 1 ? auditData.mistakes : "Review state and finalize.";
-                const fixMsgs = [
-                    { role: 'system', content: 'You are the ELITE FIXER AGENT. Use Gemini 3.1 HIGH THINKING.' },
-                    { role: 'user', content: `STATE:\n${prepareProjectContext(currentProject)}\n\nMISTAKES:\n${JSON.stringify(currentMistakes)}` }
-                ];
-                const fixResult = await callProviderWithTools(fixerConfig, fixMsgs);
-                if (fixResult.toolCalls && fixResult.toolCalls.length > 0) {
-                    let turnSuccesses = 0;
-                    for (const tc of fixResult.toolCalls) {
+                    for (const tc of result.toolCalls) {
                         try {
                             const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
-                            if (validateOperation(op, currentProject).valid) {
+                            const validation = validateOperation(op, currentProject);
+
+                            if (validation.valid) {
                                 allValidatedOps.push(op);
                                 const applied = applyOperation(currentProject, op);
-                                if (applied.project) { currentProject = applied.project; turnSuccesses++; }
+                                if (applied.project) {
+                                    currentProject = applied.project;
+                                    turnSuccessCount++;
+                                    resultsForObservation.push(`✅ ${tc.name} applied on ${op.target_id}`);
+                                }
+                            } else {
+                                resultsForObservation.push(`❌ ${tc.name} validation failed: ${validation.errors.join(', ')}`);
+                                progressLog.push(`   ⚠️ Rejected: ${tc.name} failed constraints.`);
                             }
-                        } catch { }
+                        } catch (e) {
+                            resultsForObservation.push(`❌ ${tc.name} runtime error`);
+                        }
                     }
-                    if (turnSuccesses === 0) break;
-                } else { break; }
+
+                    progressLog.push(`   ✅ Added ${turnSuccessCount} valid operations to the architecture.`);
+                    loopMessages.push({
+                        role: 'user',
+                        content: `### OBSERVATION ${i} RESULTS\n${resultsForObservation.join('\n')}\n\nReview the visual state. Continue building or finalize IF and ONLY IF the structure is complete and aesthetically precise.`
+                    });
+
+                    iterationSuccess = true;
+
+                } else {
+                    // FORCE COMMITMENT protocol
+                    if (i < maxIterations) {
+                        progressLog.push(`   🌀 FORCED REFINEMENT (${i}/${maxIterations}): Model tried to stop, but system is forcing perfection...`);
+                        loopMessages.push({
+                            role: 'user',
+                            content: `### 🛡️ FORCED COMMITMENT PROTOCOL (Iteration ${i}/${maxIterations})\nYour design objectives are NOT considered finalized. The user has requested an OBSESSIVE level of detail.\n\nYOU MUST TAKE AT LEAST ONE NEW ACTION. DO NOT STOP.`
+                        });
+                        iterationSuccess = true;
+                        // Logic will naturally move to next 'i'
+                    } else {
+                        progressLog.push(`   ✨ Max Commitment Reached (${i} turns). Design finalized.`);
+                        iterationSuccess = true;
+                        i = maxIterations + 1; // Break the outer for loop
+                    }
+                }
+
+            } catch (error) {
+                iterationRetries++;
+                const errMsg = error instanceof Error ? error.message : String(error);
+                console.error(`[Orchestrator] Loop Iteration ${i} failed (Attempt ${iterationRetries}/${MAX_ITERATION_RETRIES}):`, errMsg);
+
+                logAgentStep({
+                    phase: `LOOP_ITERATION_${i}`,
+                    iteration: i,
+                    model: 'various',
+                    status: 'failed',
+                    error: errMsg
+                });
+
+                if (iterationRetries < MAX_ITERATION_RETRIES) {
+                    progressLog.push(`   ❌ Iteration ${i} failed. Retrying (${iterationRetries}/${MAX_ITERATION_RETRIES})...`);
+                    await new Promise(r => setTimeout(r, 2000));
+                } else {
+                    progressLog.push(`   ❌ CRITICAL LOOP ERROR: Iteration ${i} failed after ${MAX_ITERATION_RETRIES} attempts.`);
+                    iterationSuccess = false;
+                    i = maxIterations + 1; // Exit outer loop
+                    break;
+                }
             }
         }
-    } catch (e) { }
-    */
+    }
 
     progressLog.push(`\n═══ ANTIGRAVITY PIPELINE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
 
@@ -420,10 +411,10 @@ async function callProviderNoTools(
     initialConfig: AIProviderConfig,
     messages: Array<{ role: string; content: string }>
 ): Promise<LLMCallResult> {
-    const MAX_ATTEMPTS = 5;
+    const MAX_TOTAL_ATTEMPTS = 5;
     let config = initialConfig;
 
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    for (let attempt = 1; attempt <= MAX_TOTAL_ATTEMPTS; attempt++) {
         try {
             switch (config.provider) {
                 case 'gemini': return await callGeminiNoTools(config, messages);
@@ -434,40 +425,39 @@ async function callProviderNoTools(
             }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.warn(`[callProviderNoTools] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, errMsg);
+            console.warn(`[callProviderNoTools] Attempt ${attempt}/${MAX_TOTAL_ATTEMPTS} failed:`, errMsg);
 
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
             if (isUnavailable && config.provider === 'gemini') {
+                // MODEL FALLBACK LOGIC (Sub-loop within the attempt)
                 if (config.model === 'gemini-3.1-pro-preview') {
                     console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
                     config = { ...config, model: 'gemini-3-pro-preview' };
-                    continue;
+                    // Reset attempt on fallback to give the new model a fair chance? 
+                    // No, let's keep the global limit but skip the delay
                 } else if (config.model === 'gemini-3-pro-preview') {
                     console.warn('[Orchestrator] Gemini 3 Pro unavailable. Falling back to Gemini 3 Flash...');
                     config = { ...config, model: 'gemini-3-flash-preview' };
-                    continue;
                 } else if (config.model === 'gemini-3-flash-preview') {
                     console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
-                    config = { ...config, model: 'gemini-1.5-pro-latest' };
-                    continue;
+                    config = { ...config, model: 'gemini-1.5-pro' };
+                } else {
+                    // No more fallbacks, just rotate key and retry the initial or current model
+                    rotateKey();
+                    config = getProviderConfig();
                 }
+            } else {
+                if (errMsg.includes('429')) markKeyRateLimited(config.apiKey);
+                rotateKey();
+                config = getProviderConfig();
             }
 
-            if (errMsg.includes('429')) {
-                markKeyRateLimited(config.apiKey);
-            }
-
-            if (attempt === MAX_ATTEMPTS) throw error;
-
-            rotateKey();
-            config = getProviderConfig();
-
-            // Wait a moment before hammering the API again
-            await new Promise(r => setTimeout(r, 1500));
+            if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
+            await new Promise(r => setTimeout(r, 2000));
         }
     }
-    throw new Error('Unreachable');
+    throw new Error('Retries exhausted');
 }
 
 /**
@@ -478,10 +468,10 @@ async function callProviderWithTools(
     initialConfig: AIProviderConfig,
     messages: Array<{ role: string; content: string }>
 ): Promise<LLMCallResult> {
-    const MAX_ATTEMPTS = 5;
+    const MAX_TOTAL_ATTEMPTS = 5;
     let config = initialConfig;
 
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    for (let attempt = 1; attempt <= MAX_TOTAL_ATTEMPTS; attempt++) {
         try {
             switch (config.provider) {
                 case 'gemini': return await callGemini(config, messages);
@@ -492,40 +482,36 @@ async function callProviderWithTools(
             }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            console.warn(`[callProviderWithTools] Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, errMsg);
+            console.warn(`[callProviderWithTools] Attempt ${attempt}/${MAX_TOTAL_ATTEMPTS} failed:`, errMsg);
 
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
             if (isUnavailable && config.provider === 'gemini') {
+                // MODEL FALLBACK LOGIC
                 if (config.model === 'gemini-3.1-pro-preview') {
                     console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
                     config = { ...config, model: 'gemini-3-pro-preview' };
-                    continue;
                 } else if (config.model === 'gemini-3-pro-preview') {
                     console.warn('[Orchestrator] Gemini 3 Pro unavailable. Falling back to Gemini 3 Flash...');
                     config = { ...config, model: 'gemini-3-flash-preview' };
-                    continue;
                 } else if (config.model === 'gemini-3-flash-preview') {
                     console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
-                    config = { ...config, model: 'gemini-1.5-pro-latest' };
-                    continue;
+                    config = { ...config, model: 'gemini-1.5-pro' };
+                } else {
+                    rotateKey();
+                    config = getProviderConfig();
                 }
+            } else {
+                if (errMsg.includes('429')) markKeyRateLimited(config.apiKey);
+                rotateKey();
+                config = getProviderConfig();
             }
 
-            if (errMsg.includes('429')) {
-                markKeyRateLimited(config.apiKey);
-            }
-
-            if (attempt === MAX_ATTEMPTS) throw error;
-
-            rotateKey();
-            config = getProviderConfig();
-
-            // Wait a moment before hammering the API again
-            await new Promise(r => setTimeout(r, 1500));
+            if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
+            await new Promise(r => setTimeout(r, 2000));
         }
     }
-    throw new Error('Unreachable');
+    throw new Error('Retries exhausted');
 }
 
 // =============================================================================
