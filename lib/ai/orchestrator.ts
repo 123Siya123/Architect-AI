@@ -113,18 +113,25 @@ export async function sendChatToAI(
 
         while (!iterationSuccess && iterationRetries < MAX_ITERATION_RETRIES) {
             try {
+                const config = getProviderConfig();
+
                 const buildingSpecs = prepareProjectContext(currentProject);
                 const asciiPlan = generateASCIIFloorPlan(currentProject);
                 const materialContext = prepareMaterialContext(materials);
                 const budgetContext = prepareBudgetContext(currentProject);
 
-                loopMessages.push({
+                // --- CONTEXT OPTIMIZATION ---
+                // We ONLY want the LATEST building state observation in our history.
+                // Keeping all previous ones makes the prompt grow quadratically,
+                // causing massive latency and token bloat.
+                const optimizedMessages = loopMessages.filter(m => !m.content.startsWith('### SYSTEM OBSERVATION'));
+
+                optimizedMessages.push({
                     role: 'user',
                     content: `### SYSTEM OBSERVATION ${i}\nAscii Plan:\n${asciiPlan}\n\nBudget: ${budgetContext}\nNode State:\n${buildingSpecs}\n\nPlease proceed with design operations.`
                 });
 
-                const config = getProviderConfig();
-                const normalized = normalizeMessages(loopMessages);
+                const normalized = normalizeMessages(optimizedMessages);
 
                 logAgentStep({
                     phase: `LOOP_ITERATION_${i}`,
@@ -135,6 +142,11 @@ export async function sendChatToAI(
                 });
 
                 const result = await callProviderWithTools(config, normalized);
+
+                // If call succeeded, WE COMMIT the observation to the main history 
+                // so the NEXT iteration's 'optimizedMessages' (which filters the history) 
+                // sees the state as it was after iteration i-1.
+                loopMessages.push(optimizedMessages[optimizedMessages.length - 1]);
 
                 logAgentStep({
                     phase: `LOOP_ITERATION_${i}`,
@@ -217,8 +229,8 @@ export async function sendChatToAI(
                 });
 
                 if (iterationRetries < MAX_ITERATION_RETRIES) {
-                    progressLog.push(`   ❌ Iteration ${i} failed. Retrying (${iterationRetries}/${MAX_ITERATION_RETRIES})...`);
-                    await new Promise(r => setTimeout(r, 2000));
+                    progressLog.push(`   ❌ Iteration ${i} failed. Retrying in 500ms (${iterationRetries}/${MAX_ITERATION_RETRIES})...`);
+                    await new Promise(r => setTimeout(r, 500));
                 } else {
                     progressLog.push(`   ❌ CRITICAL LOOP ERROR: Iteration ${i} failed after ${MAX_ITERATION_RETRIES} attempts.`);
                     iterationSuccess = false;
@@ -454,7 +466,7 @@ async function callProviderNoTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 500));
         }
     }
     throw new Error('Retries exhausted');
@@ -508,7 +520,7 @@ async function callProviderWithTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 500));
         }
     }
     throw new Error('Retries exhausted');
