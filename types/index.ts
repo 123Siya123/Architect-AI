@@ -359,7 +359,8 @@ export type OperationType =
   | 'move_room'             // Compound: move room + all children
   | 'solve_precision'       // Architectural precision solver
   | 'set_precision_level'   // Toggle precision (Conceptual/Standard/Construction)
-  | 'create_custom_element'; // Custom shape from description
+  | 'create_custom_element' // Custom shape from description
+  | 'use_template';         // Apply pre-built template
 
 /**
  * PSGOperation — A single atomic edit to the scene graph.

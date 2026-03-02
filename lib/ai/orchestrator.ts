@@ -88,7 +88,7 @@ export async function sendChatToAI(
 
     let currentProject = { ...request.project, nodes: { ...request.project.nodes } };
     const allValidatedOps: PSGOperation[] = [];
-    const maxIterations = 15;
+    const maxIterations = 25; // High Thinking capacity — lots of rope.
     let finalMessage = "";
 
     // The message history for this specific turn's ReAct loop
@@ -98,13 +98,7 @@ export async function sendChatToAI(
 
     // Add previous chat history for context
     if (request.history && request.history.length > 0) {
-        // Include last 10 messages for full context
-        for (const msg of request.history.slice(-10)) {
-            loopMessages.push({
-                role: msg.role === 'assistant' ? 'assistant' : 'user',
-                content: msg.content
-            });
-        }
+        loopMessages.push(...request.history.slice(-10).map(m => ({ role: m.role, content: m.content })));
     }
 
     // Add the user request
@@ -165,19 +159,35 @@ export async function sendChatToAI(
                 progressLog.push(`   ✅ Added ${turnSuccessCount} valid operations to the architecture.`);
                 loopMessages.push({
                     role: 'user',
-                    content: `### OBSERVATION ${i} RESULTS\n${resultsForObservation.join('\n')}\n\nContinue building or finalize if complete.`
+                    content: `### OBSERVATION ${i} RESULTS\n${resultsForObservation.join('\n')}\n\nReview the visual state. Continue building or finalize IF and ONLY IF the structure is complete and aesthetically precise.`
                 });
 
             } else {
-                // No tools called
-                if (i === 1) {
-                    progressLog.push(`   💬 No-Action detected on iteration 1. Forcing building mindset...`);
+                // No tools called. Let's evaluate if the building is actually complete.
+                const nodes = Object.values(currentProject.nodes);
+                const nodeCount = nodes.length;
+                const hasRoof = nodes.some(n => n.type === 'Roof');
+                const hasFloor = nodes.some(n => n.type === 'Floor' || n.type === 'Slab');
+                const hasExteriorWalls = nodes.filter(n => n.type === 'Wall' && n.tags?.includes('exterior')).length >= 4;
+                const isVeryIncomplete = i < 8 && (nodeCount < 12 || !hasRoof || !hasFloor);
+
+                if (isVeryIncomplete) {
+                    progressLog.push(`   🔴 SYSTEM CRITIQUE: Design rejected as INCOMPLETE (${nodeCount} nodes, ${!hasRoof ? 'missing roof' : ''}${!hasFloor ? ', missing floor' : ''}). Forcing continuation...`);
                     loopMessages.push({
                         role: 'user',
-                        content: "SYSTEM WARNING: You provided no tool calls. You MUST use add_node or other tools to build the house. Natural language is not enough."
+                        content: `### CRITICAL ARCHITECTURAL REVIEW (Iteration ${i})
+Your turn provided NO tool calls, yet the structure is clearly incomplete.
+- Node Count: ${nodeCount}
+- Roof: ${hasRoof ? 'PRESENT' : 'MISSING'}
+- Floor: ${hasFloor ? 'PRESENT' : 'MISSING'}
+- Exterior Shell: ${hasExteriorWalls ? 'COMPLETE' : 'INCOMPLETE'}
+- Style Fidelity: Does this look like the requested style? (e.g., Symmetry, Wings, Columns for White House portico?)
+
+DO NOT finalise. You are permitted to use up to ${maxIterations} turns. You MUST continue building until the project is a masterpiece. Use "use_template" if it makes sense, or "add_node" for details.`
                     });
                     continue;
                 }
+
                 progressLog.push(`   ✨ Design objectives finalized. No further actions required.`);
                 break;
             }
@@ -375,6 +385,14 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
         case 'set_precision_level':
             return {
                 type: 'set_precision_level' as OperationType,
+                target_id: 'project',
+                params: { ...args },
+                timestamp,
+            };
+
+        case 'use_template':
+            return {
+                type: 'use_template' as OperationType,
                 target_id: 'project',
                 params: { ...args },
                 timestamp,

@@ -39,6 +39,12 @@ import type {
     Vec3,
 } from '@/types';
 import { validateOperation } from './validator';
+import {
+    createWhiteHouseTemplate,
+    createModern4BedTemplate,
+    createSimple3BedTemplate,
+    createMinimalistStudioTemplate
+} from './templates';
 
 // =============================================================================
 // GRID SNAPPING — Eliminates floating-point drift
@@ -156,6 +162,9 @@ export function applyOperation(
             case 'set_precision_level':
                 // Toggle between Conceptual (5cm) and Construction (0.5mm)
                 updatedProject = setPrecisionLevel(project, operation);
+                break;
+            case 'use_template':
+                updatedProject = useTemplate(project, operation);
                 break;
             default:
                 return {
@@ -879,6 +888,52 @@ function setPrecisionLevel(project: PSGProject, operation: PSGOperation): PSGPro
             ...project.settings,
             precision_level: levelInt,
             grid_size: newGridSize,
+        }
+    };
+}
+
+/**
+ * Applies a pre-built house template to the project.
+ */
+function useTemplate(project: PSGProject, operation: PSGOperation): PSGProject {
+    const { template_slug } = operation.params as { template_slug: string };
+
+    let newProject: PSGProject;
+    switch (template_slug) {
+        case 'white_house':
+            newProject = createWhiteHouseTemplate();
+            break;
+        case 'modern_4bed_2floor':
+        case 'modern_4bed':
+            newProject = createModern4BedTemplate();
+            break;
+        case 'simple_3bed_1floor':
+        case 'simple_3bed':
+            newProject = createSimple3BedTemplate();
+            break;
+        case 'minimalist_studio':
+            newProject = createMinimalistStudioTemplate();
+            break;
+        default:
+            throw new Error(`Template "${template_slug}" not found.`);
+    }
+
+    // Preserve metadata but replace structure
+    return {
+        ...newProject,
+        id: project.id,
+        created_at: project.created_at,
+        modified_at: new Date().toISOString(),
+        version: project.version + 1,
+        settings: {
+            ...project.settings,
+            grid_size: project.settings.grid_size,
+            precision_level: project.settings.precision_level,
+        },
+        budget: {
+            ...project.budget,
+            total_budget: project.budget.total_budget,
+            currency: project.budget.currency,
         }
     };
 }

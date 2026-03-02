@@ -485,4 +485,28 @@ export const AI_TOOLS = [
             },
         },
     },
+    // ─── TOOL 12: Use a pre-built template ───────────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'use_template',
+            description:
+                'Apply a pre-built house template to the current project. ' +
+                'This will REPLACE the entire project state with the template. ' +
+                'Use this to quickly satisfy complex requests like "White House", "Mansion", or "3-Bedroom Home". ' +
+                'Available templates: "white_house", "modern_4bed", "simple_3bed", "minimalist_studio".',
+            parameters: {
+                type: 'object',
+                properties: {
+                    template_slug: {
+                        type: 'string',
+                        enum: ['white_house', 'modern_4bed', 'simple_3bed_1floor', 'minimalist_studio'],
+                        description: 'The slug of the template to apply.'
+                    },
+                    reasoning: { type: 'string', description: 'Why are you choosing this template?' }
+                },
+                required: ['template_slug']
+            },
+        },
+    },
 ];
