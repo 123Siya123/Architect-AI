@@ -30,6 +30,13 @@ export function prepareProjectContext(project: PSGProject): string {
         if (node.parent_id) readable.p = node.parent_id;
         if (node.custom_geometry) readable.cg = node.custom_geometry;
 
+        if (node.surface_matrix) {
+            readable.surface = {
+                desc: node.surface_matrix.description,
+                grid: `${node.surface_matrix.rows}x${node.surface_matrix.cols}`
+            };
+        }
+
         readableNodes[id] = readable;
     }
 

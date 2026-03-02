@@ -38,6 +38,7 @@ import { ThreeEvent } from '@react-three/fiber';
 import { useDesignStore } from '@/store/useDesignStore';
 import {
     buildWallWithOpenings,
+    buildMatrixWall,
     buildWindowGroup,
     buildDoorGroup,
     resolveWallCorners,
@@ -119,11 +120,17 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision, f
         dimensions: { ...node.dimensions, x: adjustedWidth },
     }), [node, adjustedWidth]);
 
-    // Build wall geometry with openings
+    // Build wall geometry with openings OR matrix-based geometry
     const wallGeometry = useMemo(
-        () => buildWallWithOpenings(adjustedNode, allNodes),
+        () => {
+            if (node.surface_matrix) {
+                return buildMatrixWall(node);
+            }
+            return buildWallWithOpenings(adjustedNode, allNodes);
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [node.id, node.version, adjustedWidth, node.dimensions.y, node.dimensions.z,
+        node.surface_matrix ? JSON.stringify(node.surface_matrix) : '',
         node.children_ids.map(id => {
             const child = allNodes[id];
             return child ? `${child.version}_${child.position.x}_${child.position.z}_${child.position.y}` : '';

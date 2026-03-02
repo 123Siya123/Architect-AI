@@ -509,4 +509,62 @@ export const AI_TOOLS = [
             },
         },
     },
+    // ─── TOOL 13: Advanced Wall Surface Editing ─────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'edit_wall_surface',
+            description:
+                'Apply a custom surface modification to a wall (e.g., bulbs, curves, holes, or variable thickness). ' +
+                'Internal representation is a 2D matrix representing thickness multipliers across the wall face. ' +
+                '0.0 = hole (cutout), 1.0 = standard thickness, 2.0+ = bulbous/thickened area. ' +
+                'This tool allows you to "paint" onto the wall surface.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    target_id: { type: 'string', description: 'ID of the Wall or Partition' },
+                    command: {
+                        type: 'string',
+                        enum: ['reset', 'set_bulb', 'cut_hole', 'set_matrix', 'draw_curve'],
+                        description: 'Operation to perform'
+                    },
+                    description: { type: 'string', description: 'A short human-readable summary of the modification (e.g., "Bulb in the top-left corner")' },
+                    rows: { type: 'number', description: 'Matrix resolution (Y-axis). 2x2 is minimum, 20x20 is standard for bulbs. Default 10.' },
+                    cols: { type: 'number', description: 'Matrix resolution (X-axis). Default 10.' },
+                    cx: { type: 'number', description: 'X-center (0.0 to 1.0) for bulb' },
+                    cy: { type: 'number', description: 'Y-center (0.0 to 1.0) for bulb' },
+                    radius: { type: 'number', description: 'Radius (0.0 to 1.0) for bulb' },
+                    strength: { type: 'number', description: 'Thickness multiplier at bulb peak. 2.0 means double the wall thickness.' },
+                    x: { type: 'number', description: 'X-start (0.0 to 1.0) for rectangular hole' },
+                    y: { type: 'number', description: 'Y-start (0.0 to 1.0) for rectangular hole' },
+                    w: { type: 'number', description: 'Width percentage (0.0 to 1.0) for rectangular hole' },
+                    h: { type: 'number', description: 'Height percentage (0.0 to 1.0) for rectangular hole' },
+                    data: {
+                        type: 'array',
+                        items: { type: 'array', items: { type: 'number' } },
+                        description: 'Raw matrix data (optional, only for command="set_matrix")'
+                    }
+                },
+                required: ['target_id', 'command', 'description']
+            },
+        },
+    },
+    // ─── TOOL 14: Look up Wall Surface Matrix ────────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'get_wall_surface',
+            description:
+                'Get the full numerical matrix for a wall\'s custom surface. ' +
+                'Call this ONLY if you need to precisely edit an existing complex wall shape. ' +
+                'By default, you only see a short description of the wall surface.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    target_id: { type: 'string', description: 'ID of the wall to look up' }
+                },
+                required: ['target_id']
+            },
+        },
+    },
 ];

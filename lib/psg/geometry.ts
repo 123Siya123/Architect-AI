@@ -142,6 +142,112 @@ export function buildWallWithOpenings(
 }
 
 /**
+ * Creates advanced wall geometry based on a SurfaceMatrix (for bulbs, curves, holes)
+ *
+ * @param wall - The Wall PSGNode with a surface_matrix
+ * @returns THREE.BufferGeometry
+ */
+export function buildMatrixWall(wall: PSGNode): THREE.BufferGeometry {
+    const { rows, cols, data } = wall.surface_matrix!;
+    const W = wall.dimensions.x;
+    const H = wall.dimensions.y;
+    const T = wall.dimensions.z;
+
+    const geometry = new THREE.BufferGeometry();
+    const vertices: number[] = [];
+    const indices: number[] = [];
+    const normals: number[] = [];
+
+    const cellW = W / cols;
+    const cellH = H / rows;
+
+    // Helper to get vertex index
+    const getIdx = (r: number, c: number, isBack: boolean) => {
+        const base = r * (cols + 1) + c;
+        return isBack ? base + (rows + 1) * (cols + 1) : base;
+    };
+
+    // 1. Generate Vertices
+    // We create (rows+1) x (cols+1) grid points to form the cells
+    for (let isBack = 0; isBack < 2; isBack++) {
+        const sideMult = isBack ? -1 : 1;
+        for (let r = 0; r <= rows; r++) {
+            for (let c = 0; c <= cols; c++) {
+                const x = -W / 2 + c * cellW;
+                const y = -H / 2 + r * cellH;
+
+                // Thickness lookup: use the average of surrounding cells for the vertex displacement
+                // This creates a smooth transition between varied thickness cells.
+                let thickMult = 1;
+                const rCell = Math.min(r, rows - 1);
+                const cCell = Math.min(c, cols - 1);
+                thickMult = data[rCell][cCell];
+
+                const z = (T / 2) * thickMult * sideMult;
+
+                vertices.push(x, y, z);
+                normals.push(0, 0, sideMult); // Initial normals
+            }
+        }
+    }
+
+    // 2. Generate Indices (Faces)
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const val = data[r][c];
+            if (val <= 0) continue; // Hole! Skip this cell.
+
+            // Front face (CCW winding)
+            const f0 = getIdx(r, c, false);
+            const f1 = getIdx(r, c + 1, false);
+            const f2 = getIdx(r + 1, c + 1, false);
+            const f3 = getIdx(r + 1, c, false);
+
+            indices.push(f0, f1, f2);
+            indices.push(f0, f2, f3);
+
+            // Back face (CW winding relative to front, so CCW if looking from back)
+            const b0 = getIdx(r, c, true);
+            const b1 = getIdx(r, c + 1, true);
+            const b2 = getIdx(r + 1, c + 1, true);
+            const b3 = getIdx(r + 1, c, true);
+
+            indices.push(b0, b2, b1);
+            indices.push(b0, b3, b2);
+
+            // 3. Side faces (if edge of hole or wall boundary)
+            // Top edge
+            if (r === rows - 1 || data[r + 1][c] <= 0) {
+                indices.push(f3, f2, b2);
+                indices.push(f3, b2, b3);
+            }
+            // Bottom edge
+            if (r === 0 || data[r - 1][c] <= 0) {
+                indices.push(f0, b1, f1);
+                indices.push(f0, b0, b1);
+            }
+            // Left edge
+            if (c === 0 || data[r][c - 1] <= 0) {
+                indices.push(f0, f3, b3);
+                indices.push(f0, b3, b0);
+            }
+            // Right edge
+            if (c === cols - 1 || data[r][c + 1] <= 0) {
+                indices.push(f1, b2, f2);
+                indices.push(f1, b1, b2);
+            }
+        }
+    }
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+
+    return geometry;
+}
+
+/**
  * Computes the local X offset of an opening within its parent wall.
  *
  * For a wall aligned East-West (yaw=0°): local X = opening.position.x - wall.position.x

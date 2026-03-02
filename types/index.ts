@@ -146,6 +146,14 @@ export type PSGNodeType =
   | 'ElectricalOutlet' // Electrical
   | 'ElectricalPanel'; // Electrical
 
+/** Matrix-based surface modification (bulbs, curves, holes) */
+export interface SurfaceMatrix {
+  rows: number;
+  cols: number;
+  data: number[][];    // Grid of thickness multipliers (0 = hole, 1 = standard, >1 = bulb)
+  description: string; // Human/AI-readable summary of the shape
+}
+
 /** Tags that classify a node's structural role */
 export type StructuralTag =
   | 'load_bearing'    // Removing this would compromise structure
@@ -252,6 +260,9 @@ export interface PSGNode {
 
   /** Wall: configuration */
   wall_style?: 'straight' | 'curved' | 'round' | 'wavy' | 'sloped';
+
+  /** Wall: Advanced surface matrix for curves/bulbs/holes */
+  surface_matrix?: SurfaceMatrix;
 
   /** Balcony: configuration */
   balcony_style?: 'projecting' | 'recessed' | 'juliet' | 'loggia' | 'wrap_around' | 'mezzanine' | 'deck' | 'veranda';
@@ -360,6 +371,7 @@ export type OperationType =
   | 'solve_precision'       // Architectural precision solver
   | 'set_precision_level'   // Toggle precision (Conceptual/Standard/Construction)
   | 'create_custom_element' // Custom shape from description
+  | 'edit_wall_surface'     // NEW: Advanced wall matrix editing
   | 'use_template';         // Apply pre-built template
 
 /**

@@ -192,6 +192,17 @@ export async function sendChatToAI(
 
                     for (const tc of result.toolCalls) {
                         try {
+                            if (tc.name === 'get_wall_surface') {
+                                const wallId = tc.args.target_id as string;
+                                const wall = currentProject.nodes[wallId];
+                                if (wall?.surface_matrix) {
+                                    resultsForObservation.push(`🔍 Matrix for ${wallId}:\n${JSON.stringify(wall.surface_matrix.data)}`);
+                                } else {
+                                    resultsForObservation.push(`❌ ${wallId} has no custom surface matrix.`);
+                                }
+                                continue;
+                            }
+
                             const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
                             const validation = validateOperation(op, currentProject);
 
@@ -418,6 +429,13 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
                 timestamp,
             };
 
+        case 'edit_wall_surface':
+            return {
+                type: 'edit_wall_surface',
+                target_id: (args.target_id as string) || 'unknown',
+                params: { ...args },
+                timestamp,
+            };
         default:
             throw new Error(`Unknown tool name: ${name}`);
     }

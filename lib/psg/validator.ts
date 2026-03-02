@@ -199,6 +199,12 @@ function validateSchema(
             }
             break;
         }
+        case 'edit_wall_surface': {
+            const { command, description } = operation.params as Record<string, unknown>;
+            if (!command) errors.push('edit_wall_surface requires command parameter');
+            if (!description) errors.push('edit_wall_surface requires description parameter');
+            break;
+        }
     }
 
     return { valid: errors.length === 0, errors, warnings };

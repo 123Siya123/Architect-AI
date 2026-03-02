@@ -163,6 +163,9 @@ export function applyOperation(
                 // Toggle between Conceptual (5cm) and Construction (0.5mm)
                 updatedProject = setPrecisionLevel(project, operation);
                 break;
+            case 'edit_wall_surface':
+                updatedProject = editWallSurface(project, operation);
+                break;
             case 'use_template':
                 updatedProject = useTemplate(project, operation);
                 break;
@@ -793,6 +796,115 @@ function createCustomElement(project: PSGProject, operation: PSGOperation): PSGP
     }
 
     return { ...project, nodes: updatedNodes };
+}
+
+/**
+ * Advanced surface editing for walls (bulbs, curves, holes)
+ */
+function editWallSurface(project: PSGProject, operation: PSGOperation): PSGProject {
+    const node = project.nodes[operation.target_id];
+    if (!node || (node.type !== 'Wall' && node.type !== 'Partition')) {
+        throw new Error(`edit_wall_surface: node "${operation.target_id}" must be a Wall or Partition`);
+    }
+
+    const params = operation.params as {
+        command: 'reset' | 'set_bulb' | 'cut_hole' | 'set_matrix' | 'draw_curve';
+        rows?: number;
+        cols?: number;
+        cx?: number; // 0-1 range center x
+        cy?: number; // 0-1 range center y
+        radius?: number; // 0-1 range radius
+        strength?: number; // thickness multiplier
+        x?: number; y?: number; w?: number; h?: number; // For hole
+        data?: number[][]; // For setting raw matrix
+        description?: string;
+    };
+
+    const rows = params.rows || node.surface_matrix?.rows || 10;
+    const cols = params.cols || node.surface_matrix?.cols || 10;
+
+    let matrixData: number[][];
+
+    // Initialize or clone existing data
+    if (node.surface_matrix) {
+        matrixData = node.surface_matrix.data.map(r => [...r]);
+    } else {
+        matrixData = Array(rows).fill(0).map(() => Array(cols).fill(1));
+    }
+
+    if (params.command === 'reset') {
+        matrixData = Array(rows).fill(0).map(() => Array(cols).fill(1));
+    } else if (params.command === 'set_bulb') {
+        applyBulb(matrixData, params.cx || 0.5, params.cy || 0.5, params.radius || 0.2, params.strength || 2);
+    } else if (params.command === 'cut_hole') {
+        applyHole(matrixData, params.x || 0.4, params.y || 0.4, params.w || 0.2, params.h || 0.2);
+    } else if (params.command === 'set_matrix' && params.data) {
+        matrixData = params.data;
+    } else if (params.command === 'draw_curve') {
+        // Simple Sine wave curve example
+        applyCurve(matrixData);
+    }
+
+    const updatedNode: PSGNode = {
+        ...node,
+        surface_matrix: {
+            rows: matrixData.length,
+            cols: matrixData[0].length,
+            data: matrixData,
+            description: params.description || node.surface_matrix?.description || `Custom ${node.type} shape`
+        },
+        version: node.version + 1,
+        modified_at: new Date().toISOString()
+    };
+
+    return {
+        ...project,
+        nodes: { ...project.nodes, [node.id]: updatedNode }
+    };
+}
+
+/** Helper: Applies a Gaussian bulb to matrix data */
+function applyBulb(data: number[][], cx: number, cy: number, r: number, strength: number) {
+    const rows = data.length;
+    const cols = data[0].length;
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            const y = i / (rows - 1);
+            const x = j / (cols - 1);
+            const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+            if (dist < r * 2) { // 2s sigma
+                const factor = Math.exp(-(dist ** 2) / (2 * (r / 2) ** 2));
+                data[i][j] = 1 + (strength - 1) * factor;
+            }
+        }
+    }
+}
+
+/** Helper: Cuts a hole (renders value 0) */
+function applyHole(data: number[][], x: number, y: number, w: number, h: number) {
+    const rows = data.length;
+    const cols = data[0].length;
+    for (let i = 0; i < rows; i++) {
+        const py = i / (rows - 1);
+        for (let j = 0; j < cols; j++) {
+            const px = j / (cols - 1);
+            if (px >= x && px <= x + w && py >= y && py <= y + h) {
+                data[i][j] = 0;
+            }
+        }
+    }
+}
+
+/** Helper: Applies a sine wave curvature */
+function applyCurve(data: number[][]) {
+    const rows = data.length;
+    const cols = data[0].length;
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            const x = j / (cols - 1);
+            data[i][j] = 1 + 0.5 * Math.sin(x * Math.PI * 2);
+        }
+    }
 }
 
 // =============================================================================
