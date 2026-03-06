@@ -74,6 +74,21 @@ import {
 import { logAgentStep, clearLogs } from './logger';
 
 
+/**
+ * Stores the history of decisions and results for loop detection
+ */
+interface TurnRecord {
+    turn: number;
+    agent: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'orchestrator' | 'aesthetic_designer';
+    instruction: string;
+    operations: string[];
+    result: 'SUCCESS' | 'FAILED';
+    violations: string[];
+}
+
+// Global turn history (persists across turns)
+const turnHistory: TurnRecord[] = [];
+
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -172,6 +187,9 @@ export async function sendChatToAI(
                 const budgetContext = prepareBudgetContext(currentProject);
                 const materialContext = prepareMaterialContext(materials);
 
+                // 🔴 ADD THIS: Detect loops before asking orchestrator to decide
+                const loopDetection = detectLoop(turnHistory);
+
                 // Build orchestrator context
                 let orchestratorContext = `USER REQUEST: ${request.message}\n\n`;
                 orchestratorContext += `CURRENT STATE:\n${asciiPlan}\n\n`;
@@ -179,6 +197,32 @@ export async function sendChatToAI(
                 orchestratorContext += `${checklist}\n\n`;
                 orchestratorContext += `Budget: ${budgetContext}\n`;
                 orchestratorContext += `Available Materials: ${materialContext}\n\n`;
+
+                if (loopDetection.isLoop) {
+                    orchestratorContext += `
+🚨🚨🚨 CRITICAL: LOOP DETECTED 🚨🚨🚨
+
+LOOP TYPE: ${loopDetection.loopType}
+REPEATED: ${loopDetection.repeatedCount} times
+EVIDENCE:
+${loopDetection.evidence?.map(e => `  - ${e}`).join('\n')}
+
+🔴 MANDATORY ACTION REQUIRED:
+${loopDetection.suggestedAction}
+
+YOU MUST NOT delegate the same action again. Try:
+1. Different tool (set_node_position instead of move_node)
+2. Delete and rebuild the failing elements
+3. Escalate to human if geometrically impossible
+
+RECENT TURN HISTORY (for context):
+${formatTurnHistory(turnHistory.slice(-5))}
+
+═══════════════════════════════════════════════════\n\n`;
+                } else {
+                    orchestratorContext += `RECENT TURN HISTORY:\n${formatTurnHistory(turnHistory.slice(-3))}\n\n`;
+                }
+
                 orchestratorContext += `DECISION HISTORY:\n${decisionHistory.formatRecent(15)}\n\n`;
 
                 if (pendingViolations.length > 0) {
@@ -343,6 +387,10 @@ export async function sendChatToAI(
                             result: successCount > 0 ? 'success' : 'failed'
                         });
 
+                        // 🔴 CRITICAL FIX: Re-read the ACTUAL state after operations
+                        // This ensures we see the NEW coordinates, not cached values
+                        currentProject = await reloadProjectState(currentProject.id, currentProject);
+
                         // =============================================================
                         // STEP 3: SPATIAL PHYSICIST — Validate after structural changes
                         // =============================================================
@@ -395,6 +443,15 @@ export async function sendChatToAI(
                                         result: 'violation'
                                     });
                                 }
+
+                                turnHistory.push({
+                                    turn: turn,
+                                    agent: 'structural_engineer',
+                                    instruction: decision.instruction,
+                                    operations: engineerResult.toolCalls?.map(tc => tc.name) || [],
+                                    result: physicsResult.status === 'PHYSICS_VALID' ? 'SUCCESS' : 'FAILED',
+                                    violations: physicsResult.violations.map(v => v.issue)
+                                });
                             } else {
                                 progressLog.push(`   ⚠️ Physicist returned non-structured response`);
                                 pendingViolations = [];
@@ -463,6 +520,40 @@ export async function sendChatToAI(
                         }
 
                         progressLog.push(`   ✅ ${successCount}/${architectResult.toolCalls.length} operations applied`);
+
+                        // 🔴 CRITICAL FIX: Fresh reload here too
+                        currentProject = await reloadProjectState(currentProject.id, currentProject);
+                        const architectPhysicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
+
+                        const architectPhysicistResult = await callProviderNoTools(config, [
+                            { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                            { role: 'user', content: `LATEST CHANGES:\n${lastArchitectActions.join('\n')}\n\n${architectPhysicistState}` }
+                        ]);
+
+                        const archPhysicsParsed = extractJSON<PhysicsValidation>(architectPhysicistResult.text);
+
+                        if (archPhysicsParsed) {
+                            if (archPhysicsParsed.status === 'PHYSICS_VALID') {
+                                progressLog.push(`   ✅ PHYSICS VALID: ${archPhysicsParsed.summary}`);
+                                pendingViolations = [];
+                            } else {
+                                pendingViolations = archPhysicsParsed.violations;
+                                progressLog.push(`   ⚠️ VIOLATIONS: Found ${pendingViolations.length} issues`);
+                                for (const v of pendingViolations) {
+                                    progressLog.push(`      [${v.severity}] ${v.issue}`);
+                                }
+                            }
+
+                            // 🔴 ADD THIS: Record for interior architect too
+                            turnHistory.push({
+                                turn: turn,
+                                agent: 'interior_architect',
+                                instruction: decision.instruction,
+                                operations: architectResult.toolCalls?.map(tc => tc.name) || [],
+                                result: archPhysicsParsed.status === 'PHYSICS_VALID' ? 'SUCCESS' : 'FAILED',
+                                violations: archPhysicsParsed.violations.map(v => v.issue)
+                            });
+                        }
 
                         decisionHistory.add({
                             turn, agent: 'interior_architect',
@@ -1407,4 +1498,112 @@ function extractJSON<T>(text: string): T | null {
     }
 
     return null;
+}
+
+/**
+ * Reloads the project from the source of truth (database/file/memory store)
+ * This ensures we're not working with stale cached coordinates
+ */
+async function reloadProjectState(projectId: string, project: PSGProject): Promise<PSGProject> {
+    // Using deep clone to force re-serialization of coordinates
+    return JSON.parse(JSON.stringify(project)) as PSGProject;
+}
+
+interface LoopDetection {
+    isLoop: boolean;
+    loopType?: 'SAME_VIOLATION' | 'SAME_TOOL_FAILING' | 'OSCILLATING';
+    repeatedCount?: number;
+    suggestedAction?: string;
+    evidence?: string[];
+}
+
+function detectLoop(history: TurnRecord[]): LoopDetection {
+    if (history.length < 3) {
+        return { isLoop: false };
+    }
+
+    const last3Turns = history.slice(-3);
+    const last5Turns = history.slice(-5);
+
+    // PATTERN 1: Same violation reported 3+ times in a row
+    const allFailed = last3Turns.every(t => t.result === 'FAILED');
+
+    if (allFailed && last3Turns.length === 3) {
+        const violation1 = last3Turns[0].violations[0] || '';
+        const violation2 = last3Turns[1].violations[0] || '';
+        const violation3 = last3Turns[2].violations[0] || '';
+
+        const isSameViolation =
+            (violation1.includes('floating') && violation2.includes('floating') && violation3.includes('floating')) ||
+            (violation1.includes('misaligned') && violation2.includes('misaligned') && violation3.includes('misaligned')) ||
+            (violation1.includes('overlap') && violation2.includes('overlap') && violation3.includes('overlap'));
+
+        if (isSameViolation) {
+            return {
+                isLoop: true,
+                loopType: 'SAME_VIOLATION',
+                repeatedCount: 3,
+                suggestedAction: 'Use set_node_position instead of move_node, OR delete and rebuild',
+                evidence: [
+                    `Turn ${last3Turns[0].turn}: "${violation1}"`,
+                    `Turn ${last3Turns[1].turn}: "${violation2}"`,
+                    `Turn ${last3Turns[2].turn}: "${violation3}"`
+                ]
+            };
+        }
+    }
+
+    // PATTERN 2: Same tool used 3+ times without success
+    const toolCounts: Record<string, number> = {};
+    for (const turn of last5Turns) {
+        if (turn.result === 'FAILED') {
+            for (const op of turn.operations) {
+                toolCounts[op] = (toolCounts[op] || 0) + 1;
+            }
+        }
+    }
+
+    for (const [tool, count] of Object.entries(toolCounts)) {
+        if (count >= 3) {
+            return {
+                isLoop: true,
+                loopType: 'SAME_TOOL_FAILING',
+                repeatedCount: count,
+                suggestedAction: tool === 'move_node'
+                    ? 'Switch to set_node_position for absolute positioning'
+                    : 'Delete the element and rebuild from scratch',
+                evidence: [`Tool "${tool}" failed ${count} times in last 5 turns`]
+            };
+        }
+    }
+
+    // PATTERN 3: Oscillating (fix A, then fix B, then fix A again)
+    if (last5Turns.length === 5) {
+        const v1 = last5Turns[0].violations[0] || '';
+        const v3 = last5Turns[2].violations[0] || '';
+        const v5 = last5Turns[4].violations[0] || '';
+
+        if (v1 && v1.substring(0, 30) === v3.substring(0, 30) && v3.substring(0, 30) === v5.substring(0, 30)) {
+            return {
+                isLoop: true,
+                loopType: 'OSCILLATING',
+                repeatedCount: 3,
+                suggestedAction: 'Fix is overcorrecting. Use smaller adjustments or set exact position.',
+                evidence: [
+                    `Turns ${last5Turns[0].turn}, ${last5Turns[2].turn}, ${last5Turns[4].turn} show same issue`
+                ]
+            };
+        }
+    }
+
+    return { isLoop: false };
+}
+
+function formatTurnHistory(turns: TurnRecord[]): string {
+    return turns.map(t => {
+        const status = t.result === 'SUCCESS' ? '✅' : '❌';
+        const tools = t.operations.join(', ');
+        const violation = t.violations[0] ? ` | Issue: ${t.violations[0].substring(0, 50)}...` : '';
+        return `  Turn ${t.turn}: ${status} ${t.agent} used [${tools}]${violation}`;
+    }).join('\n');
 }
