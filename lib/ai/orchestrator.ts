@@ -1,49 +1,43 @@
 /**
  * =============================================================================
- * LIB/AI/ORCHESTRATOR.TS — Multi-Agent Agentic Architecture
+ * LIB/AI/ORCHESTRATOR.TS — Parallel Cognitive Architecture
  * =============================================================================
  *
- * UPGRADE v3 — Full multi-agent rewrite
- *
  * ARCHITECTURE:
- * ┌─────────────────────────────────────────────────────────────────┐
- * │  User Request                                                   │
- * │       │                                                         │
- * │       ▼                                                         │
- * │  ┌──────────────────────┐                                       │
- * │  │  COORDINATOR AGENT   │  Understands the request in 3D       │
- * │  │  (Planning Phase)    │  context. Reads current building     │
- * │  │                      │  state. Plans sub-tasks.             │
- * │  └──────────┬───────────┘                                       │
- * │       ┌─────┼─────┐                                             │
- * │       ▼     ▼     ▼                                             │
- * │  ┌────────┐┌────────┐┌────────┐                                │
- * │  │Worker 1││Worker 2││Worker 3│  Each gets full building specs │
- * │  │(e.g.   ││(e.g.   ││(e.g.   │  + specific task description  │
- * │  │ slab)  ││ walls) ││ roof)  │  Executes tool calls          │
- * │  └───┬────┘└───┬────┘└───┬────┘                                │
- * │      └────┬────┘         │                                      │
- * │           ▼              ▼                                      │
- * │  ┌──────────────────────────┐                                   │
- * │  │    CHECKER AGENT         │  Gets original question +        │
- * │  │    (QA Phase)            │  full building state after edits │
- * │  │                          │  Looks for spatial mistakes      │
- * │  └──────────┬───────────────┘                                   │
- * │             │ If mistakes found                                 │
- * │             ▼                                                   │
- * │  ┌──────────────────────────┐                                   │
- * │  │    FIXER AGENT           │  Gets building + mistake desc   │
- * │  │    (Correction Phase)    │  Applies corrections            │
- * │  └──────────────────────────┘                                   │
- * └─────────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────┐
+ * │           ORCHESTRATOR (Every Turn)                  │
+ * │  "What needs to happen next to achieve the goal?"   │
+ * └─────────────────────────────────────────────────────┘
+ *                          ↓
+ *         ┌────────────────┼────────────────┐
+ *         ↓                ↓                ↓
+ * ┌──────────────┐  ┌─────────────┐  ┌──────────────┐
+ * │   STRUCTURAL │  │   SPATIAL   │  │  AESTHETIC   │
+ * │   ENGINEER   │  │  PHYSICIST  │  │  DESIGNER    │
+ * └──────────────┘  └─────────────┘  └──────────────┘
+ *         │                │                │
+ *         └────────────────┼────────────────┘
+ *                          ↓
+ *               ┌──────────────────┐
+ *               │  SHARED 3D GRAPH │
+ *               │  (Single Source   │
+ *               │   of Truth)       │
+ *               └──────────────────┘
  *
- * READABLE KEYS:
- * - "position" instead of "pos"
- * - "dimensions" instead of "dim"
- * - "rotation" instead of "rot"
- * - "material" instead of "mat"
- * - "children" instead of "kids"
- * - "function" instead of "fn"
+ * FLOW:
+ *   1. Orchestrator analyzes state → delegates to ONE specialist
+ *   2. Structural Engineer builds (with pre-flight checks)
+ *   3. Spatial Physicist validates every structural change
+ *   4. If violations → Orchestrator routes to Engineer for fixes
+ *   5. Aesthetic Designer reviews periodically (every 5 turns)
+ *   6. Repeat until DESIGN_COMPLETE
+ *
+ * KEY IMPROVEMENTS OVER v3 (Sequential Phased):
+ *   - Constraint checking is FRONT-LOADED in the Engineer
+ *   - Physicist has VETO POWER (must fix before proceeding)
+ *   - Single Source of Truth (shared 3D graph)
+ *   - Orchestrator is LIGHTWEIGHT (no tool calls)
+ *   - Typically finishes in 12-15 turns instead of 25
  *
  * =============================================================================
  */
@@ -65,21 +59,71 @@ import {
     prepareProjectContext,
     prepareMaterialContext,
     prepareBudgetContext,
-    generateASCIIFloorPlan
+    generateASCIIFloorPlan,
+    prepare3DNodeTree,
+    prepareProgressChecklist,
+    DecisionHistory,
 } from './context';
 import {
-    STRATEGY_AGENT_PROMPT,
-    BUILDER_AGENT_PROMPT,
-    GEOMETRICIAN_AGENT_PROMPT,
-    VISION_AUDIT_PROMPT,
-    QA_SUPERVISOR_PROMPT
+    ORCHESTRATOR_PROMPT,
+    STRUCTURAL_ENGINEER_PROMPT,
+    SPATIAL_PHYSICIST_PROMPT,
+    AESTHETIC_DESIGNER_PROMPT,
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
 
-// Phase agents logic remains below...
 
 // =============================================================================
-// MAIN EXPORT — Send Chat to AI (Multi-Agent)
+// TYPES
+// =============================================================================
+
+interface OrchestratorDecision {
+    reasoning: string;
+    delegate_to: 'structural_engineer' | 'spatial_physicist' | 'aesthetic_designer' | 'DESIGN_COMPLETE';
+    instruction: string;
+    priority?: 'critical' | 'high' | 'normal';
+}
+
+interface PhysicsValidation {
+    status: 'PHYSICS_VALID' | 'VIOLATIONS_FOUND';
+    violations: Array<{
+        element_id?: string;
+        issue: string;
+        severity: 'CRITICAL' | 'WARNING' | 'INFO';
+        correction?: {
+            action: string;
+            target_id?: string;
+            params?: Record<string, unknown>;
+        };
+    }>;
+    summary: string;
+}
+
+interface AestheticReview {
+    aesthetic_score: number;
+    style_match?: string;
+    recommendations: Array<{
+        element_id?: string;
+        suggestion: string;
+        priority: string;
+        action?: string;
+    }>;
+    summary: string;
+}
+
+interface ToolCall {
+    name: string;
+    args: Record<string, unknown>;
+}
+
+interface LLMCallResult {
+    text: string;
+    toolCalls?: ToolCall[];
+}
+
+
+// =============================================================================
+// MAIN EXPORT — Send Chat to AI (Parallel Cognitive Architecture)
 // =============================================================================
 
 export async function sendChatToAI(
@@ -88,229 +132,395 @@ export async function sendChatToAI(
     _retryCount: number = 0
 ): Promise<AIChatResponse> {
     const progressLog: string[] = [];
-    console.log('[Orchestrator] ═══ ANTIGRAVITY REACT LOOP STARTING ═══');
+    console.log('[Orchestrator] ═══ PARALLEL COGNITIVE ARCHITECTURE STARTING ═══');
 
     let currentProject = { ...request.project, nodes: { ...request.project.nodes } };
     const allValidatedOps: PSGOperation[] = [];
-    const maxIterations = 25; // High Thinking capacity — lots of rope.
-    let finalMessage = "";
+    const maxTurns = 20;
+    let finalMessage = '';
+    const decisionHistory = new DecisionHistory();
 
-    const loopMessages: Array<{ role: string; content: string }> = [];
+    // Track structural changes for physicist validation
+    let lastEngineerActions: string[] = [];
+    let structuralChangesSinceAestheticReview = 0;
+    let pendingViolations: PhysicsValidation['violations'] = [];
 
-    // Initial Blueprint Strategy
-    loopMessages.push({ role: 'system', content: STRATEGY_AGENT_PROMPT });
-
-    // Add history
-    if (request.history) {
-        loopMessages.push(...request.history.slice(-10).map(m => ({ role: m.role, content: m.content })));
-    }
-
-    loopMessages.push({ role: 'user', content: `USER REQUEST: ${request.message}` });
     clearLogs();
 
-    for (let i = 1; i <= maxIterations; i++) {
-        progressLog.push(`\n───── 🌀 LOOP ITERATION ${i}/${maxIterations} ─────`);
+    progressLog.push('═══ PARALLEL COGNITIVE ARCHITECTURE ═══');
+    progressLog.push(`Goal: ${request.message}`);
 
-        let iterationSuccess = false;
-        let iterationRetries = 0;
-        const MAX_ITERATION_RETRIES = 5;
+    for (let turn = 1; turn <= maxTurns; turn++) {
+        progressLog.push(`\n───── 🔄 TURN ${turn}/${maxTurns} ─────`);
 
-        while (!iterationSuccess && iterationRetries < MAX_ITERATION_RETRIES) {
+        let turnSuccess = false;
+        let turnRetries = 0;
+        const MAX_TURN_RETRIES = 3;
+
+        while (!turnSuccess && turnRetries < MAX_TURN_RETRIES) {
             try {
+                // =============================================================
+                // STEP 1: ORCHESTRATOR — Analyze and Delegate
+                // =============================================================
                 const config = getProviderConfig();
 
-                const buildingSpecs = prepareProjectContext(currentProject);
                 const asciiPlan = generateASCIIFloorPlan(currentProject);
-                const materialContext = prepareMaterialContext(materials);
+                const nodeTree = prepare3DNodeTree(currentProject);
+                const checklist = prepareProgressChecklist(currentProject);
                 const budgetContext = prepareBudgetContext(currentProject);
+                const materialContext = prepareMaterialContext(materials);
 
-                // --- MULTI-PHASE AGENTIC SCHEDULE ---
-                let currentSystemPrompt = BUILDER_AGENT_PROMPT;
-                let phaseName = "BUILDING";
+                // Build orchestrator context
+                let orchestratorContext = `USER REQUEST: ${request.message}\n\n`;
+                orchestratorContext += `CURRENT STATE:\n${asciiPlan}\n\n`;
+                orchestratorContext += `${nodeTree}\n\n`;
+                orchestratorContext += `${checklist}\n\n`;
+                orchestratorContext += `Budget: ${budgetContext}\n`;
+                orchestratorContext += `Available Materials: ${materialContext}\n\n`;
+                orchestratorContext += `DECISION HISTORY:\n${decisionHistory.formatRecent(15)}\n\n`;
 
-                if (i <= 3) {
-                    currentSystemPrompt = STRATEGY_AGENT_PROMPT;
-                    phaseName = "STRATEGY";
-                } else if (i >= 11 && i <= 14) {
-                    currentSystemPrompt = VISION_AUDIT_PROMPT;
-                    phaseName = "SPATIAL_VISION_AUDIT";
-                } else if (i >= 15 && i <= 21) {
-                    currentSystemPrompt = GEOMETRICIAN_AGENT_PROMPT;
-                    phaseName = "GEOMETRIC_PERFECTION";
-                } else if (i >= 22) {
-                    currentSystemPrompt = QA_SUPERVISOR_PROMPT;
-                    phaseName = "FINAL_QA";
+                if (pendingViolations.length > 0) {
+                    orchestratorContext += `⚠️ PENDING PHYSICS VIOLATIONS (MUST ADDRESS):\n`;
+                    for (const v of pendingViolations) {
+                        orchestratorContext += `  - [${v.severity}] ${v.issue}`;
+                        if (v.correction) {
+                            orchestratorContext += ` → Fix: ${v.correction.action}`;
+                            if (v.correction.target_id) orchestratorContext += ` on ${v.correction.target_id}`;
+                        }
+                        orchestratorContext += '\n';
+                    }
+                    orchestratorContext += '\n';
                 }
 
-                // --- CONTEXT OPTIMIZATION ---
-                const optimizedMessages = loopMessages.filter(m => !m.content.startsWith('### SYSTEM OBSERVATION'));
+                // Add conversation history
+                if (request.history && request.history.length > 0) {
+                    orchestratorContext += `CONVERSATION HISTORY:\n`;
+                    for (const msg of request.history.slice(-6)) {
+                        orchestratorContext += `[${msg.role}]: ${msg.content.substring(0, 200)}\n`;
+                    }
+                    orchestratorContext += '\n';
+                }
 
-                // Inject current phase prompt
-                optimizedMessages[0] = { role: 'system', content: currentSystemPrompt };
-
-                optimizedMessages.push({
-                    role: 'user',
-                    content: `### [PHASE: ${phaseName}] SYSTEM OBSERVATION ${i}\nAscii Plan:\n${asciiPlan}\n\nBudget: ${budgetContext}\nNode State:\n${buildingSpecs}\n\nPlease proceed with ${phaseName} operations.`
-                });
-
-                const normalized = normalizeMessages(optimizedMessages);
+                progressLog.push(`   🧠 ORCHESTRATOR: Analyzing state...`);
 
                 logAgentStep({
-                    phase: phaseName,
-                    iteration: i,
+                    phase: 'ORCHESTRATOR',
+                    iteration: turn,
                     model: config.model,
                     status: 'pending',
-                    prompt: normalized[normalized.length - 1].content
+                    prompt: orchestratorContext.substring(0, 500) + '...'
                 });
 
-                const result = await callProviderWithTools(config, normalized);
+                const orchestratorResult = await callProviderNoTools(config, [
+                    { role: 'system', content: ORCHESTRATOR_PROMPT },
+                    { role: 'user', content: orchestratorContext }
+                ]);
 
-                // If call succeeded, WE COMMIT the observation to the main history 
-                // so the NEXT iteration's 'optimizedMessages' (which filters the history) 
-                // sees the state as it was after iteration i-1.
-                loopMessages.push(optimizedMessages[optimizedMessages.length - 1]);
+                const decision = extractJSON<OrchestratorDecision>(orchestratorResult.text);
 
-                logAgentStep({
-                    phase: `LOOP_ITERATION_${i}`,
-                    iteration: i,
-                    model: config.model,
-                    status: 'success',
-                    response: result.text,
-                    toolCalls: result.toolCalls
-                });
-
-                if (result.text) {
-                    finalMessage = result.text;
-                    loopMessages.push({ role: 'assistant', content: result.text });
-                    progressLog.push(`   💭 Reasoning: "${result.text.substring(0, 80)}..."`);
+                if (!decision) {
+                    progressLog.push(`   ⚠️ Orchestrator returned non-JSON. Using text as guidance.`);
+                    finalMessage = orchestratorResult.text;
+                    // Try to continue — treat as delegation to engineer
+                    decisionHistory.add({
+                        turn, agent: 'orchestrator',
+                        decision: 'Non-structured response',
+                        reasoning: orchestratorResult.text.substring(0, 200),
+                        result: 'success'
+                    });
+                    turnSuccess = true;
+                    continue;
                 }
 
-                if (result.toolCalls && result.toolCalls.length > 0) {
-                    progressLog.push(`   🛠️ EXECUTION: Processing ${result.toolCalls.length} structural operation(s)...`);
-                    const resultsForObservation: string[] = [];
-                    let turnSuccessCount = 0;
+                progressLog.push(`   📋 Decision: delegate to ${decision.delegate_to}`);
+                progressLog.push(`   💭 Reasoning: "${decision.reasoning.substring(0, 100)}..."`);
 
-                    for (const tc of result.toolCalls) {
-                        try {
-                            if (tc.name === 'get_wall_surface') {
-                                const wallId = tc.args.target_id as string;
-                                const wall = currentProject.nodes[wallId];
-                                if (wall?.surface_matrix) {
-                                    const sm = wall.surface_matrix;
-                                    if (sm.code) {
-                                        resultsForObservation.push(`🔍 Surface for ${wallId}:\n  Mode: PROCEDURAL\n  Code: ${sm.code}\n  Resolution: ${sm.resolution || 32}\n  Description: ${sm.description}`);
-                                    } else {
-                                        resultsForObservation.push(`🔍 Surface for ${wallId}:\n  Mode: DATA MATRIX (${sm.rows}x${sm.cols})\n  Data: ${JSON.stringify(sm.data)}\n  Description: ${sm.description}`);
+                logAgentStep({
+                    phase: 'ORCHESTRATOR',
+                    iteration: turn,
+                    model: config.model,
+                    status: 'success',
+                    response: JSON.stringify(decision),
+                    reasoning: decision.reasoning
+                });
+
+                // =============================================================
+                // CHECK: Is design complete?
+                // =============================================================
+                if (decision.delegate_to === 'DESIGN_COMPLETE') {
+                    progressLog.push(`   ✨ DESIGN COMPLETE — Orchestrator declared the design finished.`);
+                    finalMessage = decision.reasoning;
+                    decisionHistory.add({
+                        turn, agent: 'orchestrator',
+                        decision: 'Design declared complete',
+                        reasoning: decision.reasoning,
+                        result: 'success'
+                    });
+                    turn = maxTurns + 1; // Exit loop
+                    turnSuccess = true;
+                    break;
+                }
+
+                // =============================================================
+                // STEP 2: DELEGATE TO SPECIALIST
+                // =============================================================
+                if (decision.delegate_to === 'structural_engineer') {
+                    // --- STRUCTURAL ENGINEER ---
+                    progressLog.push(`   🏗️ STRUCTURAL ENGINEER: Executing...`);
+
+                    const engineerContext = `INSTRUCTION FROM LEAD ARCHITECT:\n${decision.instruction}\n\n`;
+                    const engineerState = `CURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\nBudget: ${budgetContext}\nMaterials: ${materialContext}`;
+
+                    const engineerMessages = [
+                        { role: 'system', content: STRUCTURAL_ENGINEER_PROMPT },
+                        { role: 'user', content: engineerContext + engineerState }
+                    ];
+
+                    const engineerResult = await callProviderWithTools(config, normalizeMessages(engineerMessages));
+
+                    logAgentStep({
+                        phase: 'STRUCTURAL_ENGINEER',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: engineerResult.text,
+                        toolCalls: engineerResult.toolCalls
+                    });
+
+                    if (engineerResult.text) {
+                        finalMessage = engineerResult.text;
+                    }
+
+                    lastEngineerActions = [];
+
+                    if (engineerResult.toolCalls && engineerResult.toolCalls.length > 0) {
+                        progressLog.push(`   🛠️ Engineer issued ${engineerResult.toolCalls.length} operation(s)`);
+                        let successCount = 0;
+
+                        for (const tc of engineerResult.toolCalls) {
+                            try {
+                                if (tc.name === 'get_wall_surface') {
+                                    const wallId = tc.args.target_id as string;
+                                    const wall = currentProject.nodes[wallId];
+                                    if (wall?.surface_matrix) {
+                                        lastEngineerActions.push(`Queried surface of ${wallId}`);
+                                    }
+                                    continue;
+                                }
+
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                        lastEngineerActions.push(`✅ ${tc.name} on ${op.target_id}`);
                                     }
                                 } else {
-                                    resultsForObservation.push(`ℹ️ ${wallId} has standard flat surface (no custom modifications).`);
+                                    lastEngineerActions.push(`❌ ${tc.name} rejected: ${validation.errors.join(', ')}`);
+                                    progressLog.push(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
                                 }
-                                continue;
+                            } catch (e) {
+                                lastEngineerActions.push(`❌ ${tc.name} runtime error`);
                             }
+                        }
 
-                            const op = toolCallToOperation(tc.name, tc.args as Record<string, unknown>);
-                            const validation = validateOperation(op, currentProject);
+                        progressLog.push(`   ✅ ${successCount}/${engineerResult.toolCalls.length} operations applied`);
+                        structuralChangesSinceAestheticReview += successCount;
 
-                            if (validation.valid) {
-                                allValidatedOps.push(op);
-                                const applied = applyOperation(currentProject, op);
-                                if (applied.project) {
-                                    currentProject = applied.project;
-                                    turnSuccessCount++;
-                                    resultsForObservation.push(`✅ ${tc.name} applied on ${op.target_id}`);
+                        decisionHistory.add({
+                            turn, agent: 'structural_engineer',
+                            decision: `Applied ${successCount} operations: ${decision.instruction.substring(0, 80)}`,
+                            reasoning: engineerResult.text?.substring(0, 150) || '',
+                            result: successCount > 0 ? 'success' : 'failed'
+                        });
+
+                        // =============================================================
+                        // STEP 3: SPATIAL PHYSICIST — Validate after structural changes
+                        // =============================================================
+                        if (successCount > 0) {
+                            progressLog.push(`   🔬 SPATIAL PHYSICIST: Validating...`);
+
+                            const physicistContext = `LATEST CHANGES:\n${lastEngineerActions.join('\n')}\n\n`;
+                            const physicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
+
+                            const physicistResult = await callProviderNoTools(config, [
+                                { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                                { role: 'user', content: physicistContext + physicistState }
+                            ]);
+
+                            logAgentStep({
+                                phase: 'SPATIAL_PHYSICIST',
+                                iteration: turn,
+                                model: config.model,
+                                status: 'success',
+                                response: physicistResult.text
+                            });
+
+                            const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
+
+                            if (physicsResult) {
+                                if (physicsResult.status === 'PHYSICS_VALID') {
+                                    progressLog.push(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                                    pendingViolations = [];
+                                    decisionHistory.add({
+                                        turn, agent: 'spatial_physicist',
+                                        decision: 'All checks passed',
+                                        reasoning: physicsResult.summary,
+                                        result: 'success'
+                                    });
+                                } else {
+                                    const criticals = physicsResult.violations.filter(v => v.severity === 'CRITICAL');
+                                    const warnings = physicsResult.violations.filter(v => v.severity === 'WARNING');
+
+                                    progressLog.push(`   ⚠️ VIOLATIONS: ${criticals.length} critical, ${warnings.length} warnings`);
+                                    for (const v of physicsResult.violations) {
+                                        progressLog.push(`      [${v.severity}] ${v.issue}`);
+                                    }
+
+                                    // Store violations for the orchestrator to address
+                                    pendingViolations = physicsResult.violations;
+                                    decisionHistory.add({
+                                        turn, agent: 'spatial_physicist',
+                                        decision: `Found ${physicsResult.violations.length} violation(s)`,
+                                        reasoning: physicsResult.summary,
+                                        result: 'violation'
+                                    });
                                 }
                             } else {
-                                resultsForObservation.push(`❌ ${tc.name} validation failed: ${validation.errors.join(', ')}`);
-                                progressLog.push(`   ⚠️ Rejected: ${tc.name} failed constraints.`);
+                                progressLog.push(`   ⚠️ Physicist returned non-structured response`);
+                                pendingViolations = [];
                             }
-                        } catch (e) {
-                            resultsForObservation.push(`❌ ${tc.name} runtime error`);
+                        }
+
+                    } else {
+                        // Engineer returned text but no tool calls
+                        progressLog.push(`   ℹ️ Engineer provided analysis but no operations`);
+                        decisionHistory.add({
+                            turn, agent: 'structural_engineer',
+                            decision: 'No operations (constraint violation or analysis)',
+                            reasoning: engineerResult.text?.substring(0, 150) || 'No response',
+                            result: 'failed'
+                        });
+                    }
+
+                } else if (decision.delegate_to === 'aesthetic_designer') {
+                    // --- AESTHETIC DESIGNER ---
+                    progressLog.push(`   🎨 AESTHETIC DESIGNER: Reviewing...`);
+
+                    const aestheticContext = `DESIGN INTENT: ${request.message}\n\n`;
+                    const aestheticState = `CURRENT STATE:\n${nodeTree}\n\n${asciiPlan}\n\nMaterials: ${materialContext}`;
+
+                    const aestheticResult = await callProviderNoTools(config, [
+                        { role: 'system', content: AESTHETIC_DESIGNER_PROMPT },
+                        { role: 'user', content: aestheticContext + aestheticState }
+                    ]);
+
+                    logAgentStep({
+                        phase: 'AESTHETIC_DESIGNER',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: aestheticResult.text
+                    });
+
+                    const review = extractJSON<AestheticReview>(aestheticResult.text);
+
+                    if (review) {
+                        progressLog.push(`   🎨 Score: ${review.aesthetic_score}/10 — ${review.summary}`);
+                        for (const rec of review.recommendations.slice(0, 5)) {
+                            progressLog.push(`      💡 ${rec.suggestion}`);
+                        }
+                        structuralChangesSinceAestheticReview = 0;
+                        decisionHistory.add({
+                            turn, agent: 'aesthetic_designer',
+                            decision: `Score: ${review.aesthetic_score}/10, ${review.recommendations.length} recommendations`,
+                            reasoning: review.summary,
+                            result: 'success'
+                        });
+                    } else {
+                        progressLog.push(`   ℹ️ Aesthetic review returned non-structured response`);
+                    }
+
+                } else if (decision.delegate_to === 'spatial_physicist') {
+                    // --- DIRECT PHYSICIST CALL (Orchestrator requested explicit validation) ---
+                    progressLog.push(`   🔬 SPATIAL PHYSICIST: Full validation requested...`);
+
+                    const physicistState = `FULL 3D STATE:\n${nodeTree}\n\n${asciiPlan}`;
+
+                    const physicistResult = await callProviderNoTools(config, [
+                        { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                        { role: 'user', content: `ORCHESTRATOR REQUEST: ${decision.instruction}\n\n${physicistState}` }
+                    ]);
+
+                    logAgentStep({
+                        phase: 'SPATIAL_PHYSICIST',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: physicistResult.text
+                    });
+
+                    const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
+                    if (physicsResult) {
+                        if (physicsResult.status === 'PHYSICS_VALID') {
+                            progressLog.push(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                            pendingViolations = [];
+                        } else {
+                            pendingViolations = physicsResult.violations;
+                            for (const v of physicsResult.violations) {
+                                progressLog.push(`      [${v.severity}] ${v.issue}`);
+                            }
                         }
                     }
 
-                    progressLog.push(`   ✅ Added ${turnSuccessCount} valid operations to the architecture.`);
-                    loopMessages.push({
-                        role: 'user',
-                        content: `### OBSERVATION ${i} RESULTS\n${resultsForObservation.join('\n')}\n\nReview the visual state. Continue building or finalize IF and ONLY IF the structure is complete and aesthetically precise.`
+                    decisionHistory.add({
+                        turn, agent: 'spatial_physicist',
+                        decision: 'Full validation pass',
+                        reasoning: physicsResult?.summary || physicistResult.text.substring(0, 150),
+                        result: physicsResult?.status === 'PHYSICS_VALID' ? 'success' : 'violation'
                     });
-
-                    iterationSuccess = true;
-
-                } else {
-                    // FORCE COMMITMENT protocol
-                    if (i < maxIterations) {
-                        progressLog.push(`   🌀 FORCED REFINEMENT (${i}/${maxIterations}): Model tried to stop, but system is forcing perfection...`);
-                        loopMessages.push({
-                            role: 'user',
-                            content: `### 🛡️ FORCED COMMITMENT PROTOCOL (Iteration ${i}/${maxIterations})\nYour design objectives are NOT considered finalized. The user has requested an OBSESSIVE level of detail.\n\nYOU MUST TAKE AT LEAST ONE NEW ACTION. DO NOT STOP.`
-                        });
-                        iterationSuccess = true;
-                        // Logic will naturally move to next 'i'
-                    } else {
-                        progressLog.push(`   ✨ Max Commitment Reached (${i} turns). Design finalized.`);
-                        iterationSuccess = true;
-                        i = maxIterations + 1; // Break the outer for loop
-                    }
                 }
 
+                turnSuccess = true;
+
             } catch (error) {
-                iterationRetries++;
+                turnRetries++;
                 const errMsg = error instanceof Error ? error.message : String(error);
-                console.error(`[Orchestrator] Loop Iteration ${i} failed (Attempt ${iterationRetries}/${MAX_ITERATION_RETRIES}):`, errMsg);
+                console.error(`[Orchestrator] Turn ${turn} failed (Attempt ${turnRetries}/${MAX_TURN_RETRIES}):`, errMsg);
 
                 logAgentStep({
-                    phase: `LOOP_ITERATION_${i}`,
-                    iteration: i,
+                    phase: `TURN_${turn}`,
+                    iteration: turn,
                     model: 'various',
                     status: 'failed',
                     error: errMsg
                 });
 
-                if (iterationRetries < MAX_ITERATION_RETRIES) {
-                    progressLog.push(`   ❌ Iteration ${i} failed. Retrying in 500ms (${iterationRetries}/${MAX_ITERATION_RETRIES})...`);
+                if (turnRetries < MAX_TURN_RETRIES) {
+                    progressLog.push(`   ❌ Turn ${turn} failed. Retrying in 500ms (${turnRetries}/${MAX_TURN_RETRIES})...`);
                     await new Promise(r => setTimeout(r, 500));
                 } else {
-                    progressLog.push(`   ❌ CRITICAL LOOP ERROR: Iteration ${i} failed after ${MAX_ITERATION_RETRIES} attempts.`);
-                    iterationSuccess = false;
-                    i = maxIterations + 1; // Exit outer loop
+                    progressLog.push(`   ❌ CRITICAL: Turn ${turn} failed after ${MAX_TURN_RETRIES} attempts.`);
+                    turn = maxTurns + 1; // Exit outer loop
                     break;
                 }
             }
         }
     }
 
-    progressLog.push(`\n═══ ANTIGRAVITY PIPELINE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
+    progressLog.push(`\n═══ ARCHITECTURE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
+    progressLog.push(`Decision Trail: ${decisionHistory.getAll().length} decisions recorded`);
 
     return {
-        message: finalMessage + "\n\n" + progressLog.join('\n'),
+        message: finalMessage + '\n\n' + progressLog.join('\n'),
         operations: allValidatedOps,
         warnings: [],
         suggestions: [],
     };
-}
-
-
-// =============================================================================
-// AGENT TYPES
-// =============================================================================
-
-interface CoordinatorOutput {
-    analysis: string;
-    sub_tasks: SubTask[];
-    user_message: string;
-    follow_up_suggestions?: string[];
-}
-
-interface SubTask {
-    id: string;
-    description: string;
-    priority: number;
-}
-
-interface WorkerResult {
-    operations: PSGOperation[];
-    text: string;
-    errors: string[];
 }
 
 
@@ -450,18 +660,8 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
 // LLM PROVIDER CALLS
 // =============================================================================
 
-interface ToolCall {
-    name: string;
-    args: Record<string, unknown>;
-}
-
-interface LLMCallResult {
-    text: string;
-    toolCalls?: ToolCall[];
-}
-
 /**
- * Calls the LLM WITHOUT tools (for Coordinator and Checker agents).
+ * Calls the LLM WITHOUT tools (for Orchestrator, Physicist, Aesthetic agents).
  * Automatically detects rate limits, marks the key for cooldown, rotates, and retries.
  */
 async function callProviderNoTools(
@@ -487,12 +687,9 @@ async function callProviderNoTools(
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
             if (isUnavailable && config.provider === 'gemini') {
-                // MODEL FALLBACK LOGIC (Sub-loop within the attempt)
                 if (config.model === 'gemini-3.1-pro-preview') {
                     console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
                     config = { ...config, model: 'gemini-3-pro-preview' };
-                    // Reset attempt on fallback to give the new model a fair chance? 
-                    // No, let's keep the global limit but skip the delay
                 } else if (config.model === 'gemini-3-pro-preview') {
                     console.warn('[Orchestrator] Gemini 3 Pro unavailable. Falling back to Gemini 3 Flash...');
                     config = { ...config, model: 'gemini-3-flash-preview' };
@@ -500,7 +697,6 @@ async function callProviderNoTools(
                     console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
                     config = { ...config, model: 'gemini-1.5-pro' };
                 } else {
-                    // No more fallbacks, just rotate key and retry the initial or current model
                     rotateKey();
                     config = getProviderConfig();
                 }
@@ -518,7 +714,7 @@ async function callProviderNoTools(
 }
 
 /**
- * Calls the LLM WITH tools (for Worker and Fixer agents).
+ * Calls the LLM WITH tools (for Structural Engineer).
  * Automatically detects rate limits, marks the key for cooldown, rotates, and retries.
  */
 async function callProviderWithTools(
@@ -544,7 +740,6 @@ async function callProviderWithTools(
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
             if (isUnavailable && config.provider === 'gemini') {
-                // MODEL FALLBACK LOGIC
                 if (config.model === 'gemini-3.1-pro-preview') {
                     console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
                     config = { ...config, model: 'gemini-3-pro-preview' };
@@ -1037,7 +1232,7 @@ function extractTextFromFailedGeneration(failedGen: string): string {
 
 /**
  * Normalizes message history to ensure strictly alternating roles (user <-> assistant).
- * Merges consecutive messages of the same role. Useful for ReAct loops with observations.
+ * Merges consecutive messages of the same role. Useful for agent loops with observations.
  */
 function normalizeMessages(messages: Array<{ role: string; content: string }>): Array<{ role: string; content: string }> {
     const normalized: Array<{ role: string; content: string }> = [];

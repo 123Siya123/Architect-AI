@@ -1,5 +1,141 @@
 import type { PSGProject, PSGNode, Material } from '@/types';
 
+// =============================================================================
+// DECISION HISTORY — Hierarchical Memory for Agent Context
+// =============================================================================
+
+export interface DecisionEntry {
+    turn: number;
+    agent: string;
+    decision: string;
+    reasoning: string;
+    result: 'success' | 'failed' | 'violation';
+}
+
+export class DecisionHistory {
+    private entries: DecisionEntry[] = [];
+
+    add(entry: DecisionEntry) {
+        this.entries.push(entry);
+    }
+
+    getAll(): DecisionEntry[] {
+        return [...this.entries];
+    }
+
+    getRecent(count: number = 10): DecisionEntry[] {
+        return this.entries.slice(-count);
+    }
+
+    format(): string {
+        if (this.entries.length === 0) return 'No decisions yet.';
+        return this.entries.map(e =>
+            `[Turn ${e.turn}] ${e.agent}: ${e.decision} (${e.result})${e.reasoning ? ` — ${e.reasoning}` : ''}`
+        ).join('\n');
+    }
+
+    formatRecent(count: number = 10): string {
+        const recent = this.getRecent(count);
+        if (recent.length === 0) return 'No decisions yet.';
+        return recent.map(e =>
+            `[Turn ${e.turn}] ${e.agent}: ${e.decision} (${e.result})${e.reasoning ? ` — ${e.reasoning}` : ''}`
+        ).join('\n');
+    }
+}
+
+// =============================================================================
+// 3D NODE TREE — Single Source of Truth for All Agents
+// =============================================================================
+
+/**
+ * Prepares a detailed, hierarchical 3D node tree with full coordinates.
+ * This is the SHARED state that every agent receives.
+ */
+export function prepare3DNodeTree(project: PSGProject): string {
+    const nodes = project.nodes;
+    const lines: string[] = [];
+
+    // Find root nodes (no parent or parent not in nodes)
+    const rootIds = Object.keys(nodes).filter(id => {
+        const node = nodes[id];
+        return !node.parent_id || !nodes[node.parent_id];
+    });
+
+    const printNode = (id: string, depth: number) => {
+        const node = nodes[id];
+        if (!node) return;
+
+        const indent = '  '.repeat(depth);
+        const pos = `pos(${round(node.position.x, 2)}, ${round(node.position.y, 2)}, ${round(node.position.z, 2)})`;
+        const dim = `dim(${round(node.dimensions.x, 2)} × ${round(node.dimensions.y, 2)} × ${round(node.dimensions.z, 2)})`;
+        const rot = node.rotation.yaw !== 0 ? ` rot(yaw=${node.rotation.yaw}°)` : '';
+        const mat = node.material_id ? ` [${node.material_id}]` : '';
+        const fn = node.room_function ? ` (${node.room_function})` : '';
+        const style = node.roof_style ? ` style=${node.roof_style}` : '';
+        const stairStyle = node.stair_style ? ` style=${node.stair_style}` : '';
+
+        lines.push(`${indent}├─ ${node.type}: "${node.name}" [${id}]`);
+        lines.push(`${indent}│  ${pos} ${dim}${rot}${mat}${fn}${style}${stairStyle}`);
+
+        // Print children
+        if (node.children_ids && node.children_ids.length > 0) {
+            for (const childId of node.children_ids) {
+                printNode(childId, depth + 1);
+            }
+        }
+    };
+
+    if (rootIds.length === 0) {
+        return 'EMPTY — No nodes in the building.';
+    }
+
+    lines.push('3D NODE TREE:');
+    for (const rootId of rootIds) {
+        printNode(rootId, 0);
+    }
+
+    return lines.join('\n');
+}
+
+// =============================================================================
+// PROGRESS CHECKLIST — What exists vs. what's needed
+// =============================================================================
+
+/**
+ * Generates a progress checklist showing what structural elements exist.
+ */
+export function prepareProgressChecklist(project: PSGProject): string {
+    const nodes = Object.values(project.nodes);
+    const counts: Record<string, number> = {};
+
+    for (const node of nodes) {
+        counts[node.type] = (counts[node.type] || 0) + 1;
+    }
+
+    const lines: string[] = ['STRUCTURAL INVENTORY:'];
+    const typeOrder = ['Floor', 'Slab', 'Room', 'Wall', 'Partition', 'Door', 'Window', 'Stairs', 'Roof', 'Balcony', 'Column', 'Beam', 'Chimney', 'Skylight'];
+
+    for (const type of typeOrder) {
+        if (counts[type]) {
+            lines.push(`  ✓ ${type}: ${counts[type]}`);
+            delete counts[type];
+        }
+    }
+
+    // Any remaining types
+    for (const [type, count] of Object.entries(counts)) {
+        lines.push(`  ✓ ${type}: ${count}`);
+    }
+
+    if (nodes.length === 0) {
+        lines.push('  (empty — no elements placed yet)');
+    }
+
+    lines.push(`  TOTAL: ${nodes.length} elements`);
+    return lines.join('\n');
+}
+
+
 function round(value: number, decimals: number): number {
     const w = Math.pow(10, decimals);
     return Math.round(value * w) / w;
