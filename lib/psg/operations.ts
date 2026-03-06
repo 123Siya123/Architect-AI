@@ -129,6 +129,9 @@ export function applyOperation(
             case 'move_node':
                 updatedProject = moveNode(project, operation);
                 break;
+            case 'set_node_position':
+                updatedProject = setNodePosition(project, operation);
+                break;
             case 'resize_node':
                 updatedProject = resizeNode(project, operation);
                 break;
@@ -293,6 +296,50 @@ function moveNode(project: PSGProject, operation: PSGOperation): PSGProject {
     // Recursively move all children by the same delta
     const updatedNodes = { ...project.nodes, [operation.target_id]: updatedNode };
     moveChildrenRecursive(updatedNodes, node, delta_x as number, delta_y as number, delta_z as number, gridSize);
+
+    return { ...project, nodes: updatedNodes };
+}
+
+/**
+ * Sets the absolute position of a node (in meters).
+ * Also moves all children to maintain relative positions.
+ * All resulting positions are snapped to the 5cm grid.
+ */
+function setNodePosition(project: PSGProject, operation: PSGOperation): PSGProject {
+    const { position_x, position_y, position_z } = operation.params as {
+        position_x?: number;
+        position_y?: number;
+        position_z?: number;
+    };
+
+    const gridSize = project.settings.grid_size;
+    const node = project.nodes[operation.target_id];
+
+    const currentX = node.position.x;
+    const currentY = node.position.y;
+    const currentZ = node.position.z;
+
+    const newX = position_x !== undefined ? position_x : currentX;
+    const newY = position_y !== undefined ? position_y : currentY;
+    const newZ = position_z !== undefined ? position_z : currentZ;
+
+    const deltaX = newX - currentX;
+    const deltaY = newY - currentY;
+    const deltaZ = newZ - currentZ;
+
+    const updatedNode: PSGNode = {
+        ...node,
+        position: snapVec3({
+            x: newX,
+            y: newY,
+            z: newZ,
+        }, gridSize),
+        modified_at: new Date().toISOString(),
+        version: node.version + 1,
+    };
+
+    const updatedNodes = { ...project.nodes, [operation.target_id]: updatedNode };
+    moveChildrenRecursive(updatedNodes, node, deltaX, deltaY, deltaZ, gridSize);
 
     return { ...project, nodes: updatedNodes };
 }

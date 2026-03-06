@@ -69,6 +69,7 @@ import {
     STRUCTURAL_ENGINEER_PROMPT,
     SPATIAL_PHYSICIST_PROMPT,
     AESTHETIC_DESIGNER_PROMPT,
+    INTERIOR_ARCHITECT_PROMPT,
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
 
@@ -79,7 +80,7 @@ import { logAgentStep, clearLogs } from './logger';
 
 interface OrchestratorDecision {
     reasoning: string;
-    delegate_to: 'structural_engineer' | 'spatial_physicist' | 'aesthetic_designer' | 'DESIGN_COMPLETE';
+    delegate_to: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'aesthetic_designer' | 'DESIGN_COMPLETE';
     instruction: string;
     priority?: 'critical' | 'high' | 'normal';
 }
@@ -90,9 +91,10 @@ interface PhysicsValidation {
         element_id?: string;
         issue: string;
         severity: 'CRITICAL' | 'WARNING' | 'INFO';
-        correction?: {
+        suggested_fix?: {
             action: string;
             target_id?: string;
+            exact_coordinates?: { x?: number, y?: number, z?: number };
             params?: Record<string, unknown>;
         };
     }>;
@@ -183,9 +185,12 @@ export async function sendChatToAI(
                     orchestratorContext += `⚠️ PENDING PHYSICS VIOLATIONS (MUST ADDRESS):\n`;
                     for (const v of pendingViolations) {
                         orchestratorContext += `  - [${v.severity}] ${v.issue}`;
-                        if (v.correction) {
-                            orchestratorContext += ` → Fix: ${v.correction.action}`;
-                            if (v.correction.target_id) orchestratorContext += ` on ${v.correction.target_id}`;
+                        if (v.suggested_fix) {
+                            orchestratorContext += ` → Fix: ${v.suggested_fix.action}`;
+                            if (v.suggested_fix.target_id) orchestratorContext += ` on ${v.suggested_fix.target_id}`;
+                            if (v.suggested_fix.exact_coordinates) {
+                                orchestratorContext += ` to [${v.suggested_fix.exact_coordinates.x}, ${v.suggested_fix.exact_coordinates.y}, ${v.suggested_fix.exact_coordinates.z}]`;
+                            }
                         }
                         orchestratorContext += '\n';
                     }
@@ -407,6 +412,74 @@ export async function sendChatToAI(
                         });
                     }
 
+                } else if (decision.delegate_to === 'interior_architect') {
+                    // --- INTERIOR ARCHITECT ---
+                    progressLog.push(`   🪑 INTERIOR ARCHITECT: Executing...`);
+
+                    const architectContext = `ORCHESTRATOR INSTRUCTION:\n${decision.instruction}\n\n`;
+                    const architectState = `LATEST 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n`;
+
+                    const architectMessages = [
+                        { role: 'system', content: INTERIOR_ARCHITECT_PROMPT },
+                        { role: 'user', content: architectContext + architectState }
+                    ];
+
+                    const architectResult = await callProviderWithTools(config, architectMessages);
+
+                    logAgentStep({
+                        phase: 'INTERIOR_ARCHITECT',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: architectResult.text,
+                        reasoning: `Called ${architectResult.toolCalls?.length || 0} tools`,
+                    });
+
+                    if (architectResult.toolCalls && architectResult.toolCalls.length > 0) {
+                        progressLog.push(`   🪑 Proposed ${architectResult.toolCalls.length} operations`);
+                        let successCount = 0;
+                        const lastArchitectActions: string[] = [];
+
+                        for (const tc of architectResult.toolCalls) {
+                            try {
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                        lastArchitectActions.push(`✅ ${tc.name} on ${op.target_id}`);
+                                    }
+                                } else {
+                                    lastArchitectActions.push(`❌ ${tc.name} rejected: ${validation.errors.join(', ')}`);
+                                    progressLog.push(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                }
+                            } catch (e) {
+                                lastArchitectActions.push(`❌ ${tc.name} runtime error`);
+                            }
+                        }
+
+                        progressLog.push(`   ✅ ${successCount}/${architectResult.toolCalls.length} operations applied`);
+
+                        decisionHistory.add({
+                            turn, agent: 'interior_architect',
+                            decision: `Applied ${successCount} operations: ${decision.instruction.substring(0, 80)}`,
+                            reasoning: architectResult.text?.substring(0, 150) || '',
+                            result: successCount > 0 ? 'success' : 'failed'
+                        });
+                    } else {
+                        progressLog.push(`   ℹ️ Interior architect provided analysis but no operations`);
+                        decisionHistory.add({
+                            turn, agent: 'interior_architect',
+                            decision: 'No operations',
+                            reasoning: architectResult.text?.substring(0, 150) || 'No response',
+                            result: 'failed'
+                        });
+                    }
+
                 } else if (decision.delegate_to === 'aesthetic_designer') {
                     // --- AESTHETIC DESIGNER ---
                     progressLog.push(`   🎨 AESTHETIC DESIGNER: Reviewing...`);
@@ -548,6 +621,18 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
                     delta_x: args.delta_x ?? 0,
                     delta_y: args.delta_y ?? 0,
                     delta_z: args.delta_z ?? 0,
+                },
+                timestamp,
+            };
+
+        case 'set_node_position':
+            return {
+                type: 'set_node_position',
+                target_id: (args.target_id as string) || 'unknown',
+                params: {
+                    ...(args.position_x !== undefined && { position_x: args.position_x }),
+                    ...(args.position_y !== undefined && { position_y: args.position_y }),
+                    ...(args.position_z !== undefined && { position_z: args.position_z }),
                 },
                 timestamp,
             };

@@ -158,6 +158,32 @@ export const AI_TOOLS = [
         },
     },
 
+    // ─── TOOL 2.5: Set node absolute position ────────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'set_node_position',
+            description:
+                'Set the exact ABSOLUTE coordinates of an element in meters. ' +
+                'When moving fails multiple times, or you need to snap perfectly to a specific Y-elevation (e.g. wall base at Y=0), use this. ' +
+                'All child elements automatically move to maintain their relative positions. ' +
+                'Missing coordinate parameters will remain unchanged.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    target_id: {
+                        type: 'string',
+                        description: 'ID of the node to position (e.g. "wall_north_wall_abc12345")',
+                    },
+                    position_x: { type: 'number', description: 'Exact X center position in meters (East/West)' },
+                    position_y: { type: 'number', description: 'Exact Y center position in meters (Up/Down)' },
+                    position_z: { type: 'number', description: 'Exact Z center position in meters (South/North)' },
+                },
+                required: ['target_id'],
+            },
+        },
+    },
+
     // ─── TOOL 3: Resize a node ───────────────────────────────────────
     {
         type: 'function' as const,

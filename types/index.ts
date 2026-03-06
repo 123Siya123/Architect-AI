@@ -381,6 +381,7 @@ export interface BudgetConfig {
 /** All possible AI edit operations */
 export type OperationType =
   | 'move_node'
+  | 'set_node_position'     // NEW: Set absolute position
   | 'resize_node'
   | 'rotate_node'
   | 'replace_material'

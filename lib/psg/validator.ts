@@ -156,6 +156,13 @@ function validateSchema(
             }
             break;
         }
+        case 'set_node_position': {
+            const { position_x, position_y, position_z } = operation.params as Record<string, unknown>;
+            if (position_x === undefined && position_y === undefined && position_z === undefined) {
+                errors.push('set_node_position requires at least one of: position_x, position_y, position_z');
+            }
+            break;
+        }
         case 'resize_node': {
             const { width, height, depth } = operation.params as Record<string, unknown>;
             if (width === undefined && height === undefined && depth === undefined) {
@@ -236,7 +243,7 @@ function validateConstraints(
     const constraints = node.constraints;
 
     // Check fixed position
-    if (operation.type === 'move_node' && constraints.fixed_position) {
+    if ((operation.type === 'move_node' || operation.type === 'set_node_position') && constraints.fixed_position) {
         errors.push(
             `Cannot move "${node.name}" — it has a fixed position. ` +
             `This is typically a foundation or ground-level element.`
@@ -421,15 +428,20 @@ function validatePhysics(
     }
 
     // For move operations, check node doesn't go underground
-    if (operation.type === 'move_node' && node.type !== 'Foundation') {
+    if ((operation.type === 'move_node' || operation.type === 'set_node_position') && node.type !== 'Foundation') {
         const params = operation.params as Record<string, number>;
-        const newY = node.position.y + (params.delta_y || 0);
+        let newY = node.position.y;
+        if (operation.type === 'move_node') {
+            newY += (params.delta_y || 0);
+        } else {
+            newY = params.position_y !== undefined ? params.position_y : newY;
+        }
         const halfHeight = node.dimensions.y / 2;
         if (newY - halfHeight < -0.5) { // Allow 0.5m below grade for basements
             warnings.push({
                 severity: 'warning',
                 message: `Moving "${node.name}" would place it ${Math.abs(newY - halfHeight).toFixed(1)}m below ground level.`,
-                suggestion: 'Check if this is intentional (e.g., basement). If not, adjust delta_y.',
+                suggestion: 'Check if this is intentional (e.g., basement). If not, adjust delta_y or position_y.',
             });
         }
     }
@@ -465,7 +477,7 @@ function validateCollisions(
     const warnings: OperationWarning[] = [];
 
     // Only check for move and resize operations
-    if (operation.type !== 'move_node' && operation.type !== 'resize_node' && operation.type !== 'add_node') {
+    if (operation.type !== 'move_node' && operation.type !== 'set_node_position' && operation.type !== 'resize_node' && operation.type !== 'add_node') {
         return { valid: true, errors, warnings };
     }
 
@@ -552,6 +564,11 @@ function getEditedAABB(node: PSGNode, operation: PSGOperation): AABB {
         pos.x += params.delta_x || 0;
         pos.y += params.delta_y || 0;
         pos.z += params.delta_z || 0;
+    } else if (operation.type === 'set_node_position') {
+        const params = operation.params as Record<string, number>;
+        pos.x = params.position_x !== undefined ? params.position_x : pos.x;
+        pos.y = params.position_y !== undefined ? params.position_y : pos.y;
+        pos.z = params.position_z !== undefined ? params.position_z : pos.z;
     }
 
     if (operation.type === 'resize_node') {
