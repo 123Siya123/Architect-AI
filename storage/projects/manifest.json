@@ -82,5 +82,29 @@
     "name": "Simple 3-Bedroom Home",
     "modified_at": "2026-03-02T09:39:16.641Z",
     "preview_summary": "27 elements"
+  },
+  {
+    "id": "ddd4bf75-ae2b-439a-b0f9-90793eb92927",
+    "name": "The White House (Executive Residence)",
+    "modified_at": "2026-03-06T17:25:23.766Z",
+    "preview_summary": "32 elements"
+  },
+  {
+    "id": "ead3272b-8267-47ab-bcd7-aa3b4ce29fa3",
+    "name": "Modern 4-Bedroom Home",
+    "modified_at": "2026-03-06T17:25:35.439Z",
+    "preview_summary": "47 elements"
+  },
+  {
+    "id": "73b45f27-2463-4746-aca5-77f411c6ca49",
+    "name": "Simple 3-Bedroom Home",
+    "modified_at": "2026-03-06T17:25:44.255Z",
+    "preview_summary": "27 elements"
+  },
+  {
+    "id": "6197d870-fe1a-451a-95a0-6c51c5acebc0",
+    "name": "New Project",
+    "modified_at": "2026-03-06T17:25:47.899Z",
+    "preview_summary": "1 elements"
   }
 ]

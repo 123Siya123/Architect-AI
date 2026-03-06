@@ -515,50 +515,66 @@ export const AI_TOOLS = [
         function: {
             name: 'edit_wall_surface',
             description:
-                'Apply a custom surface modification to a wall (bulbs, curves, holes, artistic patterns). ' +
-                'For complex or "organic" forms, use command="set_matrix" and PROVIDE THE FULL NUMERICAL MATRIX in the "data" parameter. ' +
-                'Internal representation is a 2D matrix (rows x cols) of thickness multipliers: ' +
-                '0.0 = HOLE (cutout), 1.0 = standard wall thickness, >1.0 = protrusion/bulb. ' +
-                'You can use resolutions up to 40x40 for detailed artistic sculpting.',
+                'Sculpt a wall surface with full creative control. Two modes available:\n\n' +
+                '★ PREFERRED: command="set_code" — Write a JS math expression evaluated at every point.\n' +
+                '  The expression receives u (0→1 horizontal) and v (0→1 vertical).\n' +
+                '  Must RETURN a thickness multiplier: 0.0=HOLE, 1.0=standard, >1.0=bulb/protrusion.\n' +
+                '  Uses infinite resolution (computed at render time). Very token-efficient.\n' +
+                '  EXAMPLES:\n' +
+                '  • Gaussian bulb: "1.0 + 2.0 * Math.exp(-((u-0.5)**2 + (v-0.5)**2) / 0.02)"\n' +
+                '  • Sine wave:     "1.0 + 0.3 * Math.sin(u * Math.PI * 6)"\n' +
+                '  • Arch cutout:   "((u-0.5)**2/(0.15**2) + (v-0.7)**2/(0.2**2) < 1) ? 0.0 : 1.0"\n' +
+                '  • Diamond:       "1.0 + 0.5 * Math.max(0, 1 - 2*Math.abs(u-0.5) - 2*Math.abs(v-0.5))"\n' +
+                '  • Two bumps:     "1 + 1.5*Math.exp(-((u-0.3)**2+(v-0.5)**2)/0.01) + 1.5*Math.exp(-((u-0.7)**2+(v-0.5)**2)/0.01)"\n\n' +
+                '★ FALLBACK: command="set_matrix" — Provide an explicit 2D array of thickness values.\n' +
+                '  Best for very specific hand-crafted patterns.\n\n' +
+                'Other commands: "set_bulb" (quick Gaussian), "cut_hole" (rectangular cutout), "reset" (clear).',
             parameters: {
                 type: 'object',
                 properties: {
-                    target_id: { type: 'string', description: 'ID of the Wall or Partition' },
+                    target_id: { type: 'string', description: 'ID of the Wall or Partition to sculpt' },
                     command: {
                         type: 'string',
-                        enum: ['reset', 'set_bulb', 'cut_hole', 'set_matrix', 'draw_curve'],
-                        description: 'Operation to perform'
+                        enum: ['set_code', 'set_matrix', 'set_bulb', 'cut_hole', 'draw_curve', 'reset'],
+                        description: 'set_code (preferred), set_matrix, set_bulb, cut_hole, draw_curve, or reset'
                     },
-                    description: { type: 'string', description: 'A human-readable summary of the shape (e.g., "Circular bulb with 0.5m peak")' },
-                    rows: { type: 'number', description: 'Matrix resolution (Y-axis). Mandatory for set_matrix.' },
-                    cols: { type: 'number', description: 'Matrix resolution (X-axis). Mandatory for set_matrix.' },
+                    description: { type: 'string', description: 'Human-readable summary of the wall shape' },
+                    code: {
+                        type: 'string',
+                        description: 'JS expression for set_code. Variables: u (0-1 horiz), v (0-1 vert). Must return a number.'
+                    },
+                    resolution: {
+                        type: 'number',
+                        description: 'Mesh resolution for procedural mode (default 32, max 64 for ultra-smooth)'
+                    },
                     data: {
                         type: 'array',
                         items: { type: 'array', items: { type: 'number' } },
-                        description: '2D array of multipliers. Required for command="set_matrix".'
+                        description: 'Raw 2D matrix data for set_matrix mode'
                     },
-                    cx: { type: 'number', description: 'X-center (0.0 to 1.0) for set_bulb' },
-                    cy: { type: 'number', description: 'Y-center (0.0 to 1.0) for set_bulb' },
-                    radius: { type: 'number', description: 'Radius (0.0 to 1.0) for set_bulb' },
-                    strength: { type: 'number', description: 'Multiplier at peak for set_bulb' }
+                    rows: { type: 'number', description: 'Number of rows in the data matrix' },
+                    cols: { type: 'number', description: 'Number of cols in the data matrix' },
+                    cx: { type: 'number', description: 'X-center (0-1) for set_bulb' },
+                    cy: { type: 'number', description: 'Y-center (0-1) for set_bulb' },
+                    radius: { type: 'number', description: 'Radius (0-1) for set_bulb' },
+                    strength: { type: 'number', description: 'Peak multiplier for set_bulb' }
                 },
                 required: ['target_id', 'command', 'description']
             },
         },
     },
-    // ─── TOOL 14: Look up Wall Surface Matrix ────────────────────────
+    // ─── TOOL 14: Look up Wall Surface ────────────────────────────────
     {
         type: 'function' as const,
         function: {
             name: 'get_wall_surface',
             description:
-                'Get the full numerical matrix for a wall\'s custom surface. ' +
-                'Call this ONLY if you need to precisely edit an existing complex wall shape. ' +
-                'By default, you only see a short description of the wall surface.',
+                'Inspect a wall\'s current surface configuration (code expression or matrix data). ' +
+                'Call this ONLY if you need to see the exact formula/data before editing.',
             parameters: {
                 type: 'object',
                 properties: {
-                    target_id: { type: 'string', description: 'ID of the wall to look up' }
+                    target_id: { type: 'string', description: 'ID of the wall to inspect' }
                 },
                 required: ['target_id']
             },

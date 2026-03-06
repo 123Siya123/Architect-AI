@@ -196,9 +196,14 @@ export async function sendChatToAI(
                                 const wallId = tc.args.target_id as string;
                                 const wall = currentProject.nodes[wallId];
                                 if (wall?.surface_matrix) {
-                                    resultsForObservation.push(`🔍 Matrix for ${wallId}:\n${JSON.stringify(wall.surface_matrix.data)}`);
+                                    const sm = wall.surface_matrix;
+                                    if (sm.code) {
+                                        resultsForObservation.push(`🔍 Surface for ${wallId}:\n  Mode: PROCEDURAL\n  Code: ${sm.code}\n  Resolution: ${sm.resolution || 32}\n  Description: ${sm.description}`);
+                                    } else {
+                                        resultsForObservation.push(`🔍 Surface for ${wallId}:\n  Mode: DATA MATRIX (${sm.rows}x${sm.cols})\n  Data: ${JSON.stringify(sm.data)}\n  Description: ${sm.description}`);
+                                    }
                                 } else {
-                                    resultsForObservation.push(`❌ ${wallId} has no custom surface matrix.`);
+                                    resultsForObservation.push(`ℹ️ ${wallId} has standard flat surface (no custom modifications).`);
                                 }
                                 continue;
                             }

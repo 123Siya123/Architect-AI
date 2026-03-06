@@ -31,10 +31,19 @@ export function prepareProjectContext(project: PSGProject): string {
         if (node.custom_geometry) readable.cg = node.custom_geometry;
 
         if (node.surface_matrix) {
-            readable.surface = {
-                desc: node.surface_matrix.description,
-                grid: `${node.surface_matrix.rows}x${node.surface_matrix.cols}`
-            };
+            if (node.surface_matrix.code) {
+                readable.surface = {
+                    mode: 'procedural',
+                    desc: node.surface_matrix.description,
+                    res: node.surface_matrix.resolution || 32
+                };
+            } else {
+                readable.surface = {
+                    mode: 'data',
+                    desc: node.surface_matrix.description,
+                    grid: `${node.surface_matrix.rows}x${node.surface_matrix.cols}`
+                };
+            }
         }
 
         readableNodes[id] = readable;

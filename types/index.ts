@@ -146,12 +146,35 @@ export type PSGNodeType =
   | 'ElectricalOutlet' // Electrical
   | 'ElectricalPanel'; // Electrical
 
-/** Matrix-based surface modification (bulbs, curves, holes) */
+/**
+ * Surface modification for walls — supports TWO modes:
+ *
+ * MODE 1: PROCEDURAL CODE (preferred for AI)
+ *   The AI writes a tiny JS expression that computes thickness at any (u, v) point.
+ *   u = horizontal position (0.0 = left edge, 1.0 = right edge)
+ *   v = vertical position (0.0 = bottom edge, 1.0 = top edge)
+ *   Returns: thickness multiplier (0.0 = hole, 1.0 = standard, >1.0 = bulb)
+ *   Example: "1.0 + 1.5 * Math.exp(-((u-0.5)**2 + (v-0.5)**2) / 0.02)"
+ *   → Creates a smooth Gaussian bulb in the center of the wall.
+ *   Resolution is INFINITE (computed at render time based on mesh density).
+ *
+ * MODE 2: RAW DATA MATRIX (fallback for pixel-art control)
+ *   A 2D grid of explicit thickness multipliers.
+ *   Best for very specific hand-crafted patterns or imported heightmaps.
+ *
+ * If both `code` and `data` are present, `code` takes priority.
+ */
 export interface SurfaceMatrix {
+  /** JS expression returning thickness multiplier. Has access to: u, v, Math */
+  code?: string;
+  /** Mesh resolution for procedural mode (rows along Y, cols along X) */
+  resolution?: number;
+  /** Raw matrix data — rows × cols grid of thickness multipliers */
   rows: number;
   cols: number;
-  data: number[][];    // Grid of thickness multipliers (0 = hole, 1 = standard, >1 = bulb)
-  description: string; // Human/AI-readable summary of the shape
+  data: number[][];
+  /** Human/AI-readable summary of the shape */
+  description: string;
 }
 
 /** Tags that classify a node's structural role */

@@ -200,9 +200,10 @@ function validateSchema(
             break;
         }
         case 'edit_wall_surface': {
-            const { command, description } = operation.params as Record<string, unknown>;
+            const { command, description, code } = operation.params as Record<string, unknown>;
             if (!command) errors.push('edit_wall_surface requires command parameter');
             if (!description) errors.push('edit_wall_surface requires description parameter');
+            if (command === 'set_code' && !code) errors.push('edit_wall_surface set_code requires code parameter');
             break;
         }
     }

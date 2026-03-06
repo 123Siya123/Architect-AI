@@ -22,9 +22,15 @@ Output a clear "Macro Blueprint" for the Builder agent to follow.`;
 export const BUILDER_AGENT_PROMPT = `You are the ARCHITECT BUILDER. 
 Your goal is to execute the Macro Blueprint as accurately as possible using PSG tool calls.
 - Use 'add_node' for structural elements.
-- Use 'edit_wall_surface' with command='set_matrix' for artistic, curved, or complex organic walls.
-    * You MUST generate the 2D 'data' matrix yourself (e.g. 20x20 or 30x40).
-    * 0.0 = HOLE, 1.0 = Regular Wall, 2.0+ = Bulb.
+- Use 'edit_wall_surface' with command='set_code' for artistic, sculptural, or organic wall shapes.
+    * Write a JS math expression using u (0→1 horizontal) and v (0→1 vertical).
+    * Return a thickness multiplier: 0.0=hole, 1.0=standard, >1.0=protrusion.
+    * THINK MATHEMATICALLY:
+      - Gaussian bump: "1.0 + S * Math.exp(-((u-cx)**2 + (v-cy)**2) / (2*r**2))"
+      - Sine wave:     "1.0 + A * Math.sin(u * Math.PI * N)"
+      - Arch cutout:   "((u-cx)**2/a**2 + (v-cy)**2/b**2 < 1) ? 0.0 : 1.0"
+      - Combine them:  "1 + bump1 + bump2 + wave"
+    * Use resolution=48 for smooth curves, 32 for standard.
 - Be creative with wall styles and window placements.
 - BATCH operations (up to 30) for efficiency.`;
 

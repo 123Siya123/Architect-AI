@@ -799,7 +799,7 @@ function createCustomElement(project: PSGProject, operation: PSGOperation): PSGP
 }
 
 /**
- * Advanced surface editing for walls (bulbs, curves, holes)
+ * Advanced surface editing for walls (bulbs, curves, holes, procedural code)
  */
 function editWallSurface(project: PSGProject, operation: PSGOperation): PSGProject {
     const node = project.nodes[operation.target_id];
@@ -808,32 +808,66 @@ function editWallSurface(project: PSGProject, operation: PSGOperation): PSGProje
     }
 
     const params = operation.params as {
-        command: 'reset' | 'set_bulb' | 'cut_hole' | 'set_matrix' | 'draw_curve';
+        command: 'reset' | 'set_bulb' | 'cut_hole' | 'set_matrix' | 'draw_curve' | 'set_code';
         rows?: number;
         cols?: number;
-        cx?: number; // 0-1 range center x
-        cy?: number; // 0-1 range center y
-        radius?: number; // 0-1 range radius
-        strength?: number; // thickness multiplier
-        x?: number; y?: number; w?: number; h?: number; // For hole
-        data?: number[][]; // For setting raw matrix
+        resolution?: number;
+        cx?: number;
+        cy?: number;
+        radius?: number;
+        strength?: number;
+        x?: number; y?: number; w?: number; h?: number;
+        data?: number[][];
+        code?: string;
         description?: string;
     };
 
     const rows = params.rows || node.surface_matrix?.rows || 10;
     const cols = params.cols || node.surface_matrix?.cols || 10;
 
+    // ─── PROCEDURAL CODE MODE ────────────────────────────────────────
+    if (params.command === 'set_code' && params.code) {
+        const updatedNode: PSGNode = {
+            ...node,
+            surface_matrix: {
+                code: params.code,
+                resolution: params.resolution || 32,
+                rows: 2,
+                cols: 2,
+                data: [[1, 1], [1, 1]], // Minimal placeholder (code takes priority)
+                description: params.description || 'Procedural surface'
+            },
+            version: node.version + 1,
+            modified_at: new Date().toISOString()
+        };
+
+        return {
+            ...project,
+            nodes: { ...project.nodes, [node.id]: updatedNode }
+        };
+    }
+
+    // ─── DATA MATRIX MODE ────────────────────────────────────────────
     let matrixData: number[][];
 
-    // Initialize or clone existing data
-    if (node.surface_matrix) {
+    if (node.surface_matrix && !node.surface_matrix.code) {
         matrixData = node.surface_matrix.data.map(r => [...r]);
     } else {
         matrixData = Array(rows).fill(0).map(() => Array(cols).fill(1));
     }
 
     if (params.command === 'reset') {
-        matrixData = Array(rows).fill(0).map(() => Array(cols).fill(1));
+        // Clear everything including procedural code
+        const updatedNode: PSGNode = {
+            ...node,
+            surface_matrix: undefined,
+            version: node.version + 1,
+            modified_at: new Date().toISOString()
+        };
+        return {
+            ...project,
+            nodes: { ...project.nodes, [node.id]: updatedNode }
+        };
     } else if (params.command === 'set_bulb') {
         applyBulb(matrixData, params.cx || 0.5, params.cy || 0.5, params.radius || 0.2, params.strength || 2);
     } else if (params.command === 'cut_hole') {
@@ -841,7 +875,6 @@ function editWallSurface(project: PSGProject, operation: PSGOperation): PSGProje
     } else if (params.command === 'set_matrix' && params.data) {
         matrixData = params.data;
     } else if (params.command === 'draw_curve') {
-        // Simple Sine wave curve example
         applyCurve(matrixData);
     }
 
@@ -872,7 +905,7 @@ function applyBulb(data: number[][], cx: number, cy: number, r: number, strength
             const y = i / (rows - 1);
             const x = j / (cols - 1);
             const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
-            if (dist < r * 2) { // 2s sigma
+            if (dist < r * 2) {
                 const factor = Math.exp(-(dist ** 2) / (2 * (r / 2) ** 2));
                 data[i][j] = 1 + (strength - 1) * factor;
             }
