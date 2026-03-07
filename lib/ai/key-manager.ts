@@ -178,10 +178,31 @@ export function markKeyRateLimited(key: string, retryAfterMs?: number): void {
  */
 export function allKeysOnCooldown(provider: string = 'default'): boolean {
     ensureInitialized();
-    const pool = keyPools[provider] || keyPools['default'];
+    const targetPool = keyPools[provider] ? provider : 'default';
+    const pool = keyPools[targetPool];
     if (!pool || pool.length === 0) return true;
     const now = Date.now();
     return pool.every(entry => entry.rateLimitedUntil > now);
+}
+
+/**
+ * Returns the number of milliseconds until the soonest rate-limited key becomes available for a pool.
+ * Returns 0 if at least one key is available.
+ */
+export function getWaitTimeForPool(provider: string = 'default'): number {
+    ensureInitialized();
+    const targetPool = keyPools[provider] ? provider : 'default';
+    const pool = keyPools[targetPool];
+    if (!pool || pool.length === 0) return 0;
+
+    const now = Date.now();
+    let minWait = Infinity;
+    for (const entry of pool) {
+        const wait = Math.max(0, entry.rateLimitedUntil - now);
+        if (wait === 0) return 0; // Available now
+        if (wait < minWait) minWait = wait;
+    }
+    return minWait === Infinity ? 0 : minWait;
 }
 
 export function rotateKey(provider: string = 'default'): void {

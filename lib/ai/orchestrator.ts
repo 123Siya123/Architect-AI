@@ -52,7 +52,7 @@ import type {
     OperationType,
 } from '@/types';
 import { AI_TOOLS } from './tools';
-import { getProviderConfig, rotateKey, markKeyRateLimited, allKeysOnCooldown, type AIProviderConfig } from './key-manager';
+import { getProviderConfig, rotateKey, markKeyRateLimited, allKeysOnCooldown, getWaitTimeForPool, type AIProviderConfig } from './key-manager';
 import { validateOperation } from '@/lib/psg/validator';
 import { applyOperation } from '@/lib/psg/operations';
 import {
@@ -1101,7 +1101,13 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
                 timestamp,
             };
         default:
-            throw new Error(`Unknown tool name: ${name}`);
+            console.warn(`[Orchestrator] Unknown tool name requested by agent: ${name}`);
+            return {
+                type: 'unknown_tool' as any,
+                target_id: 'project',
+                params: { original_tool: name, ...args },
+                timestamp,
+            };
     }
 }
 
@@ -1191,8 +1197,11 @@ async function callProviderNoTools(
                     }
                 }
             } else if (config.provider === 'groq' && isRateLimit) {
-                // Groq rate limited — rotate groq key
-                markKeyRateLimited(config.apiKey);
+                // Groq rate limited — parse specific wait time if available
+                const match = errMsg.match(/try again in ([\d\.]+)s/);
+                const retryMs = match ? Math.ceil(parseFloat(match[1]) * 1000) : undefined;
+
+                markKeyRateLimited(config.apiKey, retryMs);
                 config = getProviderConfig('groq');
                 console.warn(`[Orchestrator] Groq rate limited. Rotating Groq key...`);
             } else {
@@ -1202,9 +1211,20 @@ async function callProviderNoTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            // Shorter backoff when switching providers (already a different service)
-            const backoff = config.provider !== initialConfig.provider ? 200 : Math.min(500 * attempt, 5000);
-            await new Promise(r => setTimeout(r, backoff));
+
+            // Check if we need to sleep because all keys are temporarily exhausted
+            let waitTime = getWaitTimeForPool(config.provider);
+            if (waitTime > 0 && waitTime < 60000) {
+                console.warn(`[Orchestrator] All ${config.provider} keys on cooldown. Waiting ${Math.ceil(waitTime / 1000)}s...`);
+                // add padding
+                waitTime += 500;
+            } else if (waitTime >= 60000) {
+                waitTime = 5000; // Cap to 5s if it's too long, rely on retries/fallbacks
+            } else {
+                waitTime = config.provider !== initialConfig.provider ? 200 : Math.min(500 * attempt, 5000);
+            }
+
+            await new Promise(r => setTimeout(r, waitTime));
         }
     }
     throw new Error('Retries exhausted');
@@ -1283,7 +1303,10 @@ async function callProviderWithTools(
                     }
                 }
             } else if (config.provider === 'groq' && isRateLimit) {
-                markKeyRateLimited(config.apiKey);
+                const match = errMsg.match(/try again in ([\d\.]+)s/);
+                const retryMs = match ? Math.ceil(parseFloat(match[1]) * 1000) : undefined;
+
+                markKeyRateLimited(config.apiKey, retryMs);
                 config = getProviderConfig('groq');
                 console.warn(`[Orchestrator] Groq rate limited. Rotating Groq key...`);
             } else {
@@ -1293,8 +1316,20 @@ async function callProviderWithTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            const backoff = config.provider !== initialConfig.provider ? 200 : Math.min(500 * attempt, 5000);
-            await new Promise(r => setTimeout(r, backoff));
+
+            // Check if we need to sleep because all keys are temporarily exhausted
+            let waitTime = getWaitTimeForPool(config.provider);
+            if (waitTime > 0 && waitTime < 60000) {
+                console.warn(`[Orchestrator] All ${config.provider} keys on cooldown. Waiting ${Math.ceil(waitTime / 1000)}s...`);
+                // add padding
+                waitTime += 500;
+            } else if (waitTime >= 60000) {
+                waitTime = 5000; // Cap to 5s if it's too long
+            } else {
+                waitTime = config.provider !== initialConfig.provider ? 200 : Math.min(500 * attempt, 5000);
+            }
+
+            await new Promise(r => setTimeout(r, waitTime));
         }
     }
     throw new Error('Retries exhausted');
