@@ -152,13 +152,25 @@
   {
     "id": "8cece3b4-3d4b-4f4e-bd4b-7df68b63587f",
     "name": "Untitled Project",
-    "modified_at": "2026-03-07T11:37:26.173Z",
-    "preview_summary": "25 elements"
+    "modified_at": "2026-03-07T11:43:17.435Z",
+    "preview_summary": "26 elements"
   },
   {
     "id": "824e0d44-5fc3-424d-ad6e-6e871d498c11",
     "name": "Untitled Project",
     "modified_at": "2026-03-07T11:26:18.593Z",
     "preview_summary": "21 elements"
+  },
+  {
+    "id": "ec2415bc-5ed2-4eb1-95f8-8176e744c9b5",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-07T13:14:24.001Z",
+    "preview_summary": "69 elements"
+  },
+  {
+    "id": "1db2ac39-dcf2-4885-8ed2-356ea8cdc7fd",
+    "name": "Simple 3-Bedroom Home",
+    "modified_at": "2026-03-07T13:26:00.949Z",
+    "preview_summary": "27 elements"
   }
 ]

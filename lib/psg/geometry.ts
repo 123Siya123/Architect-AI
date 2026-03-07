@@ -264,7 +264,7 @@ function sampleMatrix(data: number[][], u: number, v: number, interpolation: 'ne
     const cols = data[0]?.length ?? 0;
     if (rows < 1 || cols < 1) return 1;
     const uu = Math.min(1, Math.max(0, u));
-    const vv = Math.min(1, Math.max(0, v));
+    const vv = 1 - Math.min(1, Math.max(0, v));
     if (interpolation === 'nearest') {
         const c = Math.round(uu * (cols - 1));
         const r = Math.round(vv * (rows - 1));

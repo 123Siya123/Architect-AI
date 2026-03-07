@@ -52,7 +52,7 @@ import type {
     OperationType,
 } from '@/types';
 import { AI_TOOLS } from './tools';
-import { getProviderConfig, rotateKey, markKeyRateLimited, type AIProviderConfig } from './key-manager';
+import { getProviderConfig, rotateKey, markKeyRateLimited, allKeysOnCooldown, type AIProviderConfig } from './key-manager';
 import { validateOperation } from '@/lib/psg/validator';
 import { applyOperation } from '@/lib/psg/operations';
 import {
@@ -72,6 +72,50 @@ import {
     INTERIOR_ARCHITECT_PROMPT,
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
+
+// =============================================================================
+// PERSISTENT FALLBACK STATE
+// =============================================================================
+// When Gemini is rate-limited, this stores the fallback config so ALL subsequent
+// calls in the same (and future) turns also use the fallback provider until
+// the cooldown expires.
+let activeFallbackConfig: AIProviderConfig | null = null;
+let fallbackExpiresAt: number = 0;
+
+function getEffectiveConfig(): AIProviderConfig {
+    const now = Date.now();
+    if (activeFallbackConfig && now < fallbackExpiresAt) {
+        console.log(`[Orchestrator] Using fallback provider: ${activeFallbackConfig.provider} (${activeFallbackConfig.model})`);
+        // Refresh key from pool in case of rotation
+        return getProviderConfig(activeFallbackConfig.provider);
+    }
+    // Fallback expired, clear it
+    if (activeFallbackConfig) {
+        console.log(`[Orchestrator] Fallback expired. Returning to default provider.`);
+        activeFallbackConfig = null;
+    }
+
+    // Proactive check: if all default/gemini keys are on cooldown, switch to Groq immediately
+    if (allKeysOnCooldown('default') && allKeysOnCooldown('gemini')) {
+        console.warn('[Orchestrator] ⚠️ All Gemini keys on cooldown. Proactively switching to Groq.');
+        const groqFallback = setFallbackToGroq();
+        if (groqFallback) return groqFallback;
+    }
+
+    return getProviderConfig();
+}
+
+function setFallbackToGroq(cooldownMs: number = 600000) {
+    const groqConfig = getProviderConfig('groq');
+    if (groqConfig.apiKey) {
+        activeFallbackConfig = groqConfig;
+        fallbackExpiresAt = Date.now() + cooldownMs; // Default: 10 minutes
+        console.log(`[Orchestrator] ⚡ FALLBACK ACTIVATED: Switching ALL calls to Groq for ${Math.ceil(cooldownMs / 60000)} minutes`);
+        return groqConfig;
+    }
+    console.warn('[Orchestrator] No Groq keys available for fallback!');
+    return null;
+}
 
 
 /**
@@ -213,7 +257,7 @@ export async function sendChatToAI(
                 // =============================================================
                 // STEP 1: ORCHESTRATOR — Analyze and Delegate
                 // =============================================================
-                const config = getProviderConfig();
+                const config = getEffectiveConfig();
 
                 if (attachments && attachments.length > 0 && config.provider !== 'gemini') {
                     log(`   ⚠️ WARNING: Attachments ignored. Provider ${config.provider} does not support images.`);
@@ -435,6 +479,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                 const completionStatus = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
                 const criticalPending = pendingViolations.filter(v => v.severity === 'CRITICAL');
+                const surfaceSculptPending = shouldApplySurfaceSculpt(currentProject, structuralTargets);
 
                 if (criticalPending.length > 0 && decision.delegate_to !== 'structural_engineer') {
                     decision = {
@@ -449,6 +494,13 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         delegate_to: 'structural_engineer',
                         instruction: completionStatus.nextInstruction,
                         reasoning: `${decision.reasoning} | Overridden: core structure incomplete.`
+                    };
+                } else if (surfaceSculptPending) {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'interior_architect',
+                        instruction: buildSurfaceMatrixInstruction(currentProject, structuralTargets),
+                        reasoning: `${decision.reasoning} | Overridden: custom matrix sculpting requested and not yet applied.`
                     };
                 } else if (decision.delegate_to === 'DESIGN_COMPLETE' && !completionStatus.complete) {
                     decision = {
@@ -656,7 +708,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     log(`   🪑 INTERIOR ARCHITECT: Executing...`);
 
                     const architectContext = `ORCHESTRATOR INSTRUCTION:\n${decision.instruction}\n\n`;
-                    const architectState = `LATEST 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n`;
+                    const insightsBlock = wallSurfaceInsights.length > 0
+                        ? `WALL SURFACE INSIGHTS:\n${wallSurfaceInsights.join('\n')}\n\n`
+                        : '';
+                    const architectState = `LATEST 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n${insightsBlock}`;
 
                     const architectMessages = [
                         { role: 'system', content: INTERIOR_ARCHITECT_PROMPT },
@@ -681,6 +736,15 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                         for (const tc of architectResult.toolCalls) {
                             try {
+                                if (tc.name === 'get_wall_surface') {
+                                    const wallId = tc.args.target_id as string;
+                                    const surfaceInsight = summarizeWallSurface(currentProject, wallId);
+                                    wallSurfaceInsights = [surfaceInsight, ...wallSurfaceInsights].slice(0, 8);
+                                    lastArchitectActions.push(`Queried surface of ${wallId}`);
+                                    log(`   🔎 ${surfaceInsight}`);
+                                    continue;
+                                }
+
                                 const op = toolCallToOperation(tc.name, tc.args);
                                 const validation = validateOperation(op, currentProject);
 
@@ -1058,6 +1122,7 @@ async function callProviderNoTools(
     const MAX_TOTAL_ATTEMPTS = 7;
     let config = initialConfig;
     let timeoutMultiplier = 1; // Escalate timeout on retry
+    let geminiFailCount = 0; // Track consecutive Gemini failures
 
     for (let attempt = 1; attempt <= MAX_TOTAL_ATTEMPTS; attempt++) {
         if (signal?.aborted) throw new Error('User cancelled');
@@ -1065,7 +1130,11 @@ async function callProviderNoTools(
             // Pass timeout multiplier context via a patched config
             const callConfig = { ...config, _timeoutMultiplier: timeoutMultiplier } as any;
             switch (config.provider) {
-                case 'gemini': return await callGeminiNoTools(callConfig, messages, attachments, signal);
+                case 'gemini': {
+                    const result = await callGeminiNoTools(callConfig, messages, attachments, signal);
+                    // Success! If we were using fallback, keep it but note success
+                    return result;
+                }
                 case 'groq': return await callGroqNoTools(config, messages, signal);
                 case 'openai': return await callOpenAINoTools(config, messages, signal);
                 case 'github': return await callGithubNoTools(config, messages, signal);
@@ -1082,29 +1151,50 @@ async function callProviderNoTools(
             console.warn(`[callProviderNoTools] Attempt ${attempt}/${MAX_TOTAL_ATTEMPTS} failed:`, errMsg);
 
             const isTimeout = errMsg.includes('timed out') || errMsg.includes('Timeout');
-            const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
             const isRateLimit = errMsg.includes('429');
+            const isQuotaExhausted = errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('quota');
+            const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
             if (isTimeout) {
                 // On timeout, increase timeout for next attempt instead of rotating
                 timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
                 console.warn(`[callProviderNoTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
-            } else if ((isUnavailable || isRateLimit) && config.provider === 'gemini') {
+            } else if (config.provider === 'gemini' && (isRateLimit || isQuotaExhausted || isUnavailable)) {
                 if (isRateLimit) markKeyRateLimited(config.apiKey);
+                geminiFailCount++;
 
-                if (config.model.includes('gemini-3.1-pro')) {
-                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
-                    config = { ...config, model: 'gemini-3-pro-preview' };
-                } else if (config.model === 'gemini-3-pro-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Switching to Groq...');
-                    config = getProviderConfig('groq');
-                } else if (config.model === 'gemini-3-flash-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to Groq...');
-                    config = getProviderConfig('groq');
+                // If quota exhausted (daily limit) or 2+ consecutive Gemini failures,
+                // skip intermediate models and go straight to Groq
+                if (isQuotaExhausted || geminiFailCount >= 2) {
+                    console.warn(`[Orchestrator] ⚡ Gemini quota exhausted or ${geminiFailCount} failures. Switching to Groq immediately.`);
+                    const groqFallback = setFallbackToGroq();
+                    if (groqFallback) {
+                        config = groqFallback;
+                    } else {
+                        // No Groq keys available, try one more Gemini model
+                        rotateKey();
+                        config = getProviderConfig();
+                    }
+                } else if (config.model.includes('gemini-3.1-pro')) {
+                    // First failure: try a different Gemini model
+                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Trying Gemini Flash...');
+                    config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
                 } else {
-                    rotateKey();
-                    config = getProviderConfig();
+                    // Any other Gemini model failed — go to Groq
+                    console.warn(`[Orchestrator] Gemini ${config.model} unavailable. Switching to Groq...`);
+                    const groqFallback = setFallbackToGroq();
+                    if (groqFallback) {
+                        config = groqFallback;
+                    } else {
+                        rotateKey();
+                        config = getProviderConfig();
+                    }
                 }
+            } else if (config.provider === 'groq' && isRateLimit) {
+                // Groq rate limited — rotate groq key
+                markKeyRateLimited(config.apiKey);
+                config = getProviderConfig('groq');
+                console.warn(`[Orchestrator] Groq rate limited. Rotating Groq key...`);
             } else {
                 if (errMsg.includes('429')) markKeyRateLimited(config.apiKey);
                 rotateKey();
@@ -1112,8 +1202,8 @@ async function callProviderNoTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            // Escalating backoff: 500ms, 1s, 2s, 3s, ...
-            const backoff = Math.min(500 * attempt, 5000);
+            // Shorter backoff when switching providers (already a different service)
+            const backoff = config.provider !== initialConfig.provider ? 200 : Math.min(500 * attempt, 5000);
             await new Promise(r => setTimeout(r, backoff));
         }
     }
@@ -1133,6 +1223,7 @@ async function callProviderWithTools(
     const MAX_TOTAL_ATTEMPTS = 7;
     let config = initialConfig;
     let timeoutMultiplier = 1;
+    let geminiFailCount = 0;
 
     for (let attempt = 1; attempt <= MAX_TOTAL_ATTEMPTS; attempt++) {
         if (signal?.aborted) throw new Error('User cancelled');
@@ -1156,28 +1247,45 @@ async function callProviderWithTools(
             console.warn(`[callProviderWithTools] Attempt ${attempt}/${MAX_TOTAL_ATTEMPTS} failed:`, errMsg);
 
             const isTimeout = errMsg.includes('timed out') || errMsg.includes('Timeout');
-            const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
             const isRateLimit = errMsg.includes('429');
+            const isQuotaExhausted = errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('quota');
+            const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
 
             if (isTimeout) {
                 timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
                 console.warn(`[callProviderWithTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
-            } else if ((isUnavailable || isRateLimit) && config.provider === 'gemini') {
+            } else if (config.provider === 'gemini' && (isRateLimit || isQuotaExhausted || isUnavailable)) {
                 if (isRateLimit) markKeyRateLimited(config.apiKey);
+                geminiFailCount++;
 
-                if (config.model.includes('gemini-3.1-pro')) {
-                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
-                    config = { ...config, model: 'gemini-3-pro-preview' };
-                } else if (config.model === 'gemini-3-pro-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Switching to Groq...');
-                    config = getProviderConfig('groq');
-                } else if (config.model === 'gemini-3-flash-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to Groq...');
-                    config = getProviderConfig('groq');
+                // If quota exhausted (daily limit) or 2+ consecutive Gemini failures,
+                // skip intermediate models and go straight to Groq
+                if (isQuotaExhausted || geminiFailCount >= 2) {
+                    console.warn(`[Orchestrator] ⚡ Gemini quota exhausted or ${geminiFailCount} failures. Switching to Groq immediately.`);
+                    const groqFallback = setFallbackToGroq();
+                    if (groqFallback) {
+                        config = groqFallback;
+                    } else {
+                        rotateKey();
+                        config = getProviderConfig();
+                    }
+                } else if (config.model.includes('gemini-3.1-pro')) {
+                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Trying Gemini Flash...');
+                    config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
                 } else {
-                    rotateKey();
-                    config = getProviderConfig();
+                    console.warn(`[Orchestrator] Gemini ${config.model} unavailable. Switching to Groq...`);
+                    const groqFallback = setFallbackToGroq();
+                    if (groqFallback) {
+                        config = groqFallback;
+                    } else {
+                        rotateKey();
+                        config = getProviderConfig();
+                    }
                 }
+            } else if (config.provider === 'groq' && isRateLimit) {
+                markKeyRateLimited(config.apiKey);
+                config = getProviderConfig('groq');
+                console.warn(`[Orchestrator] Groq rate limited. Rotating Groq key...`);
             } else {
                 if (errMsg.includes('429')) markKeyRateLimited(config.apiKey);
                 rotateKey();
@@ -1185,7 +1293,7 @@ async function callProviderWithTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            const backoff = Math.min(500 * attempt, 5000);
+            const backoff = config.provider !== initialConfig.provider ? 200 : Math.min(500 * attempt, 5000);
             await new Promise(r => setTimeout(r, backoff));
         }
     }
@@ -1960,6 +2068,8 @@ interface StructuralTargets {
     farmStyle: boolean;
     complexity: 'standard' | 'high' | 'extreme';
     minTurns: number;
+    customSurfaceRequested: boolean;
+    preferredShapeMode: 'smooth' | 'linear';
 }
 
 interface CompletionStatus {
@@ -1973,6 +2083,8 @@ function inferStructuralTargets(message: string): StructuralTargets {
     const normalized = message.toLowerCase();
     const floorMatch = normalized.match(/(\d+)\s*[- ]?floor/);
     const requiredFloors = floorMatch ? Math.max(1, Number(floorMatch[1])) : 1;
+    const customSurfaceRequested = /matrix|surface|bulb|carv|relief|sculpt|custom design|thickness/.test(normalized);
+    const preferredShapeMode: 'smooth' | 'linear' = /linear|sharp|cornery|cornery|blocky/.test(normalized) ? 'linear' : 'smooth';
 
     // Check for complexity/ambition keywords
     const highComplexity = /bond|villain|spectacular|huge|massive|complex|dynamic|matrix|curve|sculpt|futuristic|mansion|palace|grand/i.test(normalized);
@@ -1993,7 +2105,9 @@ function inferStructuralTargets(message: string): StructuralTargets {
         requiredFloors,
         farmStyle: /farm|estate/.test(normalized),
         complexity,
-        minTurns
+        minTurns,
+        customSurfaceRequested,
+        preferredShapeMode,
     };
 }
 
@@ -2014,6 +2128,7 @@ function evaluateCompletion(
     const windows = count('Window');
     const stairs = count('Stairs');
     const criticals = pendingViolations.filter(v => v.severity === 'CRITICAL').length;
+    const hasSurfaceSculpt = nodes.some(n => (n.type === 'Wall' || n.type === 'Partition') && !!n.surface_matrix);
 
     const missing: string[] = [];
 
@@ -2030,6 +2145,7 @@ function evaluateCompletion(
     if (windows < Math.max(4, targets.requiredFloors * 2)) missing.push('add more windows');
     if (targets.requiredFloors > 1 && stairs < 1) missing.push('add stairs connecting floors');
     if (criticals > 0) missing.push('resolve critical physics violations');
+    if (targets.customSurfaceRequested && !hasSurfaceSculpt) missing.push('apply custom matrix surface sculpting');
 
     // Add complexity specific checks
     if (targets.complexity !== 'standard') {
@@ -2073,6 +2189,23 @@ function buildCriticalFixInstruction(criticals: PhysicsValidation['violations'])
     }
 
     return `Resolve CRITICAL physics violations only in this turn: ${fixes.join('; ')}. Use set_node_position over move_node whenever coordinates are provided.`;
+}
+
+function shouldApplySurfaceSculpt(project: PSGProject, targets: StructuralTargets): boolean {
+    if (!targets.customSurfaceRequested) return false;
+    const nodes = Object.values(project.nodes);
+    const hasSurfaceSculpt = nodes.some(n => (n.type === 'Wall' || n.type === 'Partition') && !!n.surface_matrix);
+    return !hasSurfaceSculpt;
+}
+
+function buildSurfaceMatrixInstruction(project: PSGProject, targets: StructuralTargets): string {
+    const candidates = Object.values(project.nodes)
+        .filter(n => n.type === 'Wall' || n.type === 'Partition')
+        .sort((a, b) => (b.dimensions.x * b.dimensions.y) - (a.dimensions.x * a.dimensions.y));
+    const target = candidates[0];
+    const targetHint = target ? `Target wall: ${target.id}.` : 'Pick the most relevant visible exterior wall.';
+    const shapeMode = targets.preferredShapeMode;
+    return `${targetHint} Perform custom surface sculpting with full matrix control. First call get_wall_surface on the target. Then call edit_wall_surface with command="set_matrix", shape_mode="${shapeMode}", rows and cols between 20 and 40, and provide the FULL data matrix in one call. Matrix orientation must be top-first: data[0][0]=upper-left, data[0][last]=upper-right, data[last][0]=lower-left, data[last][last]=lower-right. Use lower values for carve-ins and higher values for bulbs, and set a clear description.`;
 }
 
 function ensureConstructionPrecision(project: PSGProject): PSGOperation | null {

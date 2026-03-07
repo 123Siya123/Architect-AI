@@ -21,6 +21,11 @@ Each wall/partition may store:
 
 - `u`: horizontal position from `0` (left) to `1` (right)
 - `v`: vertical position from `0` (bottom) to `1` (top)
+- For `set_matrix`, row order is top-down:
+  - `data[0][0]` = upper-left
+  - `data[0][last]` = upper-right
+  - `data[last][0]` = lower-left
+  - `data[last][last]` = lower-right
 
 ## Command Contract
 
@@ -33,6 +38,7 @@ Commands:
 
 - `set_code`: set procedural expression
 - `set_matrix`: replace with explicit matrix
+- `shape_mode`: `linear` (cornery) or `smooth` (rounded)
 - `stamp`: apply reusable brush profile
 - `set_bulb`: quick Gaussian protrusion
 - `cut_hole`: rectangular cut

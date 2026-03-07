@@ -551,13 +551,15 @@ export const AI_TOOLS = [
                 'Sculpt wall thickness using procedural formulas or editable matrices.\n\n' +
                 'Core commands:\n' +
                 '• set_code: JS expression using u,v returning thickness multiplier.\n' +
-                '• set_matrix: explicit matrix of multipliers.\n' +
+                '• set_matrix: explicit FULL matrix of multipliers.\n' +
                 '• stamp: apply reusable shape brush with blend mode.\n' +
                 '• set_bulb: quick center/radius/strength Gaussian protrusion.\n' +
                 '• cut_hole: rectangular hole region.\n' +
                 '• draw_curve: sine-wave profile along x or y axis.\n' +
                 '• smooth / normalize / invert / set_cell / reset.\n\n' +
-                'Values: low=thin, high=thick, value<=hole_threshold creates holes.',
+                'Values: low=thin, high=thick, value<=hole_threshold creates holes.\n\n' +
+                'Matrix orientation for set_matrix data:\n' +
+                'data[0][0]=upper-left, data[0][last]=upper-right, data[last][0]=lower-left, data[last][last]=lower-right.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -583,6 +585,7 @@ export const AI_TOOLS = [
                     },
                     rows: { type: 'number', description: 'Target matrix rows for non-code commands' },
                     cols: { type: 'number', description: 'Target matrix cols for non-code commands' },
+                    shape_mode: { type: 'string', enum: ['linear', 'smooth'], description: 'linear = sharper transitions, smooth = rounded transitions' },
                     min_value: { type: 'number', description: 'Lower clamp for thickness multipliers' },
                     max_value: { type: 'number', description: 'Upper clamp for thickness multipliers' },
                     hole_threshold: { type: 'number', description: 'Values <= threshold render as hole' },

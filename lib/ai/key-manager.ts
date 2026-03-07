@@ -53,17 +53,17 @@ function parseKeys(envVarName: string): string[] {
 
 function initPool(provider: string, keys: string[]) {
     if (keys.length === 0) return;
-    
+
     // Deduplicate
     const uniqueKeys = [...new Set(keys)];
-    
+
     keyPools[provider] = uniqueKeys.map(key => ({
         key,
         rateLimitedUntil: 0,
         uses: 0,
     }));
     cursors[provider] = 0;
-    
+
     console.log(`[KeyManager] Initialized pool '${provider}' with ${uniqueKeys.length} key(s)`);
 }
 
@@ -74,7 +74,7 @@ function ensureInitialized() {
     const defaultKeys = parseKeys('AI_API_KEYS');
     const singleKey = process.env.AI_API_KEY;
     if (singleKey && !defaultKeys.includes(singleKey)) defaultKeys.push(singleKey);
-    
+
     // Legacy support: Include GEMINI_API_KEY in default if using gemini
     const geminiKey = process.env.GEMINI_API_KEY;
     if (geminiKey && !defaultKeys.includes(geminiKey)) defaultKeys.push(geminiKey);
@@ -172,11 +172,23 @@ export function markKeyRateLimited(key: string, retryAfterMs?: number): void {
     }
 }
 
+/**
+ * Returns true if ALL keys in the specified pool are currently on cooldown.
+ * Useful for deciding when to proactively switch providers.
+ */
+export function allKeysOnCooldown(provider: string = 'default'): boolean {
+    ensureInitialized();
+    const pool = keyPools[provider] || keyPools['default'];
+    if (!pool || pool.length === 0) return true;
+    const now = Date.now();
+    return pool.every(entry => entry.rateLimitedUntil > now);
+}
+
 export function rotateKey(provider: string = 'default'): void {
     ensureInitialized();
     const targetPool = keyPools[provider] ? provider : 'default';
     const pool = keyPools[targetPool];
-    
+
     if (pool && pool.length > 1) {
         cursors[targetPool] = (cursors[targetPool] + 1) % pool.length;
         console.log(`[KeyManager] Rotated ${targetPool} key cursor`);
@@ -206,7 +218,7 @@ export function getProviderConfig(forceProvider?: string): AIProviderConfig {
 
     // If forcing provider, use default model for that provider unless env var matches
     let model = process.env.AI_MODEL || defaultModels[provider];
-    
+
     // If we switched providers, the env var model might be wrong (e.g. gemini model for groq)
     if (provider === 'groq' && model.includes('gemini')) model = defaultModels.groq;
     if (provider === 'gemini' && !model.includes('gemini')) model = defaultModels.gemini;
@@ -223,7 +235,7 @@ export function getProviderConfig(forceProvider?: string): AIProviderConfig {
 export function getKeyPoolStatus() {
     ensureInitialized();
     const status = [];
-    
+
     for (const [provider, pool] of Object.entries(keyPools)) {
         for (let i = 0; i < pool.length; i++) {
             const entry = pool[i];

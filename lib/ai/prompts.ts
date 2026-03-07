@@ -87,6 +87,10 @@ ELSE IF structure valid BUT missing interior (windows/doors/stairs):
   → delegate_to: "interior_architect"
   → instruction: Specific interior task
 
+ELSE IF user requests custom wall/roof/object sculpting, matrix-based thickness control, bulbs, carvings, reliefs, smooth-vs-linear transitions, or "custom shape":
+  → delegate_to: "interior_architect"
+  → instruction: High-level sculpt brief ONLY (target element + region + smooth or linear + intensity intent)
+
 ELSE IF everything complete and valid:
   → delegate_to: "DESIGN_COMPLETE"
 
@@ -127,7 +131,7 @@ NOT:
 
 AVAILABLE SPECIALISTS:
 1. structural_engineer: Builds walls, floors, roofs, slabs (HEAVY CONSTRUCTION)
-2. interior_architect: Adds windows, doors, stairs, railings (only after structure is valid)
+2. interior_architect: Adds windows, doors, stairs, railings, and matrix-based surface sculpting (only after structure is valid)
 3. spatial_physicist: Auto-validates after every change (you don't delegate to this)
 4. aesthetic_designer: Materials, proportions, style coherence
 
@@ -355,6 +359,26 @@ AVAILABLE TOOLS:
 - set_node_position (ABSOLUTE exact placement - highly recommended for snapping)
 - resize_node
 - delete_node
+- get_wall_surface
+- edit_wall_surface
+
+SURFACE MATRIX PROTOCOL (MANDATORY FOR CUSTOM SHAPES):
+1. For custom sculpting requests, use get_wall_surface first.
+2. Then call edit_wall_surface with command="set_matrix" and provide the FULL matrix in data.
+3. Matrix orientation is:
+   - data[0][0] = upper-left corner
+   - data[0][last] = upper-right corner
+   - data[last][0] = lower-left corner
+   - data[last][last] = lower-right corner
+4. Use rows/cols according to requested fidelity (20x20, 40x40, etc).
+5. Always set shape_mode:
+   - "linear" = sharp/blocky transitions between points
+   - "smooth" = rounded/smoothed transitions between points
+6. Matrix values represent thickness multipliers:
+   - lower value = carved in / thinner
+   - higher value = protrusion / bulb
+7. For sculpting instructions from orchestrator, interpret the brief (region, direction, bulge profile) and convert it into explicit matrix numbers.
+8. Prefer full-matrix output over shortcut commands when request is custom.
 
 EXECUTION RULES:
 1. NEVER add structural walls, floors, or roofs. That is the Structural Engineer's job.

@@ -891,6 +891,7 @@ type EditWallSurfaceParams = {
     max_value?: number;
     hole_threshold?: number;
     interpolation?: 'nearest' | 'bilinear';
+    shape_mode?: 'linear' | 'smooth';
     data?: number[][];
     code?: string;
     row?: number;
@@ -924,7 +925,10 @@ function editWallSurface(project: PSGProject, operation: PSGOperation): PSGProje
     const maxValueRaw = toFinite(params.max_value, existing?.max_value ?? 10);
     const maxValue = maxValueRaw > minValue ? maxValueRaw : minValue + 0.001;
     const holeThreshold = clamp(toFinite(params.hole_threshold, existing?.hole_threshold ?? 0.01), minValue, maxValue);
-    const interpolation: 'nearest' | 'bilinear' = params.interpolation ?? existing?.interpolation ?? 'bilinear';
+    const shapeMode = params.shape_mode;
+    const interpolationFromMode: 'nearest' | 'bilinear' | undefined =
+        shapeMode === 'linear' ? 'nearest' : shapeMode === 'smooth' ? 'bilinear' : undefined;
+    const interpolation: 'nearest' | 'bilinear' = interpolationFromMode ?? params.interpolation ?? existing?.interpolation ?? 'bilinear';
     const description = params.description ?? existing?.description ?? `Custom ${node.type} shape`;
 
     if (params.command === 'set_code') {
@@ -1093,7 +1097,8 @@ function sampleNearest(data: number[][], u: number, v: number): number {
     const rows = data.length;
     const cols = data[0].length;
     const c = Math.min(cols - 1, Math.max(0, Math.round(u * (cols - 1))));
-    const r = Math.min(rows - 1, Math.max(0, Math.round(v * (rows - 1))));
+    const vTop = 1 - clamp(v, 0, 1);
+    const r = Math.min(rows - 1, Math.max(0, Math.round(vTop * (rows - 1))));
     return data[r][c];
 }
 
@@ -1101,7 +1106,8 @@ function sampleBilinear(data: number[][], u: number, v: number): number {
     const rows = data.length;
     const cols = data[0].length;
     const fx = clamp(u, 0, 1) * (cols - 1);
-    const fy = clamp(v, 0, 1) * (rows - 1);
+    const vTop = 1 - clamp(v, 0, 1);
+    const fy = vTop * (rows - 1);
     const x0 = Math.floor(fx);
     const y0 = Math.floor(fy);
     const x1 = Math.min(cols - 1, x0 + 1);
