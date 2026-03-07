@@ -29,7 +29,7 @@
 
 interface KeyEntry {
     key: string;
-    rateLimitedUntil: number; // Unix ms timestamp; 0 = available
+    rateLimitedUntil: Record<string, number>; // Unix ms timestamp per model; 0 = available
     uses: number;             // Total successful uses
 }
 
@@ -59,7 +59,7 @@ function initPool(provider: string, keys: string[]) {
 
     keyPools[provider] = uniqueKeys.map(key => ({
         key,
-        rateLimitedUntil: 0,
+        rateLimitedUntil: {},
         uses: 0,
     }));
     cursors[provider] = 0;
@@ -114,7 +114,7 @@ const COOLDOWN_MS = parseInt(process.env.AI_API_KEY_COOLDOWN_MS || '61000', 10);
  * Returns the next available API key for the specified provider.
  * Falls back to 'default' pool if provider-specific pool doesn't exist.
  */
-export function getNextKey(provider: string = 'default'): string {
+export function getNextKey(provider: string = 'default', model: string = 'default'): string {
     ensureInitialized();
 
     // Use specific pool if exists, otherwise default
@@ -124,7 +124,7 @@ export function getNextKey(provider: string = 'default'): string {
     if (!pool || pool.length === 0) {
         // If requesting groq but no groq keys, try default pool as fallback
         if (provider !== 'default' && keyPools['default']) {
-            return getNextKey('default');
+            return getNextKey('default', model);
         }
         return '';
     }
@@ -137,7 +137,8 @@ export function getNextKey(provider: string = 'default'): string {
         cursors[targetPool] = (cursors[targetPool] + 1) % pool.length;
         const entry = pool[idx];
 
-        if (entry.rateLimitedUntil <= now) {
+        const modelCooldown = entry.rateLimitedUntil[model] || 0;
+        if (modelCooldown <= now) {
             entry.uses++;
             // console.log(`[KeyManager] Using ${targetPool} key #${idx + 1} (used ${entry.uses} times)`);
             return entry.key;
@@ -147,15 +148,17 @@ export function getNextKey(provider: string = 'default'): string {
     }
 
     // All keys on cooldown - find soonest
+    // All keys on cooldown for this model - find soonest
     const soonest = pool.reduce((best, entry) =>
-        entry.rateLimitedUntil < best.rateLimitedUntil ? entry : best
+        (entry.rateLimitedUntil[model] || 0) < (best.rateLimitedUntil[model] || 0) ? entry : best
     );
-    const waitSec = Math.ceil((soonest.rateLimitedUntil - now) / 1000);
-    console.warn(`[KeyManager] All ${targetPool} keys on cooldown. Wait: ${waitSec}s. Using best available.`);
+    const soonestTime = soonest.rateLimitedUntil[model] || 0;
+    const waitSec = Math.ceil((soonestTime - now) / 1000);
+    console.warn(`[KeyManager] All ${targetPool} keys on cooldown for model ${model}. Wait: ${waitSec}s. Using best available.`);
     return soonest.key;
 }
 
-export function markKeyRateLimited(key: string, retryAfterMs?: number): void {
+export function markKeyRateLimited(key: string, retryAfterMs?: number, model: string = 'default'): void {
     ensureInitialized();
     const cooldown = retryAfterMs ?? COOLDOWN_MS;
     const now = Date.now();
@@ -165,8 +168,8 @@ export function markKeyRateLimited(key: string, retryAfterMs?: number): void {
         const pool = keyPools[poolName];
         const entry = pool.find(e => e.key === key);
         if (entry) {
-            entry.rateLimitedUntil = now + cooldown;
-            console.warn(`[KeyManager] Rate-limited key in pool '${poolName}' for ${Math.ceil(cooldown / 1000)}s`);
+            entry.rateLimitedUntil[model] = now + cooldown;
+            console.warn(`[KeyManager] Rate-limited key in pool '${poolName}' for model '${model}' for ${Math.ceil(cooldown / 1000)}s`);
             return;
         }
     }
@@ -176,20 +179,20 @@ export function markKeyRateLimited(key: string, retryAfterMs?: number): void {
  * Returns true if ALL keys in the specified pool are currently on cooldown.
  * Useful for deciding when to proactively switch providers.
  */
-export function allKeysOnCooldown(provider: string = 'default'): boolean {
+export function allKeysOnCooldown(provider: string = 'default', model: string = 'default'): boolean {
     ensureInitialized();
     const targetPool = keyPools[provider] ? provider : 'default';
     const pool = keyPools[targetPool];
     if (!pool || pool.length === 0) return true;
     const now = Date.now();
-    return pool.every(entry => entry.rateLimitedUntil > now);
+    return pool.every(entry => (entry.rateLimitedUntil[model] || 0) > now);
 }
 
 /**
  * Returns the number of milliseconds until the soonest rate-limited key becomes available for a pool.
  * Returns 0 if at least one key is available.
  */
-export function getWaitTimeForPool(provider: string = 'default'): number {
+export function getWaitTimeForPool(provider: string = 'default', model: string = 'default'): number {
     ensureInitialized();
     const targetPool = keyPools[provider] ? provider : 'default';
     const pool = keyPools[targetPool];
@@ -198,7 +201,8 @@ export function getWaitTimeForPool(provider: string = 'default'): number {
     const now = Date.now();
     let minWait = Infinity;
     for (const entry of pool) {
-        const wait = Math.max(0, entry.rateLimitedUntil - now);
+        const modelLimit = entry.rateLimitedUntil[model] || 0;
+        const wait = Math.max(0, modelLimit - now);
         if (wait === 0) return 0; // Available now
         if (wait < minWait) minWait = wait;
     }
@@ -226,7 +230,7 @@ export interface AIProviderConfig {
     apiKey: string;
 }
 
-export function getProviderConfig(forceProvider?: string): AIProviderConfig {
+export function getProviderConfig(forceProvider?: string, forceModel?: string): AIProviderConfig {
     const defaultProvider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'gemini');
     const provider = (forceProvider || defaultProvider) as AIProviderConfig['provider'];
 
@@ -238,13 +242,13 @@ export function getProviderConfig(forceProvider?: string): AIProviderConfig {
     };
 
     // If forcing provider, use default model for that provider unless env var matches
-    let model = process.env.AI_MODEL || defaultModels[provider];
+    let model = forceModel || process.env.AI_MODEL || defaultModels[provider];
 
     // If we switched providers, the env var model might be wrong (e.g. gemini model for groq)
     if (provider === 'groq' && model.includes('gemini')) model = defaultModels.groq;
     if (provider === 'gemini' && !model.includes('gemini')) model = defaultModels.gemini;
 
-    const apiKey = getNextKey(provider);
+    const apiKey = getNextKey(provider, model);
 
     return { provider, model, apiKey };
 }
@@ -260,12 +264,24 @@ export function getKeyPoolStatus() {
     for (const [provider, pool] of Object.entries(keyPools)) {
         for (let i = 0; i < pool.length; i++) {
             const entry = pool[i];
+
+            // Generate a summary state for the object
+            let maxCooldown = 0;
+            const limits: any = {};
+            for (const [mod, val] of Object.entries(entry.rateLimitedUntil)) {
+                if (val > Date.now()) {
+                    limits[mod] = val;
+                    if (val > maxCooldown) maxCooldown = val;
+                }
+            }
+
             status.push({
                 provider,
                 index: i,
                 key: entry.key.slice(0, 8) + '...',
                 uses: entry.uses,
-                rateLimitedUntil: entry.rateLimitedUntil,
+                rateLimitedUntil: maxCooldown, // Deprecated backwards compatible
+                limits,
                 isActive: i === cursors[provider]
             });
         }

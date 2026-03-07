@@ -95,13 +95,6 @@ function getEffectiveConfig(): AIProviderConfig {
         activeFallbackConfig = null;
     }
 
-    // Proactive check: if all default/gemini keys are on cooldown, switch to Groq immediately
-    if (allKeysOnCooldown('default') && allKeysOnCooldown('gemini')) {
-        console.warn('[Orchestrator] ⚠️ All Gemini keys on cooldown. Proactively switching to Groq.');
-        const groqFallback = setFallbackToGroq();
-        if (groqFallback) return groqFallback;
-    }
-
     return getProviderConfig();
 }
 
@@ -1173,18 +1166,18 @@ async function callProviderNoTools(
                 timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
                 console.warn(`[callProviderNoTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
             } else if (config.provider === 'gemini' && (isRateLimit || isQuotaExhausted || isUnavailable)) {
-                if (isRateLimit || isQuotaExhausted) markKeyRateLimited(config.apiKey);
+                if (isRateLimit || isQuotaExhausted) markKeyRateLimited(config.apiKey, undefined, config.model);
                 geminiFailCount++;
 
-                const allGeminiDown = allKeysOnCooldown('default') && allKeysOnCooldown('gemini');
+                const allGeminiDown = allKeysOnCooldown('default', config.model) && allKeysOnCooldown('gemini', config.model);
 
                 if (allGeminiDown) {
                     // Try falling back to Flash if we were on Pro, otherwise go to Groq
                     if (config.model.includes('gemini-3.1-pro')) {
                         console.warn('[Orchestrator] All Gemini Pro keys exhausted. Trying Gemini Flash...');
-                        config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
+                        config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig('gemini', 'gemini-3-flash-preview').apiKey };
                     } else {
-                        console.warn(`[Orchestrator] ⚡ All Gemini keys exhausted. Switching to Groq immediately.`);
+                        console.warn(`[Orchestrator] ⚡ All Gemini keys exhausted for ${config.model}. Switching to Groq immediately.`);
                         const groqFallback = setFallbackToGroq();
                         if (groqFallback) {
                             config = groqFallback;
@@ -1195,21 +1188,20 @@ async function callProviderNoTools(
                     }
                 } else {
                     // We have more keys! Just rotate and try again with Gemini
-                    console.log(`[Orchestrator] Gemini key ${isQuotaExhausted ? 'quota exhausted' : 'rate limited'}. Rotating to next available key...`);
+                    console.log(`[Orchestrator] Gemini key ${isQuotaExhausted ? 'quota exhausted' : 'rate limited'} for ${config.model}. Rotating to next available key...`);
                     rotateKey();
-                    const nextKeyConfig = getProviderConfig('gemini');
-                    config = { ...config, apiKey: nextKeyConfig.apiKey };
+                    config = getProviderConfig('gemini', config.model); // Re-fetch since key rotated
                 }
             } else if (config.provider === 'groq' && isRateLimit) {
                 // Groq rate limited — parse specific wait time if available
                 const match = errMsg.match(/try again in ([\d\.]+)s/);
                 const retryMs = match ? Math.ceil(parseFloat(match[1]) * 1000) : undefined;
 
-                markKeyRateLimited(config.apiKey, retryMs);
+                markKeyRateLimited(config.apiKey, retryMs, config.model);
                 config = getProviderConfig('groq');
                 console.warn(`[Orchestrator] Groq rate limited. Rotating Groq key...`);
             } else {
-                if (errMsg.includes('429')) markKeyRateLimited(config.apiKey);
+                if (errMsg.includes('429')) markKeyRateLimited(config.apiKey, undefined, config.model);
                 rotateKey();
                 config = getProviderConfig();
             }
@@ -1217,7 +1209,7 @@ async function callProviderNoTools(
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
 
             // Check if we need to sleep because all keys are temporarily exhausted
-            let waitTime = getWaitTimeForPool(config.provider);
+            let waitTime = getWaitTimeForPool(config.provider, config.model);
             if (waitTime > 0 && waitTime < 60000) {
                 console.warn(`[Orchestrator] All ${config.provider} keys on cooldown. Waiting ${Math.ceil(waitTime / 1000)}s...`);
                 // add padding
@@ -1279,17 +1271,17 @@ async function callProviderWithTools(
                 timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
                 console.warn(`[callProviderWithTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
             } else if (config.provider === 'gemini' && (isRateLimit || isQuotaExhausted || isUnavailable)) {
-                if (isRateLimit || isQuotaExhausted) markKeyRateLimited(config.apiKey);
+                if (isRateLimit || isQuotaExhausted) markKeyRateLimited(config.apiKey, undefined, config.model);
                 geminiFailCount++;
 
-                const allGeminiDown = allKeysOnCooldown('default') && allKeysOnCooldown('gemini');
+                const allGeminiDown = allKeysOnCooldown('default', config.model) && allKeysOnCooldown('gemini', config.model);
 
                 if (allGeminiDown) {
                     if (config.model.includes('gemini-3.1-pro')) {
                         console.warn('[Orchestrator] All Gemini Pro keys exhausted. Trying Gemini Flash...');
-                        config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
+                        config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig('gemini', 'gemini-3-flash-preview').apiKey };
                     } else {
-                        console.warn(`[Orchestrator] ⚡ All Gemini keys exhausted. Switching to Groq immediately.`);
+                        console.warn(`[Orchestrator] ⚡ All Gemini keys exhausted for ${config.model}. Switching to Groq immediately.`);
                         const groqFallback = setFallbackToGroq();
                         if (groqFallback) {
                             config = groqFallback;
@@ -1299,20 +1291,19 @@ async function callProviderWithTools(
                         }
                     }
                 } else {
-                    console.log(`[Orchestrator] Gemini key ${isQuotaExhausted ? 'quota exhausted' : 'rate limited'}. Rotating to next available key...`);
+                    console.log(`[Orchestrator] Gemini key ${isQuotaExhausted ? 'quota exhausted' : 'rate limited'} for ${config.model}. Rotating to next available key...`);
                     rotateKey();
-                    const nextKeyConfig = getProviderConfig('gemini');
-                    config = { ...config, apiKey: nextKeyConfig.apiKey };
+                    config = getProviderConfig('gemini', config.model); // Re-fetch since key rotated
                 }
             } else if (config.provider === 'groq' && isRateLimit) {
                 const match = errMsg.match(/try again in ([\d\.]+)s/);
                 const retryMs = match ? Math.ceil(parseFloat(match[1]) * 1000) : undefined;
 
-                markKeyRateLimited(config.apiKey, retryMs);
+                markKeyRateLimited(config.apiKey, retryMs, config.model);
                 config = getProviderConfig('groq');
                 console.warn(`[Orchestrator] Groq rate limited. Rotating Groq key...`);
             } else {
-                if (errMsg.includes('429')) markKeyRateLimited(config.apiKey);
+                if (errMsg.includes('429')) markKeyRateLimited(config.apiKey, undefined, config.model);
                 rotateKey();
                 config = getProviderConfig();
             }
@@ -1320,7 +1311,7 @@ async function callProviderWithTools(
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
 
             // Check if we need to sleep because all keys are temporarily exhausted
-            let waitTime = getWaitTimeForPool(config.provider);
+            let waitTime = getWaitTimeForPool(config.provider, config.model);
             if (waitTime > 0 && waitTime < 60000) {
                 console.warn(`[Orchestrator] All ${config.provider} keys on cooldown. Waiting ${Math.ceil(waitTime / 1000)}s...`);
                 // add padding
