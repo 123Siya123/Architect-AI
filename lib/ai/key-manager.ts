@@ -3,26 +3,28 @@
  * LIB/AI/KEY-MANAGER.TS — API Key Carousel
  * =============================================================================
  *
- * Manages a pool of API keys per provider and rotates through them to avoid
+ * Manages pools of API keys per provider and rotates through them to avoid
  * hitting rate limits. If a key returns a 429, it is put on cooldown and the
  * next key in the pool is used automatically.
  *
  * HOW IT WORKS:
- * 1. Keys are loaded from env vars: AI_API_KEYS (comma-separated list)
- * 2. A global cursor tracks which key to use next (round-robin)
+ * 1. Keys are loaded from env vars:
+ *    - AI_API_KEYS (default pool for current provider)
+ *    - GROQ_API_KEYS (fallback pool for Groq)
+ *    - GEMINI_API_KEYS (specific pool for Gemini)
+ * 2. Separate cursors track which key to use next for each provider
  * 3. Each key tracks when it last got a 429, and is skipped during cooldown
- * 4. If ALL keys are on cooldown, we wait for the one with the shortest cooldown
  *
  * CONFIGURATION (in .env.local):
- *   AI_API_KEYS=key1,key2,key3,key4
- *   AI_API_KEY_COOLDOWN_MS=61000   (default: 61s — Groq resets every minute)
+ *   AI_API_KEYS=key1,key2
+ *   GROQ_API_KEYS=gsk_1,gsk_2
+ *   AI_API_KEY_COOLDOWN_MS=61000
  *
  * =============================================================================
  */
 
 // =============================================================================
-// KEY POOL STATE (module-level singleton — persists across requests in the same
-// Node.js process, which is fine for Next.js server-side API routes)
+// KEY POOL STATE
 // =============================================================================
 
 interface KeyEntry {
@@ -31,196 +33,209 @@ interface KeyEntry {
     uses: number;             // Total successful uses
 }
 
-/** Global key pool, initialized once on first use */
-let keyPool: KeyEntry[] | null = null;
+/** Pools keyed by provider name (or 'default') */
+const keyPools: Record<string, KeyEntry[]> = {};
 
-/** Points to the next key to try (round-robin cursor) */
-let cursor = 0;
+/** Cursors keyed by provider name (or 'default') */
+const cursors: Record<string, number> = {};
 
 // =============================================================================
 // INITIALIZATION
 // =============================================================================
 
-/**
- * Parses the API keys from environment variables.
- *
- * Reads from:
- * - AI_API_KEYS — comma-separated list of keys (primary, supports multiple)
- * - AI_API_KEY  — single key fallback
- */
-function initKeyPool(): KeyEntry[] {
-    const multiKeys = process.env.AI_API_KEYS || '';
-    const singleKey = process.env.AI_API_KEY || '';
-    const geminiKey = process.env.GEMINI_API_KEY || '';
+function parseKeys(envVarName: string): string[] {
+    const raw = process.env[envVarName] || '';
+    return raw
+        .split(',')
+        .map(k => k.trim().replace(/^["']|["']$/g, '').trim())
+        .filter(Boolean);
+}
 
-    // Combine both sources, split by comma, filter empty strings
-    // AND aggressively clean each key of quotes, whitespace, or hidden symbols
-    const allKeysFiltered = multiKeys.split(',').map(k => k.trim().replace(/^["']|["']$/g, '').trim()).filter(Boolean);
-
-    const allKeys = [...allKeysFiltered];
-
-    if (singleKey && !allKeys.includes(singleKey)) {
-        allKeys.push(singleKey.trim().replace(/^["']|["']$/g, '').trim());
-    }
-
-    if (geminiKey && !allKeys.includes(geminiKey)) {
-        allKeys.push(geminiKey.trim().replace(/^["']|["']$/g, '').trim());
-    }
-
-    if (allKeys.length === 0) {
-        console.warn('[KeyManager] No API keys found. Set AI_API_KEYS, AI_API_KEY or GEMINI_API_KEY in .env.local');
-    }
-
-    console.log(`[KeyManager] Initialized with ${allKeys.length} key(s)`);
-    allKeys.forEach((k, i) => {
-        console.log(`[KeyManager] Key #${i + 1}: length ${k.length}, starts with ${k.substring(0, 4)}...`);
-    });
-
-    return allKeys.map(key => ({
+function initPool(provider: string, keys: string[]) {
+    if (keys.length === 0) return;
+    
+    // Deduplicate
+    const uniqueKeys = [...new Set(keys)];
+    
+    keyPools[provider] = uniqueKeys.map(key => ({
         key,
         rateLimitedUntil: 0,
         uses: 0,
     }));
+    cursors[provider] = 0;
+    
+    console.log(`[KeyManager] Initialized pool '${provider}' with ${uniqueKeys.length} key(s)`);
 }
 
-function getKeyPool(): KeyEntry[] {
-    if (!keyPool) {
-        keyPool = initKeyPool();
+function ensureInitialized() {
+    if (Object.keys(keyPools).length > 0) return;
+
+    // 1. Default Pool (from AI_API_KEYS / AI_API_KEY)
+    const defaultKeys = parseKeys('AI_API_KEYS');
+    const singleKey = process.env.AI_API_KEY;
+    if (singleKey && !defaultKeys.includes(singleKey)) defaultKeys.push(singleKey);
+    
+    // Legacy support: Include GEMINI_API_KEY in default if using gemini
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (geminiKey && !defaultKeys.includes(geminiKey)) defaultKeys.push(geminiKey);
+
+    initPool('default', defaultKeys);
+
+    // 2. Groq Pool
+    const groqKeys = parseKeys('GROQ_API_KEYS');
+    initPool('groq', groqKeys);
+
+    // 3. Explicit Gemini Pool (if defined separate from default)
+    const explicitGemini = parseKeys('GEMINI_API_KEYS');
+    if (explicitGemini.length > 0) {
+        initPool('gemini', explicitGemini);
     }
-    return keyPool;
+
+    if (Object.keys(keyPools).length === 0) {
+        console.warn('[KeyManager] No API keys found in environment variables.');
+    }
 }
 
-/** Returns true if at least one key is configured */
-export function hasKeys(): boolean {
-    return getKeyPool().length > 0;
+/** Returns true if keys are configured for the requested provider (or default) */
+export function hasKeys(provider: string = 'default'): boolean {
+    ensureInitialized();
+    // Fallback to default pool if specific provider pool missing
+    const pool = keyPools[provider] || keyPools['default'];
+    return pool && pool.length > 0;
 }
 
 // =============================================================================
 // KEY SELECTION
 // =============================================================================
 
-/** How long to put a key on cooldown after a 429 (default 61s) */
 const COOLDOWN_MS = parseInt(process.env.AI_API_KEY_COOLDOWN_MS || '61000', 10);
 
 /**
- * Returns the next available API key using round-robin rotation.
- * Skips keys that are currently on rate-limit cooldown.
- *
- * @throws Error if all keys are on cooldown
+ * Returns the next available API key for the specified provider.
+ * Falls back to 'default' pool if provider-specific pool doesn't exist.
  */
-export function getNextKey(): string {
-    const pool = getKeyPool();
-    if (pool.length === 0) return '';
+export function getNextKey(provider: string = 'default'): string {
+    ensureInitialized();
+
+    // Use specific pool if exists, otherwise default
+    const targetPool = keyPools[provider] ? provider : 'default';
+    const pool = keyPools[targetPool];
+
+    if (!pool || pool.length === 0) {
+        // If requesting groq but no groq keys, try default pool as fallback
+        if (provider !== 'default' && keyPools['default']) {
+            return getNextKey('default');
+        }
+        return '';
+    }
 
     const now = Date.now();
     let attempts = 0;
 
-    // Round-robin through the pool, skipping rate-limited keys
     while (attempts < pool.length) {
-        const idx = cursor % pool.length;
-        cursor = (cursor + 1) % pool.length;
+        const idx = cursors[targetPool] % pool.length;
+        cursors[targetPool] = (cursors[targetPool] + 1) % pool.length;
         const entry = pool[idx];
 
         if (entry.rateLimitedUntil <= now) {
             entry.uses++;
-            console.log(`[KeyManager] Using key #${idx + 1} (used ${entry.uses} times)`);
+            // console.log(`[KeyManager] Using ${targetPool} key #${idx + 1} (used ${entry.uses} times)`);
             return entry.key;
         }
 
-        const waitMs = entry.rateLimitedUntil - now;
-        console.log(`[KeyManager] Key #${idx + 1} on cooldown for ${Math.ceil(waitMs / 1000)}s, skipping`);
         attempts++;
     }
 
-    // All keys are rate-limited — return the one that expires soonest
+    // All keys on cooldown - find soonest
     const soonest = pool.reduce((best, entry) =>
         entry.rateLimitedUntil < best.rateLimitedUntil ? entry : best
     );
     const waitSec = Math.ceil((soonest.rateLimitedUntil - now) / 1000);
-    console.warn(`[KeyManager] All ${pool.length} key(s) on cooldown. Shortest wait: ${waitSec}s. Using it anyway.`);
+    console.warn(`[KeyManager] All ${targetPool} keys on cooldown. Wait: ${waitSec}s. Using best available.`);
     return soonest.key;
 }
 
-/**
- * Marks a specific key as rate-limited.
- * Called when the API returns a 429 status.
- *
- * @param key - The key to throttle
- * @param retryAfterMs - Optional: retry-after value from the API response header (ms)
- */
 export function markKeyRateLimited(key: string, retryAfterMs?: number): void {
-    const pool = getKeyPool();
-    const entry = pool.find(e => e.key === key);
-    if (!entry) return;
-
+    ensureInitialized();
     const cooldown = retryAfterMs ?? COOLDOWN_MS;
-    entry.rateLimitedUntil = Date.now() + cooldown;
-    console.warn(`[KeyManager] Key ending in ...${key.slice(-6)} rate-limited for ${Math.ceil(cooldown / 1000)}s`);
-}
-
-/**
- * Returns a status summary of all keys (for debugging/monitoring).
- * Keys are partially redacted for security.
- */
-export function getKeyPoolStatus(): Array<{
-    index: number;
-    keyHint: string;
-    available: boolean;
-    cooldownRemainingSec: number;
-    uses: number;
-}> {
-    const pool = getKeyPool();
     const now = Date.now();
-    return pool.map((entry, idx) => ({
-        index: idx + 1,
-        keyHint: `...${entry.key.slice(-6)}`,
-        available: entry.rateLimitedUntil <= now,
-        cooldownRemainingSec: Math.max(0, Math.ceil((entry.rateLimitedUntil - now) / 1000)),
-        uses: entry.uses,
-    }));
+
+    // Find key in ANY pool
+    for (const poolName of Object.keys(keyPools)) {
+        const pool = keyPools[poolName];
+        const entry = pool.find(e => e.key === key);
+        if (entry) {
+            entry.rateLimitedUntil = now + cooldown;
+            console.warn(`[KeyManager] Rate-limited key in pool '${poolName}' for ${Math.ceil(cooldown / 1000)}s`);
+            return;
+        }
+    }
+}
+
+export function rotateKey(provider: string = 'default'): void {
+    ensureInitialized();
+    const targetPool = keyPools[provider] ? provider : 'default';
+    const pool = keyPools[targetPool];
+    
+    if (pool && pool.length > 1) {
+        cursors[targetPool] = (cursors[targetPool] + 1) % pool.length;
+        console.log(`[KeyManager] Rotated ${targetPool} key cursor`);
+    }
 }
 
 // =============================================================================
-// PROVIDER CONFIG — used by orchestrator.ts
+// PROVIDER CONFIG
 // =============================================================================
 
-/** Configuration object that the orchestrator uses to call an LLM provider. */
 export interface AIProviderConfig {
     provider: 'gemini' | 'groq' | 'openai' | 'github';
     model: string;
     apiKey: string;
 }
 
-/**
- * Builds a provider config from environment variables + the next available key.
- * The orchestrator calls this once per request.
- *
- * ENV VARS:
- * - AI_PROVIDER: "gemini" | "groq" | "openai" (default: "gemini")
- * - AI_MODEL: model name (default depends on provider)
- */
-export function getProviderConfig(): AIProviderConfig {
-    const provider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'gemini') as AIProviderConfig['provider'];
+export function getProviderConfig(forceProvider?: string): AIProviderConfig {
+    const defaultProvider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'gemini');
+    const provider = (forceProvider || defaultProvider) as AIProviderConfig['provider'];
+
     const defaultModels: Record<string, string> = {
         gemini: 'gemini-3-flash-preview',
-        groq: 'llama-3.3-70b-versatile',
+        groq: 'llama-3.3-70b-versatile', // Best Groq model
         openai: 'gpt-4o',
         github: 'gpt-4o',
     };
-    const model = process.env.AI_MODEL || defaultModels[provider] || 'gemini-3-flash-preview';
-    const apiKey = getNextKey();
+
+    // If forcing provider, use default model for that provider unless env var matches
+    let model = process.env.AI_MODEL || defaultModels[provider];
+    
+    // If we switched providers, the env var model might be wrong (e.g. gemini model for groq)
+    if (provider === 'groq' && model.includes('gemini')) model = defaultModels.groq;
+    if (provider === 'gemini' && !model.includes('gemini')) model = defaultModels.gemini;
+
+    const apiKey = getNextKey(provider);
 
     return { provider, model, apiKey };
 }
 
 /**
- * Advances the key cursor so the next call to getNextKey() uses a different key.
- * Called by the orchestrator after a failed API call.
+ * Returns a summary of the current key pools status.
+ * Keys are redacted for security.
  */
-export function rotateKey(): void {
-    const pool = getKeyPool();
-    if (pool.length > 1) {
-        cursor = (cursor + 1) % pool.length;
-        console.log(`[KeyManager] Rotated to next key`);
+export function getKeyPoolStatus() {
+    ensureInitialized();
+    const status = [];
+    
+    for (const [provider, pool] of Object.entries(keyPools)) {
+        for (let i = 0; i < pool.length; i++) {
+            const entry = pool[i];
+            status.push({
+                provider,
+                index: i,
+                key: entry.key.slice(0, 8) + '...',
+                uses: entry.uses,
+                rateLimitedUntil: entry.rateLimitedUntil,
+                isActive: i === cursors[provider]
+            });
+        }
     }
+    return status;
 }

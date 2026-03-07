@@ -66,16 +66,21 @@ export function prepare3DNodeTree(project: PSGProject): string {
         if (!node) return;
 
         const indent = '  '.repeat(depth);
-        const pos = `pos(${round(node.position.x, 2)}, ${round(node.position.y, 2)}, ${round(node.position.z, 2)})`;
-        const dim = `dim(${round(node.dimensions.x, 2)} × ${round(node.dimensions.y, 2)} × ${round(node.dimensions.z, 2)})`;
+        const pos = `pos(${round(node.position.x, 4)}, ${round(node.position.y, 4)}, ${round(node.position.z, 4)})`;
+        const dim = `dim(${round(node.dimensions.x, 4)} × ${round(node.dimensions.y, 4)} × ${round(node.dimensions.z, 4)})`;
         const rot = node.rotation.yaw !== 0 ? ` rot(yaw=${node.rotation.yaw}°)` : '';
         const mat = node.material_id ? ` [${node.material_id}]` : '';
         const fn = node.room_function ? ` (${node.room_function})` : '';
         const style = node.roof_style ? ` style=${node.roof_style}` : '';
         const stairStyle = node.stair_style ? ` style=${node.stair_style}` : '';
+        const surf = node.surface_matrix
+            ? node.surface_matrix.code
+                ? ` surface(procedural,res=${node.surface_matrix.resolution || 48},range=${node.surface_matrix.min_value ?? 0}-${node.surface_matrix.max_value ?? 10},hole<=${node.surface_matrix.hole_threshold ?? 0.01})`
+                : ` surface(matrix=${node.surface_matrix.rows}x${node.surface_matrix.cols},range=${node.surface_matrix.min_value ?? 0}-${node.surface_matrix.max_value ?? 10},hole<=${node.surface_matrix.hole_threshold ?? 0.01})`
+            : '';
 
         lines.push(`${indent}├─ ${node.type}: "${node.name}" [${id}]`);
-        lines.push(`${indent}│  ${pos} ${dim}${rot}${mat}${fn}${style}${stairStyle}`);
+        lines.push(`${indent}│  ${pos} ${dim}${rot}${mat}${fn}${style}${stairStyle}${surf ? ` ${surf}` : ''}`);
 
         // Print children
         if (node.children_ids && node.children_ids.length > 0) {
@@ -158,8 +163,8 @@ export function prepareProjectContext(project: PSGProject): string {
     for (const [id, node] of Object.entries(project.nodes)) {
         const readable: Record<string, unknown> = {
             t: node.type,
-            pos: [round(node.position.x, 2), round(node.position.y, 2), round(node.position.z, 2)],
-            dim: [round(node.dimensions.x, 2), round(node.dimensions.y, 2), round(node.dimensions.z, 2)],
+            pos: [round(node.position.x, 4), round(node.position.y, 4), round(node.position.z, 4)],
+            dim: [round(node.dimensions.x, 4), round(node.dimensions.y, 4), round(node.dimensions.z, 4)],
         };
 
         if (node.rotation.yaw !== 0) readable.yaw = node.rotation.yaw;
@@ -167,17 +172,27 @@ export function prepareProjectContext(project: PSGProject): string {
         if (node.custom_geometry) readable.cg = node.custom_geometry;
 
         if (node.surface_matrix) {
+            const matrixMeta = {
+                range: [
+                    node.surface_matrix.min_value ?? 0,
+                    node.surface_matrix.max_value ?? 10,
+                ],
+                hole: node.surface_matrix.hole_threshold ?? 0.01,
+                interp: node.surface_matrix.interpolation ?? 'bilinear',
+            };
             if (node.surface_matrix.code) {
                 readable.surface = {
                     mode: 'procedural',
                     desc: node.surface_matrix.description,
-                    res: node.surface_matrix.resolution || 32
+                    res: node.surface_matrix.resolution || 32,
+                    ...matrixMeta,
                 };
             } else {
                 readable.surface = {
                     mode: 'data',
                     desc: node.surface_matrix.description,
-                    grid: `${node.surface_matrix.rows}x${node.surface_matrix.cols}`
+                    grid: `${node.surface_matrix.rows}x${node.surface_matrix.cols}`,
+                    ...matrixMeta,
                 };
             }
         }
@@ -247,7 +262,7 @@ export function generateASCIIFloorPlan(project: PSGProject): string {
     );
 
     for (const [floorId, { floorNode, rooms }] of sortedFloors) {
-        lines.push(`═══ ${floorNode.name} (Y=${round(floorNode.position.y, 1)}m) [ID: ${floorId}] ═══`);
+        lines.push(`═══ ${floorNode.name} (Y=${round(floorNode.position.y, 4)}m) [ID: ${floorId}] ═══`);
 
         if (rooms.length === 0) {
             lines.push('  (no rooms defined)');
@@ -262,11 +277,11 @@ export function generateASCIIFloorPlan(project: PSGProject): string {
         });
 
         for (const room of rooms) {
-            const w = round(room.dimensions.x, 1);
-            const d = round(room.dimensions.z, 1);
-            const cx = round(room.position.x, 1);
-            const cz = round(room.position.z, 1);
-            const area = round(w * d, 1);
+            const w = round(room.dimensions.x, 3);
+            const d = round(room.dimensions.z, 3);
+            const cx = round(room.position.x, 4);
+            const cz = round(room.position.z, 4);
+            const area = round(w * d, 2);
             const fn = room.room_function ? ` [${room.room_function}]` : '';
             const tags = room.tags.length > 0 ? ` {${room.tags.join(', ')}}` : '';
 
@@ -305,9 +320,9 @@ export function generateASCIIFloorPlan(project: PSGProject): string {
 
         for (const child of floorChildren) {
             if (child.type === 'Stairs') {
-                lines.push(`  📶 ${child.name} (${child.stair_style || 'straight'}) @ position(${round(child.position.x, 1)}, ${round(child.position.z, 1)}) — ID: ${child.id}`);
+                lines.push(`  📶 ${child.name} (${child.stair_style || 'straight'}) @ position(${round(child.position.x, 4)}, ${round(child.position.z, 4)}) — ID: ${child.id}`);
             } else if (child.type === 'Slab') {
-                lines.push(`  🟫 ${child.name} (${round(child.dimensions.x, 1)}×${round(child.dimensions.z, 1)}m) @ Y=${round(child.position.y, 1)} — ID: ${child.id}`);
+                lines.push(`  🟫 ${child.name} (${round(child.dimensions.x, 3)}×${round(child.dimensions.z, 3)}m) @ Y=${round(child.position.y, 4)} — ID: ${child.id}`);
             }
         }
 

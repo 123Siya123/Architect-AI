@@ -1,39 +1,18 @@
-/**
- * =============================================================================
- * APP/API/AI/CHAT/ROUTE.TS — AI Chat API Endpoint
- * =============================================================================
- *
- * Handles POST requests from the ChatPanel. This is the bridge between
- * the frontend and the AI orchestrator.
- *
- * FLOW:
- * 1. Parse the request body (message, project, history)
- * 2. Load the materials library
- * 3. Send to the AI orchestrator (Gemini/OpenAI)
- * 4. Validate any returned operations
- * 5. Return the AI's message + validated operations
- *
- * SECURITY:
- * - API keys are server-side only (never exposed to client)
- * - All operations are validated before being returned
- * - Rate limiting should be added in production
- * =============================================================================
- */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { sendChatToAI } from '@/lib/ai/orchestrator';
-import { validateOperation } from '@/lib/psg/validator';
-import type { AIChatRequest, Material, PSGOperation } from '@/types';
+import type { AIChatRequest, Material } from '@/types';
 import materialsJson from '@/data/materials.json';
+
+export const maxDuration = 300; // Allow long running requests
 
 export async function POST(request: NextRequest) {
     try {
         const body: AIChatRequest = await request.json();
-        const { message, project, history } = body;
+        const { message, project, history, attachments } = body;
 
-        if (!message?.trim()) {
+        if (!message?.trim() && (!attachments || attachments.length === 0)) {
             return NextResponse.json(
-                { message: 'Please provide a message.', operations: [] },
+                { message: 'Please provide a message or attachment.', operations: [] },
                 { status: 400 }
             );
         }
@@ -44,19 +23,74 @@ export async function POST(request: NextRequest) {
             materials[id] = mat as unknown as Material;
         }
 
-        // Send to AI orchestrator
-        const aiResponse = await sendChatToAI(
-            { message, project, history: history || [] },
-            materials
-        );
+        const encoder = new TextEncoder();
 
-        return NextResponse.json({
-            message: aiResponse.message,
-            operations: aiResponse.operations,
-            warnings: aiResponse.warnings || [],
-            suggestions: aiResponse.suggestions || [],
-            progress_log: aiResponse.progress_log || [],
+        const stream = new ReadableStream({
+            async start(controller) {
+                try {
+                    // Send to AI orchestrator with progress callback
+                    const aiResponse = await sendChatToAI(
+                        { message, project, history: history || [], attachments },
+                        materials,
+                        (event) => {
+                            try {
+                                const chunk = JSON.stringify(event) + '\n';
+                                controller.enqueue(encoder.encode(chunk));
+                            } catch (e) {
+                                // Ignore enqueue errors (stream closed)
+                            }
+                        },
+                        request.signal
+                    );
+
+                    // Stream final result
+                    const resultChunk = JSON.stringify({
+                        type: 'result',
+                        data: {
+                            message: aiResponse.message,
+                            operations: aiResponse.operations,
+                            warnings: aiResponse.warnings || [],
+                            suggestions: aiResponse.suggestions || [],
+                            progress_log: aiResponse.progress_log || [],
+                        }
+                    }) + '\n';
+                    try {
+                        controller.enqueue(encoder.encode(resultChunk));
+                        controller.close();
+                    } catch (e) {
+                        // Ignore
+                    }
+                } catch (error) {
+                    console.error('[API /ai/chat] Error in stream:', error);
+                    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+
+                    // Don't try to send error if user cancelled
+                    if (errMsg.includes('User cancelled') || errMsg.includes('aborted')) {
+                        try { controller.close(); } catch { }
+                        return;
+                    }
+
+                    const errorChunk = JSON.stringify({
+                        type: 'error',
+                        message: errMsg
+                    }) + '\n';
+                    try {
+                        controller.enqueue(encoder.encode(errorChunk));
+                        controller.close();
+                    } catch (e) {
+                        // Ignore
+                    }
+                }
+            }
         });
+
+        return new NextResponse(stream, {
+            headers: {
+                'Content-Type': 'application/x-ndjson',
+                'Transfer-Encoding': 'chunked',
+            },
+        });
+
     } catch (error) {
         console.error('[API /ai/chat] Error:', error);
         const errMsg = error instanceof Error ? error.message : 'Unknown error';

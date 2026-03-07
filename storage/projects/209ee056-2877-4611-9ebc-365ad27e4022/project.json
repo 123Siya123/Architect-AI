@@ -1,0 +1,346 @@
+{
+  "id": "209ee056-2877-4611-9ebc-365ad27e4022",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-07T00:12:08.385Z",
+  "modified_at": "2026-03-07T00:14:17.874Z",
+  "version": 8,
+  "root_node_id": "house_08268d06",
+  "nodes": {
+    "house_08268d06": {
+      "id": "house_08268d06",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground"
+      ],
+      "created_at": "2026-03-07T00:12:08.385Z",
+      "modified_at": "2026-03-07T00:14:17.872Z",
+      "version": 1
+    },
+    "floor_ground": {
+      "id": "floor_ground",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_08268d06",
+      "children_ids": [
+        "room_lair"
+      ],
+      "created_at": "2026-03-07T00:14:17.872Z",
+      "modified_at": "2026-03-07T00:14:17.873Z",
+      "version": 1
+    },
+    "room_lair": {
+      "id": "room_lair",
+      "type": "Room",
+      "name": "Lair_Main_Hall",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [
+        "slab_e6u1zjji",
+        "wall_iixhpu6m",
+        "wall_hrk3dvwe",
+        "wall_j303wkn2",
+        "wall_piokoxwp"
+      ],
+      "room_function": "living",
+      "created_at": "2026-03-07T00:14:17.873Z",
+      "modified_at": "2026-03-07T00:14:17.874Z",
+      "version": 1
+    },
+    "slab_e6u1zjji": {
+      "id": "slab_e6u1zjji",
+      "type": "Slab",
+      "name": "Floor Slab",
+      "position": {
+        "x": 0,
+        "y": -0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.2,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-07T00:14:17.873Z",
+      "modified_at": "2026-03-07T00:14:17.873Z",
+      "version": 1
+    },
+    "wall_iixhpu6m": {
+      "id": "wall_iixhpu6m",
+      "type": "Wall",
+      "name": "North Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-07T00:14:17.873Z",
+      "modified_at": "2026-03-07T00:14:17.873Z",
+      "version": 1
+    },
+    "wall_hrk3dvwe": {
+      "id": "wall_hrk3dvwe",
+      "type": "Wall",
+      "name": "South Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-07T00:14:17.873Z",
+      "modified_at": "2026-03-07T00:14:17.873Z",
+      "version": 1
+    },
+    "wall_j303wkn2": {
+      "id": "wall_j303wkn2",
+      "type": "Wall",
+      "name": "East Wall",
+      "position": {
+        "x": 5,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-07T00:14:17.874Z",
+      "modified_at": "2026-03-07T00:14:17.874Z",
+      "version": 1
+    },
+    "wall_piokoxwp": {
+      "id": "wall_piokoxwp",
+      "type": "Wall",
+      "name": "West Wall",
+      "position": {
+        "x": -5,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-07T00:14:17.874Z",
+      "modified_at": "2026-03-07T00:14:17.874Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 11864,
+    "remaining": 188136,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -56,8 +56,14 @@ interface DesignState {
     error: string | null;
     chatMessages: ChatMessage[];
     isAIThinking: boolean;
+    aiThinkingLogs: string[];
     undoStack: PSGOperation[];
     redoStack: PSGOperation[];
+    
+    // Autosave & Status
+    isDirty: boolean;
+    lastSaved: string | null;
+    autosaveTimer: ReturnType<typeof setTimeout> | null;
 
     // Actions
     loadProject: (project: PSGProject) => void;
@@ -72,14 +78,16 @@ interface DesignState {
     setActivePanel: (panel: ActivePanel) => void;
     setActiveFloorId: (floorId: string | null) => void;
     addChatMessage: (message: ChatMessage) => void;
-    sendMessageToAI: (text: string) => Promise<void>;
+    sendMessageToAI: (text: string, attachments?: { name: string; type: string; data: string }[]) => Promise<void>;
     revertToMessage: (messageId: string) => void;
     setAIThinking: (thinking: boolean) => void;
+    setAIThinkingLogs: (logs: string[]) => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
     getNode: (id: string) => PSGNode | undefined;
     getNodesByType: (type: string) => PSGNode[];
-    saveToServer: () => Promise<void>;
+    saveProject: (isAutosave?: boolean) => Promise<void>;
+    triggerAutosave: () => void;
     loadFromServer: (id: string) => Promise<void>;
 }
 
@@ -114,49 +122,86 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     error: null,
     chatMessages: [],
     isAIThinking: false,
+    aiThinkingLogs: [],
     undoStack: [],
     redoStack: [],
+    isDirty: false,
+    lastSaved: null,
+    autosaveTimer: null,
 
-    loadProject: (project) => set({ project: projectWithCalculatedCost(project), selection: defaultSelection, undoStack: [], redoStack: [], error: null }),
+    loadProject: (project) => set({ 
+        project: projectWithCalculatedCost(project), 
+        selection: defaultSelection, 
+        undoStack: [], 
+        redoStack: [], 
+        error: null,
+        isDirty: false,
+        lastSaved: null,
+        autosaveTimer: null
+    }),
 
     applyOp: (operation) => {
-        const { project, undoStack } = get();
+        const { project, undoStack, triggerAutosave } = get();
         const result = applyOperation(project, operation);
         if (result.success && result.project) {
-            set({ project: projectWithCalculatedCost(result.project), undoStack: [...undoStack, operation], redoStack: [] });
+            set({ 
+                project: projectWithCalculatedCost(result.project), 
+                undoStack: [...undoStack, operation], 
+                redoStack: [],
+                isDirty: true 
+            });
+            triggerAutosave();
         }
         return result;
     },
 
     applyBatchOps: (operations) => {
-        const { project, undoStack } = get();
+        const { project, undoStack, triggerAutosave } = get();
         const result = applyBatchOperations(project, operations);
         if (result.success && result.project) {
-            set({ project: projectWithCalculatedCost(result.project), undoStack: [...undoStack, ...operations], redoStack: [] });
+            set({ 
+                project: projectWithCalculatedCost(result.project), 
+                undoStack: [...undoStack, ...operations], 
+                redoStack: [],
+                isDirty: true
+            });
+            triggerAutosave();
         }
         return result;
     },
 
     undo: () => {
-        const { undoStack, redoStack, project } = get();
+        const { undoStack, redoStack, project, triggerAutosave } = get();
         if (undoStack.length === 0) return;
         const lastOp = undoStack[undoStack.length - 1];
         const undoOp = createUndoOperation(lastOp);
         if (undoOp) {
             const result = applyOperation(project, undoOp);
             if (result.success && result.project) {
-                set({ project: projectWithCalculatedCost(result.project), undoStack: undoStack.slice(0, -1), redoStack: [...redoStack, lastOp] });
+                set({ 
+                    project: projectWithCalculatedCost(result.project), 
+                    undoStack: undoStack.slice(0, -1), 
+                    redoStack: [...redoStack, lastOp],
+                    isDirty: true
+                });
+                triggerAutosave();
             }
         }
     },
 
     redo: () => {
-        const { redoStack, project, undoStack } = get();
+        const { redoStack, project, undoStack, triggerAutosave } = get();
         if (redoStack.length === 0) return;
         const redoOp = redoStack[redoStack.length - 1];
         const result = applyOperation(project, redoOp);
         if (result.success && result.project) {
-            set({ project: projectWithCalculatedCost(result.project), undoStack: [...undoStack, redoOp], redoStack: redoStack.slice(0, -1) });
+            set({ 
+                project: projectWithCalculatedCost(result.project), 
+                undoStack: [...undoStack, redoOp], 
+                redoStack: redoStack.slice(0, -1),
+                isDirty: true
+            });
+            triggerAutosave();
         }
     },
 
@@ -177,9 +222,9 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     setActivePanel: (panel) => set({ activePanel: panel }),
     setActiveFloorId: (id) => set({ activeFloorId: id }),
     addChatMessage: (message) => set({ chatMessages: [...get().chatMessages, message] }),
-    sendMessageToAI: async (text: string) => {
-        const { isAIThinking, project, chatMessages, addChatMessage, setAIThinking } = get();
-        if (!text.trim() || isAIThinking) return;
+    sendMessageToAI: async (text: string, attachments?: { name: string; type: string; data: string }[]) => {
+        const { isAIThinking, project, chatMessages, addChatMessage, setAIThinking, setAIThinkingLogs, triggerAutosave } = get();
+        if ((!text.trim() && (!attachments || attachments.length === 0)) || isAIThinking) return;
 
         const projectSnapshot = JSON.parse(JSON.stringify(project));
 
@@ -189,9 +234,11 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             content: text.trim(),
             timestamp: new Date().toISOString(),
             snapshot: projectSnapshot,
+            attachments: attachments
         };
         addChatMessage(userMsg);
         setAIThinking(true);
+        setAIThinkingLogs([]);
 
         try {
             const response = await fetch('/api/ai/chat', {
@@ -201,6 +248,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                     message: text.trim(),
                     project,
                     history: chatMessages,
+                    attachments: attachments
                 }),
             });
 
@@ -209,17 +257,79 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                 throw new Error(errorData.message || `API error ${response.status}`);
             }
 
-            const data = await response.json();
-            const allOps = data.operations || [];
+            if (!response.body) throw new Error('Response body is not readable');
 
-            let successCount = 0;
-            let failCount = 0;
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            const currentLogs: string[] = [];
+            let finalData: any = null;
+            const streamedOperationKeys = new Set<string>();
+            let streamedSuccessCount = 0;
+            let streamedFailCount = 0;
+            let hasChanges = false;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || ''; // Keep incomplete line
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const event = JSON.parse(line);
+                        if (event.type === 'log') {
+                            currentLogs.push(event.content);
+                            setAIThinkingLogs([...currentLogs]);
+                        } else if (event.type === 'operation' && event.operation) {
+                            const key = JSON.stringify(event.operation);
+                            if (!streamedOperationKeys.has(key)) {
+                                streamedOperationKeys.add(key);
+                                const result = get().applyOp(event.operation);
+                                if (result.success) {
+                                    streamedSuccessCount++;
+                                    hasChanges = true;
+                                    // FORCE UPDATE: Trigger a re-render by creating a new object reference
+                                    // This is sometimes needed if Zustand's shallow compare misses deep changes
+                                    set((state) => ({ 
+                                        project: { ...state.project } 
+                                    }));
+                                } else {
+                                    streamedFailCount++;
+                                    console.warn('[Store] Streamed op failed validation:', event.operation.type, event.operation.target_id, result.errors);
+                                }
+                            }
+                        } else if (event.type === 'result') {
+                            finalData = event.data;
+                        } else if (event.type === 'error') {
+                            throw new Error(event.message);
+                        }
+                    } catch (e) {
+                        console.warn('[Store] Failed to parse stream line:', line);
+                    }
+                }
+            }
+
+            if (!finalData) {
+                throw new Error('No result data received from AI');
+            }
+
+            const allOps = finalData.operations || [];
+            let successCount = streamedSuccessCount;
+            let failCount = streamedFailCount;
 
             for (const op of allOps) {
                 try {
+                    const key = JSON.stringify(op);
+                    if (streamedOperationKeys.has(key)) continue;
+
                     const result = get().applyOp(op);
                     if (result.success) {
                         successCount++;
+                        hasChanges = true;
                     } else {
                         failCount++;
                         console.warn('[Store] Op failed validation:', op.type, op.target_id, result.errors);
@@ -233,14 +343,18 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             if (allOps.length > 0) {
                 console.log(`[Store] Applied ${successCount}/${allOps.length} operations (${failCount} failed)`);
             }
+            
+            if (hasChanges) {
+                triggerAutosave();
+            }
 
             const aiMsg: ChatMessage = {
                 id: `msg_${Date.now()}_ai`,
                 role: 'assistant',
-                content: data.message || 'I processed your request.',
+                content: finalData.message || 'I processed your request.',
                 timestamp: new Date().toISOString(),
                 operations: allOps,
-                pipeline_log: data.progress_log || [],
+                pipeline_log: finalData.progress_log || currentLogs,
             };
             get().addChatMessage(aiMsg);
         } catch (err) {
@@ -253,6 +367,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             });
         } finally {
             get().setAIThinking(false);
+            get().setAIThinkingLogs([]);
         }
     },
     revertToMessage: (messageId) => {
@@ -270,32 +385,65 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                 undoStack: [],
                 redoStack: [],
                 error: null,
+                isDirty: true, // Revert makes it dirty
                 // Remove all messages strictly AFTER the one we revert to
                 chatMessages: chatMessages.slice(0, msgIndex + 1)
             });
+            get().triggerAutosave();
         }
     },
     setAIThinking: (thinking) => set({ isAIThinking: thinking }),
+    setAIThinkingLogs: (logs) => set({ aiThinkingLogs: logs }),
     setLoading: (loading) => set({ isLoading: loading }),
     setError: (error) => set({ error }),
     getNode: (id) => get().project.nodes[id],
     getNodesByType: (type) => Object.values(get().project.nodes).filter((n) => n.type === type),
 
-    saveToServer: async () => {
+    triggerAutosave: () => {
+        const { autosaveTimer, saveProject } = get();
+        if (autosaveTimer) clearTimeout(autosaveTimer);
+        
+        // Debounce for 2 seconds
+        const timer = setTimeout(() => {
+            saveProject(true);
+        }, 2000);
+        
+        set({ autosaveTimer: timer });
+    },
+
+    saveProject: async (isAutosave = false) => {
         const { project, setLoading, setError } = get();
-        setLoading(true);
+        if (!isAutosave) setLoading(true);
+        
         try {
-            const res = await fetch('/api/projects', {
-                method: 'POST',
+            // Use PUT to update existing project
+            // Add ?revision=true if manual save or periodic autosave? 
+            // Maybe we only create revision on manual save?
+            // Or create revision on autosave too? Let's say yes for now but maybe limit frequency.
+            // For now, let's create revision on EVERY save to be safe (backend limits to 50 anyway).
+            
+            const url = `/api/projects/${project.id}?revision=${isAutosave ? 'true' : 'true'}`;
+            
+            const res = await fetch(url, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(project)
             });
+            
             if (!res.ok) throw new Error('Failed to save project');
-            console.log('[Store] Project saved to server');
+            
+            console.log(`[Store] Project saved (${isAutosave ? 'Autosave' : 'Manual'})`);
+            set({ 
+                isDirty: false, 
+                lastSaved: new Date().toISOString(),
+                autosaveTimer: null 
+            });
+            
         } catch (err) {
-            setError((err as Error).message);
+            console.error('Save failed:', err);
+            if (!isAutosave) setError((err as Error).message);
         } finally {
-            setLoading(false);
+            if (!isAutosave) setLoading(false);
         }
     },
 

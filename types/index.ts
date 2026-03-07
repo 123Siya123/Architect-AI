@@ -169,6 +169,14 @@ export interface SurfaceMatrix {
   code?: string;
   /** Mesh resolution for procedural mode (rows along Y, cols along X) */
   resolution?: number;
+  /** Lower clamp for thickness multipliers */
+  min_value?: number;
+  /** Upper clamp for thickness multipliers */
+  max_value?: number;
+  /** Cells at/below this value are treated as holes */
+  hole_threshold?: number;
+  /** Sampling mode when using raw data matrix */
+  interpolation?: 'nearest' | 'bilinear';
   /** Raw matrix data — rows × cols grid of thickness multipliers */
   rows: number;
   cols: number;
@@ -275,6 +283,10 @@ export interface PSGNode {
   stair_style?: 'straight' | 'l_shaped' | 'u_shaped' | 'spiral' | 'curved' | 'winder' | 'bifurcated' | 'circular' | 'half_turn' | 'quarter_turn';
   stair_riser_height?: number;  // Height of each step
   stair_tread_depth?: number;   // Depth of each step
+  stair_width?: number;         // Width of the flight (defaults to dimensions.x)
+  stair_inner_radius?: number;  // For curved/spiral stairs (hole in middle)
+  stair_rotation?: number;      // Clockwise vs Counter-clockwise (boolean or -1/1)
+  stair_landing_depth?: number; // Depth of landing for L/U shapes
 
   /** Roof: configuration */
   roof_style?: 'gable' | 'hip' | 'flat' | 'mansard' | 'shed' | 'gambrel' | 'butterfly' | 'dome' | 'conical' | 'saltbox' | 'pyramid' | 'skillion' | 'jerkinhead' | 'bonnet' | 'cross_gable' | 'cross_hip' | 'round';
@@ -295,13 +307,15 @@ export interface PSGNode {
 
   /** Custom geometry: bridge between AI structural generation and 3D Engine */
   custom_geometry?: {
-    type: 'extrusion' | 'lathe' | 'sphere' | 'box' | 'cylinder' | 'cone' | 'plane' | 'arch' | 'code';
+    type: 'extrusion' | 'lathe' | 'sphere' | 'box' | 'cylinder' | 'cone' | 'plane' | 'arch' | 'code' | 'loft' | 'sweep';
     profile_points?: number[][]; // Array of [x, y] coordinates for extrusion (2D shape) or lathe (profile)
-    depth?: number;              // Extrusion depth
+    path_points?: number[][];    // Array of [x, y, z] coordinates for sweep/extrude path
+    depth?: number;              // Extrusion depth (if no path)
     radius?: number;             // Radius for sphere/lathe/cylinder/cone
+    inner_radius?: number;       // For tubes/torus
     height?: number;             // Height for cylinder/cone
     segments?: number;           // Smoothness/segments
-    thickness?: number;          // Thickness for arch
+    thickness?: number;          // Thickness for arch/tube
     code?: string;               // JavaScript code for universally generating the shape (for type="code")
   };
 
@@ -507,6 +521,12 @@ export interface ChatMessage {
   operations?: PSGOperation[];
   // If the user uploaded reference images
   image_urls?: string[];
+  // If the user uploaded files (images or text) - Base64 encoded
+  attachments?: {
+    name: string;
+    type: string;
+    data: string; // Base64
+  }[];
   // State snapshot for "go back" functionality
   snapshot?: PSGProject;
   // Internal pipeline logs for transparency (optional)
@@ -519,6 +539,11 @@ export interface AIChatRequest {
   project: PSGProject;        // Current state of the house
   history: ChatMessage[];      // Conversation context
   image_urls?: string[];       // Reference images uploaded by user
+  attachments?: {              // Attached files (images/text)
+    name: string;
+    type: string;
+    data: string;
+  }[];
 }
 
 /** Response from the AI chat endpoint */

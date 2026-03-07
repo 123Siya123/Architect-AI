@@ -86,9 +86,6 @@ interface TurnRecord {
     violations: string[];
 }
 
-// Global turn history (persists across turns)
-const turnHistory: TurnRecord[] = [];
-
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -138,6 +135,10 @@ interface LLMCallResult {
     toolCalls?: ToolCall[];
 }
 
+type ProgressEvent =
+    | { type: 'log'; content: string }
+    | { type: 'operation'; operation: PSGOperation; turn: number; agent: TurnRecord['agent'] };
+
 
 // =============================================================================
 // MAIN EXPORT — Send Chat to AI (Parallel Cognitive Architecture)
@@ -146,9 +147,25 @@ interface LLMCallResult {
 export async function sendChatToAI(
     request: AIChatRequest,
     materials: Record<string, Material>,
-    _retryCount: number = 0
+    onProgress?: (event: ProgressEvent) => void,
+    signal?: AbortSignal
 ): Promise<AIChatResponse> {
     const progressLog: string[] = [];
+    const attachments = request.attachments; // Extract attachments
+
+    const log = (message: string) => {
+        progressLog.push(message);
+        console.log(`[Orchestrator] ${message}`); // Add console logging for visibility
+        try {
+            onProgress?.({ type: 'log', content: message });
+        } catch (e) {
+            // Ignore errors when sending progress (e.g. if client disconnected)
+        }
+    };
+    const emitOperation = (operation: PSGOperation, turn: number, agent: TurnRecord['agent']) => {
+        onProgress?.({ type: 'operation', operation, turn, agent });
+    };
+
     console.log('[Orchestrator] ═══ PARALLEL COGNITIVE ARCHITECTURE STARTING ═══');
 
     let currentProject = { ...request.project, nodes: { ...request.project.nodes } };
@@ -156,23 +173,40 @@ export async function sendChatToAI(
     const maxTurns = 20;
     let finalMessage = '';
     const decisionHistory = new DecisionHistory();
+    const turnHistory: TurnRecord[] = [];
+    const structuralTargets = inferStructuralTargets(request.message);
 
-    // Track structural changes for physicist validation
     let lastEngineerActions: string[] = [];
     let structuralChangesSinceAestheticReview = 0;
     let pendingViolations: PhysicsValidation['violations'] = [];
+    let wallSurfaceInsights: string[] = [];
+
+    const precisionBootstrap = ensureConstructionPrecision(currentProject);
+    if (precisionBootstrap) {
+        const bootstrapValidation = validateOperation(precisionBootstrap, currentProject);
+        if (bootstrapValidation.valid) {
+            const bootstrapApplied = applyOperation(currentProject, precisionBootstrap);
+            if (bootstrapApplied.project) {
+                currentProject = bootstrapApplied.project;
+                allValidatedOps.push(precisionBootstrap);
+                log('   🎯 Precision set to construction level (0.5mm)');
+            }
+        }
+    }
 
     clearLogs();
 
-    progressLog.push('═══ PARALLEL COGNITIVE ARCHITECTURE ═══');
-    progressLog.push(`Goal: ${request.message}`);
+    log('═══ PARALLEL COGNITIVE ARCHITECTURE ═══');
+    log(`Goal: ${request.message}`);
+    log(`Target Floors: ${structuralTargets.requiredFloors}`);
+    log(`Complexity: ${structuralTargets.complexity} (Min Turns: ${structuralTargets.minTurns})`);
 
     for (let turn = 1; turn <= maxTurns; turn++) {
-        progressLog.push(`\n───── 🔄 TURN ${turn}/${maxTurns} ─────`);
+        log(`\n───── 🔄 TURN ${turn}/${maxTurns} ─────`);
 
         let turnSuccess = false;
         let turnRetries = 0;
-        const MAX_TURN_RETRIES = 3;
+        const MAX_TURN_RETRIES = 5;
 
         while (!turnSuccess && turnRetries < MAX_TURN_RETRIES) {
             try {
@@ -181,11 +215,124 @@ export async function sendChatToAI(
                 // =============================================================
                 const config = getProviderConfig();
 
+                if (attachments && attachments.length > 0 && config.provider !== 'gemini') {
+                    log(`   ⚠️ WARNING: Attachments ignored. Provider ${config.provider} does not support images.`);
+                }
+
                 const asciiPlan = generateASCIIFloorPlan(currentProject);
                 const nodeTree = prepare3DNodeTree(currentProject);
                 const checklist = prepareProgressChecklist(currentProject);
                 const budgetContext = prepareBudgetContext(currentProject);
                 const materialContext = prepareMaterialContext(materials);
+                const preTurnCompletion = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                const hasBlockingViolations = pendingViolations.some(v => v.severity === 'CRITICAL' || v.severity === 'WARNING');
+
+                if (preTurnCompletion.complete && !hasBlockingViolations) {
+                    finalMessage = `Design completed in ${turn - 1} turns.`;
+                    decisionHistory.add({
+                        turn,
+                        agent: 'orchestrator',
+                        decision: 'Auto-stop on deterministic completion',
+                        reasoning: `All completion gates satisfied with no blocking violations`,
+                        result: 'success'
+                    });
+                    log(`   ✨ AUTO STOP: All completion gates satisfied. Ending early.`);
+                    turn = maxTurns + 1;
+                    turnSuccess = true;
+                    break;
+                }
+
+                // =============================================================
+                // STEP 0: SYSTEM INTERVENTION — Auto-fix Criticals
+                // =============================================================
+                const systemFixes = pendingViolations.filter(v =>
+                    v.severity === 'CRITICAL' &&
+                    v.suggested_fix &&
+                    (v.suggested_fix.exact_coordinates || v.suggested_fix.params)
+                );
+
+                if (systemFixes.length > 0) {
+                    log(`   🔧 SYSTEM INTERVENTION: Auto-applying ${systemFixes.length} critical fixes...`);
+                    let fixCount = 0;
+                    const systemActions: string[] = [];
+
+                    for (const fix of systemFixes) {
+                        try {
+                            const sf = fix.suggested_fix!;
+                            const args = {
+                                target_id: sf.target_id,
+                                ...(sf.params || {}),
+                                ...(sf.exact_coordinates ? {
+                                    position_x: sf.exact_coordinates.x,
+                                    position_y: sf.exact_coordinates.y,
+                                    position_z: sf.exact_coordinates.z
+                                } : {})
+                            };
+
+                            const op = toolCallToOperation(sf.action, args);
+                            const validation = validateOperation(op, currentProject);
+
+                            if (validation.valid) {
+                                allValidatedOps.push(op);
+                                emitOperation(op, turn, 'orchestrator');
+                                const applied = applyOperation(currentProject, op);
+                                if (applied.project) {
+                                    currentProject = applied.project;
+                                    fixCount++;
+                                    systemActions.push(`✅ ${sf.action} on ${sf.target_id}`);
+                                }
+                            } else {
+                                log(`   ⚠️ System Fix Rejected: ${sf.action} — ${validation.errors[0]}`);
+                            }
+                        } catch (e) {
+                            console.error('System fix failed', e);
+                        }
+                    }
+
+                    if (fixCount > 0) {
+                        // Reload state to be safe
+                        currentProject = await reloadProjectState(currentProject.id, currentProject);
+
+                        // Validate changes immediately
+                        log(`   🔬 SPATIAL PHYSICIST: Validating system fixes...`);
+                        const physicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
+
+                        const physicistResult = await callProviderNoTools(config, [
+                            { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                            { role: 'user', content: `SYSTEM INTERVENTION APPLIED:\n${systemActions.join('\n')}\n\n${physicistState}` }
+                        ], undefined, signal);
+
+                        const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
+                        if (physicsResult) {
+                            if (physicsResult.status === 'PHYSICS_VALID') {
+                                log(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                                pendingViolations = [];
+                            } else {
+                                pendingViolations = physicsResult.violations;
+                                log(`   ⚠️ VIOLATIONS REMAINING: ${pendingViolations.length}`);
+                            }
+                        }
+
+                        decisionHistory.add({
+                            turn, agent: 'orchestrator',
+                            decision: `System applied ${fixCount} critical fixes`,
+                            reasoning: 'Direct execution of physicist suggested fixes to break loop',
+                            result: 'success'
+                        });
+
+                        turnHistory.push({
+                            turn,
+                            agent: 'orchestrator',
+                            instruction: 'System Intervention',
+                            operations: systemActions,
+                            result: 'SUCCESS',
+                            violations: pendingViolations.map(v => v.issue)
+                        });
+
+                        turnSuccess = true;
+                        continue; // Skip to next turn
+                    }
+                }
 
                 // 🔴 ADD THIS: Detect loops before asking orchestrator to decide
                 const loopDetection = detectLoop(turnHistory);
@@ -224,6 +371,9 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 }
 
                 orchestratorContext += `DECISION HISTORY:\n${decisionHistory.formatRecent(15)}\n\n`;
+                if (wallSurfaceInsights.length > 0) {
+                    orchestratorContext += `WALL SURFACE INSIGHTS:\n${wallSurfaceInsights.join('\n')}\n\n`;
+                }
 
                 if (pendingViolations.length > 0) {
                     orchestratorContext += `⚠️ PENDING PHYSICS VIOLATIONS (MUST ADDRESS):\n`;
@@ -250,7 +400,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     orchestratorContext += '\n';
                 }
 
-                progressLog.push(`   🧠 ORCHESTRATOR: Analyzing state...`);
+                log(`   🧠 ORCHESTRATOR: Analyzing state...`);
 
                 logAgentStep({
                     phase: 'ORCHESTRATOR',
@@ -260,15 +410,17 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     prompt: orchestratorContext.substring(0, 500) + '...'
                 });
 
+                log(`   🤖 Calling ${config.provider} (${config.model})...`); // Debug log
+
                 const orchestratorResult = await callProviderNoTools(config, [
                     { role: 'system', content: ORCHESTRATOR_PROMPT },
                     { role: 'user', content: orchestratorContext }
-                ]);
+                ], attachments, signal); // Pass attachments here
 
-                const decision = extractJSON<OrchestratorDecision>(orchestratorResult.text);
+                let decision = extractJSON<OrchestratorDecision>(orchestratorResult.text);
 
                 if (!decision) {
-                    progressLog.push(`   ⚠️ Orchestrator returned non-JSON. Using text as guidance.`);
+                    log(`   ⚠️ Orchestrator returned non-JSON. Using text as guidance.`);
                     finalMessage = orchestratorResult.text;
                     // Try to continue — treat as delegation to engineer
                     decisionHistory.add({
@@ -281,8 +433,34 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     continue;
                 }
 
-                progressLog.push(`   📋 Decision: delegate to ${decision.delegate_to}`);
-                progressLog.push(`   💭 Reasoning: "${decision.reasoning.substring(0, 100)}..."`);
+                const completionStatus = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                const criticalPending = pendingViolations.filter(v => v.severity === 'CRITICAL');
+
+                if (criticalPending.length > 0 && decision.delegate_to !== 'structural_engineer') {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'structural_engineer',
+                        instruction: buildCriticalFixInstruction(criticalPending),
+                        reasoning: `${decision.reasoning} | Overridden: CRITICAL violations must be fixed before other work.`
+                    };
+                } else if (decision.delegate_to !== 'structural_engineer' && !completionStatus.structureReady) {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'structural_engineer',
+                        instruction: completionStatus.nextInstruction,
+                        reasoning: `${decision.reasoning} | Overridden: core structure incomplete.`
+                    };
+                } else if (decision.delegate_to === 'DESIGN_COMPLETE' && !completionStatus.complete) {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'structural_engineer',
+                        instruction: completionStatus.nextInstruction,
+                        reasoning: `${decision.reasoning} | Overridden: design not complete (${completionStatus.missing.join('; ')}).`
+                    };
+                }
+
+                log(`   📋 Decision: delegate to ${decision.delegate_to}`);
+                log(`   💭 Reasoning: "${decision.reasoning.substring(0, 100)}..."`);
 
                 logAgentStep({
                     phase: 'ORCHESTRATOR',
@@ -297,7 +475,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 // CHECK: Is design complete?
                 // =============================================================
                 if (decision.delegate_to === 'DESIGN_COMPLETE') {
-                    progressLog.push(`   ✨ DESIGN COMPLETE — Orchestrator declared the design finished.`);
+                    log(`   ✨ DESIGN COMPLETE — Orchestrator declared the design finished.`);
                     finalMessage = decision.reasoning;
                     decisionHistory.add({
                         turn, agent: 'orchestrator',
@@ -315,17 +493,20 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 // =============================================================
                 if (decision.delegate_to === 'structural_engineer') {
                     // --- STRUCTURAL ENGINEER ---
-                    progressLog.push(`   🏗️ STRUCTURAL ENGINEER: Executing...`);
+                    log(`   🏗️ STRUCTURAL ENGINEER: Executing...`);
 
                     const engineerContext = `INSTRUCTION FROM LEAD ARCHITECT:\n${decision.instruction}\n\n`;
-                    const engineerState = `CURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\nBudget: ${budgetContext}\nMaterials: ${materialContext}`;
+                    const insightsBlock = wallSurfaceInsights.length > 0
+                        ? `\n\nWALL SURFACE INSIGHTS:\n${wallSurfaceInsights.join('\n')}`
+                        : '';
+                    const engineerState = `CURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\nBudget: ${budgetContext}\nMaterials: ${materialContext}${insightsBlock}`;
 
                     const engineerMessages = [
                         { role: 'system', content: STRUCTURAL_ENGINEER_PROMPT },
                         { role: 'user', content: engineerContext + engineerState }
                     ];
 
-                    const engineerResult = await callProviderWithTools(config, normalizeMessages(engineerMessages));
+                    const engineerResult = await callProviderWithTools(config, normalizeMessages(engineerMessages), attachments, signal);
 
                     logAgentStep({
                         phase: 'STRUCTURAL_ENGINEER',
@@ -343,17 +524,17 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     lastEngineerActions = [];
 
                     if (engineerResult.toolCalls && engineerResult.toolCalls.length > 0) {
-                        progressLog.push(`   🛠️ Engineer issued ${engineerResult.toolCalls.length} operation(s)`);
+                        log(`   🛠️ Engineer issued ${engineerResult.toolCalls.length} operation(s)`);
                         let successCount = 0;
 
                         for (const tc of engineerResult.toolCalls) {
                             try {
                                 if (tc.name === 'get_wall_surface') {
                                     const wallId = tc.args.target_id as string;
-                                    const wall = currentProject.nodes[wallId];
-                                    if (wall?.surface_matrix) {
-                                        lastEngineerActions.push(`Queried surface of ${wallId}`);
-                                    }
+                                    const surfaceInsight = summarizeWallSurface(currentProject, wallId);
+                                    wallSurfaceInsights = [surfaceInsight, ...wallSurfaceInsights].slice(0, 8);
+                                    lastEngineerActions.push(`Queried surface of ${wallId}`);
+                                    log(`   🔎 ${surfaceInsight}`);
                                     continue;
                                 }
 
@@ -362,6 +543,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                                 if (validation.valid) {
                                     allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'structural_engineer');
                                     const applied = applyOperation(currentProject, op);
                                     if (applied.project) {
                                         currentProject = applied.project;
@@ -370,14 +552,14 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                     }
                                 } else {
                                     lastEngineerActions.push(`❌ ${tc.name} rejected: ${validation.errors.join(', ')}`);
-                                    progressLog.push(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
                                 }
                             } catch (e) {
                                 lastEngineerActions.push(`❌ ${tc.name} runtime error`);
                             }
                         }
 
-                        progressLog.push(`   ✅ ${successCount}/${engineerResult.toolCalls.length} operations applied`);
+                        log(`   ✅ ${successCount}/${engineerResult.toolCalls.length} operations applied`);
                         structuralChangesSinceAestheticReview += successCount;
 
                         decisionHistory.add({
@@ -395,7 +577,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         // STEP 3: SPATIAL PHYSICIST — Validate after structural changes
                         // =============================================================
                         if (successCount > 0) {
-                            progressLog.push(`   🔬 SPATIAL PHYSICIST: Validating...`);
+                            log(`   🔬 SPATIAL PHYSICIST: Validating...`);
 
                             const physicistContext = `LATEST CHANGES:\n${lastEngineerActions.join('\n')}\n\n`;
                             const physicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
@@ -403,7 +585,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                             const physicistResult = await callProviderNoTools(config, [
                                 { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
                                 { role: 'user', content: physicistContext + physicistState }
-                            ]);
+                            ], undefined, signal);
 
                             logAgentStep({
                                 phase: 'SPATIAL_PHYSICIST',
@@ -417,7 +599,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                             if (physicsResult) {
                                 if (physicsResult.status === 'PHYSICS_VALID') {
-                                    progressLog.push(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                                    log(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
                                     pendingViolations = [];
                                     decisionHistory.add({
                                         turn, agent: 'spatial_physicist',
@@ -429,9 +611,9 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                     const criticals = physicsResult.violations.filter(v => v.severity === 'CRITICAL');
                                     const warnings = physicsResult.violations.filter(v => v.severity === 'WARNING');
 
-                                    progressLog.push(`   ⚠️ VIOLATIONS: ${criticals.length} critical, ${warnings.length} warnings`);
+                                    log(`   ⚠️ VIOLATIONS: ${criticals.length} critical, ${warnings.length} warnings`);
                                     for (const v of physicsResult.violations) {
-                                        progressLog.push(`      [${v.severity}] ${v.issue}`);
+                                        log(`      [${v.severity}] ${v.issue}`);
                                     }
 
                                     // Store violations for the orchestrator to address
@@ -453,14 +635,14 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                     violations: physicsResult.violations.map(v => v.issue)
                                 });
                             } else {
-                                progressLog.push(`   ⚠️ Physicist returned non-structured response`);
+                                log(`   ⚠️ Physicist returned non-structured response`);
                                 pendingViolations = [];
                             }
                         }
 
                     } else {
                         // Engineer returned text but no tool calls
-                        progressLog.push(`   ℹ️ Engineer provided analysis but no operations`);
+                        log(`   ℹ️ Engineer provided analysis but no operations`);
                         decisionHistory.add({
                             turn, agent: 'structural_engineer',
                             decision: 'No operations (constraint violation or analysis)',
@@ -471,7 +653,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                 } else if (decision.delegate_to === 'interior_architect') {
                     // --- INTERIOR ARCHITECT ---
-                    progressLog.push(`   🪑 INTERIOR ARCHITECT: Executing...`);
+                    log(`   🪑 INTERIOR ARCHITECT: Executing...`);
 
                     const architectContext = `ORCHESTRATOR INSTRUCTION:\n${decision.instruction}\n\n`;
                     const architectState = `LATEST 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n`;
@@ -481,7 +663,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         { role: 'user', content: architectContext + architectState }
                     ];
 
-                    const architectResult = await callProviderWithTools(config, architectMessages);
+                    const architectResult = await callProviderWithTools(config, architectMessages, attachments, signal);
 
                     logAgentStep({
                         phase: 'INTERIOR_ARCHITECT',
@@ -493,7 +675,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     });
 
                     if (architectResult.toolCalls && architectResult.toolCalls.length > 0) {
-                        progressLog.push(`   🪑 Proposed ${architectResult.toolCalls.length} operations`);
+                        log(`   🪑 Proposed ${architectResult.toolCalls.length} operations`);
                         let successCount = 0;
                         const lastArchitectActions: string[] = [];
 
@@ -504,6 +686,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                                 if (validation.valid) {
                                     allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'interior_architect');
                                     const applied = applyOperation(currentProject, op);
                                     if (applied.project) {
                                         currentProject = applied.project;
@@ -512,14 +695,14 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                     }
                                 } else {
                                     lastArchitectActions.push(`❌ ${tc.name} rejected: ${validation.errors.join(', ')}`);
-                                    progressLog.push(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
                                 }
                             } catch (e) {
                                 lastArchitectActions.push(`❌ ${tc.name} runtime error`);
                             }
                         }
 
-                        progressLog.push(`   ✅ ${successCount}/${architectResult.toolCalls.length} operations applied`);
+                        log(`   ✅ ${successCount}/${architectResult.toolCalls.length} operations applied`);
 
                         // 🔴 CRITICAL FIX: Fresh reload here too
                         currentProject = await reloadProjectState(currentProject.id, currentProject);
@@ -528,19 +711,19 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         const architectPhysicistResult = await callProviderNoTools(config, [
                             { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
                             { role: 'user', content: `LATEST CHANGES:\n${lastArchitectActions.join('\n')}\n\n${architectPhysicistState}` }
-                        ]);
+                        ], undefined, signal);
 
                         const archPhysicsParsed = extractJSON<PhysicsValidation>(architectPhysicistResult.text);
 
                         if (archPhysicsParsed) {
                             if (archPhysicsParsed.status === 'PHYSICS_VALID') {
-                                progressLog.push(`   ✅ PHYSICS VALID: ${archPhysicsParsed.summary}`);
+                                log(`   ✅ PHYSICS VALID: ${archPhysicsParsed.summary}`);
                                 pendingViolations = [];
                             } else {
                                 pendingViolations = archPhysicsParsed.violations;
-                                progressLog.push(`   ⚠️ VIOLATIONS: Found ${pendingViolations.length} issues`);
+                                log(`   ⚠️ VIOLATIONS: Found ${pendingViolations.length} issues`);
                                 for (const v of pendingViolations) {
-                                    progressLog.push(`      [${v.severity}] ${v.issue}`);
+                                    log(`      [${v.severity}] ${v.issue}`);
                                 }
                             }
 
@@ -562,7 +745,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                             result: successCount > 0 ? 'success' : 'failed'
                         });
                     } else {
-                        progressLog.push(`   ℹ️ Interior architect provided analysis but no operations`);
+                        log(`   ℹ️ Interior architect provided analysis but no operations`);
                         decisionHistory.add({
                             turn, agent: 'interior_architect',
                             decision: 'No operations',
@@ -573,7 +756,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                 } else if (decision.delegate_to === 'aesthetic_designer') {
                     // --- AESTHETIC DESIGNER ---
-                    progressLog.push(`   🎨 AESTHETIC DESIGNER: Reviewing...`);
+                    log(`   🎨 AESTHETIC DESIGNER: Reviewing...`);
 
                     const aestheticContext = `DESIGN INTENT: ${request.message}\n\n`;
                     const aestheticState = `CURRENT STATE:\n${nodeTree}\n\n${asciiPlan}\n\nMaterials: ${materialContext}`;
@@ -581,7 +764,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     const aestheticResult = await callProviderNoTools(config, [
                         { role: 'system', content: AESTHETIC_DESIGNER_PROMPT },
                         { role: 'user', content: aestheticContext + aestheticState }
-                    ]);
+                    ], attachments, signal);
 
                     logAgentStep({
                         phase: 'AESTHETIC_DESIGNER',
@@ -594,9 +777,9 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     const review = extractJSON<AestheticReview>(aestheticResult.text);
 
                     if (review) {
-                        progressLog.push(`   🎨 Score: ${review.aesthetic_score}/10 — ${review.summary}`);
+                        log(`   🎨 Score: ${review.aesthetic_score}/10 — ${review.summary}`);
                         for (const rec of review.recommendations.slice(0, 5)) {
-                            progressLog.push(`      💡 ${rec.suggestion}`);
+                            log(`      💡 ${rec.suggestion}`);
                         }
                         structuralChangesSinceAestheticReview = 0;
                         decisionHistory.add({
@@ -606,19 +789,19 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                             result: 'success'
                         });
                     } else {
-                        progressLog.push(`   ℹ️ Aesthetic review returned non-structured response`);
+                        log(`   ℹ️ Aesthetic review returned non-structured response`);
                     }
 
                 } else if (decision.delegate_to === 'spatial_physicist') {
                     // --- DIRECT PHYSICIST CALL (Orchestrator requested explicit validation) ---
-                    progressLog.push(`   🔬 SPATIAL PHYSICIST: Full validation requested...`);
+                    log(`   🔬 SPATIAL PHYSICIST: Full validation requested...`);
 
                     const physicistState = `FULL 3D STATE:\n${nodeTree}\n\n${asciiPlan}`;
 
                     const physicistResult = await callProviderNoTools(config, [
                         { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
                         { role: 'user', content: `ORCHESTRATOR REQUEST: ${decision.instruction}\n\n${physicistState}` }
-                    ]);
+                    ], undefined, signal);
 
                     logAgentStep({
                         phase: 'SPATIAL_PHYSICIST',
@@ -631,12 +814,12 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
                     if (physicsResult) {
                         if (physicsResult.status === 'PHYSICS_VALID') {
-                            progressLog.push(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                            log(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
                             pendingViolations = [];
                         } else {
                             pendingViolations = physicsResult.violations;
                             for (const v of physicsResult.violations) {
-                                progressLog.push(`      [${v.severity}] ${v.issue}`);
+                                log(`      [${v.severity}] ${v.issue}`);
                             }
                         }
                     }
@@ -649,11 +832,35 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     });
                 }
 
+                const postTurnCompletion = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                const hasPostBlockingViolations = pendingViolations.some(v => v.severity === 'CRITICAL' || v.severity === 'WARNING');
+                if (postTurnCompletion.complete && !hasPostBlockingViolations) {
+                    finalMessage = finalMessage || `Design completed in ${turn} turns.`;
+                    decisionHistory.add({
+                        turn,
+                        agent: 'orchestrator',
+                        decision: 'Auto-stop on deterministic completion',
+                        reasoning: `All completion gates satisfied with no blocking violations`,
+                        result: 'success'
+                    });
+                    log(`   ✨ AUTO STOP: All completion gates satisfied. Ending early.`);
+                    turn = maxTurns + 1;
+                    turnSuccess = true;
+                    break;
+                }
+
                 turnSuccess = true;
 
             } catch (error) {
-                turnRetries++;
                 const errMsg = error instanceof Error ? error.message : String(error);
+
+                // Only break on genuine user cancellation
+                if (errMsg.includes('User cancelled') || signal?.aborted) {
+                    console.log('[Orchestrator] Operation cancelled by user');
+                    break; // Exit loop immediately
+                }
+
+                turnRetries++;
                 console.error(`[Orchestrator] Turn ${turn} failed (Attempt ${turnRetries}/${MAX_TURN_RETRIES}):`, errMsg);
 
                 logAgentStep({
@@ -665,19 +872,21 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 });
 
                 if (turnRetries < MAX_TURN_RETRIES) {
-                    progressLog.push(`   ❌ Turn ${turn} failed. Retrying in 500ms (${turnRetries}/${MAX_TURN_RETRIES})...`);
-                    await new Promise(r => setTimeout(r, 500));
+                    // Escalating backoff: 1s, 2s, 3s, 4s, etc.
+                    const backoff = Math.min(1000 * turnRetries, 5000);
+                    log(`   ❌ Turn ${turn} failed (${errMsg.substring(0, 60)}). Retrying in ${backoff / 1000}s (${turnRetries}/${MAX_TURN_RETRIES})...`);
+                    await new Promise(r => setTimeout(r, backoff));
                 } else {
-                    progressLog.push(`   ❌ CRITICAL: Turn ${turn} failed after ${MAX_TURN_RETRIES} attempts.`);
-                    turn = maxTurns + 1; // Exit outer loop
+                    log(`   ❌ CRITICAL: Turn ${turn} failed after ${MAX_TURN_RETRIES} attempts. Skipping to next turn...`);
+                    // Instead of terminating everything, just skip this turn
                     break;
                 }
             }
         }
     }
 
-    progressLog.push(`\n═══ ARCHITECTURE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
-    progressLog.push(`Decision Trail: ${decisionHistory.getAll().length} decisions recorded`);
+    log(`\n═══ ARCHITECTURE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
+    log(`Decision Trail: ${decisionHistory.getAll().length} decisions recorded`);
 
     return {
         message: finalMessage + '\n\n' + progressLog.join('\n'),
@@ -838,40 +1047,60 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
 
 /**
  * Calls the LLM WITHOUT tools (for Orchestrator, Physicist, Aesthetic agents).
- * Automatically detects rate limits, marks the key for cooldown, rotates, and retries.
+ * Automatically detects rate limits, timeouts, marks the key for cooldown, rotates, and retries.
  */
 async function callProviderNoTools(
     initialConfig: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    attachments?: { name: string; type: string; data: string }[],
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
-    const MAX_TOTAL_ATTEMPTS = 5;
+    const MAX_TOTAL_ATTEMPTS = 7;
     let config = initialConfig;
+    let timeoutMultiplier = 1; // Escalate timeout on retry
 
     for (let attempt = 1; attempt <= MAX_TOTAL_ATTEMPTS; attempt++) {
+        if (signal?.aborted) throw new Error('User cancelled');
         try {
+            // Pass timeout multiplier context via a patched config
+            const callConfig = { ...config, _timeoutMultiplier: timeoutMultiplier } as any;
             switch (config.provider) {
-                case 'gemini': return await callGeminiNoTools(config, messages);
-                case 'groq': return await callGroqNoTools(config, messages);
-                case 'openai': return await callOpenAINoTools(config, messages);
-                case 'github': return await callGithubNoTools(config, messages);
+                case 'gemini': return await callGeminiNoTools(callConfig, messages, attachments, signal);
+                case 'groq': return await callGroqNoTools(config, messages, signal);
+                case 'openai': return await callOpenAINoTools(config, messages, signal);
+                case 'github': return await callGithubNoTools(config, messages, signal);
                 default: throw new Error(`Unknown provider: ${config.provider}`);
             }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
+
+            // User cancellation — propagate immediately, no retry
+            if (errMsg.includes('User cancelled') || signal?.aborted) {
+                throw new Error('User cancelled');
+            }
+
             console.warn(`[callProviderNoTools] Attempt ${attempt}/${MAX_TOTAL_ATTEMPTS} failed:`, errMsg);
 
+            const isTimeout = errMsg.includes('timed out') || errMsg.includes('Timeout');
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
+            const isRateLimit = errMsg.includes('429');
 
-            if (isUnavailable && config.provider === 'gemini') {
-                if (config.model === 'gemini-3.1-pro-preview') {
+            if (isTimeout) {
+                // On timeout, increase timeout for next attempt instead of rotating
+                timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
+                console.warn(`[callProviderNoTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
+            } else if ((isUnavailable || isRateLimit) && config.provider === 'gemini') {
+                if (isRateLimit) markKeyRateLimited(config.apiKey);
+
+                if (config.model.includes('gemini-3.1-pro')) {
                     console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
                     config = { ...config, model: 'gemini-3-pro-preview' };
                 } else if (config.model === 'gemini-3-pro-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Falling back to Gemini 3 Flash...');
-                    config = { ...config, model: 'gemini-3-flash-preview' };
+                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Switching to Groq...');
+                    config = getProviderConfig('groq');
                 } else if (config.model === 'gemini-3-flash-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
-                    config = { ...config, model: 'gemini-1.5-pro' };
+                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to Groq...');
+                    config = getProviderConfig('groq');
                 } else {
                     rotateKey();
                     config = getProviderConfig();
@@ -883,7 +1112,9 @@ async function callProviderNoTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            await new Promise(r => setTimeout(r, 500));
+            // Escalating backoff: 500ms, 1s, 2s, 3s, ...
+            const backoff = Math.min(500 * attempt, 5000);
+            await new Promise(r => setTimeout(r, backoff));
         }
     }
     throw new Error('Retries exhausted');
@@ -891,40 +1122,58 @@ async function callProviderNoTools(
 
 /**
  * Calls the LLM WITH tools (for Structural Engineer).
- * Automatically detects rate limits, marks the key for cooldown, rotates, and retries.
+ * Automatically detects rate limits, timeouts, marks the key for cooldown, rotates, and retries.
  */
 async function callProviderWithTools(
     initialConfig: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    attachments?: { name: string; type: string; data: string }[],
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
-    const MAX_TOTAL_ATTEMPTS = 5;
+    const MAX_TOTAL_ATTEMPTS = 7;
     let config = initialConfig;
+    let timeoutMultiplier = 1;
 
     for (let attempt = 1; attempt <= MAX_TOTAL_ATTEMPTS; attempt++) {
+        if (signal?.aborted) throw new Error('User cancelled');
         try {
+            const callConfig = { ...config, _timeoutMultiplier: timeoutMultiplier } as any;
             switch (config.provider) {
-                case 'gemini': return await callGemini(config, messages);
-                case 'groq': return await callGroq(config, messages);
-                case 'openai': return await callOpenAI(config, messages);
-                case 'github': return await callGithub(config, messages);
+                case 'gemini': return await callGemini(callConfig, messages, attachments, signal);
+                case 'groq': return await callGroq(config, messages, signal);
+                case 'openai': return await callOpenAI(config, messages, signal);
+                case 'github': return await callGithub(config, messages, signal);
                 default: throw new Error(`Unknown provider: ${config.provider}`);
             }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
+
+            // User cancellation — propagate immediately
+            if (errMsg.includes('User cancelled') || signal?.aborted) {
+                throw new Error('User cancelled');
+            }
+
             console.warn(`[callProviderWithTools] Attempt ${attempt}/${MAX_TOTAL_ATTEMPTS} failed:`, errMsg);
 
+            const isTimeout = errMsg.includes('timed out') || errMsg.includes('Timeout');
             const isUnavailable = errMsg.includes('503') || errMsg.includes('404') || errMsg.includes('500');
+            const isRateLimit = errMsg.includes('429');
 
-            if (isUnavailable && config.provider === 'gemini') {
-                if (config.model === 'gemini-3.1-pro-preview') {
+            if (isTimeout) {
+                timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
+                console.warn(`[callProviderWithTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
+            } else if ((isUnavailable || isRateLimit) && config.provider === 'gemini') {
+                if (isRateLimit) markKeyRateLimited(config.apiKey);
+
+                if (config.model.includes('gemini-3.1-pro')) {
                     console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Falling back to Gemini 3 Pro...');
                     config = { ...config, model: 'gemini-3-pro-preview' };
                 } else if (config.model === 'gemini-3-pro-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Falling back to Gemini 3 Flash...');
-                    config = { ...config, model: 'gemini-3-flash-preview' };
+                    console.warn('[Orchestrator] Gemini 3 Pro unavailable. Switching to Groq...');
+                    config = getProviderConfig('groq');
                 } else if (config.model === 'gemini-3-flash-preview') {
-                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to STABLE 1.5 Pro...');
-                    config = { ...config, model: 'gemini-1.5-pro' };
+                    console.warn('[Orchestrator] Gemini 3 Flash unavailable. Switching to Groq...');
+                    config = getProviderConfig('groq');
                 } else {
                     rotateKey();
                     config = getProviderConfig();
@@ -936,7 +1185,8 @@ async function callProviderWithTools(
             }
 
             if (attempt === MAX_TOTAL_ATTEMPTS) throw error;
-            await new Promise(r => setTimeout(r, 500));
+            const backoff = Math.min(500 * attempt, 5000);
+            await new Promise(r => setTimeout(r, backoff));
         }
     }
     throw new Error('Retries exhausted');
@@ -948,16 +1198,37 @@ async function callProviderWithTools(
 
 async function callGemini(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    attachments?: { name: string; type: string; data: string }[],
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
 
+    const userMessages = messages.filter((m) => m.role === 'user');
+    const lastUserMessage = userMessages[userMessages.length - 1];
+
     const contents = messages
         .filter((m) => m.role !== 'system')
-        .map((m) => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: m.content }],
-        }));
+        .map((m) => {
+            const parts: any[] = [{ text: m.content }];
+
+            // Attach files to the last user message
+            if (m === lastUserMessage && attachments && attachments.length > 0) {
+                for (const att of attachments) {
+                    parts.push({
+                        inlineData: {
+                            mimeType: att.type,
+                            data: att.data
+                        }
+                    });
+                }
+            }
+
+            return {
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts,
+            };
+        });
 
     const systemMsg = messages.find((m) => m.role === 'system');
 
@@ -1008,11 +1279,16 @@ async function callGemini(
         },
     };
 
-    const response = await fetch(url, {
+    // Base timeout: 180s for thinking models, 90s for non-thinking
+    const baseTimeout = isGemini3 ? 180000 : 90000;
+    const timeoutMultiplier = (config as any)._timeoutMultiplier || 1;
+    const timeoutMs = Math.round(baseTimeout * timeoutMultiplier);
+
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-    });
+    }, timeoutMs, signal); // Dynamic timeout for reasoning models
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1041,16 +1317,37 @@ async function callGemini(
 
 async function callGeminiNoTools(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    attachments?: { name: string; type: string; data: string }[],
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${config.apiKey}`;
 
+    const userMessages = messages.filter((m) => m.role === 'user');
+    const lastUserMessage = userMessages[userMessages.length - 1];
+
     const contents = messages
         .filter((m) => m.role !== 'system')
-        .map((m) => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: m.content }],
-        }));
+        .map((m) => {
+            const parts: any[] = [{ text: m.content }];
+
+            // Attach files to the last user message
+            if (m === lastUserMessage && attachments && attachments.length > 0) {
+                for (const att of attachments) {
+                    parts.push({
+                        inlineData: {
+                            mimeType: att.type,
+                            data: att.data
+                        }
+                    });
+                }
+            }
+
+            return {
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts,
+            };
+        });
 
     const systemMsg = messages.find((m) => m.role === 'system');
 
@@ -1072,11 +1369,16 @@ async function callGeminiNoTools(
         },
     };
 
-    const response = await fetch(url, {
+    // Base timeout: 180s for thinking models, 60s for non-thinking
+    const baseTimeout = isGemini3 ? 180000 : 60000;
+    const timeoutMultiplier = (config as any)._timeoutMultiplier || 1;
+    const timeoutMs = Math.round(baseTimeout * timeoutMultiplier);
+
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-    });
+    }, timeoutMs, signal); // Dynamic timeout for reasoning models
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1101,7 +1403,8 @@ async function callGeminiNoTools(
 
 async function callGroq(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = 'https://api.groq.com/openai/v1/chat/completions';
 
@@ -1114,14 +1417,14 @@ async function callGroq(
         max_tokens: 1024,
     };
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${config.apiKey}`,
         },
         body: JSON.stringify(body),
-    });
+    }, 45000, signal); // 45s for Groq (very fast)
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1164,7 +1467,8 @@ async function callGroq(
 
 async function callGroqNoTools(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = 'https://api.groq.com/openai/v1/chat/completions';
 
@@ -1175,14 +1479,14 @@ async function callGroqNoTools(
         max_tokens: 1024,
     };
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${config.apiKey}`,
         },
         body: JSON.stringify(body),
-    });
+    }, 45000);
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1202,7 +1506,8 @@ async function callGroqNoTools(
 
 async function callOpenAI(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = 'https://api.openai.com/v1/chat/completions';
 
@@ -1215,14 +1520,14 @@ async function callOpenAI(
         max_tokens: 4000,
     };
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${config.apiKey}`,
         },
         body: JSON.stringify(body),
-    });
+    }, 60000, signal);
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1245,7 +1550,8 @@ async function callOpenAI(
 
 async function callOpenAINoTools(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = 'https://api.openai.com/v1/chat/completions';
 
@@ -1256,14 +1562,14 @@ async function callOpenAINoTools(
         max_tokens: 4000,
     };
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${config.apiKey}`,
         },
         body: JSON.stringify(body),
-    });
+    }, 60000, signal);
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1283,7 +1589,8 @@ async function callOpenAINoTools(
 
 async function callGithub(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = 'https://models.inference.ai.azure.com/chat/completions';
 
@@ -1296,14 +1603,14 @@ async function callGithub(
         max_tokens: 4000,
     };
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${config.apiKey}`,
         },
         body: JSON.stringify(body),
-    });
+    }, 60000, signal);
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1326,7 +1633,8 @@ async function callGithub(
 
 async function callGithubNoTools(
     config: AIProviderConfig,
-    messages: Array<{ role: string; content: string }>
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
 ): Promise<LLMCallResult> {
     const url = 'https://models.inference.ai.azure.com/chat/completions';
 
@@ -1337,14 +1645,14 @@ async function callGithubNoTools(
         max_tokens: 4000,
     };
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${config.apiKey}`,
         },
         body: JSON.stringify(body),
-    });
+    }, 60000, signal);
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -1463,6 +1771,52 @@ function formatCurrency(amount: number, currency: string): string {
     }).format(amount);
 }
 
+function summarizeWallSurface(project: PSGProject, targetId: string): string {
+    const node = project.nodes[targetId];
+    if (!node) {
+        return `Surface query failed: node "${targetId}" not found`;
+    }
+    if (node.type !== 'Wall' && node.type !== 'Partition') {
+        return `Surface query failed: "${targetId}" is ${node.type}, must be Wall or Partition`;
+    }
+    if (!node.surface_matrix) {
+        return `Surface ${targetId}: none`;
+    }
+
+    const sm = node.surface_matrix;
+    const minValue = sm.min_value ?? 0;
+    const maxValue = sm.max_value ?? 10;
+    const holeThreshold = sm.hole_threshold ?? 0.01;
+    const interp = sm.interpolation ?? 'bilinear';
+
+    if (sm.code) {
+        const code = sm.code.replace(/\s+/g, ' ').trim();
+        const preview = code.length > 220 ? `${code.slice(0, 220)}...` : code;
+        return `Surface ${targetId}: procedural res=${sm.resolution ?? 48} range=[${minValue},${maxValue}] hole<=${holeThreshold} interp=${interp} code="${preview}"`;
+    }
+
+    const rows = sm.rows;
+    const cols = sm.cols;
+    let observedMin = Number.POSITIVE_INFINITY;
+    let observedMax = Number.NEGATIVE_INFINITY;
+    let total = 0;
+    let count = 0;
+    let holeCount = 0;
+    for (const row of sm.data) {
+        for (const value of row) {
+            const n = typeof value === 'number' && Number.isFinite(value) ? value : 1;
+            observedMin = Math.min(observedMin, n);
+            observedMax = Math.max(observedMax, n);
+            total += n;
+            count++;
+            if (n <= holeThreshold) holeCount++;
+        }
+    }
+    const avg = count > 0 ? round(total / count, 4) : 1;
+    const holeRatio = count > 0 ? round((holeCount / count) * 100, 2) : 0;
+    return `Surface ${targetId}: matrix ${rows}x${cols} range=[${minValue},${maxValue}] hole<=${holeThreshold} interp=${interp} data(min=${round(observedMin, 4)},max=${round(observedMax, 4)},avg=${avg},holes=${holeRatio}%)`;
+}
+
 /**
  * Extracts a JSON object from a string that may contain markdown fences,
  * [PLAN] tags, or other text wrapping.
@@ -1529,14 +1883,16 @@ function detectLoop(history: TurnRecord[]): LoopDetection {
     const allFailed = last3Turns.every(t => t.result === 'FAILED');
 
     if (allFailed && last3Turns.length === 3) {
-        const violation1 = last3Turns[0].violations[0] || '';
-        const violation2 = last3Turns[1].violations[0] || '';
-        const violation3 = last3Turns[2].violations[0] || '';
+        const violation1 = normalizeViolation(last3Turns[0].violations[0] || '');
+        const violation2 = normalizeViolation(last3Turns[1].violations[0] || '');
+        const violation3 = normalizeViolation(last3Turns[2].violations[0] || '');
 
         const isSameViolation =
             (violation1.includes('floating') && violation2.includes('floating') && violation3.includes('floating')) ||
             (violation1.includes('misaligned') && violation2.includes('misaligned') && violation3.includes('misaligned')) ||
-            (violation1.includes('overlap') && violation2.includes('overlap') && violation3.includes('overlap'));
+            (violation1.includes('overhang') && violation2.includes('overhang') && violation3.includes('overhang')) ||
+            (violation1.includes('overlap') && violation2.includes('overlap') && violation3.includes('overlap')) ||
+            (violation1.length > 10 && violation1 === violation2 && violation2 === violation3);
 
         if (isSameViolation) {
             return {
@@ -1599,6 +1955,149 @@ function detectLoop(history: TurnRecord[]): LoopDetection {
     return { isLoop: false };
 }
 
+interface StructuralTargets {
+    requiredFloors: number;
+    farmStyle: boolean;
+    complexity: 'standard' | 'high' | 'extreme';
+    minTurns: number;
+}
+
+interface CompletionStatus {
+    structureReady: boolean;
+    complete: boolean;
+    missing: string[];
+    nextInstruction: string;
+}
+
+function inferStructuralTargets(message: string): StructuralTargets {
+    const normalized = message.toLowerCase();
+    const floorMatch = normalized.match(/(\d+)\s*[- ]?floor/);
+    const requiredFloors = floorMatch ? Math.max(1, Number(floorMatch[1])) : 1;
+
+    // Check for complexity/ambition keywords
+    const highComplexity = /bond|villain|spectacular|huge|massive|complex|dynamic|matrix|curve|sculpt|futuristic|mansion|palace|grand/i.test(normalized);
+    const extremeComplexity = (/detail|perfect|impressive|best|masterpiece|ultimate/i.test(normalized) && highComplexity) || /very dynamic|lot bigger/i.test(normalized);
+
+    let complexity: 'standard' | 'high' | 'extreme' = 'standard';
+    let minTurns = 4; // Default minimum
+
+    if (extremeComplexity) {
+        complexity = 'extreme';
+        minTurns = 12;
+    } else if (highComplexity) {
+        complexity = 'high';
+        minTurns = 8;
+    }
+
+    return {
+        requiredFloors,
+        farmStyle: /farm|estate/.test(normalized),
+        complexity,
+        minTurns
+    };
+}
+
+function evaluateCompletion(
+    project: PSGProject,
+    targets: StructuralTargets,
+    pendingViolations: PhysicsValidation['violations'],
+    currentTurn: number
+): CompletionStatus {
+    const nodes = Object.values(project.nodes);
+    const count = (type: PSGNode['type']) => nodes.filter(n => n.type === type).length;
+
+    const floors = count('Floor');
+    const rooms = count('Room');
+    const walls = count('Wall');
+    const roofs = count('Roof');
+    const doors = count('Door');
+    const windows = count('Window');
+    const stairs = count('Stairs');
+    const criticals = pendingViolations.filter(v => v.severity === 'CRITICAL').length;
+
+    const missing: string[] = [];
+
+    // Check turn count first
+    if (currentTurn < targets.minTurns) {
+        missing.push(`continue refining (minimum ${targets.minTurns} turns for ${targets.complexity} complexity)`);
+    }
+
+    if (floors < targets.requiredFloors) missing.push(`add ${targets.requiredFloors - floors} floor(s)`);
+    if (rooms < targets.requiredFloors) missing.push(`add ${targets.requiredFloors - rooms} room(s)`);
+    if (walls < targets.requiredFloors * 4) missing.push('add full perimeter walls for all floors');
+    if (roofs < 1) missing.push('add a roof');
+    if (doors < 1) missing.push('add at least one entrance door');
+    if (windows < Math.max(4, targets.requiredFloors * 2)) missing.push('add more windows');
+    if (targets.requiredFloors > 1 && stairs < 1) missing.push('add stairs connecting floors');
+    if (criticals > 0) missing.push('resolve critical physics violations');
+
+    // Add complexity specific checks
+    if (targets.complexity !== 'standard') {
+        if (rooms < targets.requiredFloors * 3) missing.push('add more rooms for complexity');
+        if (windows < 8) missing.push('add more windows for impressiveness');
+    }
+
+    const structureReady = floors >= targets.requiredFloors && walls >= targets.requiredFloors * 4 && roofs >= 1;
+    const complete = missing.length === 0;
+
+    let styleHint = targets.farmStyle
+        ? 'Use a farm estate style: pitched roof, porch, and practical family layout.'
+        : 'Maintain requested style coherence.';
+
+    if (targets.complexity === 'high' || targets.complexity === 'extreme') {
+        styleHint += ' Make it impressive and detailed.';
+    }
+
+    const nextInstruction = missing.length > 0
+        ? `Continue construction and resolve: ${missing.slice(0, 4).join(', ')}. ${styleHint}`
+        : `Finalize any remaining details. ${styleHint}`;
+
+    return { structureReady, complete, missing, nextInstruction };
+}
+
+function buildCriticalFixInstruction(criticals: PhysicsValidation['violations']): string {
+    const fixes = criticals
+        .filter(v => v.suggested_fix?.target_id && v.suggested_fix?.action)
+        .slice(0, 6)
+        .map(v => {
+            const fix = v.suggested_fix!;
+            const coords = fix.exact_coordinates;
+            const coordText = coords
+                ? ` to [${coords.x ?? 'keep'}, ${coords.y ?? 'keep'}, ${coords.z ?? 'keep'}]`
+                : '';
+            return `${fix.action} ${fix.target_id}${coordText}`;
+        });
+
+    if (fixes.length === 0) {
+        return 'Resolve all CRITICAL physics violations first. Use absolute positioning and exact coordinates.';
+    }
+
+    return `Resolve CRITICAL physics violations only in this turn: ${fixes.join('; ')}. Use set_node_position over move_node whenever coordinates are provided.`;
+}
+
+function ensureConstructionPrecision(project: PSGProject): PSGOperation | null {
+    if (project.settings.precision_level === 2 && project.settings.grid_size <= 0.0005) {
+        return null;
+    }
+
+    return {
+        type: 'set_precision_level',
+        target_id: 'project',
+        params: { level: '2' },
+        timestamp: new Date().toISOString(),
+    };
+}
+
+function normalizeViolation(violation: string): string {
+    return violation
+        .toLowerCase()
+        .replace(/\b\d+(\.\d+)?m\b/g, 'n')
+        .replace(/\b\d+(\.\d+)?mm\b/g, 'n')
+        .replace(/\[[^\]]+\]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 function formatTurnHistory(turns: TurnRecord[]): string {
     return turns.map(t => {
         const status = t.result === 'SUCCESS' ? '✅' : '❌';
@@ -1606,4 +2105,47 @@ function formatTurnHistory(turns: TurnRecord[]): string {
         const violation = t.violations[0] ? ` | Issue: ${t.violations[0].substring(0, 50)}...` : '';
         return `  Turn ${t.turn}: ${status} ${t.agent} used [${tools}]${violation}`;
     }).join('\n');
+}
+
+/**
+ * Wrapper for fetch with timeout (60s default)
+ */
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 60000, signal?: AbortSignal): Promise<Response> {
+    const controller = new AbortController();
+    const id = setTimeout(() => {
+        controller.abort(new Error(`Timeout after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    // Handle external signal — only abort for genuine user cancellation
+    const onExternalAbort = () => controller.abort(new Error('User cancelled'));
+    if (signal) {
+        if (signal.aborted) {
+            clearTimeout(id);
+            throw new Error('User cancelled');
+        }
+        signal.addEventListener('abort', onExternalAbort, { once: true });
+    }
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+        clearTimeout(id);
+        if (signal) signal.removeEventListener('abort', onExternalAbort);
+        return response;
+    } catch (error) {
+        clearTimeout(id);
+        if (signal) signal.removeEventListener('abort', onExternalAbort);
+        // Distinguish timeout from user cancellation
+        if (error instanceof Error) {
+            if (error.message?.includes('User cancelled') || signal?.aborted) {
+                throw new Error('User cancelled');
+            }
+            if (error.message?.includes('Timeout') || error.name === 'AbortError') {
+                throw new Error(`Request timed out after ${timeoutMs}ms`);
+            }
+        }
+        throw error;
+    }
 }

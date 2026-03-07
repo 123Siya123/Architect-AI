@@ -156,20 +156,22 @@ export function buildMatrixWall(wall: PSGNode): THREE.BufferGeometry {
     const W = wall.dimensions.x;
     const H = wall.dimensions.y;
     const T = wall.dimensions.z;
-
-    // Determine grid resolution
-    // For procedural mode, use higher resolution for smoother curves
+    const minValue = Number.isFinite(sm.min_value) ? sm.min_value! : 0;
+    const maxValueBase = Number.isFinite(sm.max_value) ? sm.max_value! : 10;
+    const maxValue = maxValueBase > minValue ? maxValueBase : minValue + 0.001;
+    const holeThreshold = Number.isFinite(sm.hole_threshold)
+        ? Math.min(maxValue, Math.max(minValue, sm.hole_threshold!))
+        : Math.max(minValue, 0.01);
+    const interpolation = sm.interpolation ?? 'bilinear';
     const useCode = !!sm.code;
-    const rows = useCode ? (sm.resolution || 32) : sm.rows;
-    const cols = useCode ? (sm.resolution || 32) : sm.cols;
-
-    // Build the thickness evaluator function
+    const rows = useCode ? Math.max(8, Math.min(128, Math.round(sm.resolution || 48))) : Math.max(2, sm.rows);
+    const cols = useCode ? Math.max(8, Math.min(128, Math.round(sm.resolution || 48))) : Math.max(2, sm.cols);
     const getThickness = useCode
-        ? buildProceduralEvaluator(sm.code!)
+        ? buildProceduralEvaluator(sm.code!, minValue, maxValue)
         : (u: number, v: number) => {
-            const c = Math.min(Math.floor(u * sm.cols), sm.cols - 1);
-            const r = Math.min(Math.floor(v * sm.rows), sm.rows - 1);
-            return sm.data[r]?.[c] ?? 1.0;
+            const sampled = sampleMatrix(sm.data, u, v, interpolation);
+            if (!Number.isFinite(sampled)) return 1;
+            return Math.min(maxValue, Math.max(minValue, sampled));
         };
 
     const geometry = new THREE.BufferGeometry();
@@ -180,13 +182,10 @@ export function buildMatrixWall(wall: PSGNode): THREE.BufferGeometry {
     const cellW = W / cols;
     const cellH = H / rows;
 
-    // Helper to get vertex index
     const getIdx = (r: number, c: number, isBack: boolean) => {
         const base = r * (cols + 1) + c;
         return isBack ? base + (rows + 1) * (cols + 1) : base;
     };
-
-    // Precompute the thickness at each vertex
     const thicknessGrid: number[][] = [];
     for (let r = 0; r <= rows; r++) {
         thicknessGrid[r] = [];
@@ -197,7 +196,6 @@ export function buildMatrixWall(wall: PSGNode): THREE.BufferGeometry {
         }
     }
 
-    // 1. Generate Vertices (front + back faces)
     for (let isBack = 0; isBack < 2; isBack++) {
         const sideMult = isBack ? -1 : 1;
         for (let r = 0; r <= rows; r++) {
@@ -213,53 +211,39 @@ export function buildMatrixWall(wall: PSGNode): THREE.BufferGeometry {
         }
     }
 
-    // Helper to check if a cell is "solid" (not a hole)
     const isSolid = (r: number, c: number): boolean => {
         if (r < 0 || r >= rows || c < 0 || c >= cols) return false;
-        // Average the 4 corner vertices of this cell
         const avg = (thicknessGrid[r][c] + thicknessGrid[r][c + 1] +
             thicknessGrid[r + 1][c] + thicknessGrid[r + 1][c + 1]) / 4;
-        return avg > 0.01;
+        return avg > holeThreshold;
     };
-
-    // 2. Generate Indices (front + back + side faces)
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            if (!isSolid(r, c)) continue; // Hole! Skip this cell.
-
-            // Front face
+            if (!isSolid(r, c)) continue;
             const f0 = getIdx(r, c, false);
             const f1 = getIdx(r, c + 1, false);
             const f2 = getIdx(r + 1, c + 1, false);
             const f3 = getIdx(r + 1, c, false);
             indices.push(f0, f1, f2);
             indices.push(f0, f2, f3);
-
-            // Back face
             const b0 = getIdx(r, c, true);
             const b1 = getIdx(r, c + 1, true);
             const b2 = getIdx(r + 1, c + 1, true);
             const b3 = getIdx(r + 1, c, true);
             indices.push(b0, b2, b1);
             indices.push(b0, b3, b2);
-
-            // Side faces (at boundaries of solid/hole regions)
-            // Top edge
             if (r === rows - 1 || !isSolid(r + 1, c)) {
                 indices.push(f3, f2, b2);
                 indices.push(f3, b2, b3);
             }
-            // Bottom edge
             if (r === 0 || !isSolid(r - 1, c)) {
                 indices.push(f0, b1, f1);
                 indices.push(f0, b0, b1);
             }
-            // Left edge
             if (c === 0 || !isSolid(r, c - 1)) {
                 indices.push(f0, f3, b3);
                 indices.push(f0, b3, b0);
             }
-            // Right edge
             if (c === cols - 1 || !isSolid(r, c + 1)) {
                 indices.push(f1, b2, f2);
                 indices.push(f1, b1, b2);
@@ -275,6 +259,34 @@ export function buildMatrixWall(wall: PSGNode): THREE.BufferGeometry {
     return geometry;
 }
 
+function sampleMatrix(data: number[][], u: number, v: number, interpolation: 'nearest' | 'bilinear'): number {
+    const rows = data.length;
+    const cols = data[0]?.length ?? 0;
+    if (rows < 1 || cols < 1) return 1;
+    const uu = Math.min(1, Math.max(0, u));
+    const vv = Math.min(1, Math.max(0, v));
+    if (interpolation === 'nearest') {
+        const c = Math.round(uu * (cols - 1));
+        const r = Math.round(vv * (rows - 1));
+        return data[r]?.[c] ?? 1;
+    }
+    const fx = uu * (cols - 1);
+    const fy = vv * (rows - 1);
+    const x0 = Math.floor(fx);
+    const y0 = Math.floor(fy);
+    const x1 = Math.min(cols - 1, x0 + 1);
+    const y1 = Math.min(rows - 1, y0 + 1);
+    const tx = fx - x0;
+    const ty = fy - y0;
+    const q00 = data[y0]?.[x0] ?? 1;
+    const q10 = data[y0]?.[x1] ?? q00;
+    const q01 = data[y1]?.[x0] ?? q00;
+    const q11 = data[y1]?.[x1] ?? q10;
+    const a = q00 * (1 - tx) + q10 * tx;
+    const b = q01 * (1 - tx) + q11 * tx;
+    return a * (1 - ty) + b * ty;
+}
+
 /**
  * Creates a sandboxed evaluator from a JS code string.
  * The code is a mathematical expression with access to: u, v, Math.
@@ -285,32 +297,27 @@ export function buildMatrixWall(wall: PSGNode): THREE.BufferGeometry {
  *   "((u-0.5)**2 + (v-0.7)**2 < 0.09) ? 0.0 : 1.0"               → Circular hole
  *   "Math.max(0, 1.0 - 3 * Math.abs(u - 0.5))"                    → Triangular ridge
  */
-function buildProceduralEvaluator(code: string): (u: number, v: number) => number {
+function buildProceduralEvaluator(code: string, minValue: number, maxValue: number): (u: number, v: number) => number {
     try {
-        // Create a function from the expression
-        // Variables available: u (0-1 horizontal), v (0-1 vertical), Math
         const fn = new Function('u', 'v', `
             "use strict";
             try {
                 const result = ${code};
                 if (typeof result !== 'number' || !isFinite(result)) return 1.0;
-                return Math.max(0, Math.min(result, 10.0)); // Clamp to [0, 10]
+                return Math.max(${minValue}, Math.min(result, ${maxValue}));
             } catch(e) {
-                return 1.0; // Fallback to standard thickness on error
+                return 1.0;
             }
         `) as (u: number, v: number) => number;
-
-        // Test it with a sample point to validate
         const test = fn(0.5, 0.5);
         if (typeof test !== 'number') {
             console.warn('[buildProceduralEvaluator] Code returned non-number, falling back');
             return () => 1.0;
         }
-
         return fn;
     } catch (e) {
         console.error('[buildProceduralEvaluator] Failed to compile code:', code, e);
-        return () => 1.0; // Safe fallback
+        return () => 1.0;
     }
 }
 

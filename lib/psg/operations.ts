@@ -37,13 +37,14 @@ import type {
     OperationResult,
     OperationWarning,
     Vec3,
+    SurfaceMatrix,
 } from '@/types';
 import { validateOperation } from './validator';
 import {
-    createWhiteHouseTemplate,
     createModern4BedTemplate,
     createSimple3BedTemplate,
-    createMinimalistStudioTemplate
+    createMinimalistStudioTemplate,
+    createWhiteHouseTemplate
 } from './templates';
 
 // =============================================================================
@@ -848,143 +849,490 @@ function createCustomElement(project: PSGProject, operation: PSGOperation): PSGP
 /**
  * Advanced surface editing for walls (bulbs, curves, holes, procedural code)
  */
+type SurfaceCommand =
+    | 'reset'
+    | 'set_bulb'
+    | 'cut_hole'
+    | 'set_matrix'
+    | 'draw_curve'
+    | 'set_code'
+    | 'stamp'
+    | 'smooth'
+    | 'normalize'
+    | 'invert'
+    | 'set_cell';
+
+type StampShape = 'gaussian' | 'cone' | 'dome' | 'ring' | 'ridge_x' | 'ridge_y';
+type BlendMode = 'set' | 'add' | 'subtract' | 'max' | 'min' | 'multiply';
+
+type EditWallSurfaceParams = {
+    command: SurfaceCommand;
+    rows?: number;
+    cols?: number;
+    resolution?: number;
+    cx?: number;
+    cy?: number;
+    radius?: number;
+    inner_radius?: number;
+    strength?: number;
+    shape?: StampShape;
+    blend?: BlendMode;
+    falloff?: number;
+    x?: number;
+    y?: number;
+    w?: number;
+    h?: number;
+    axis?: 'x' | 'y';
+    frequency?: number;
+    phase?: number;
+    amplitude?: number;
+    passes?: number;
+    min_value?: number;
+    max_value?: number;
+    hole_threshold?: number;
+    interpolation?: 'nearest' | 'bilinear';
+    data?: number[][];
+    code?: string;
+    row?: number;
+    col?: number;
+    value?: number;
+    description?: string;
+};
+
 function editWallSurface(project: PSGProject, operation: PSGOperation): PSGProject {
     const node = project.nodes[operation.target_id];
     if (!node || (node.type !== 'Wall' && node.type !== 'Partition')) {
         throw new Error(`edit_wall_surface: node "${operation.target_id}" must be a Wall or Partition`);
     }
 
-    const params = operation.params as {
-        command: 'reset' | 'set_bulb' | 'cut_hole' | 'set_matrix' | 'draw_curve' | 'set_code';
-        rows?: number;
-        cols?: number;
-        resolution?: number;
-        cx?: number;
-        cy?: number;
-        radius?: number;
-        strength?: number;
-        x?: number; y?: number; w?: number; h?: number;
-        data?: number[][];
-        code?: string;
-        description?: string;
-    };
-
-    const rows = params.rows || node.surface_matrix?.rows || 10;
-    const cols = params.cols || node.surface_matrix?.cols || 10;
-
-    // ─── PROCEDURAL CODE MODE ────────────────────────────────────────
-    if (params.command === 'set_code' && params.code) {
-        const updatedNode: PSGNode = {
-            ...node,
-            surface_matrix: {
-                code: params.code,
-                resolution: params.resolution || 32,
-                rows: 2,
-                cols: 2,
-                data: [[1, 1], [1, 1]], // Minimal placeholder (code takes priority)
-                description: params.description || 'Procedural surface'
-            },
-            version: node.version + 1,
-            modified_at: new Date().toISOString()
-        };
-
-        return {
-            ...project,
-            nodes: { ...project.nodes, [node.id]: updatedNode }
-        };
-    }
-
-    // ─── DATA MATRIX MODE ────────────────────────────────────────────
-    let matrixData: number[][];
-
-    if (node.surface_matrix && !node.surface_matrix.code) {
-        matrixData = node.surface_matrix.data.map(r => [...r]);
-    } else {
-        matrixData = Array(rows).fill(0).map(() => Array(cols).fill(1));
-    }
+    const params = operation.params as EditWallSurfaceParams;
+    const existing = node.surface_matrix;
 
     if (params.command === 'reset') {
-        // Clear everything including procedural code
         const updatedNode: PSGNode = {
             ...node,
             surface_matrix: undefined,
             version: node.version + 1,
-            modified_at: new Date().toISOString()
+            modified_at: new Date().toISOString(),
         };
-        return {
-            ...project,
-            nodes: { ...project.nodes, [node.id]: updatedNode }
-        };
-    } else if (params.command === 'set_bulb') {
-        applyBulb(matrixData, params.cx || 0.5, params.cy || 0.5, params.radius || 0.2, params.strength || 2);
-    } else if (params.command === 'cut_hole') {
-        applyHole(matrixData, params.x || 0.4, params.y || 0.4, params.w || 0.2, params.h || 0.2);
-    } else if (params.command === 'set_matrix' && params.data) {
-        matrixData = params.data;
-    } else if (params.command === 'draw_curve') {
-        applyCurve(matrixData);
+        return { ...project, nodes: { ...project.nodes, [node.id]: updatedNode } };
     }
 
+    const rows = toIntInRange(params.rows, existing?.rows ?? 24, 2, 256);
+    const cols = toIntInRange(params.cols, existing?.cols ?? 24, 2, 256);
+    const minValue = toFinite(params.min_value, existing?.min_value ?? 0);
+    const maxValueRaw = toFinite(params.max_value, existing?.max_value ?? 10);
+    const maxValue = maxValueRaw > minValue ? maxValueRaw : minValue + 0.001;
+    const holeThreshold = clamp(toFinite(params.hole_threshold, existing?.hole_threshold ?? 0.01), minValue, maxValue);
+    const interpolation: 'nearest' | 'bilinear' = params.interpolation ?? existing?.interpolation ?? 'bilinear';
+    const description = params.description ?? existing?.description ?? `Custom ${node.type} shape`;
+
+    if (params.command === 'set_code') {
+        if (!params.code || !params.code.trim()) {
+            throw new Error('edit_wall_surface set_code requires a non-empty code expression');
+        }
+        const resolution = toIntInRange(params.resolution, existing?.resolution ?? 48, 8, 128);
+        const updatedNode: PSGNode = {
+            ...node,
+            surface_matrix: {
+                code: params.code.trim(),
+                resolution,
+                min_value: minValue,
+                max_value: maxValue,
+                hole_threshold: holeThreshold,
+                interpolation,
+                rows,
+                cols,
+                data: createFilledMatrix(rows, cols, 1),
+                description,
+            },
+            version: node.version + 1,
+            modified_at: new Date().toISOString(),
+        };
+        return { ...project, nodes: { ...project.nodes, [node.id]: updatedNode } };
+    }
+
+    let matrixData: number[][];
+    if (params.command === 'set_matrix') {
+        if (!params.data) {
+            throw new Error('edit_wall_surface set_matrix requires data');
+        }
+        matrixData = sanitizeAndNormalizeMatrix(params.data, minValue, maxValue);
+    } else {
+        matrixData = materializeSurfaceToMatrix(existing, rows, cols, minValue, maxValue);
+    }
+
+    if (params.command === 'set_bulb') {
+        applyStamp(
+            matrixData,
+            {
+                shape: 'gaussian',
+                blend: params.blend ?? 'max',
+                cx: toFinite(params.cx, 0.5),
+                cy: toFinite(params.cy, 0.5),
+                radius: clamp(toFinite(params.radius, 0.2), 0.01, 1),
+                innerRadius: clamp(toFinite(params.inner_radius, 0), 0, 1),
+                strength: toFinite(params.strength, 2),
+                falloff: clamp(toFinite(params.falloff, 2), 0.2, 6),
+            },
+            minValue,
+            maxValue
+        );
+    } else if (params.command === 'stamp') {
+        applyStamp(
+            matrixData,
+            {
+                shape: params.shape ?? 'gaussian',
+                blend: params.blend ?? 'add',
+                cx: toFinite(params.cx, 0.5),
+                cy: toFinite(params.cy, 0.5),
+                radius: clamp(toFinite(params.radius, 0.2), 0.01, 1),
+                innerRadius: clamp(toFinite(params.inner_radius, 0), 0, 1),
+                strength: toFinite(params.strength, 0.6),
+                falloff: clamp(toFinite(params.falloff, 2), 0.2, 8),
+            },
+            minValue,
+            maxValue
+        );
+    } else if (params.command === 'cut_hole') {
+        applyRectHole(
+            matrixData,
+            clamp(toFinite(params.x, 0.4), 0, 1),
+            clamp(toFinite(params.y, 0.4), 0, 1),
+            clamp(toFinite(params.w, 0.2), 0.001, 1),
+            clamp(toFinite(params.h, 0.2), 0.001, 1),
+            minValue
+        );
+    } else if (params.command === 'draw_curve') {
+        applyCurve(
+            matrixData,
+            params.axis ?? 'x',
+            Math.max(0.05, toFinite(params.amplitude, 0.5)),
+            Math.max(0.1, toFinite(params.frequency, 1)),
+            toFinite(params.phase, 0),
+            minValue,
+            maxValue
+        );
+    } else if (params.command === 'smooth') {
+        smoothMatrix(matrixData, toIntInRange(params.passes, 1, 1, 8), minValue, maxValue);
+    } else if (params.command === 'normalize') {
+        normalizeMatrix(matrixData, minValue, maxValue);
+    } else if (params.command === 'invert') {
+        invertMatrix(matrixData, minValue, maxValue);
+    } else if (params.command === 'set_cell') {
+        setCellValue(
+            matrixData,
+            toIntInRange(params.row, 0, 0, matrixData.length - 1),
+            toIntInRange(params.col, 0, 0, matrixData[0].length - 1),
+            clamp(toFinite(params.value, 1), minValue, maxValue)
+        );
+    }
+
+    sanitizeMatrixInPlace(matrixData, minValue, maxValue);
     const updatedNode: PSGNode = {
         ...node,
         surface_matrix: {
             rows: matrixData.length,
             cols: matrixData[0].length,
             data: matrixData,
-            description: params.description || node.surface_matrix?.description || `Custom ${node.type} shape`
+            min_value: minValue,
+            max_value: maxValue,
+            hole_threshold: holeThreshold,
+            interpolation,
+            description,
         },
         version: node.version + 1,
-        modified_at: new Date().toISOString()
+        modified_at: new Date().toISOString(),
     };
 
-    return {
-        ...project,
-        nodes: { ...project.nodes, [node.id]: updatedNode }
-    };
+    return { ...project, nodes: { ...project.nodes, [node.id]: updatedNode } };
 }
 
-/** Helper: Applies a Gaussian bulb to matrix data */
-function applyBulb(data: number[][], cx: number, cy: number, r: number, strength: number) {
+function toFinite(value: unknown, fallback: number): number {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+    return value;
+}
+
+function clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value));
+}
+
+function toIntInRange(value: unknown, fallback: number, min: number, max: number): number {
+    const candidate = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+    const int = Math.round(candidate);
+    return Math.min(max, Math.max(min, int));
+}
+
+function createFilledMatrix(rows: number, cols: number, fill: number): number[][] {
+    return Array.from({ length: rows }, () => Array.from({ length: cols }, () => fill));
+}
+
+function sanitizeAndNormalizeMatrix(data: number[][], minValue: number, maxValue: number): number[][] {
+    if (!Array.isArray(data) || data.length < 2 || !Array.isArray(data[0]) || data[0].length < 2) {
+        throw new Error('set_matrix data must be at least 2x2');
+    }
+    const cols = data[0].length;
+    const normalized = data.map((row) => {
+        if (!Array.isArray(row) || row.length !== cols) {
+            throw new Error('set_matrix data must be a rectangular matrix');
+        }
+        return row.map((value) => clamp(toFinite(value, 1), minValue, maxValue));
+    });
+    return normalized;
+}
+
+function sanitizeMatrixInPlace(data: number[][], minValue: number, maxValue: number): void {
+    for (let r = 0; r < data.length; r++) {
+        for (let c = 0; c < data[r].length; c++) {
+            data[r][c] = clamp(toFinite(data[r][c], 1), minValue, maxValue);
+        }
+    }
+}
+
+function sampleNearest(data: number[][], u: number, v: number): number {
     const rows = data.length;
     const cols = data[0].length;
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
-            const y = i / (rows - 1);
-            const x = j / (cols - 1);
-            const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
-            if (dist < r * 2) {
-                const factor = Math.exp(-(dist ** 2) / (2 * (r / 2) ** 2));
-                data[i][j] = 1 + (strength - 1) * factor;
+    const c = Math.min(cols - 1, Math.max(0, Math.round(u * (cols - 1))));
+    const r = Math.min(rows - 1, Math.max(0, Math.round(v * (rows - 1))));
+    return data[r][c];
+}
+
+function sampleBilinear(data: number[][], u: number, v: number): number {
+    const rows = data.length;
+    const cols = data[0].length;
+    const fx = clamp(u, 0, 1) * (cols - 1);
+    const fy = clamp(v, 0, 1) * (rows - 1);
+    const x0 = Math.floor(fx);
+    const y0 = Math.floor(fy);
+    const x1 = Math.min(cols - 1, x0 + 1);
+    const y1 = Math.min(rows - 1, y0 + 1);
+    const tx = fx - x0;
+    const ty = fy - y0;
+    const a = data[y0][x0] * (1 - tx) + data[y0][x1] * tx;
+    const b = data[y1][x0] * (1 - tx) + data[y1][x1] * tx;
+    return a * (1 - ty) + b * ty;
+}
+
+function buildCodeEvaluator(code: string, minValue: number, maxValue: number): (u: number, v: number) => number {
+    try {
+        const fn = new Function('u', 'v', `
+            "use strict";
+            const result = ${code};
+            if (typeof result !== 'number' || !isFinite(result)) return 1;
+            return result;
+        `) as (u: number, v: number) => number;
+        return (u: number, v: number) => {
+            try {
+                return clamp(fn(u, v), minValue, maxValue);
+            } catch {
+                return 1;
+            }
+        };
+    } catch {
+        return () => 1;
+    }
+}
+
+function materializeSurfaceToMatrix(
+    surface: SurfaceMatrix | undefined,
+    rows: number,
+    cols: number,
+    minValue: number,
+    maxValue: number
+): number[][] {
+    if (!surface) {
+        return createFilledMatrix(rows, cols, 1);
+    }
+
+    if (surface.code) {
+        const evalCode = buildCodeEvaluator(surface.code, minValue, maxValue);
+        const materialized = createFilledMatrix(rows, cols, 1);
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const u = cols === 1 ? 0 : c / (cols - 1);
+                const v = rows === 1 ? 0 : r / (rows - 1);
+                materialized[r][c] = evalCode(u, v);
+            }
+        }
+        return materialized;
+    }
+
+    const source = sanitizeAndNormalizeMatrix(surface.data, minValue, maxValue);
+    if (source.length === rows && source[0].length === cols) return source;
+    const interpolation = surface.interpolation ?? 'bilinear';
+    const resized = createFilledMatrix(rows, cols, 1);
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const u = cols === 1 ? 0 : c / (cols - 1);
+            const v = rows === 1 ? 0 : r / (rows - 1);
+            resized[r][c] = interpolation === 'nearest' ? sampleNearest(source, u, v) : sampleBilinear(source, u, v);
+        }
+    }
+    return resized;
+}
+
+function blendValues(current: number, next: number, mode: BlendMode): number {
+    if (mode === 'set') return next;
+    if (mode === 'add') return current + next;
+    if (mode === 'subtract') return current - next;
+    if (mode === 'max') return Math.max(current, next);
+    if (mode === 'min') return Math.min(current, next);
+    return current * next;
+}
+
+function profileValue(
+    shape: StampShape,
+    nx: number,
+    ny: number,
+    dist: number,
+    normalizedRadius: number,
+    innerRadius: number,
+    falloff: number
+): number {
+    if (dist > normalizedRadius || dist < innerRadius) return 0;
+    const t = normalizedRadius <= 0 ? 0 : clamp((dist - innerRadius) / Math.max(0.000001, normalizedRadius - innerRadius), 0, 1);
+    if (shape === 'gaussian') return Math.exp(-falloff * t * t);
+    if (shape === 'cone') return 1 - t;
+    if (shape === 'dome') return Math.sqrt(Math.max(0, 1 - t * t));
+    if (shape === 'ring') return Math.sin((1 - t) * Math.PI);
+    if (shape === 'ridge_x') return Math.max(0, 1 - Math.abs(nx));
+    return Math.max(0, 1 - Math.abs(ny));
+}
+
+function applyStamp(
+    data: number[][],
+    options: {
+        shape: StampShape;
+        blend: BlendMode;
+        cx: number;
+        cy: number;
+        radius: number;
+        innerRadius: number;
+        strength: number;
+        falloff: number;
+    },
+    minValue: number,
+    maxValue: number
+): void {
+    const rows = data.length;
+    const cols = data[0].length;
+    const radius = clamp(options.radius, 0.01, 1);
+    const innerRadius = clamp(options.innerRadius, 0, radius * 0.95);
+    for (let r = 0; r < rows; r++) {
+        const v = rows === 1 ? 0 : r / (rows - 1);
+        for (let c = 0; c < cols; c++) {
+            const u = cols === 1 ? 0 : c / (cols - 1);
+            const dx = u - options.cx;
+            const dy = v - options.cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const nv = profileValue(options.shape, dx / radius, dy / radius, dist, radius, innerRadius, options.falloff);
+            if (nv <= 0) continue;
+            const target = options.blend === 'add' || options.blend === 'subtract'
+                ? nv * options.strength
+                : 1 + (options.strength - 1) * nv;
+            data[r][c] = clamp(blendValues(data[r][c], target, options.blend), minValue, maxValue);
+        }
+    }
+}
+
+function applyRectHole(data: number[][], x: number, y: number, w: number, h: number, holeValue: number): void {
+    const rows = data.length;
+    const cols = data[0].length;
+    const x2 = x + w;
+    const y2 = y + h;
+    for (let r = 0; r < rows; r++) {
+        const v = rows === 1 ? 0 : r / (rows - 1);
+        for (let c = 0; c < cols; c++) {
+            const u = cols === 1 ? 0 : c / (cols - 1);
+            if (u >= x && u <= x2 && v >= y && v <= y2) {
+                data[r][c] = holeValue;
             }
         }
     }
 }
 
-/** Helper: Cuts a hole (renders value 0) */
-function applyHole(data: number[][], x: number, y: number, w: number, h: number) {
+function applyCurve(
+    data: number[][],
+    axis: 'x' | 'y',
+    amplitude: number,
+    frequency: number,
+    phase: number,
+    minValue: number,
+    maxValue: number
+): void {
     const rows = data.length;
     const cols = data[0].length;
-    for (let i = 0; i < rows; i++) {
-        const py = i / (rows - 1);
-        for (let j = 0; j < cols; j++) {
-            const px = j / (cols - 1);
-            if (px >= x && px <= x + w && py >= y && py <= y + h) {
-                data[i][j] = 0;
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const u = cols === 1 ? 0 : c / (cols - 1);
+            const v = rows === 1 ? 0 : r / (rows - 1);
+            const t = axis === 'x' ? u : v;
+            const value = 1 + amplitude * Math.sin((t * frequency + phase) * Math.PI * 2);
+            data[r][c] = clamp(value, minValue, maxValue);
+        }
+    }
+}
+
+function smoothMatrix(data: number[][], passes: number, minValue: number, maxValue: number): void {
+    const rows = data.length;
+    const cols = data[0].length;
+    for (let pass = 0; pass < passes; pass++) {
+        const clone = data.map((row) => [...row]);
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let total = 0;
+                let count = 0;
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        const rr = r + dr;
+                        const cc = c + dc;
+                        if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) continue;
+                        total += clone[rr][cc];
+                        count++;
+                    }
+                }
+                data[r][c] = clamp(total / Math.max(1, count), minValue, maxValue);
             }
         }
     }
 }
 
-/** Helper: Applies a sine wave curvature */
-function applyCurve(data: number[][]) {
-    const rows = data.length;
-    const cols = data[0].length;
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
-            const x = j / (cols - 1);
-            data[i][j] = 1 + 0.5 * Math.sin(x * Math.PI * 2);
+function normalizeMatrix(data: number[][], minTarget: number, maxTarget: number): void {
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+    for (const row of data) {
+        for (const value of row) {
+            if (value < min) min = value;
+            if (value > max) max = value;
         }
     }
+    const span = max - min;
+    if (span <= 1e-9) {
+        const flat = (minTarget + maxTarget) / 2;
+        for (let r = 0; r < data.length; r++) {
+            for (let c = 0; c < data[r].length; c++) data[r][c] = flat;
+        }
+        return;
+    }
+    for (let r = 0; r < data.length; r++) {
+        for (let c = 0; c < data[r].length; c++) {
+            const t = (data[r][c] - min) / span;
+            data[r][c] = minTarget + t * (maxTarget - minTarget);
+        }
+    }
+}
+
+function invertMatrix(data: number[][], minValue: number, maxValue: number): void {
+    for (let r = 0; r < data.length; r++) {
+        for (let c = 0; c < data[r].length; c++) {
+            data[r][c] = maxValue + minValue - data[r][c];
+        }
+    }
+}
+
+function setCellValue(data: number[][], row: number, col: number, value: number): void {
+    if (!data[row] || data[row][col] === undefined) return;
+    data[row][col] = value;
 }
 
 // =============================================================================

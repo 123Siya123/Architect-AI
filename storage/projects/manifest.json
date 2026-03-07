@@ -106,5 +106,59 @@
     "name": "New Project",
     "modified_at": "2026-03-06T17:25:47.899Z",
     "preview_summary": "1 elements"
+  },
+  {
+    "id": "4f73310c-d418-4747-b04f-b4b991ab427d",
+    "name": "New Project",
+    "modified_at": "2026-03-06T23:26:40.371Z",
+    "preview_summary": "8 elements"
+  },
+  {
+    "id": "9d559982-4403-4578-89eb-13c9a438aac9",
+    "name": "Simple 3-Bedroom Home",
+    "modified_at": "2026-03-06T23:38:07.575Z",
+    "preview_summary": "27 elements"
+  },
+  {
+    "id": "209ee056-2877-4611-9ebc-365ad27e4022",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-07T00:14:17.874Z",
+    "preview_summary": "8 elements"
+  },
+  {
+    "id": "483734d5-d2ad-44a0-86af-e5e628f474c4",
+    "name": "New Project",
+    "modified_at": "2026-03-07T08:32:26.902Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "dd9a9b74-5e56-4e00-aab8-ed91dd8175fa",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-07T08:38:41.829Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "3822a2eb-5b54-434e-8a9f-da718edb52c8",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-07T09:00:07.173Z",
+    "preview_summary": "16 elements"
+  },
+  {
+    "id": "e7d2224e-d645-4945-8442-61843e4a5f93",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-07T09:20:49.944Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "8cece3b4-3d4b-4f4e-bd4b-7df68b63587f",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-07T11:37:26.173Z",
+    "preview_summary": "25 elements"
+  },
+  {
+    "id": "824e0d44-5fc3-424d-ad6e-6e871d498c11",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-07T11:26:18.593Z",
+    "preview_summary": "21 elements"
   }
 ]

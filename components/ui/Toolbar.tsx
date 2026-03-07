@@ -96,6 +96,7 @@ export default function Toolbar() {
                             className={`toolbar-btn layer-btn ${visibleLayers.has(layer) ? 'active' : ''}`}
                             onClick={() => toggleLayer(layer)}
                             title={label}
+                            aria-label={`Toggle ${label} layer`}
                             style={{
                                 borderBottomColor: visibleLayers.has(layer) ? color : 'transparent',
                             }}
@@ -128,9 +129,6 @@ export default function Toolbar() {
                     ↪ Redo
                 </button>
             </div>
-
-            {/* Separator */}
-            <div className="toolbar-separator" />
 
             {/* Separator */}
             <div className="toolbar-separator" />
@@ -181,23 +179,38 @@ export default function Toolbar() {
 }
 
 function SaveButton() {
-    const saveToServer = useDesignStore((s) => s.saveToServer);
+    const saveProject = useDesignStore((s) => s.saveProject);
     const isLoading = useDesignStore((s) => s.isLoading);
-    const [saved, setSaved] = useState(false);
+    const isDirty = useDesignStore((s) => s.isDirty);
+    const lastSaved = useDesignStore((s) => s.lastSaved);
+    const [justSaved, setJustSaved] = useState(false);
 
     const handleSave = async () => {
-        await saveToServer();
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        await saveProject(); // Manual save = create revision
+        setJustSaved(true);
+        setTimeout(() => setJustSaved(false), 2000);
     };
+
+    // Determine button state
+    // - Loading: "Saving..."
+    // - Just saved (manual): "✅ Saved"
+    // - Dirty: "💾 Save*" (active)
+    // - Clean: "☁️ Saved" (inactive/dimmed)
 
     return (
         <button
-            className={`toolbar-btn save-btn ${saved ? 'saved' : ''}`}
+            className={`toolbar-btn save-btn ${isDirty ? 'dirty' : ''} ${justSaved ? 'saved' : ''}`}
             onClick={handleSave}
             disabled={isLoading}
+            title={lastSaved ? `Last saved: ${new Date(lastSaved).toLocaleTimeString()}` : 'Save project'}
         >
-            {isLoading ? '⌛ Saving...' : saved ? '✅ Saved' : '💾 Save to Cloud'}
+            {isLoading 
+                ? '⌛ Saving...' 
+                : justSaved 
+                    ? '✅ Saved' 
+                    : isDirty 
+                        ? '💾 Save*' 
+                        : '☁️ Saved'}
         </button>
     );
 }

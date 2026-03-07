@@ -235,43 +235,155 @@ export function compileStairsGeometry(node: PSGNode): THREE.Group {
     const totalHeight = node.dimensions.y;
     // For spiral, dimensions.x/z represent the bounding diameter.
     // For straight, x is width, z is depth.
-    const stairWidth = node.dimensions.x;
+    const stairWidth = node.stair_width || node.dimensions.x;
 
     const numSteps = Math.ceil(totalHeight / riserHeight);
     const group = new THREE.Group();
 
-    if (node.stair_style === 'spiral') {
-        const radius = stairWidth / 2;
-        const poleRadius = 0.05;
+    const style = node.stair_style || 'straight';
 
-        // 1. Central Pole
-        const poleGeom = new THREE.CylinderGeometry(poleRadius, poleRadius, totalHeight, 16);
-        const pole = new THREE.Mesh(poleGeom);
-        // Position at 0 since pole geometry is already centered at its own Y origin
-        pole.position.set(0, 0, 0);
-        group.add(pole);
+    if (style === 'spiral' || style === 'curved' || style === 'circular') {
+        const radius = Math.max(node.dimensions.x, node.dimensions.z) / 2;
+        const innerRadius = node.stair_inner_radius || (style === 'spiral' ? 0.05 : radius * 0.3); // Pole for spiral, void for curved
+        const totalAngle = (style === 'circular') ? 360 : 270; // Degrees of turn
+        const startAngle = 0;
 
-        // 2. Spiral Steps
-        const degreesPerStep = 360 / 15; // roughly 15 steps per revolution
-        const radPerStep = (degreesPerStep * Math.PI) / 180;
-        const stepWidth = radius - poleRadius;
+        // 1. Central Pole (only for spiral)
+        if (style === 'spiral') {
+            const poleGeom = new THREE.CylinderGeometry(innerRadius, innerRadius, totalHeight, 16);
+            const pole = new THREE.Mesh(poleGeom);
+            pole.position.set(0, 0, 0);
+            group.add(pole);
+        }
+
+        // 2. Steps
+        // For curved stairs, we calculate step width based on outer radius - inner radius
+        const stepWidth = radius - innerRadius;
+        // Angle per step
+        const anglePerStep = (totalAngle * Math.PI / 180) / numSteps;
 
         for (let i = 0; i < numSteps; i++) {
-            // A wedge-like step using box geometry
-            // The step spans from the pole to the outer radius
-            const stepGeom = new THREE.BoxGeometry(stepWidth, riserHeight, treadDepth);
+            // A wedge-like step using box geometry is crude.
+            // Better: Extruded shape for the tread.
+            const shape = new THREE.Shape();
+            // Create a wedge shape for the tread
+            // Inner arc
+            shape.absarc(0, 0, innerRadius, 0, anglePerStep, false);
+            // Outer line
+            shape.lineTo(Math.cos(anglePerStep) * radius, Math.sin(anglePerStep) * radius);
+            // Outer arc (backwards)
+            shape.absarc(0, 0, radius, anglePerStep, 0, true);
+            // Close
+            shape.lineTo(innerRadius, 0);
 
-            // Transform the geometry directly:
-            // 1. Move step outward so its inner edge touches the pole
-            stepGeom.translate(stepWidth / 2 + poleRadius, 0, 0);
-            // 2. Rotate it around the central Y axis
-            stepGeom.rotateY(-i * radPerStep);
-            // 3. Move it vertically to its correct height, centered on Y
-            stepGeom.translate(0, i * riserHeight + riserHeight / 2 - totalHeight / 2, 0);
+            const stepGeom = new THREE.ExtrudeGeometry(shape, {
+                depth: riserHeight,
+                bevelEnabled: false
+            });
 
+            // Rotate geometry so it lays flat (Extrude is along Z) -> rotate X -90
+            stepGeom.rotateX(-Math.PI / 2);
+
+            // Now position it
             const step = new THREE.Mesh(stepGeom);
+            
+            // Rotate around Y axis for the spiral effect
+            step.rotation.y = -i * anglePerStep;
+            
+            // Move vertically
+            step.position.y = i * riserHeight + riserHeight / 2 - totalHeight / 2;
+
             group.add(step);
         }
+    } else if (style === 'l_shaped' || style === 'quarter_turn') {
+        // L-shaped: Split steps into two flights with a landing.
+        // Simplified: 50% steps, landing, 50% steps rotated 90 deg.
+        const flight1Steps = Math.floor(numSteps / 2);
+        const flight2Steps = numSteps - flight1Steps;
+        const landingDepth = node.stair_landing_depth || stairWidth; // Square landing by default
+
+        // Flight 1 (Lower)
+        for (let i = 0; i < flight1Steps; i++) {
+            const step = new THREE.Mesh(new THREE.BoxGeometry(stairWidth, riserHeight, treadDepth));
+            step.position.set(
+                0,
+                i * riserHeight - totalHeight / 2 + riserHeight / 2,
+                i * treadDepth - (flight1Steps * treadDepth + landingDepth) / 2
+            );
+            group.add(step);
+        }
+
+        // Landing
+        const landingY = flight1Steps * riserHeight - totalHeight / 2 + riserHeight / 2; // Approx
+        const landingZ = (flight1Steps * treadDepth - (flight1Steps * treadDepth + landingDepth) / 2) + treadDepth/2 + landingDepth/2;
+        
+        const landing = new THREE.Mesh(new THREE.BoxGeometry(stairWidth, riserHeight, landingDepth));
+        landing.position.set(0, landingY, landingZ);
+        group.add(landing);
+
+        // Flight 2 (Upper) - Rotated 90 degrees
+        // Starts from the side of the landing
+        const startX = stairWidth/2 + treadDepth/2; // Start adjacent to landing
+        const startZ = landingZ; // Aligned with landing center Z
+        const startY = landingY + riserHeight;
+
+        for (let i = 0; i < flight2Steps; i++) {
+            const step = new THREE.Mesh(new THREE.BoxGeometry(stairWidth, riserHeight, treadDepth));
+            step.rotateY(Math.PI / 2); // Rotate 90
+            step.position.set(
+                startX + i * treadDepth,
+                startY + i * riserHeight,
+                startZ
+            );
+            group.add(step);
+        }
+
+    } else if (style === 'u_shaped' || style === 'half_turn') {
+        // U-shaped: Flight 1, Landing, Flight 2 (180 deg turn)
+        // Simplified: Parallel flights with a landing in between.
+        const flight1Steps = Math.floor(numSteps / 2);
+        const flight2Steps = numSteps - flight1Steps;
+        const landingDepth = node.stair_landing_depth || stairWidth; // Width of 2 flights + gap? Just use width.
+
+        // Offset the whole group so center is 0,0
+        const offsetX = -stairWidth / 2; // Gap? Let's assume tight U.
+
+        // Flight 1 (Up)
+        for (let i = 0; i < flight1Steps; i++) {
+            const step = new THREE.Mesh(new THREE.BoxGeometry(stairWidth, riserHeight, treadDepth));
+            step.position.set(
+                -stairWidth / 2 - 0.1, // Left side
+                i * riserHeight - totalHeight / 2 + riserHeight / 2,
+                i * treadDepth - (flight1Steps * treadDepth)/2
+            );
+            group.add(step);
+        }
+
+        // Landing (Spans both flights)
+        const landingGeom = new THREE.BoxGeometry(stairWidth * 2 + 0.2, riserHeight, landingDepth);
+        const landingY = flight1Steps * riserHeight - totalHeight / 2 + riserHeight / 2;
+        const landingZ = (flight1Steps * treadDepth)/2 + landingDepth/2;
+        const landing = new THREE.Mesh(landingGeom);
+        landing.position.set(0, landingY, landingZ);
+        group.add(landing);
+
+        // Flight 2 (Up, reverse direction)
+        for (let i = 0; i < flight2Steps; i++) {
+            const step = new THREE.Mesh(new THREE.BoxGeometry(stairWidth, riserHeight, treadDepth));
+            step.position.set(
+                stairWidth / 2 + 0.1, // Right side
+                (flight1Steps + i + 1) * riserHeight - totalHeight / 2 + riserHeight / 2,
+                (flight1Steps * treadDepth)/2 - i * treadDepth - treadDepth/2 + landingDepth/2 - landingDepth // Backwards from landing
+            );
+            // Actually, simply mirror Z position relative to landing?
+            // Let's re-calculate Z:
+            // Landing is at Z_landing.
+            // Step 0 of flight 2 is at Z_landing - landingDepth/2 - treadDepth/2
+            step.position.z = landingZ - landingDepth/2 - treadDepth/2 - i * treadDepth;
+            
+            group.add(step);
+        }
+
     } else {
         // Default / Straight stairs
         for (let i = 0; i < numSteps; i++) {
@@ -521,16 +633,34 @@ export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry | THR
                     return geom;
                 }
                 case 'extrusion':
+                case 'sweep':
                     if (cg.profile_points && cg.profile_points.length > 0) {
                         const shape = new THREE.Shape();
                         shape.moveTo(cg.profile_points[0][0], cg.profile_points[0][1]);
                         for (let i = 1; i < cg.profile_points.length; i++) {
                             shape.lineTo(cg.profile_points[i][0], cg.profile_points[i][1]);
                         }
-                        const extrudeSettings = {
-                            depth: cg.depth || node.dimensions.z,
-                            bevelEnabled: false
-                        };
+                        
+                        let extrudeSettings: THREE.ExtrudeGeometryOptions;
+
+                        if (cg.path_points && cg.path_points.length > 1) {
+                            // Extrude along a 3D path
+                            const path = new THREE.CatmullRomCurve3(
+                                cg.path_points.map(p => new THREE.Vector3(p[0], p[1], p[2]))
+                            );
+                            extrudeSettings = {
+                                extrudePath: path,
+                                steps: segs * 2, // Higher resolution for path
+                                bevelEnabled: false
+                            };
+                        } else {
+                            // Standard linear extrusion
+                            extrudeSettings = {
+                                depth: cg.depth || node.dimensions.z,
+                                bevelEnabled: false
+                            };
+                        }
+                        
                         return new THREE.ExtrudeGeometry(shape, extrudeSettings);
                     }
                     break;

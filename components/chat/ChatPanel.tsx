@@ -141,6 +141,16 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 // =============================================================================
 
 function ReactLoopStatus() {
+    const logs = useDesignStore((s) => s.aiThinkingLogs);
+    const logsEndRef = useRef<HTMLDivElement>(null);
+
+    // Auto-scroll logs
+    useEffect(() => {
+        if (logsEndRef.current) {
+            logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [logs.length]);
+
     return (
         <div className="chat-message chat-message-ai">
             <div className="chat-pipeline-status" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--accent)', borderRadius: '12px', padding: '16px' }}>
@@ -153,10 +163,43 @@ function ReactLoopStatus() {
                         <span className="chat-thinking-dot" />
                     </span>
                 </div>
-                <div className="chat-message-content-scroll" style={{ maxHeight: '120px' }}>
-                    <div style={{ fontSize: '0.8em', opacity: 0.7, marginTop: '8px', paddingLeft: '32px' }}>
-                        Reasoning through geometry, executing batch operations, and auditing precision (0.5mm tolerance)...
+                
+                <div className="chat-pipeline-log" style={{
+                    marginTop: '12px',
+                    padding: '12px',
+                    background: '#0a0a0a',
+                    color: '#00ff41', // Terminal green
+                    borderRadius: '6px',
+                    fontSize: '0.8em',
+                    border: '1px solid #333',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    boxShadow: 'inset 0 0 10px #000',
+                    lineHeight: '1.4'
+                }}>
+                    <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px' }}>
+                        [LIVE STREAM] AI Reasoning & Execution Log
                     </div>
+                    
+                    {logs.length === 0 && (
+                        <div style={{ fontSize: '0.8em', opacity: 0.7, paddingLeft: '8px', fontStyle: 'italic' }}>
+                            Initializing agent connection...
+                        </div>
+                    )}
+
+                    {logs.map((line, i) => (
+                        <div key={i} style={{
+                            marginBottom: '4px',
+                            fontFamily: '"Fira Code", "Courier New", monospace',
+                            opacity: line.startsWith('   ') ? 0.8 : 1,
+                            color: line.includes('❌') ? '#ff4d4d' : line.includes('✅') ? '#4dff4d' : '#00ff41',
+                            whiteSpace: 'pre-wrap',
+                            paddingLeft: line.startsWith('   ') ? '12px' : '0px'
+                        }}>
+                            {line}
+                        </div>
+                    ))}
+                    <div ref={logsEndRef} />
                 </div>
             </div>
         </div>
@@ -169,6 +212,8 @@ function ReactLoopStatus() {
 
 export default function ChatPanel() {
     const [input, setInput] = useState('');
+    const [attachments, setAttachments] = useState<{ name: string; type: string; data: string }[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const chatMessages = useDesignStore((s) => s.chatMessages);
     const isAIThinking = useDesignStore((s) => s.isAIThinking);
     const project = useDesignStore((s) => s.project);
@@ -181,11 +226,55 @@ export default function ChatPanel() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chatMessages.length, isAIThinking]);
 
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const newAttachments: { name: string; type: string; data: string }[] = [];
+            
+            for (let i = 0; i < e.target.files.length; i++) {
+                const file = e.target.files[i];
+                // Check if file is image or text
+                if (!file.type.startsWith('image/') && !file.type.startsWith('text/') && file.type !== 'application/pdf') {
+                    alert(`File type ${file.type} not supported. Please upload images or text documents.`);
+                    continue;
+                }
+
+                try {
+                    const base64 = await new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result as string);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    // Extract base64 data (remove data:image/png;base64, prefix)
+                    const data = base64.split(',')[1];
+                    
+                    newAttachments.push({
+                        name: file.name,
+                        type: file.type,
+                        data: data
+                    });
+                } catch (err) {
+                    console.error('Error reading file:', err);
+                }
+            }
+            
+            setAttachments(prev => [...prev, ...newAttachments]);
+            // Reset input so same file can be selected again if needed
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
+    const handleRemoveAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
+    };
+
     const sendMessage = useCallback((text: string) => {
-        if (!text.trim() || isAIThinking) return;
+        if ((!text.trim() && attachments.length === 0) || isAIThinking) return;
         setInput('');
-        sendMessageToAI(text);
-    }, [isAIThinking, sendMessageToAI]);
+        setAttachments([]);
+        sendMessageToAI(text, attachments);
+    }, [isAIThinking, sendMessageToAI, attachments]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -286,23 +375,67 @@ export default function ChatPanel() {
             </div>
 
             {/* Input Area */}
-            <form className="chat-input-form" onSubmit={handleSubmit}>
-                <textarea
-                    className="chat-input"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Describe what you'd like to change..."
-                    rows={2}
-                    disabled={isAIThinking}
-                />
-                <button
-                    type="submit"
-                    className="chat-send-btn"
-                    disabled={!input.trim() || isAIThinking}
-                >
-                    Send →
-                </button>
+            <form className="chat-input-form" onSubmit={handleSubmit} style={{ flexDirection: 'column' }}>
+                {/* Attachments Preview */}
+                {attachments.length > 0 && (
+                    <div className="chat-attachments-preview" style={{ width: '100%', display: 'flex', gap: '8px', padding: '8px', overflowX: 'auto', background: 'rgba(0,0,0,0.2)', marginBottom: '8px', borderRadius: '8px' }}>
+                        {attachments.map((file, i) => (
+                            <div key={i} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '60px' }}>
+                                {file.type.startsWith('image/') ? (
+                                    <img src={`data:${file.type};base64,${file.data}`} alt={file.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                                ) : (
+                                    <div style={{ width: '40px', height: '40px', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', fontSize: '20px' }}>📄</div>
+                                )}
+                                <span style={{ fontSize: '10px', maxWidth: '60px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>{file.name}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveAttachment(i)}
+                                    style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'red', color: 'white', borderRadius: '50%', width: '14px', height: '14px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <div style={{ display: 'flex', width: '100%', gap: '8px', alignItems: 'flex-end' }}>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileSelect}
+                        multiple
+                        accept="image/*,text/*,.pdf"
+                        style={{ display: 'none' }}
+                    />
+                    <button
+                        type="button"
+                        className="chat-attach-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isAIThinking}
+                        title="Upload images or text documents"
+                        style={{ padding: '8px 12px', fontSize: '1.2em', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                    >
+                        +
+                    </button>
+                    <textarea
+                        className="chat-input"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Describe what you'd like to change..."
+                        rows={2}
+                        disabled={isAIThinking}
+                        style={{ flex: 1 }}
+                    />
+                    <button
+                        type="submit"
+                        className="chat-send-btn"
+                        disabled={(!input.trim() && attachments.length === 0) || isAIThinking}
+                    >
+                        Send →
+                    </button>
+                </div>
             </form>
         </div>
     );

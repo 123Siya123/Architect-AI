@@ -90,6 +90,13 @@ ELSE IF structure valid BUT missing interior (windows/doors/stairs):
 ELSE IF everything complete and valid:
   → delegate_to: "DESIGN_COMPLETE"
 
+COMPLETION GATE (MANDATORY):
+- Never return DESIGN_COMPLETE if any requested floor count is not reached.
+- Never return DESIGN_COMPLETE if there is no roof, no stairs for multi-floor buildings, or no door.
+- Never return DESIGN_COMPLETE if any CRITICAL physics violation exists.
+- For family homes, require multiple rooms and windows before completion.
+- If the user requested "spectacular", "complex", or "impressive" designs, do NOT stop at a basic shell. Continue adding details, wings, custom elements, or landscaping until it is truly impressive.
+
 ═══════════════════════════════════════════════════
 USING PHYSICIST'S SUGGESTED FIXES
 ═══════════════════════════════════════════════════
@@ -155,6 +162,7 @@ You have 3 tools available:
    ✓ Physicist provided exact_coordinates in suggested_fix
    ✓ You need to snap to precise location (e.g., wall base at Y=0)
    ✓ Previous move_node attempts failed
+   ✓ Precision-sensitive coordinates like 3.875, 4.875, 1.525
    
    EXAMPLE:
    Instruction: "Place wall_north at [0, 1.75, -4.875]"
@@ -230,6 +238,7 @@ CRITICAL RULES
 ✅ DO use set_node_position when:
    - ANY coordinates are provided in instruction
    - Physicist gave suggested_fix with exact_coordinates
+   - Coordinates include millimeter-level decimals
 
 ✅ DO explain your tool choice:
    - "Using set_node_position because instruction contains [0, 1.75, -4.875]"

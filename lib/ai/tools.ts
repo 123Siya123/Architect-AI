@@ -393,8 +393,9 @@ export const AI_TOOLS = [
             description:
                 'Create a custom architectural element by describing its shape in natural language. ' +
                 'Use this for shapes that don\'t fit standard types like arched windows, bay windows, organic forms. ' +
-                'DO NOT USE this for staircases or standard balconies (use the "add_node" tool with type "Stairs" or "Balcony" instead, even for spiral). ' +
-                'The backend will generate appropriate geometry from your description.',
+                'The backend will generate appropriate geometry from your description. ' +
+                'For STAIRS, prefer "add_node" with type="Stairs" and style="spiral"/"curved"/"l_shaped" as those are now natively supported. ' +
+                'Only use this tool for truly unique geometry not covered by standard types.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -429,7 +430,7 @@ export const AI_TOOLS = [
                         properties: {
                             type: {
                                 type: 'string',
-                                enum: ['extrusion', 'lathe', 'sphere', 'box', 'cylinder', 'cone', 'plane', 'arch', 'code'],
+                                enum: ['extrusion', 'lathe', 'sphere', 'box', 'cylinder', 'cone', 'plane', 'arch', 'code', 'loft', 'sweep'],
                                 description: 'The primitive operation used to construct the shape. Use "arch" for arches, or use "code" for ANY OTHER fully procedural or highly complex 3D shape (THE UNIVERSAL SOLUTION).'
                             },
                             profile_points: {
@@ -437,8 +438,14 @@ export const AI_TOOLS = [
                                 items: { type: 'array', items: { type: 'number' } },
                                 description: 'Array of [x, y] coordinates. MANDATORY for "extrusion" (defines 2D shape to extrude) or "lathe" (defines 2D curve to rotate around Y-axis). Example: [[0,0], [1,0], [1,1], [0,1]]'
                             },
-                            depth: { type: 'number', description: 'Extrusion length (Z axis) for "extrusion" or "arch" type.' },
+                            path_points: {
+                                type: 'array',
+                                items: { type: 'array', items: { type: 'number' } },
+                                description: 'Array of [x, y, z] coordinates for sweep/extrude path. Used for "sweep" or "extrusion" along a path.'
+                            },
+                            depth: { type: 'number', description: 'Extrusion length (Z axis) for "extrusion" or "arch" type (if no path).' },
                             radius: { type: 'number', description: 'Radius for sphere, cylinder, cone, or lathe.' },
+                            inner_radius: { type: 'number', description: 'Inner radius for tubes/torus.' },
                             height: { type: 'number', description: 'Height for cylinder, cone or arch.' },
                             thickness: { type: 'number', description: 'Wall/frame thickness for "arch" type.' },
                             segments: { type: 'number', description: 'Number of segments for smooth curves (default 32, use 64 for perfect curves).' },
@@ -541,51 +548,67 @@ export const AI_TOOLS = [
         function: {
             name: 'edit_wall_surface',
             description:
-                'Sculpt a wall surface with full creative control. Two modes available:\n\n' +
-                '★ PREFERRED: command="set_code" — Write a JS math expression evaluated at every point.\n' +
-                '  The expression receives u (0→1 horizontal) and v (0→1 vertical).\n' +
-                '  Must RETURN a thickness multiplier: 0.0=HOLE, 1.0=standard, >1.0=bulb/protrusion.\n' +
-                '  Uses infinite resolution (computed at render time). Very token-efficient.\n' +
-                '  EXAMPLES:\n' +
-                '  • Gaussian bulb: "1.0 + 2.0 * Math.exp(-((u-0.5)**2 + (v-0.5)**2) / 0.02)"\n' +
-                '  • Sine wave:     "1.0 + 0.3 * Math.sin(u * Math.PI * 6)"\n' +
-                '  • Arch cutout:   "((u-0.5)**2/(0.15**2) + (v-0.7)**2/(0.2**2) < 1) ? 0.0 : 1.0"\n' +
-                '  • Diamond:       "1.0 + 0.5 * Math.max(0, 1 - 2*Math.abs(u-0.5) - 2*Math.abs(v-0.5))"\n' +
-                '  • Two bumps:     "1 + 1.5*Math.exp(-((u-0.3)**2+(v-0.5)**2)/0.01) + 1.5*Math.exp(-((u-0.7)**2+(v-0.5)**2)/0.01)"\n\n' +
-                '★ FALLBACK: command="set_matrix" — Provide an explicit 2D array of thickness values.\n' +
-                '  Best for very specific hand-crafted patterns.\n\n' +
-                'Other commands: "set_bulb" (quick Gaussian), "cut_hole" (rectangular cutout), "reset" (clear).',
+                'Sculpt wall thickness using procedural formulas or editable matrices.\n\n' +
+                'Core commands:\n' +
+                '• set_code: JS expression using u,v returning thickness multiplier.\n' +
+                '• set_matrix: explicit matrix of multipliers.\n' +
+                '• stamp: apply reusable shape brush with blend mode.\n' +
+                '• set_bulb: quick center/radius/strength Gaussian protrusion.\n' +
+                '• cut_hole: rectangular hole region.\n' +
+                '• draw_curve: sine-wave profile along x or y axis.\n' +
+                '• smooth / normalize / invert / set_cell / reset.\n\n' +
+                'Values: low=thin, high=thick, value<=hole_threshold creates holes.',
             parameters: {
                 type: 'object',
                 properties: {
                     target_id: { type: 'string', description: 'ID of the Wall or Partition to sculpt' },
                     command: {
                         type: 'string',
-                        enum: ['set_code', 'set_matrix', 'set_bulb', 'cut_hole', 'draw_curve', 'reset'],
-                        description: 'set_code (preferred), set_matrix, set_bulb, cut_hole, draw_curve, or reset'
+                        enum: ['set_code', 'set_matrix', 'stamp', 'set_bulb', 'cut_hole', 'draw_curve', 'smooth', 'normalize', 'invert', 'set_cell', 'reset'],
+                        description: 'Surface command to execute'
                     },
-                    description: { type: 'string', description: 'Human-readable summary of the wall shape' },
+                    description: { type: 'string', description: 'Human-readable summary of the shape' },
                     code: {
                         type: 'string',
                         description: 'JS expression for set_code. Variables: u (0-1 horiz), v (0-1 vert). Must return a number.'
                     },
                     resolution: {
                         type: 'number',
-                        description: 'Mesh resolution for procedural mode (default 32, max 64 for ultra-smooth)'
+                        description: 'Procedural mesh resolution (8-128)'
                     },
                     data: {
                         type: 'array',
                         items: { type: 'array', items: { type: 'number' } },
                         description: 'Raw 2D matrix data for set_matrix mode'
                     },
-                    rows: { type: 'number', description: 'Number of rows in the data matrix' },
-                    cols: { type: 'number', description: 'Number of cols in the data matrix' },
-                    cx: { type: 'number', description: 'X-center (0-1) for set_bulb' },
-                    cy: { type: 'number', description: 'Y-center (0-1) for set_bulb' },
-                    radius: { type: 'number', description: 'Radius (0-1) for set_bulb' },
-                    strength: { type: 'number', description: 'Peak multiplier for set_bulb' }
+                    rows: { type: 'number', description: 'Target matrix rows for non-code commands' },
+                    cols: { type: 'number', description: 'Target matrix cols for non-code commands' },
+                    min_value: { type: 'number', description: 'Lower clamp for thickness multipliers' },
+                    max_value: { type: 'number', description: 'Upper clamp for thickness multipliers' },
+                    hole_threshold: { type: 'number', description: 'Values <= threshold render as hole' },
+                    interpolation: { type: 'string', enum: ['nearest', 'bilinear'], description: 'Sampling mode for matrix data' },
+                    cx: { type: 'number', description: 'Center X (0-1) for set_bulb/stamp' },
+                    cy: { type: 'number', description: 'Center Y (0-1) for set_bulb/stamp' },
+                    radius: { type: 'number', description: 'Radius (0-1) for set_bulb/stamp' },
+                    inner_radius: { type: 'number', description: 'Inner radius for ring-like stamp' },
+                    strength: { type: 'number', description: 'Shape intensity or target peak' },
+                    shape: { type: 'string', enum: ['gaussian', 'cone', 'dome', 'ring', 'ridge_x', 'ridge_y'], description: 'Stamp profile shape' },
+                    blend: { type: 'string', enum: ['set', 'add', 'subtract', 'max', 'min', 'multiply'], description: 'Blend strategy for stamp/bulb' },
+                    falloff: { type: 'number', description: 'Falloff exponent for stamp profile' },
+                    x: { type: 'number', description: 'Hole origin X (0-1) for cut_hole' },
+                    y: { type: 'number', description: 'Hole origin Y (0-1) for cut_hole' },
+                    w: { type: 'number', description: 'Hole width (0-1) for cut_hole' },
+                    h: { type: 'number', description: 'Hole height (0-1) for cut_hole' },
+                    axis: { type: 'string', enum: ['x', 'y'], description: 'Wave axis for draw_curve' },
+                    amplitude: { type: 'number', description: 'Wave amplitude for draw_curve' },
+                    frequency: { type: 'number', description: 'Wave frequency for draw_curve' },
+                    phase: { type: 'number', description: 'Wave phase offset for draw_curve' },
+                    passes: { type: 'number', description: 'Smoothing iterations for smooth command' },
+                    row: { type: 'number', description: 'Matrix row for set_cell' },
+                    col: { type: 'number', description: 'Matrix column for set_cell' },
+                    value: { type: 'number', description: 'Matrix value for set_cell' }
                 },
-                required: ['target_id', 'command', 'description']
+                required: ['target_id', 'command']
             },
         },
     },

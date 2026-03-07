@@ -13,12 +13,14 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import { useDesignStore } from '@/store/useDesignStore';
 import { generateElectricalLayout } from '@/lib/systems/electrical';
 import { generatePlumbingLayout } from '@/lib/systems/plumbing';
+import { generateHVACLayout } from '@/lib/systems/hvac';
 import { runThermalSimulation } from '@/lib/thermal/simulator';
 import { createThermalShaderMaterial } from '@/lib/psg/compiler';
 import materialsDatabase from '@/data/materials.json';
@@ -46,6 +48,57 @@ function getPipeTransform(from: { x: number; y: number; z: number }, to: { x: nu
     return { position: mid, quaternion, length };
 }
 
+function WindParticles() {
+    const count = 200;
+    const meshRef = useRef<THREE.InstancedMesh>(null);
+    const particles = useMemo(() => {
+        const temp = [];
+        for (let i = 0; i < count; i++) {
+            temp.push({
+                x: (Math.random() - 0.5) * 15,
+                y: Math.random() * 6,
+                z: (Math.random() - 0.5) * 15,
+                speed: 0.5 + Math.random() * 1.5,
+                offset: Math.random() * 100
+            });
+        }
+        return temp;
+    }, []);
+
+    const dummy = useMemo(() => new THREE.Object3D(), []);
+
+    useFrame((state) => {
+        if (!meshRef.current) return;
+        const time = state.clock.elapsedTime;
+        particles.forEach((particle, i) => {
+            // Move particles along X axis for wind flow, wrapping around
+            let x = particle.x + (time * particle.speed) % 20;
+            if (x > 10) x -= 20;
+            
+            // Add some wave motion
+            const y = particle.y + Math.sin(time + particle.offset) * 0.2;
+            const z = particle.z + Math.cos(time * 0.5 + particle.offset) * 0.2;
+
+            dummy.position.set(x, y, z);
+            
+            // Scale based on speed to look like streaks
+            dummy.scale.set(0.5, 0.05, 0.05);
+            dummy.rotation.z = -0.2; // Slight tilt
+            
+            dummy.updateMatrix();
+            meshRef.current!.setMatrixAt(i, dummy.matrix);
+        });
+        meshRef.current.instanceMatrix.needsUpdate = true;
+    });
+
+    return (
+        <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshBasicMaterial color="#00ffff" transparent opacity={0.4} blending={THREE.AdditiveBlending} />
+        </instancedMesh>
+    );
+}
+
 export default function SystemsRenderer() {
     const project = useDesignStore((s) => s.project);
     const visibleLayers = useDesignStore((s) => s.visibleLayers);
@@ -70,8 +123,24 @@ export default function SystemsRenderer() {
         return runThermalSimulation(project, materialsDatabase as Record<string, Material>);
     }, [project, visibleLayers]);
 
-    // Thermal material
-    const thermalMaterial = useMemo(() => createThermalShaderMaterial(), []);
+    // --- 4. HVAC Layer ---
+    const hvacData = useMemo(() => {
+        if (!visibleLayers.has('hvac')) return null;
+        return generateHVACLayout(project);
+    }, [project, visibleLayers]);
+
+    // Thermal material with time uniform
+    const thermalMaterial = useMemo(() => {
+        const mat = createThermalShaderMaterial();
+        mat.uniforms.uTime = { value: 0 };
+        return mat;
+    }, []);
+
+    useFrame((state) => {
+        if (thermalMaterial.uniforms.uTime) {
+            thermalMaterial.uniforms.uTime.value = state.clock.elapsedTime;
+        }
+    });
 
     // Filter for top_down viewing
     const isNodeVisible = useMemo(() => {
@@ -178,6 +247,7 @@ export default function SystemsRenderer() {
             {/* ─── Thermal Layer Overlay ─────────────────────────────────── */}
             {thermalData && (
                 <group name="layer-thermal">
+                    <WindParticles />
                     {Object.entries(project.nodes).map(([id, node]) => {
                         if (['Room', 'Floor', 'House', 'Group'].includes(node.type)) return null;
 
@@ -208,8 +278,26 @@ export default function SystemsRenderer() {
                                     vertexShader={thermalMaterial.vertexShader}
                                     fragmentShader={`
                                         uniform float tempValue;
+                                        uniform float uTime;
                                         varying vec2 vUv;
+                                        varying vec3 vPosition;
                                         
+                                        // Simple noise function
+                                        float rand(vec2 n) { 
+                                            return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+                                        }
+                                        
+                                        float noise(vec2 p){
+                                            vec2 ip = floor(p);
+                                            vec2 u = fract(p);
+                                            u = u*u*(3.0-2.0*u);
+                                            
+                                            float res = mix(
+                                                mix(rand(ip), rand(ip+vec2(1.0,0.0)), u.x),
+                                                mix(rand(ip+vec2(0.0,1.0)), rand(ip+vec2(1.0,1.0)), u.x), u.y);
+                                            return res*res;
+                                        }
+
                                         vec3 heatmapColor(float t) {
                                             vec3 blue = vec3(0.0, 0.2, 1.0);
                                             vec3 cyan = vec3(0.0, 1.0, 1.0);
@@ -221,10 +309,67 @@ export default function SystemsRenderer() {
                                         }
                                         
                                         void main() {
-                                            vec3 color = heatmapColor(tempValue);
-                                            gl_FragColor = vec4(color, 0.5);
+                                            // Dynamic flow effect
+                                            float flow = noise(vPosition.xz * 2.0 + vec2(uTime * 0.5, uTime * 0.2));
+                                            
+                                            // Pulse effect based on temperature
+                                            float pulse = sin(uTime * 2.0 + vPosition.x + vPosition.y) * 0.1;
+                                            
+                                            float t = clamp(tempValue + flow * 0.1 + pulse, 0.0, 1.0);
+                                            vec3 color = heatmapColor(t);
+                                            
+                                            // Add "wind lines"
+                                            float wind = smoothstep(0.4, 0.6, sin(vPosition.x * 10.0 + vPosition.y * 5.0 - uTime * 5.0));
+                                            color += vec3(wind * 0.1);
+
+                                            gl_FragColor = vec4(color, 0.6);
                                         }
                                     `}
+                                />
+                            </mesh>
+                        );
+                    })}
+                </group>
+            )}
+
+            {/* ─── HVAC Visualization ────────────────────────────────────── */}
+            {hvacData && (
+                <group name="layer-hvac">
+                    {hvacData.components.map((comp) => (
+                        <mesh
+                            key={comp.id}
+                            position={[comp.position.x, comp.position.y, comp.position.z]}
+                            rotation={[comp.rotation.x, comp.rotation.y, comp.rotation.z]}
+                        >
+                            <boxGeometry args={[comp.dimensions.x, comp.dimensions.y, comp.dimensions.z]} />
+                            <meshStandardMaterial
+                                color={comp.type.includes('unit') ? '#888888' : '#aaaaaa'}
+                                metalness={0.8}
+                                roughness={0.2}
+                            />
+                        </mesh>
+                    ))}
+                    {hvacData.ducts.map((duct) => {
+                        const transform = getPipeTransform(duct.from, duct.to);
+                        if (!transform) return null;
+
+                        return (
+                            <mesh
+                                key={duct.id}
+                                position={transform.position}
+                                quaternion={transform.quaternion}
+                            >
+                                {duct.shape === 'round' ? (
+                                    <cylinderGeometry args={[duct.width / 2, duct.width / 2, transform.length, 8]} />
+                                ) : (
+                                    // Box is Y-up, so width/height map to X/Z relative to the length Y
+                                    <boxGeometry args={[duct.width, transform.length, duct.height]} />
+                                )}
+                                <meshStandardMaterial
+                                    color="#c0c0c0"
+                                    metalness={0.6}
+                                    roughness={0.4}
+                                    side={THREE.DoubleSide}
                                 />
                             </mesh>
                         );
