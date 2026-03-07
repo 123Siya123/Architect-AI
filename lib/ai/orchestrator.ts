@@ -257,7 +257,8 @@ export async function sendChatToAI(
                 // =============================================================
                 // STEP 1: ORCHESTRATOR — Analyze and Delegate
                 // =============================================================
-                const config = getEffectiveConfig();
+                // config is reassigned before each call so keys round-robin properly
+                let config = getEffectiveConfig();
 
                 if (attachments && attachments.length > 0 && config.provider !== 'gemini') {
                     log(`   ⚠️ WARNING: Attachments ignored. Provider ${config.provider} does not support images.`);
@@ -546,6 +547,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 if (decision.delegate_to === 'structural_engineer') {
                     // --- STRUCTURAL ENGINEER ---
                     log(`   🏗️ STRUCTURAL ENGINEER: Executing...`);
+                    config = getEffectiveConfig(); // Refresh key for round-robin
 
                     const engineerContext = `INSTRUCTION FROM LEAD ARCHITECT:\n${decision.instruction}\n\n`;
                     const insightsBlock = wallSurfaceInsights.length > 0
@@ -630,6 +632,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         // =============================================================
                         if (successCount > 0) {
                             log(`   🔬 SPATIAL PHYSICIST: Validating...`);
+                            config = getEffectiveConfig(); // Refresh key for round-robin
 
                             const physicistContext = `LATEST CHANGES:\n${lastEngineerActions.join('\n')}\n\n`;
                             const physicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
@@ -706,6 +709,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 } else if (decision.delegate_to === 'interior_architect') {
                     // --- INTERIOR ARCHITECT ---
                     log(`   🪑 INTERIOR ARCHITECT: Executing...`);
+                    config = getEffectiveConfig(); // Refresh key for round-robin
 
                     const architectContext = `ORCHESTRATOR INSTRUCTION:\n${decision.instruction}\n\n`;
                     const insightsBlock = wallSurfaceInsights.length > 0
@@ -771,6 +775,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         // 🔴 CRITICAL FIX: Fresh reload here too
                         currentProject = await reloadProjectState(currentProject.id, currentProject);
                         const architectPhysicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
+                        config = getEffectiveConfig(); // Refresh key for round-robin
 
                         const architectPhysicistResult = await callProviderNoTools(config, [
                             { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
@@ -821,6 +826,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 } else if (decision.delegate_to === 'aesthetic_designer') {
                     // --- AESTHETIC DESIGNER ---
                     log(`   🎨 AESTHETIC DESIGNER: Reviewing...`);
+                    config = getEffectiveConfig(); // Refresh key for round-robin
 
                     const aestheticContext = `DESIGN INTENT: ${request.message}\n\n`;
                     const aestheticState = `CURRENT STATE:\n${nodeTree}\n\n${asciiPlan}\n\nMaterials: ${materialContext}`;
@@ -859,6 +865,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 } else if (decision.delegate_to === 'spatial_physicist') {
                     // --- DIRECT PHYSICIST CALL (Orchestrator requested explicit validation) ---
                     log(`   🔬 SPATIAL PHYSICIST: Full validation requested...`);
+                    config = getEffectiveConfig(); // Refresh key for round-robin
 
                     const physicistState = `FULL 3D STATE:\n${nodeTree}\n\n${asciiPlan}`;
 
