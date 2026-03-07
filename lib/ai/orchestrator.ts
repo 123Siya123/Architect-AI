@@ -1173,35 +1173,32 @@ async function callProviderNoTools(
                 timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
                 console.warn(`[callProviderNoTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
             } else if (config.provider === 'gemini' && (isRateLimit || isQuotaExhausted || isUnavailable)) {
-                if (isRateLimit) markKeyRateLimited(config.apiKey);
+                if (isRateLimit || isQuotaExhausted) markKeyRateLimited(config.apiKey);
                 geminiFailCount++;
 
-                // If quota exhausted (daily limit) or 2+ consecutive Gemini failures,
-                // skip intermediate models and go straight to Groq
-                if (isQuotaExhausted || geminiFailCount >= 2) {
-                    console.warn(`[Orchestrator] ⚡ Gemini quota exhausted or ${geminiFailCount} failures. Switching to Groq immediately.`);
-                    const groqFallback = setFallbackToGroq();
-                    if (groqFallback) {
-                        config = groqFallback;
+                const allGeminiDown = allKeysOnCooldown('default') && allKeysOnCooldown('gemini');
+
+                if (allGeminiDown) {
+                    // Try falling back to Flash if we were on Pro, otherwise go to Groq
+                    if (config.model.includes('gemini-3.1-pro')) {
+                        console.warn('[Orchestrator] All Gemini Pro keys exhausted. Trying Gemini Flash...');
+                        config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
                     } else {
-                        // No Groq keys available, try one more Gemini model
-                        rotateKey();
-                        config = getProviderConfig();
+                        console.warn(`[Orchestrator] ⚡ All Gemini keys exhausted. Switching to Groq immediately.`);
+                        const groqFallback = setFallbackToGroq();
+                        if (groqFallback) {
+                            config = groqFallback;
+                        } else {
+                            rotateKey();
+                            config = getProviderConfig();
+                        }
                     }
-                } else if (config.model.includes('gemini-3.1-pro')) {
-                    // First failure: try a different Gemini model
-                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Trying Gemini Flash...');
-                    config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
                 } else {
-                    // Any other Gemini model failed — go to Groq
-                    console.warn(`[Orchestrator] Gemini ${config.model} unavailable. Switching to Groq...`);
-                    const groqFallback = setFallbackToGroq();
-                    if (groqFallback) {
-                        config = groqFallback;
-                    } else {
-                        rotateKey();
-                        config = getProviderConfig();
-                    }
+                    // We have more keys! Just rotate and try again with Gemini
+                    console.log(`[Orchestrator] Gemini key ${isQuotaExhausted ? 'quota exhausted' : 'rate limited'}. Rotating to next available key...`);
+                    rotateKey();
+                    const nextKeyConfig = getProviderConfig('gemini');
+                    config = { ...config, apiKey: nextKeyConfig.apiKey };
                 }
             } else if (config.provider === 'groq' && isRateLimit) {
                 // Groq rate limited — parse specific wait time if available
@@ -1282,32 +1279,30 @@ async function callProviderWithTools(
                 timeoutMultiplier = Math.min(timeoutMultiplier + 0.5, 3);
                 console.warn(`[callProviderWithTools] Timeout detected. Increasing timeout multiplier to ${timeoutMultiplier}x`);
             } else if (config.provider === 'gemini' && (isRateLimit || isQuotaExhausted || isUnavailable)) {
-                if (isRateLimit) markKeyRateLimited(config.apiKey);
+                if (isRateLimit || isQuotaExhausted) markKeyRateLimited(config.apiKey);
                 geminiFailCount++;
 
-                // If quota exhausted (daily limit) or 2+ consecutive Gemini failures,
-                // skip intermediate models and go straight to Groq
-                if (isQuotaExhausted || geminiFailCount >= 2) {
-                    console.warn(`[Orchestrator] ⚡ Gemini quota exhausted or ${geminiFailCount} failures. Switching to Groq immediately.`);
-                    const groqFallback = setFallbackToGroq();
-                    if (groqFallback) {
-                        config = groqFallback;
+                const allGeminiDown = allKeysOnCooldown('default') && allKeysOnCooldown('gemini');
+
+                if (allGeminiDown) {
+                    if (config.model.includes('gemini-3.1-pro')) {
+                        console.warn('[Orchestrator] All Gemini Pro keys exhausted. Trying Gemini Flash...');
+                        config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
                     } else {
-                        rotateKey();
-                        config = getProviderConfig();
+                        console.warn(`[Orchestrator] ⚡ All Gemini keys exhausted. Switching to Groq immediately.`);
+                        const groqFallback = setFallbackToGroq();
+                        if (groqFallback) {
+                            config = groqFallback;
+                        } else {
+                            rotateKey();
+                            config = getProviderConfig();
+                        }
                     }
-                } else if (config.model.includes('gemini-3.1-pro')) {
-                    console.warn('[Orchestrator] Gemini 3.1 Pro unavailable. Trying Gemini Flash...');
-                    config = { ...config, model: 'gemini-3-flash-preview', apiKey: getProviderConfig().apiKey };
                 } else {
-                    console.warn(`[Orchestrator] Gemini ${config.model} unavailable. Switching to Groq...`);
-                    const groqFallback = setFallbackToGroq();
-                    if (groqFallback) {
-                        config = groqFallback;
-                    } else {
-                        rotateKey();
-                        config = getProviderConfig();
-                    }
+                    console.log(`[Orchestrator] Gemini key ${isQuotaExhausted ? 'quota exhausted' : 'rate limited'}. Rotating to next available key...`);
+                    rotateKey();
+                    const nextKeyConfig = getProviderConfig('gemini');
+                    config = { ...config, apiKey: nextKeyConfig.apiKey };
                 }
             } else if (config.provider === 'groq' && isRateLimit) {
                 const match = errMsg.match(/try again in ([\d\.]+)s/);
