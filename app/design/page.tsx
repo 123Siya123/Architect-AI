@@ -96,8 +96,19 @@ function DesignStudioContent() {
     // Load from server if ID is present
     useEffect(() => {
         const projectId = searchParams.get('id');
+        const isProfessional = searchParams.get('professional') === 'true';
+        
         if (projectId) {
             loadFromServer(projectId);
+            
+            // If this is a professional project, load the professional specs
+            if (isProfessional) {
+                const professionalSpecs = localStorage.getItem(`professional-specs-${projectId}`);
+                if (professionalSpecs) {
+                    // Store professional specs in the design store for AI context
+                    useDesignStore.getState().setProfessionalSpecs(JSON.parse(professionalSpecs));
+                }
+            }
         }
     }, [searchParams, loadFromServer]);
 

@@ -14,6 +14,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useDesignStore } from '@/store/useDesignStore';
 import { generateFloorPlanSVG, generateProjectExportHTML, generateMaterialScheduleHTML } from '@/lib/export/plan-generator';
+import { generateConstructionDocuments } from '@/lib/export/construction-documents';
 import { calculateProjectCost } from '@/lib/psg/cost-calculator';
 import materialsDatabase from '@/data/materials.json';
 import type { ExportFormat, Material } from '@/types';
@@ -28,6 +29,11 @@ const EXPORT_OPTIONS: { id: ExportFormat; title: string; desc: string; icon: str
     { id: 'material_list', title: 'Bill of Quantities', desc: 'Full material schedule with costs (HTML)', icon: '📝' },
     { id: 'electrical', title: 'Electrical Layout', desc: 'Wiring and device placement plans', icon: '⚡' },
     { id: 'plumbing', title: 'Plumbing Layout', desc: 'Pipe routing and fixture locations', icon: '🚿' },
+    { id: 'construction_documents', title: 'Construction Documents', desc: 'Complete CD set for permits & construction', icon: '🏗️' },
+    { id: 'door_window_schedule', title: 'Door/Window Schedule', desc: 'Detailed door and window specifications', icon: '🚪' },
+    { id: 'finish_schedule', title: 'Finish Schedule', desc: 'Room-by-room finish specifications', icon: '🎨' },
+    { id: 'technical_specifications', title: 'Technical Specs', desc: 'Material specifications and standards', icon: '📋' },
+    { id: 'code_compliance', title: 'Code Compliance', desc: 'Building code compliance documentation', icon: '⚖️' },
 ];
 
 export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
@@ -58,6 +64,113 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
             } else if (selected === 'plumbing') {
                 const svg = generateFloorPlanSVG(project, 0, { plan_type: 'plumbing', title: 'Plumbing Layout' });
                 downloadFile(svg, `${project.name.replace(/\s/g, '_')}_Plumbing_Plan.svg`, 'image/svg+xml');
+            } else if (selected === 'construction_documents') {
+                const documents = generateConstructionDocuments(project);
+                
+                // Create a comprehensive HTML document with all construction documents
+                const comprehensiveHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Construction Documents - ${project.name}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .document-section { margin: 30px 0; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+        .document-title { color: #1e3a8a; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .svg-container { text-align: center; margin: 20px 0; }
+        .svg-container svg { max-width: 100%; height: auto; border: 1px solid #ccc; }
+        @media print { body { background: white; } .container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Construction Documents - ${project.name}</h1>
+        <p><strong>Project:</strong> ${project.name} | <strong>Date:</strong> ${new Date().toISOString().slice(0, 10)} | <strong>Revision:</strong> A</p>
+        
+        <div class="document-section">
+            <div class="document-title">A1.0 - Title Sheet</div>
+            <div class="svg-container">${documents.titleSheet}</div>
+        </div>
+        
+        <div class="document-section">
+            <div class="document-title">A2.0 - Site Plan</div>
+            <div class="svg-container">${documents.sitePlan}</div>
+        </div>
+        
+        ${documents.floorPlans.map((plan, index) => `
+            <div class="document-section">
+                <div class="document-title">A3.${index + 1} - ${index === 0 ? 'Ground Floor Plan' : `Level ${index} Plan`}</div>
+                <div class="svg-container">${plan}</div>
+            </div>
+        `).join('')}
+        
+        <div class="document-section">
+            <div class="document-title">A4.0 - Roof Plan</div>
+            <div class="svg-container">${documents.roofPlan}</div>
+        </div>
+        
+        ${documents.elevations.map((elevation, index) => `
+            <div class="document-section">
+                <div class="document-title">A5.${index + 1} - ${['North', 'South', 'East', 'West'][index]} Elevation</div>
+                <div class="svg-container">${elevation}</div>
+            </div>
+        `).join('')}
+        
+        ${documents.buildingSections.map((section, index) => `
+            <div class="document-section">
+                <div class="document-title">A6.${index} - Building Section</div>
+                <div class="svg-container">${section}</div>
+            </div>
+        `).join('')}
+        
+        ${documents.wallSections.map((section, index) => `
+            <div class="document-section">
+                <div class="document-title">A7.${index} - Wall Section</div>
+                <div class="svg-container">${section}</div>
+            </div>
+        `).join('')}
+        
+        ${documents.detailSheets.map((detail, index) => `
+            <div class="document-section">
+                <div class="document-title">A8.${index} - Detail Sheet</div>
+                <div class="svg-container">${detail}</div>
+            </div>
+        `).join('')}
+        
+        <div class="document-section">
+            <div class="document-title">A9.0 - Door and Window Schedule</div>
+            ${documents.doorWindowSchedule}
+        </div>
+        
+        <div class="document-section">
+            <div class="document-title">A9.1 - Finish Schedule</div>
+            ${documents.finishSchedule}
+        </div>
+        
+        <div class="document-section">
+            <div class="document-title">Technical Specifications</div>
+            ${documents.technicalSpecifications}
+        </div>
+        
+        <div class="document-section">
+            <div class="document-title">Code Compliance Documentation</div>
+            ${documents.codeCompliance}
+        </div>
+    </div>
+</body>
+</html>`;
+                
+                downloadFile(comprehensiveHTML, `${project.name.replace(/\s/g, '_')}_Construction_Documents.html`, 'text/html');
+            } else if (selected === 'door_window_schedule') {
+                downloadFile(documents.doorWindowSchedule, `${project.name.replace(/\s/g, '_')}_Door_Window_Schedule.html`, 'text/html');
+            } else if (selected === 'finish_schedule') {
+                downloadFile(documents.finishSchedule, `${project.name.replace(/\s/g, '_')}_Finish_Schedule.html`, 'text/html');
+            } else if (selected === 'technical_specifications') {
+                downloadFile(documents.technicalSpecifications, `${project.name.replace(/\s/g, '_')}_Technical_Specifications.html`, 'text/html');
+            } else if (selected === 'code_compliance') {
+                downloadFile(documents.codeCompliance, `${project.name.replace(/\s/g, '_')}_Code_Compliance.html`, 'text/html');
             } else {
                 alert(`Export for ${selected} is coming in Phase 4!`);
             }

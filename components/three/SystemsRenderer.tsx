@@ -48,53 +48,175 @@ function getPipeTransform(from: { x: number; y: number; z: number }, to: { x: nu
     return { position: mid, quaternion, length };
 }
 
-function WindParticles() {
-    const count = 200;
+function RealThermalSimulation({ project }: { project: any }) {
+    const GRID_X = 60;
+    const GRID_Z = 60;
+    const SIZE = 30; // 30x30 meters (-15 to +15)
+
+    const count = GRID_X * GRID_Z;
     const meshRef = useRef<THREE.InstancedMesh>(null);
-    const particles = useMemo(() => {
-        const temp = [];
-        for (let i = 0; i < count; i++) {
-            temp.push({
-                x: (Math.random() - 0.5) * 15,
-                y: Math.random() * 6,
-                z: (Math.random() - 0.5) * 15,
-                speed: 0.5 + Math.random() * 1.5,
-                offset: Math.random() * 100
-            });
-        }
-        return temp;
-    }, []);
+
+    // Double buffering for Cellular Automata
+    const tempGrid = useRef(new Float32Array(count).fill(0.0)); // 0 = cold outside
+    const nextGrid = useRef(new Float32Array(count).fill(0.0));
+    const colors = useMemo(() => new Float32Array(count * 3), [count]);
+
+    const cellTypes = useMemo(() => {
+        const types = new Uint8Array(count).fill(0);
+        // 0: air
+        // 1: wall (insulator, blocks heat)
+        // 2: window (cold source leak)
+        // 3: heater / HVAC (heat source)
+
+        const getCell = (gx: number, gz: number) => gz * GRID_X + gx;
+        const toGrid = (worldX: number, worldZ: number) => {
+            const gx = Math.floor((worldX + SIZE / 2) / (SIZE / GRID_X));
+            const gz = Math.floor((worldZ + SIZE / 2) / (SIZE / GRID_Z));
+            return [gx, gz];
+        };
+
+        // Rasterize walls/windows
+        Object.values(project.nodes).forEach((n: any) => {
+            if (n.type === 'Wall' || n.type === 'Partition' || n.type === 'Window' || n.type === 'Door') {
+                const length = n.dimensions.x;
+                const typeVal = n.type === 'Window' || n.type === 'Door' ? 2 : 1;
+
+                // Sample points along the wall
+                const steps = Math.ceil(length / (SIZE / GRID_X)); // 1 step per cell
+                for (let i = 0; i <= steps; i++) {
+                    const t = (i / steps) - 0.5;
+                    const lx = t * length;
+
+                    // Rotate into world space
+                    const yaw = (n.rotation?.yaw || 0) * (Math.PI / 180);
+                    const wx = n.position.x + lx * Math.cos(yaw);
+                    const wz = n.position.z - lx * Math.sin(yaw); // Z axis relation
+
+                    const [gx, gz] = toGrid(wx, wz);
+                    if (gx >= 0 && gx < GRID_X && gz >= 0 && gz < GRID_Z) {
+                        types[getCell(gx, gz)] = typeVal;
+                    }
+                }
+            }
+        });
+
+        // Heat sources (Rooms get a heater, pretend it's mini-split or underfloor)
+        Object.values(project.nodes).forEach((n: any) => {
+            if (n.type === 'Room') {
+                const [gx, gz] = toGrid(n.position.x, n.position.z);
+                if (gx >= 0 && gx < GRID_X && gz >= 0 && gz < GRID_Z) {
+                    types[getCell(gx, gz)] = 3;
+                }
+            }
+        });
+
+        return types;
+    }, [project, count]);
 
     const dummy = useMemo(() => new THREE.Object3D(), []);
 
-    useFrame((state) => {
+    React.useEffect(() => {
         if (!meshRef.current) return;
-        const time = state.clock.elapsedTime;
-        particles.forEach((particle, i) => {
-            // Move particles along X axis for wind flow, wrapping around
-            let x = particle.x + (time * particle.speed) % 20;
-            if (x > 10) x -= 20;
-            
-            // Add some wave motion
-            const y = particle.y + Math.sin(time + particle.offset) * 0.2;
-            const z = particle.z + Math.cos(time * 0.5 + particle.offset) * 0.2;
-
-            dummy.position.set(x, y, z);
-            
-            // Scale based on speed to look like streaks
-            dummy.scale.set(0.5, 0.05, 0.05);
-            dummy.rotation.z = -0.2; // Slight tilt
-            
-            dummy.updateMatrix();
-            meshRef.current!.setMatrixAt(i, dummy.matrix);
-        });
+        let i = 0;
+        const cellW = SIZE / GRID_X;
+        for (let z = 0; z < GRID_Z; z++) {
+            for (let x = 0; x < GRID_X; x++) {
+                const worldX = x * cellW - SIZE / 2 + cellW / 2;
+                const worldZ = z * cellW - SIZE / 2 + cellW / 2;
+                dummy.position.set(worldX, 1.0, worldZ); // Float above floor
+                dummy.scale.set(cellW * 0.95, 0.2, cellW * 0.95);
+                dummy.updateMatrix();
+                meshRef.current.setMatrixAt(i, dummy.matrix);
+                i++;
+            }
+        }
         meshRef.current.instanceMatrix.needsUpdate = true;
+    }, [dummy]);
+
+    const tempColor = useMemo(() => new THREE.Color(), []);
+    // Noise offset for simulated wind flow
+    const timeRef = useRef(0);
+
+    useFrame((state, delta) => {
+        if (!meshRef.current) return;
+
+        const current = tempGrid.current;
+        const next = nextGrid.current;
+        const types = cellTypes;
+        timeRef.current += delta;
+
+        // Simulation constants
+        const diffRate = 0.2; // Heat diffusion speed
+        const coolingRate = 0.005; // Outside cold seepage
+
+        for (let z = 0; z < GRID_Z; z++) {
+            for (let x = 0; x < GRID_X; x++) {
+                const idx = z * GRID_X + x;
+
+                if (types[idx] === 3) {
+                    // Heater
+                    next[idx] = 1.0;
+                } else if (types[idx] === 2) {
+                    // Window (cold leak)
+                    next[idx] = 0.0;
+                } else if (types[idx] === 1) {
+                    // Wall: Slows heat, slightly cold
+                    next[idx] = Math.max(0, current[idx] - 0.1);
+                } else {
+                    // Air: diffuse from neighbors
+                    let sum = 0;
+                    let n = 0;
+                    if (x > 0) { sum += current[idx - 1]; n++; }
+                    if (x < GRID_X - 1) { sum += current[idx + 1]; n++; }
+                    if (z > 0) { sum += current[idx - GRID_X]; n++; }
+                    if (z < GRID_Z - 1) { sum += current[idx + GRID_X]; n++; }
+
+                    const avg = sum / n;
+
+                    // Add wind/flow direction
+                    const windX = Math.sin(timeRef.current * 0.5) > 0 ? 1 : -1;
+                    const windZ = Math.cos(timeRef.current * 0.3) > 0 ? 1 : -1;
+
+                    let advect = 0;
+                    if (x > 0 && x < GRID_X - 1) {
+                        advect += current[idx - windX] * 0.05;
+                    }
+                    if (z > 0 && z < GRID_Z - 1) {
+                        advect += current[idx - windZ * GRID_X] * 0.05;
+                    }
+
+                    next[idx] = current[idx] + (avg - current[idx]) * diffRate + advect - coolingRate;
+                    if (next[idx] < 0) next[idx] = 0;
+                    if (next[idx] > 1) next[idx] = 1;
+                }
+            }
+        }
+
+        // Swap grids and update colors
+        for (let i = 0; i < count; i++) {
+            current[i] = next[i];
+
+            // Mapping: 0.0 (Cold, Blue) -> 0.5 (Comfortable, Green/Yellow) -> 1.0 (Hot, Red)
+            let h = (1.0 - current[i]) * 0.6; // 0.6 = blue, 0.0 = red
+
+            // Render only where room heat exists to hide empty outdoor areas, or show ambient cold
+            // To make it look cool, we will color everything, but set dark/dim for freezing outdoor
+            const l = current[i] * 0.4 + 0.1; // Darker when cold
+            tempColor.setHSL(h, 1.0, l);
+
+            colors[i * 3] = tempColor.r;
+            colors[i * 3 + 1] = tempColor.g;
+            colors[i * 3 + 2] = tempColor.b;
+        }
+
+        meshRef.current.instanceColor = new THREE.InstancedBufferAttribute(colors, 3);
+        meshRef.current.instanceColor.needsUpdate = true;
     });
 
     return (
         <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
             <boxGeometry args={[1, 1, 1]} />
-            <meshBasicMaterial color="#00ffff" transparent opacity={0.4} blending={THREE.AdditiveBlending} />
+            <meshBasicMaterial transparent opacity={0.6} blending={THREE.AdditiveBlending} depthWrite={false} />
         </instancedMesh>
     );
 }
@@ -245,90 +367,9 @@ export default function SystemsRenderer() {
             )}
 
             {/* ─── Thermal Layer Overlay ─────────────────────────────────── */}
-            {thermalData && (
+            {visibleLayers.has('thermal') && (
                 <group name="layer-thermal">
-                    <WindParticles />
-                    {Object.entries(project.nodes).map(([id, node]) => {
-                        if (['Room', 'Floor', 'House', 'Group'].includes(node.type)) return null;
-
-                        const tempValue = thermalData.node_temperatures[id] ?? 0.5;
-
-                        // Don't render "neutral" internal elements in heatmap
-                        if (tempValue > 0.49 && tempValue < 0.51 && !node.tags.includes('exterior')) return null;
-
-                        // Only render thermal for currently visible nodes in Plan view
-                        if (!isNodeVisible(id)) return null;
-
-                        return (
-                            <mesh
-                                key={`thermal_${id}`}
-                                position={[node.position.x, node.position.y, node.position.z]}
-                                rotation={[0, (node.rotation?.yaw || 0) * (Math.PI / 180), 0]}
-                                scale={[1.005, 1.005, 1.005]}
-                            >
-                                <boxGeometry args={[node.dimensions.x, node.dimensions.y, node.dimensions.z]} />
-                                <shaderMaterial
-                                    attach="material"
-                                    transparent
-                                    side={THREE.DoubleSide}
-                                    uniforms={{
-                                        ...thermalMaterial.uniforms,
-                                        tempValue: { value: tempValue }
-                                    }}
-                                    vertexShader={thermalMaterial.vertexShader}
-                                    fragmentShader={`
-                                        uniform float tempValue;
-                                        uniform float uTime;
-                                        varying vec2 vUv;
-                                        varying vec3 vPosition;
-                                        
-                                        // Simple noise function
-                                        float rand(vec2 n) { 
-                                            return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
-                                        }
-                                        
-                                        float noise(vec2 p){
-                                            vec2 ip = floor(p);
-                                            vec2 u = fract(p);
-                                            u = u*u*(3.0-2.0*u);
-                                            
-                                            float res = mix(
-                                                mix(rand(ip), rand(ip+vec2(1.0,0.0)), u.x),
-                                                mix(rand(ip+vec2(0.0,1.0)), rand(ip+vec2(1.0,1.0)), u.x), u.y);
-                                            return res*res;
-                                        }
-
-                                        vec3 heatmapColor(float t) {
-                                            vec3 blue = vec3(0.0, 0.2, 1.0);
-                                            vec3 cyan = vec3(0.0, 1.0, 1.0);
-                                            vec3 yellow = vec3(1.0, 1.0, 0.0);
-                                            vec3 red = vec3(1.0, 0.0, 0.0);
-                                            if (t < 0.33) return mix(blue, cyan, t / 0.33);
-                                            if (t < 0.66) return mix(cyan, yellow, (t - 0.33) / 0.33);
-                                            return mix(yellow, red, (t - 0.66) / 0.34);
-                                        }
-                                        
-                                        void main() {
-                                            // Dynamic flow effect
-                                            float flow = noise(vPosition.xz * 2.0 + vec2(uTime * 0.5, uTime * 0.2));
-                                            
-                                            // Pulse effect based on temperature
-                                            float pulse = sin(uTime * 2.0 + vPosition.x + vPosition.y) * 0.1;
-                                            
-                                            float t = clamp(tempValue + flow * 0.1 + pulse, 0.0, 1.0);
-                                            vec3 color = heatmapColor(t);
-                                            
-                                            // Add "wind lines"
-                                            float wind = smoothstep(0.4, 0.6, sin(vPosition.x * 10.0 + vPosition.y * 5.0 - uTime * 5.0));
-                                            color += vec3(wind * 0.1);
-
-                                            gl_FragColor = vec4(color, 0.6);
-                                        }
-                                    `}
-                                />
-                            </mesh>
-                        );
-                    })}
+                    <RealThermalSimulation project={project} />
                 </group>
             )}
 

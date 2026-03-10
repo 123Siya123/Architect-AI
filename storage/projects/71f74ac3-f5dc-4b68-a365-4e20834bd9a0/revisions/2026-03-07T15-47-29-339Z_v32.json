@@ -1,0 +1,940 @@
+{
+  "id": "71f74ac3-f5dc-4b68-a365-4e20834bd9a0",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-07T15:38:44.455Z",
+  "modified_at": "2026-03-07T15:47:27.135Z",
+  "version": 32,
+  "root_node_id": "house_29a43810",
+  "nodes": {
+    "house_29a43810": {
+      "id": "house_29a43810",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_0",
+        "floor_1",
+        "floor_2",
+        "floor_3"
+      ],
+      "created_at": "2026-03-07T15:38:44.455Z",
+      "modified_at": "2026-03-07T15:43:32.198Z",
+      "version": 1
+    },
+    "floor_0": {
+      "id": "floor_0",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29a43810",
+      "children_ids": [
+        "room_0"
+      ],
+      "created_at": "2026-03-07T15:41:54.522Z",
+      "modified_at": "2026-03-07T15:43:32.195Z",
+      "version": 1
+    },
+    "room_0": {
+      "id": "room_0",
+      "type": "Room",
+      "name": "Base Room",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8.3,
+        "y": 2.7,
+        "z": 8.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0",
+      "children_ids": [
+        "wall_o8zoje3a",
+        "wall_7urc4l6h",
+        "wall_sx7w1eqv",
+        "wall_fed4plus"
+      ],
+      "created_at": "2026-03-07T15:43:32.195Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 3
+    },
+    "wall_o8zoje3a": {
+      "id": "wall_o8zoje3a",
+      "type": "Wall",
+      "name": "Wall 0 N",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -4
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_0",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.195Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "wall_7urc4l6h": {
+      "id": "wall_7urc4l6h",
+      "type": "Wall",
+      "name": "Wall 0 S",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_0",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "wall_sx7w1eqv": {
+      "id": "wall_sx7w1eqv",
+      "type": "Wall",
+      "name": "Wall 0 E",
+      "position": {
+        "x": 4,
+        "y": 3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_0",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "wall_fed4plus": {
+      "id": "wall_fed4plus",
+      "type": "Wall",
+      "name": "Wall 0 W",
+      "position": {
+        "x": -4,
+        "y": 3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_0",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "floor_1": {
+      "id": "floor_1",
+      "type": "Floor",
+      "name": "Floor 1",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8.3,
+        "y": 0.30000000000000004,
+        "z": 8.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29a43810",
+      "children_ids": [
+        "slab_fclu4rvg",
+        "room_1"
+      ],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "slab_fclu4rvg": {
+      "id": "slab_fclu4rvg",
+      "type": "Slab",
+      "name": "Slab 1",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 0.3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:43:32.196Z",
+      "version": 1
+    },
+    "room_1": {
+      "id": "room_1",
+      "type": "Room",
+      "name": "Level 1 Room",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.300000000000001,
+        "y": 2.7,
+        "z": 6.300000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [
+        "wall_4qwotnsr",
+        "wall_t7vqbmsf",
+        "wall_xcc57uhb",
+        "wall_l4mtc1ei"
+      ],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.134Z",
+      "version": 3
+    },
+    "wall_4qwotnsr": {
+      "id": "wall_4qwotnsr",
+      "type": "Wall",
+      "name": "Wall 1 N",
+      "position": {
+        "x": 0,
+        "y": 9,
+        "z": -3
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "wall_t7vqbmsf": {
+      "id": "wall_t7vqbmsf",
+      "type": "Wall",
+      "name": "Wall 1 S",
+      "position": {
+        "x": 0,
+        "y": 9,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "wall_xcc57uhb": {
+      "id": "wall_xcc57uhb",
+      "type": "Wall",
+      "name": "Wall 1 E",
+      "position": {
+        "x": 3,
+        "y": 9,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.196Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "wall_l4mtc1ei": {
+      "id": "wall_l4mtc1ei",
+      "type": "Wall",
+      "name": "Wall 1 W",
+      "position": {
+        "x": -3,
+        "y": 9,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.197Z",
+      "modified_at": "2026-03-07T15:47:27.133Z",
+      "version": 2
+    },
+    "floor_2": {
+      "id": "floor_2",
+      "type": "Floor",
+      "name": "Floor 2",
+      "position": {
+        "x": 0,
+        "y": 6,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.300000000000001,
+        "y": 0.30000000000000004,
+        "z": 6.300000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29a43810",
+      "children_ids": [
+        "slab_izmdmul6",
+        "room_2"
+      ],
+      "created_at": "2026-03-07T15:43:32.197Z",
+      "modified_at": "2026-03-07T15:47:27.134Z",
+      "version": 2
+    },
+    "slab_izmdmul6": {
+      "id": "slab_izmdmul6",
+      "type": "Slab",
+      "name": "Slab 2",
+      "position": {
+        "x": 0,
+        "y": 6,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.3,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_2",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.197Z",
+      "modified_at": "2026-03-07T15:43:32.197Z",
+      "version": 1
+    },
+    "room_2": {
+      "id": "room_2",
+      "type": "Room",
+      "name": "Level 2 Room",
+      "position": {
+        "x": 0,
+        "y": 7.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4.3,
+        "y": 2.7,
+        "z": 4.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_2",
+      "children_ids": [
+        "wall_9myb9ydr",
+        "wall_13prv6j4",
+        "wall_1dtz75yu",
+        "wall_hy3kxl5w"
+      ],
+      "created_at": "2026-03-07T15:43:32.197Z",
+      "modified_at": "2026-03-07T15:47:27.134Z",
+      "version": 3
+    },
+    "wall_9myb9ydr": {
+      "id": "wall_9myb9ydr",
+      "type": "Wall",
+      "name": "Wall 2 N",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": -2
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.197Z",
+      "modified_at": "2026-03-07T15:47:27.134Z",
+      "version": 2
+    },
+    "wall_13prv6j4": {
+      "id": "wall_13prv6j4",
+      "type": "Wall",
+      "name": "Wall 2 S",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.197Z",
+      "modified_at": "2026-03-07T15:47:27.134Z",
+      "version": 2
+    },
+    "wall_1dtz75yu": {
+      "id": "wall_1dtz75yu",
+      "type": "Wall",
+      "name": "Wall 2 E",
+      "position": {
+        "x": 2,
+        "y": 15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.197Z",
+      "modified_at": "2026-03-07T15:47:27.134Z",
+      "version": 2
+    },
+    "wall_hy3kxl5w": {
+      "id": "wall_hy3kxl5w",
+      "type": "Wall",
+      "name": "Wall 2 W",
+      "position": {
+        "x": -2,
+        "y": 15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.198Z",
+      "modified_at": "2026-03-07T15:47:27.134Z",
+      "version": 2
+    },
+    "floor_3": {
+      "id": "floor_3",
+      "type": "Floor",
+      "name": "Floor 3",
+      "position": {
+        "x": 0,
+        "y": 9,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4.3,
+        "y": 0.30000000000000004,
+        "z": 4.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29a43810",
+      "children_ids": [
+        "slab_7sgfc80f"
+      ],
+      "created_at": "2026-03-07T15:43:32.198Z",
+      "modified_at": "2026-03-07T15:47:27.135Z",
+      "version": 2
+    },
+    "slab_7sgfc80f": {
+      "id": "slab_7sgfc80f",
+      "type": "Slab",
+      "name": "Slab 3",
+      "position": {
+        "x": 0,
+        "y": 9,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 0.3,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_3",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:43:32.198Z",
+      "modified_at": "2026-03-07T15:43:32.198Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 44820,
+    "remaining": 155180,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

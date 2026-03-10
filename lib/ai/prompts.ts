@@ -259,7 +259,9 @@ You are given the LATEST change(s) and the FULL 3D state.
 
 RUN THESE PHYSICS CHECKS:
 1. GRAVITY: Are all elements supported from below?
-   - Roofs must sit on walls. Walls must sit on floors/slabs.
+   - Roofs must sit on walls. The bottom Y of the roof MUST match the top Y of the walls.
+   - Check for gaps between wall top and roof bottom.
+   - Walls must sit on floors/slabs.
    - No floating elements allowed.
 2. CONNECTIVITY: Do stairs actually connect floor levels? Are doors placed in walls?
 3. CLEARANCE: Head height ≥ 2.1m everywhere? No overlapping solids?
@@ -268,7 +270,7 @@ RUN THESE PHYSICS CHECKS:
 6. PROPORTIONS: Are wall thicknesses consistent? Are ceiling heights reasonable (2.4m-3.5m)?
 
 SEVERITY LEVELS:
-- CRITICAL: Structurally impossible (floating roof, walls without foundation). MUST be fixed.
+- CRITICAL: Structurally impossible (floating roof with gap > 0.05m, walls without foundation). MUST be fixed.
 - WARNING: Code violation (missing railings, insufficient clearance). Should be fixed.
 - INFO: Minor optimization (slight misalignment, non-standard proportion). Can be deferred.
 

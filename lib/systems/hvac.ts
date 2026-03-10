@@ -68,131 +68,58 @@ export interface HVACLayout {
 
 /**
  * Generates an HVAC layout for the house.
+ * Using localized mini-split units per room to avoid huge ugly central duct systems.
  */
 export function generateHVACLayout(project: PSGProject): HVACLayout {
     const components: HVACComponent[] = [];
     const ducts: DuctSegment[] = [];
 
-    // 1. Locate Central Unit
-    // Ideally in an attic or mechanical room. For now, place it above the highest floor center.
+    const rooms = Object.values(project.nodes).filter(n => n.type === 'Room');
+
+    // Add an outdoor compressor unit for the house
     const house = project.nodes[project.root_node_id];
-    const floors = Object.values(project.nodes).filter(n => n.type === 'Floor');
-    const topFloor = floors.sort((a, b) => b.position.y - a.position.y)[0];
-    
-    // Default unit position (in attic space)
-    const unitY = topFloor ? topFloor.position.y + 3.0 : 3.0; 
-    const unitPos: Vec3 = { x: 0, y: unitY, z: 0 };
-    
     components.push({
-        id: 'hvac_main_unit',
-        type: 'hvac_unit_indoor',
-        position: unitPos,
+        id: 'hvac_outdoor_unit',
+        type: 'hvac_unit_outdoor',
+        position: { x: -3, y: 0.5, z: -3 }, // Typical outdoor placement
         rotation: { x: 0, y: 0, z: 0 },
-        dimensions: { x: 1.0, y: 1.2, z: 0.8 }
+        dimensions: { x: 0.8, y: 0.8, z: 0.4 }
     });
 
-    // 2. Process Rooms for Vents
-    const rooms = Object.values(project.nodes).filter(n => n.type === 'Room');
-    
     rooms.forEach(room => {
-        // Determine number of vents based on area
-        const area = room.dimensions.x * room.dimensions.z;
-        const numSupply = Math.max(1, Math.ceil(area / 15));
-        const hasReturn = area > 20 || room.room_function === 'hallway' || room.room_function === 'living';
+        // Evaluate if room needs an AC unit (living, bedroom, office)
+        if (['bathroom', 'closet', 'hallway'].includes(room.room_function || '')) return;
 
-        // Place Supply Vents (Ceiling)
-        // Distribute them evenly
-        for (let i = 0; i < numSupply; i++) {
-            // Simple distribution: Center if 1, spread if more
-            const offsetX = (i - (numSupply - 1) / 2) * (room.dimensions.x / (numSupply + 1)) * 2;
-            
-            const ventPos = {
-                x: room.position.x + offsetX,
-                y: room.position.y + room.dimensions.y - 0.05, // Just below ceiling
-                z: room.position.z
-            };
+        // Place a clean mini-split unit on a wall (approximate position)
+        const unitPos = {
+            x: room.position.x,
+            y: room.position.y + room.dimensions.y - 0.4, // High on the wall
+            z: room.position.z - (room.dimensions.z / 2) + 0.1 // Near back wall
+        };
 
-            const ventId = `vent_supply_${room.id}_${i}`;
-            components.push({
-                id: ventId,
-                type: 'vent_supply_ceiling',
-                position: ventPos,
-                rotation: { x: Math.PI / 2, y: 0, z: 0 }, // Face down
-                dimensions: { x: 0.3, y: 0.05, z: 0.3 },
-                roomId: room.id
-            });
+        const unitId = `hvac_split_${room.id}`;
+        components.push({
+            id: unitId,
+            type: 'hvac_unit_indoor',
+            position: unitPos,
+            rotation: { x: 0, y: 0, z: 0 },
+            dimensions: { x: 0.8, y: 0.25, z: 0.2 }, // Sleek mini-split shape
+            roomId: room.id
+        });
 
-            // Route Duct from Unit to Vent
-            // Simple routing: Unit -> (UnitY, VentX, VentZ) -> Vent
-            // This creates a vertical drop from the attic network
-            
-            // 1. Horizontal run at Unit level
-            const junctionPoint = { x: ventPos.x, y: unitPos.y, z: ventPos.z };
-            
-            ducts.push({
-                id: `duct_main_${ventId}`,
-                from: unitPos, // Simplified: all radiate from unit. Real systems have trunks.
-                to: junctionPoint,
-                width: 0.4,
-                height: 0.3,
-                shape: 'rectangular',
-                type: 'supply'
-            });
-
-            // 2. Vertical drop to Vent
-            ducts.push({
-                id: `duct_drop_${ventId}`,
-                from: junctionPoint,
-                to: { ...ventPos, y: ventPos.y + 0.05 }, // Connect to back of vent
-                width: 0.3,
-                height: 0.3,
-                shape: 'round', // Flexible duct often used for drops
-                type: 'supply'
-            });
-        }
-
-        // Place Return Vent (if needed)
-        if (hasReturn) {
-            // Place near a wall, away from supply if possible
-            const returnPos = {
-                x: room.position.x - room.dimensions.x / 3,
+        // Add a simple circular vent/diffuser for exhaust
+        components.push({
+            id: `vent_exhaust_${room.id}`,
+            type: 'vent_return_ceiling',
+            position: {
+                x: room.position.x,
                 y: room.position.y + room.dimensions.y - 0.05,
-                z: room.position.z - room.dimensions.z / 3
-            };
-
-            const returnId = `vent_return_${room.id}`;
-            components.push({
-                id: returnId,
-                type: 'vent_return_ceiling',
-                position: returnPos,
-                rotation: { x: Math.PI / 2, y: 0, z: 0 },
-                dimensions: { x: 0.5, y: 0.05, z: 0.5 },
-                roomId: room.id
-            });
-
-             // Route Return Duct
-             const junctionPoint = { x: returnPos.x, y: unitPos.y, z: returnPos.z };
-             
-             ducts.push({
-                 id: `duct_return_main_${returnId}`,
-                 from: unitPos,
-                 to: junctionPoint,
-                 width: 0.5,
-                 height: 0.4,
-                 shape: 'rectangular',
-                 type: 'return'
-             });
- 
-             ducts.push({
-                 id: `duct_return_drop_${returnId}`,
-                 from: junctionPoint,
-                 to: { ...returnPos, y: returnPos.y + 0.05 },
-                 width: 0.4,
-                 height: 0.4,
-                 shape: 'round',
-                 type: 'return'
-             });
-        }
+                z: room.position.z
+            },
+            rotation: { x: Math.PI / 2, y: 0, z: 0 },
+            dimensions: { x: 0.2, y: 0.02, z: 0.2 },
+            roomId: room.id
+        });
     });
 
     return { components, ducts };

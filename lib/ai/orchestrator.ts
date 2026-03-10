@@ -339,6 +339,13 @@ export async function sendChatToAI(
 
                 // Build orchestrator context
                 let orchestratorContext = `USER REQUEST: ${request.message}\n\n`;
+                
+                // Add professional client context if available
+                const professionalContext = request.professionalContext;
+                if (professionalContext) {
+                    orchestratorContext += `PROFESSIONAL CLIENT CONTEXT:\n${professionalContext}\n\n`;
+                }
+                
                 orchestratorContext += `CURRENT STATE:\n${asciiPlan}\n\n`;
                 orchestratorContext += `${nodeTree}\n\n`;
                 orchestratorContext += `${checklist}\n\n`;
@@ -646,6 +653,17 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                 log(`   ⚠️ Physicist returned non-structured response`);
                                 pendingViolations = [];
                             }
+                        } else {
+                            // No operations succeeded (all rejected by validation or runtime errors)
+                            log(`   ⚠️ All operations failed validation/execution`);
+                            turnHistory.push({
+                                turn: turn,
+                                agent: 'structural_engineer',
+                                instruction: decision.instruction,
+                                operations: engineerResult.toolCalls?.map(tc => tc.name) || [],
+                                result: 'FAILED',
+                                violations: [`Operations rejected: ${lastEngineerActions.filter(a => a.includes('❌') || a.includes('⚠️')).join('; ')}`]
+                            });
                         }
 
                     } else {
@@ -2140,7 +2158,12 @@ function buildCriticalFixInstruction(criticals: PhysicsValidation['violations'])
 function shouldApplySurfaceSculpt(project: PSGProject, targets: StructuralTargets): boolean {
     if (!targets.customSurfaceRequested) return false;
     const nodes = Object.values(project.nodes);
-    const hasSurfaceSculpt = nodes.some(n => (n.type === 'Wall' || n.type === 'Partition') && !!n.surface_matrix);
+    const wallCandidates = nodes.filter(n => n.type === 'Wall' || n.type === 'Partition');
+    
+    // CRITICAL FIX: Do not sculpt if there are no walls to sculpt
+    if (wallCandidates.length === 0) return false;
+
+    const hasSurfaceSculpt = wallCandidates.some(n => !!n.surface_matrix);
     return !hasSurfaceSculpt;
 }
 

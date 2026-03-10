@@ -57,15 +57,15 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const architectName = 'Professional Architect';
-  const architectTitle = 'Your Design Consultant';
+  const architectName = 'AI Design Architect';
+  const architectTitle = 'Your Virtual Consultant';
 
   useEffect(() => {
     // Initialize with welcome message
     const welcomeMessage: ChatMessage = {
       id: '1',
       role: 'architect',
-      content: `Hello! I'm your ${architectName}, ${architectTitle}. I'm excited to help bring your vision to life. This initial consultation will help me understand your needs, budget, site conditions, and design preferences so we can create something truly exceptional together.\n\nLet's start with some basic information about you and your project.`,
+      content: `Hello! I am your ${architectName}, ${architectTitle}. I am excited to help bring your vision to life. This initial consultation will help me understand your needs, budget, site conditions, and design preferences so we can create something truly exceptional together.\n\nLet's start with some basic information about you and your project.`,
       timestamp: new Date(),
       type: 'text'
     };
@@ -203,7 +203,7 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
       {/* Progress Bar */}
       <div className="bg-gray-100 p-4">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">Progress</span>
+          <span className="text-sm font-medium text-gray-700">Progress </span>
           <span className="text-sm text-gray-500">{currentPhase + 1} / {INTERVIEW_PHASES.length}</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -220,10 +220,10 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
           <div key={message.id} className={`flex ${message.role === 'client' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-3xl ${message.role === 'client' ? 'order-2' : 'order-1'}`}>
               <div className={`p-4 rounded-lg ${message.role === 'client'
-                  ? 'bg-blue-600 text-white'
-                  : message.type === 'summary'
-                    ? 'bg-green-50 border-2 border-green-200 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
+                ? 'bg-blue-600 text-white'
+                : message.type === 'summary'
+                  ? 'bg-green-50 border-2 border-green-200 text-green-800'
+                  : 'bg-gray-100 text-gray-800'
                 }`}>
                 <div className="prose prose-sm max-w-none whitespace-pre-wrap" style={{ fontSize: '0.875rem', lineHeight: '1.5' }}>
                   <ReactMarkdown>{message.content}</ReactMarkdown>
@@ -239,7 +239,7 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
                 )}
               </div>
               <div className={`text-xs text-gray-500 mt-1 ${message.role === 'client' ? 'text-right' : ''}`}>
-                {message.timestamp.toLocaleTimeString()}
+                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
           </div>
@@ -328,6 +328,7 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
           accept="image/*,.pdf,.doc,.docx,.txt"
           onChange={handleFileUpload}
           className="hidden"
+          style={{ display: 'none' }}
         />
       </div>
     </div>

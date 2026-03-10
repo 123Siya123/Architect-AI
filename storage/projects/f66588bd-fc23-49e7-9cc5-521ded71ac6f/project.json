@@ -1,0 +1,1186 @@
+{
+  "id": "f66588bd-fc23-49e7-9cc5-521ded71ac6f",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-07T15:16:43.283Z",
+  "modified_at": "2026-03-07T15:38:36.684Z",
+  "version": 46,
+  "root_node_id": "house_cfa30363",
+  "nodes": {
+    "house_cfa30363": {
+      "id": "house_cfa30363",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground_new"
+      ],
+      "created_at": "2026-03-07T15:16:43.283Z",
+      "modified_at": "2026-03-07T15:36:06.465Z",
+      "version": 1
+    },
+    "slab_mpig8phh": {
+      "id": "slab_mpig8phh",
+      "type": "Slab",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 0,
+        "y": -0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.2,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:17:17.891Z",
+      "modified_at": "2026-03-07T15:17:17.891Z",
+      "version": 1
+    },
+    "wall_fi5xc0xd": {
+      "id": "wall_fi5xc0xd",
+      "type": "Wall",
+      "name": "North Wall",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": -2.85
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:17:17.892Z",
+      "modified_at": "2026-03-07T15:38:36.684Z",
+      "version": 2,
+      "surface_matrix": {
+        "rows": 20,
+        "cols": 20,
+        "data": [
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.5,
+            1.5,
+            1.5,
+            1.5,
+            1.5,
+            1.5,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.5,
+            1.8,
+            1.8,
+            1.8,
+            1.8,
+            1.5,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.5,
+            1.8,
+            2,
+            2,
+            1.8,
+            1.5,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.5,
+            1.8,
+            2,
+            2,
+            1.8,
+            1.5,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.5,
+            1.8,
+            1.8,
+            1.8,
+            1.8,
+            1.5,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.5,
+            1.5,
+            1.5,
+            1.5,
+            1.5,
+            1.5,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1.2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        ],
+        "min_value": 0,
+        "max_value": 10,
+        "hole_threshold": 0.01,
+        "interpolation": "bilinear",
+        "description": "Custom sculpted wall with a central protruding bulb and carved-in corners"
+      }
+    },
+    "wall_8va6doy3": {
+      "id": "wall_8va6doy3",
+      "type": "Wall",
+      "name": "South Wall",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 2.85
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:17:17.893Z",
+      "modified_at": "2026-03-07T15:17:17.893Z",
+      "version": 1
+    },
+    "wall_ug3qsv4p": {
+      "id": "wall_ug3qsv4p",
+      "type": "Wall",
+      "name": "East Wall",
+      "position": {
+        "x": 2.85,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5.4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:17:17.893Z",
+      "modified_at": "2026-03-07T15:17:17.893Z",
+      "version": 1
+    },
+    "wall_lr2d883k": {
+      "id": "wall_lr2d883k",
+      "type": "Wall",
+      "name": "West Wall",
+      "position": {
+        "x": -2.85,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5.4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:17:17.893Z",
+      "modified_at": "2026-03-07T15:17:17.893Z",
+      "version": 1
+    },
+    "roof_gxvy8pp8": {
+      "id": "roof_gxvy8pp8",
+      "type": "Roof",
+      "name": "Gable Roof",
+      "position": {
+        "x": 0,
+        "y": 3.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.4,
+        "y": 1.5,
+        "z": 6.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_tile_clay",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [],
+      "roof_style": "gable",
+      "roof_pitch_degrees": 25,
+      "created_at": "2026-03-07T15:18:09.163Z",
+      "modified_at": "2026-03-07T15:18:09.163Z",
+      "version": 1
+    },
+    "floor_ground_new": {
+      "id": "floor_ground_new",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_cfa30363",
+      "children_ids": [
+        "slab_v4ujkr6z",
+        "room_main_new",
+        "roof_tk1cxdmx"
+      ],
+      "created_at": "2026-03-07T15:36:06.465Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "slab_v4ujkr6z": {
+      "id": "slab_v4ujkr6z",
+      "type": "Slab",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 0,
+        "y": -0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.2,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_new",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:36:06.465Z",
+      "modified_at": "2026-03-07T15:36:06.465Z",
+      "version": 1
+    },
+    "room_main_new": {
+      "id": "room_main_new",
+      "type": "Room",
+      "name": "Main Room",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_new",
+      "children_ids": [
+        "wall_ypl0axbv",
+        "wall_s_new",
+        "wall_e_new",
+        "wall_w_new"
+      ],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "wall_ypl0axbv": {
+      "id": "wall_ypl0axbv",
+      "type": "Wall",
+      "name": "North Wall",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": -2.85
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_new",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "wall_s_new": {
+      "id": "wall_s_new",
+      "type": "Wall",
+      "name": "South Wall",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 2.85
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_new",
+      "children_ids": [
+        "door_3wpncmnl"
+      ],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "wall_e_new": {
+      "id": "wall_e_new",
+      "type": "Wall",
+      "name": "East Wall",
+      "position": {
+        "x": 2.85,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5.4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_new",
+      "children_ids": [
+        "window_dopc3t0r"
+      ],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "wall_w_new": {
+      "id": "wall_w_new",
+      "type": "Wall",
+      "name": "West Wall",
+      "position": {
+        "x": -2.85,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5.4,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_new",
+      "children_ids": [
+        "window_cfwb1hek"
+      ],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "door_3wpncmnl": {
+      "id": "door_3wpncmnl",
+      "type": "Door",
+      "name": "Main Entrance Door",
+      "position": {
+        "x": 0,
+        "y": 1.05,
+        "z": 2.85
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 2.1,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_s_new",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "window_dopc3t0r": {
+      "id": "window_dopc3t0r",
+      "type": "Window",
+      "name": "East Window",
+      "position": {
+        "x": 2.85,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 1.2,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_e_new",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "window_cfwb1hek": {
+      "id": "window_cfwb1hek",
+      "type": "Window",
+      "name": "West Window",
+      "position": {
+        "x": -2.85,
+        "y": 1.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 1.2,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_w_new",
+      "children_ids": [],
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    },
+    "roof_tk1cxdmx": {
+      "id": "roof_tk1cxdmx",
+      "type": "Roof",
+      "name": "Gable Roof",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.4,
+        "y": 1.5,
+        "z": 6.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_tile_clay",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_new",
+      "children_ids": [],
+      "roof_style": "gable",
+      "created_at": "2026-03-07T15:36:06.466Z",
+      "modified_at": "2026-03-07T15:36:06.466Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 173861.28,
+    "remaining": 26138.72,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

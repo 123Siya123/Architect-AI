@@ -1,0 +1,66 @@
+{
+  "id": "bd7b0753-8057-4858-9799-f9659444d5a4",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-07T14:07:20.815Z",
+  "modified_at": "2026-03-07T14:35:50.302Z",
+  "version": 2,
+  "root_node_id": "house_c14a67b6",
+  "nodes": {
+    "house_c14a67b6": {
+      "id": "house_c14a67b6",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-07T14:07:20.815Z",
+      "modified_at": "2026-03-07T14:07:20.815Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

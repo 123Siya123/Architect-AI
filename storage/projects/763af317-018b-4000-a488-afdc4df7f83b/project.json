@@ -1,0 +1,1371 @@
+{
+  "id": "763af317-018b-4000-a488-afdc4df7f83b",
+  "name": "The White House (Executive Residence)",
+  "description": "",
+  "created_at": "2026-03-07T18:12:59.062Z",
+  "modified_at": "2026-03-07T18:12:59.062Z",
+  "version": 1,
+  "root_node_id": "house_b1e9e70e",
+  "nodes": {
+    "house_b1e9e70e": {
+      "id": "house_b1e9e70e",
+      "type": "House",
+      "name": "The White House (Executive Residence)",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_0_31e84233",
+        "floor_1_10fcffe1",
+        "floor_2_5bd6353c",
+        "foundation_5d2f0b38",
+        "roof_1e362219"
+      ],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "floor_0_31e84233": {
+      "id": "floor_0_31e84233",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0,
+        "y": 0.3,
+        "z": 0
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b1e9e70e",
+      "children_ids": [
+        "room_west_wing_corridor_db2204af",
+        "room_the_oval_office_118775bb"
+      ],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "floor_1_10fcffe1": {
+      "id": "floor_1_10fcffe1",
+      "type": "Floor",
+      "name": "State Floor (First Floor)",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0,
+        "y": 0.3,
+        "z": 0
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b1e9e70e",
+      "children_ids": [
+        "room_entrance_hall_59281b28",
+        "room_blue_room_64e7ed98",
+        "room_east_room_eccd1729",
+        "room_state_dining_room_3679cc8c",
+        "slab_1fb11a1e",
+        "wall_north_facade_ba031f32",
+        "wall_south_facade_a9640350",
+        "wall_west_facade_21e91b18",
+        "wall_east_facade_ecb07c93",
+        "wall_north_column_-2_5e317a60",
+        "wall_north_column_-1_bdf4a053",
+        "wall_north_column_0_61f23a44",
+        "wall_north_column_1_32f4c33f",
+        "wall_north_column_2_91ec2792",
+        "slab_b8d5e5d7"
+      ],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "floor_2_5bd6353c": {
+      "id": "floor_2_5bd6353c",
+      "type": "Floor",
+      "name": "Second Floor",
+      "position": {
+        "x": 0,
+        "y": 9,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0,
+        "y": 0.3,
+        "z": 0
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b1e9e70e",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "foundation_5d2f0b38": {
+      "id": "foundation_5d2f0b38",
+      "type": "Foundation",
+      "name": "Major Foundation",
+      "position": {
+        "x": 0,
+        "y": -0.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 121,
+        "y": 1,
+        "z": 36
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b1e9e70e",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "room_entrance_hall_59281b28": {
+      "id": "room_entrance_hall_59281b28",
+      "type": "Room",
+      "name": "Entrance Hall",
+      "position": {
+        "x": 0,
+        "y": 6.75,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 4.5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "room_function": "hallway",
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "room_blue_room_64e7ed98": {
+      "id": "room_blue_room_64e7ed98",
+      "type": "Room",
+      "name": "Blue Room",
+      "position": {
+        "x": 0,
+        "y": 6.75,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4.5,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "room_function": "living",
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "room_east_room_eccd1729": {
+      "id": "room_east_room_eccd1729",
+      "type": "Room",
+      "name": "East Room",
+      "position": {
+        "x": 18,
+        "y": 6.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4.5,
+        "z": 24
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "room_function": "dining",
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "room_state_dining_room_3679cc8c": {
+      "id": "room_state_dining_room_3679cc8c",
+      "type": "Room",
+      "name": "State Dining Room",
+      "position": {
+        "x": -18,
+        "y": 6.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4.5,
+        "z": 24
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "room_function": "dining",
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "slab_1fb11a1e": {
+      "id": "slab_1fb11a1e",
+      "type": "Slab",
+      "name": "State Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 51,
+        "y": 0.3,
+        "z": 26
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_north_facade_ba031f32": {
+      "id": "wall_north_facade_ba031f32",
+      "type": "Wall",
+      "name": "North Facade",
+      "position": {
+        "x": 0,
+        "y": 6.75,
+        "z": -12.7
+      },
+      "dimensions": {
+        "x": 51,
+        "y": 4.5,
+        "z": 0.6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [
+        "window_8bb3491d",
+        "window_e618f802",
+        "window_fe5ce343",
+        "window_1e7fe6da",
+        "door_1d50b332"
+      ],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_south_facade_a9640350": {
+      "id": "wall_south_facade_a9640350",
+      "type": "Wall",
+      "name": "South Facade",
+      "position": {
+        "x": 0,
+        "y": 6.75,
+        "z": 12.7
+      },
+      "dimensions": {
+        "x": 51,
+        "y": 4.5,
+        "z": 0.6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [
+        "window_2ff89152",
+        "window_737eb1c9",
+        "window_c671d1c8",
+        "window_637a70f7"
+      ],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_west_facade_21e91b18": {
+      "id": "wall_west_facade_21e91b18",
+      "type": "Wall",
+      "name": "West Facade",
+      "position": {
+        "x": -25.2,
+        "y": 6.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 24.8,
+        "y": 4.5,
+        "z": 0.6
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_east_facade_ecb07c93": {
+      "id": "wall_east_facade_ecb07c93",
+      "type": "Wall",
+      "name": "East Facade",
+      "position": {
+        "x": 25.2,
+        "y": 6.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 24.8,
+        "y": 4.5,
+        "z": 0.6
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "exterior"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_north_column_-2_5e317a60": {
+      "id": "wall_north_column_-2_5e317a60",
+      "type": "Column",
+      "name": "North Column -2",
+      "position": {
+        "x": -8,
+        "y": 9,
+        "z": -17
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 9,
+        "z": 1.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_north_column_-1_bdf4a053": {
+      "id": "wall_north_column_-1_bdf4a053",
+      "type": "Column",
+      "name": "North Column -1",
+      "position": {
+        "x": -4,
+        "y": 9,
+        "z": -17
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 9,
+        "z": 1.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_north_column_0_61f23a44": {
+      "id": "wall_north_column_0_61f23a44",
+      "type": "Column",
+      "name": "North Column 0",
+      "position": {
+        "x": 0,
+        "y": 9,
+        "z": -17
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 9,
+        "z": 1.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_north_column_1_32f4c33f": {
+      "id": "wall_north_column_1_32f4c33f",
+      "type": "Column",
+      "name": "North Column 1",
+      "position": {
+        "x": 4,
+        "y": 9,
+        "z": -17
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 9,
+        "z": 1.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "wall_north_column_2_91ec2792": {
+      "id": "wall_north_column_2_91ec2792",
+      "type": "Column",
+      "name": "North Column 2",
+      "position": {
+        "x": 8,
+        "y": 9,
+        "z": -17
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 9,
+        "z": 1.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "min_width": 0.5,
+        "min_height": 2.1,
+        "min_thickness": 0.1,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "slab_b8d5e5d7": {
+      "id": "slab_b8d5e5d7",
+      "type": "Slab",
+      "name": "South Balcony",
+      "position": {
+        "x": 0,
+        "y": 9,
+        "z": 16
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.2,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1_10fcffe1",
+      "children_ids": [],
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "room_west_wing_corridor_db2204af": {
+      "id": "room_west_wing_corridor_db2204af",
+      "type": "Room",
+      "name": "West Wing Corridor",
+      "position": {
+        "x": -35.5,
+        "y": 2.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 4.5,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_31e84233",
+      "children_ids": [],
+      "room_function": "hallway",
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "room_the_oval_office_118775bb": {
+      "id": "room_the_oval_office_118775bb",
+      "type": "Room",
+      "name": "The Oval Office",
+      "position": {
+        "x": -50.5,
+        "y": 2.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4.5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_walnut",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0_31e84233",
+      "children_ids": [],
+      "room_function": "office",
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_8bb3491d": {
+      "id": "window_8bb3491d",
+      "type": "Window",
+      "name": "Grand Window N -20",
+      "position": {
+        "x": -20,
+        "y": 7,
+        "z": -12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_facade_ba031f32"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_facade_ba031f32",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_2ff89152": {
+      "id": "window_2ff89152",
+      "type": "Window",
+      "name": "Grand Window S -20",
+      "position": {
+        "x": -20,
+        "y": 7,
+        "z": 12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_south_facade_a9640350"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_south_facade_a9640350",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_e618f802": {
+      "id": "window_e618f802",
+      "type": "Window",
+      "name": "Grand Window N -12",
+      "position": {
+        "x": -12,
+        "y": 7,
+        "z": -12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_facade_ba031f32"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_facade_ba031f32",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_737eb1c9": {
+      "id": "window_737eb1c9",
+      "type": "Window",
+      "name": "Grand Window S -12",
+      "position": {
+        "x": -12,
+        "y": 7,
+        "z": 12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_south_facade_a9640350"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_south_facade_a9640350",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_fe5ce343": {
+      "id": "window_fe5ce343",
+      "type": "Window",
+      "name": "Grand Window N 12",
+      "position": {
+        "x": 12,
+        "y": 7,
+        "z": -12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_facade_ba031f32"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_facade_ba031f32",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_c671d1c8": {
+      "id": "window_c671d1c8",
+      "type": "Window",
+      "name": "Grand Window S 12",
+      "position": {
+        "x": 12,
+        "y": 7,
+        "z": 12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_south_facade_a9640350"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_south_facade_a9640350",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_1e7fe6da": {
+      "id": "window_1e7fe6da",
+      "type": "Window",
+      "name": "Grand Window N 20",
+      "position": {
+        "x": 20,
+        "y": 7,
+        "z": -12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_facade_ba031f32"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_facade_ba031f32",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "window_637a70f7": {
+      "id": "window_637a70f7",
+      "type": "Window",
+      "name": "Grand Window S 20",
+      "position": {
+        "x": 20,
+        "y": 7,
+        "z": 12.7
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 3.5,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.4,
+        "max_width": 3,
+        "min_height": 0.4,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_south_facade_a9640350"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_south_facade_a9640350",
+      "children_ids": [],
+      "opening_width": 2.5,
+      "opening_height": 3.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "door_1d50b332": {
+      "id": "door_1d50b332",
+      "type": "Door",
+      "name": "North Entrance Door",
+      "position": {
+        "x": 0,
+        "y": 6,
+        "z": -12.7
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 3,
+        "z": 0.05
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "min_width": 0.7,
+        "max_width": 1.8,
+        "min_height": 1.9,
+        "max_height": 2.4,
+        "connected_to": [
+          "wall_north_facade_ba031f32"
+        ]
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_north_facade_ba031f32",
+      "children_ids": [],
+      "opening_width": 3,
+      "opening_height": 3,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    },
+    "roof_1e362219": {
+      "id": "roof_1e362219",
+      "type": "Roof",
+      "name": "Executive Roof",
+      "position": {
+        "x": 0,
+        "y": 13.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 55,
+        "y": 0.8,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_render_white",
+      "opacity": 1,
+      "tags": [
+        "exterior"
+      ],
+      "constraints": {
+        "fixed_position": false,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b1e9e70e",
+      "children_ids": [],
+      "roof_style": "flat",
+      "roof_pitch_degrees": 0,
+      "roof_overhang": 0.5,
+      "created_at": "2026-03-07T18:12:59.062Z",
+      "modified_at": "2026-03-07T18:12:59.062Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 250000,
+    "spent": 0,
+    "remaining": 250000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

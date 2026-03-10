@@ -1,6 +1,7 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useDesignStore } from '@/store/useDesignStore';
 import { TEMPLATES } from '@/lib/psg/templates';
@@ -8,6 +9,21 @@ import { TEMPLATES } from '@/lib/psg/templates';
 export default function HomePage() {
   const router = useRouter();
   const loadProject = useDesignStore((s) => s.loadProject);
+  const [recentProjects, setRecentProjects] = useState<any[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('/api/projects');
+        if (res.ok) {
+          const data = await res.json();
+          setRecentProjects(Array.isArray(data) ? data : []);
+        }
+      } catch (err) { }
+    };
+    fetchProjects();
+  }, []);
 
   const handleSelectTemplate = async (templateSlug: string) => {
     const template = TEMPLATES.find(t => t.slug === templateSlug);
@@ -44,9 +60,45 @@ export default function HomePage() {
           <div className="hero-buttons">
             <button className="btn-primary" onClick={() => handleSelectTemplate('empty')}>Start Designing</button>
             <button className="btn-secondary" onClick={() => router.push('/professional-client')}>Professional Project</button>
+            <button className="btn-secondary" onClick={() => setShowHistory(!showHistory)}>History</button>
           </div>
         </div>
       </section>
+
+      {showHistory && (
+        <section className="dashboard-grid" style={{ maxWidth: '800px', margin: '40px auto 0 auto', display: 'block' }}>
+          <div className="dashboard-column recent-column">
+            <div className="column-header">
+              <h2>Recent Projects</h2>
+              <p>Continue working on your saved designs</p>
+            </div>
+            <div className="recent-projects-list">
+              {recentProjects.length > 0 ? (
+                recentProjects.map((project) => (
+                  <Link
+                    key={project.id}
+                    href={`/design?id=${project.id}`}
+                    className="recent-project-card"
+                  >
+                    <div className="project-icon">🏛️</div>
+                    <div className="project-details">
+                      <h4>{project.name}</h4>
+                      <span className="project-meta">
+                        {project.preview_summary || 'Saved Project'} • {new Date(project.modified_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <button className="btn-open">Open</button>
+                  </Link>
+                ))
+              ) : (
+                <div className="empty-projects">
+                  <p>No projects found yet. Start a new one!</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Features Grid ────────────────────────────────────── */}
       <section className="landing-features">
@@ -79,7 +131,7 @@ export default function HomePage() {
           <p>Explore what's possible with our AI House Designer</p>
         </div>
         <div className="gallery-grid">
-          {TEMPLATES.filter(t => t.slug !== 'empty').map((template) => (
+          {TEMPLATES.filter(t => t.slug !== 'empty' && t.slug !== 'white_house').map((template) => (
             <div key={template.slug} className="gallery-item">
               <img src={template.preview_image} alt={template.name} />
               <div className="gallery-overlay">
