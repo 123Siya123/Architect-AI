@@ -26,6 +26,7 @@ export const STANDARDS = {
     INTERIOR_WALL_THICK: 0.15,   // m — interior partition
     MIN_CEILING_HEIGHT: 2.40,   // m — minimum habitable
     STANDARD_CEILING: 2.70,   // m — standard residential
+    WALL_HEIGHT_STD: 2.70,     // m — standard wall height
     GRAND_CEILING: 4.00,   // m — formal/public spaces
     STAIR_RISER_HEIGHT: 0.175,  // m — standard riser
     STAIR_TREAD_DEPTH: 0.28,   // m — standard tread

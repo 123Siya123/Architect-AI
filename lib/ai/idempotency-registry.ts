@@ -1,26 +1,33 @@
 export interface NodeRegistryEntry {
     id: string;
-    semanticRole: string;    // e.g. "wall_north_floor1", "slab_ground"
-    createdAtTurn: number;
-    floorIndex: number;
-    nodeType: string;
+    semanticRole: string;    // e.g. "wall_north_floor1"
+    status: 'pending' | 'solid';
 }
 
 export class IdempotencyRegistry {
     private registry = new Map<string, NodeRegistryEntry>();
 
-    // Call this BEFORE every add_node operation
     checkExists(semanticRole: string): NodeRegistryEntry | null {
         return this.registry.get(semanticRole) ?? null;
     }
 
-    register(entry: NodeRegistryEntry): void {
-        this.registry.set(entry.semanticRole, entry);
+    register(semanticRole: string, status: 'pending' | 'solid'): void {
+        this.registry.set(semanticRole, { id: 'pending', semanticRole, status });
     }
 
-    // Returns the correct operation: "create" | "update" | "skip"
-    resolveOperation(semanticRole: string, proposedOp: "add_node"): "create" | "update" {
-        if (this.checkExists(semanticRole)) return "update";
-        return "create";
+    updateId(semanticRole: string, id: string): void {
+        const existing = this.registry.get(semanticRole);
+        if (existing) {
+            this.registry.set(semanticRole, { ...existing, id, status: 'solid' });
+        }
+    }
+
+    getPromptBlock(): string {
+        if (this.registry.size === 0) return "No nodes created yet.";
+        let block = "EXISTING SEMANTIC NODES:\n";
+        this.registry.forEach((entry, role) => {
+            block += `- ${role}: ${entry.id} (${entry.status})\n`;
+        });
+        return block;
     }
 }

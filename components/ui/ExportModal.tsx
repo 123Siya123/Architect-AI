@@ -51,6 +51,8 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     const handleExport = async () => {
         setIsExporting(true);
         try {
+            const documents = generateConstructionDocuments(project);
+
             if (selected === 'floor_plans') {
                 const html = generateProjectExportHTML(project);
                 downloadFile(html, `${project.name.replace(/\s/g, '_')}_Plans_Elevations.html`, 'text/html');
@@ -65,9 +67,6 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                 const svg = generateFloorPlanSVG(project, 0, { plan_type: 'plumbing', title: 'Plumbing Layout' });
                 downloadFile(svg, `${project.name.replace(/\s/g, '_')}_Plumbing_Plan.svg`, 'image/svg+xml');
             } else if (selected === 'construction_documents') {
-                const documents = generateConstructionDocuments(project);
-                
-                // Create a comprehensive HTML document with all construction documents
                 const comprehensiveHTML = `
 <!DOCTYPE html>
 <html lang="en">
@@ -161,7 +160,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     </div>
 </body>
 </html>`;
-                
+
                 downloadFile(comprehensiveHTML, `${project.name.replace(/\s/g, '_')}_Construction_Documents.html`, 'text/html');
             } else if (selected === 'door_window_schedule') {
                 downloadFile(documents.doorWindowSchedule, `${project.name.replace(/\s/g, '_')}_Door_Window_Schedule.html`, 'text/html');

@@ -328,8 +328,8 @@ function validateStructural(
             warnings.push({
                 severity: 'warning',
                 message: `CRITICAL: Deleting load-bearing "${node.name}" which supports: ` +
-                dependents.map(d => d.name).join(', ') +
-                `. Ensure you have a plan to support these elements or delete them too.`,
+                    dependents.map(d => d.name).join(', ') +
+                    `. Ensure you have a plan to support these elements or delete them too.`,
                 suggestion: 'This action is structurally risky. Proceed only if the Physicist explicitly requested it.',
             });
         } else {
@@ -350,7 +350,7 @@ function validateStructural(
  */
 function findDependentNodes(nodeId: string, project: PSGProject): PSGNode[] {
     return Object.values(project.nodes).filter(
-        (n) => n.constraints.connected_to.includes(nodeId)
+        (n) => n.constraints.connected_to?.includes(nodeId)
     );
 }
 
@@ -469,19 +469,19 @@ function validatePhysics(
     // Check for floating roof
     if ((operation.type === 'move_node' || operation.type === 'set_node_position' || operation.type === 'resize_node') && node.type === 'Roof') {
         const params = operation.params as Record<string, number>;
-        
+
         // Calculate proposed geometry
         let newY = node.position.y;
         let newHeight = node.dimensions.y;
-        
+
         if (operation.type === 'move_node') {
-             newY += (params.delta_y || 0);
+            newY += (params.delta_y || 0);
         } else if (operation.type === 'set_node_position') {
-             newY = params.position_y !== undefined ? params.position_y : newY;
+            newY = params.position_y !== undefined ? params.position_y : newY;
         }
-        
+
         if (operation.type === 'resize_node') {
-             newHeight = params.height !== undefined ? params.height : newHeight;
+            newHeight = params.height !== undefined ? params.height : newHeight;
         }
 
         const roofBottom = newY - newHeight / 2;
@@ -489,7 +489,7 @@ function validatePhysics(
         // Find the highest wall top in the project
         let maxWallTop = -Infinity;
         let highestWallName = '';
-        
+
         for (const otherNode of Object.values(project.nodes)) {
             if (otherNode.type === 'Wall') {
                 const wallTop = otherNode.position.y + otherNode.dimensions.y / 2;

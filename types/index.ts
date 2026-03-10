@@ -559,6 +559,8 @@ export interface AIChatResponse {
   warnings: OperationWarning[];
   suggestions?: string[];      // Follow-up suggestions
   progress_log?: string[];     // Internal steps taken by the AI team
+  project?: PSGProject;        // NEW: Final project state
+  history?: any[];             // NEW: Turn history
 }
 
 /** Request to generate initial house from description */
@@ -605,9 +607,9 @@ export type ExportFormat =
   | 'electrical'       // Electrical layout drawings
   | 'plumbing'         // Plumbing layout drawings
   | 'bill_of_quantities' // Detailed BoQ
-  | 'construction_documents'
-  | 'door_window_schedule'
-  | 'finish_schedule'
-  | 'technical_specifications'
+  | 'construction_documents' // Complete CD set
+  | 'door_window_schedule' // Detailed door and window specs
+  | 'finish_schedule' // Room-by-room finishes
+  | 'technical_specifications' // Standards and specs
+  | 'code_compliance' // Building code documentation
   | 'full_package';    // Everything above
-

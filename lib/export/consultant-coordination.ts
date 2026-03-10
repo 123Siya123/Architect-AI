@@ -132,7 +132,7 @@ export function generateConsultantCoordination(
   options: Partial<ConsultantOptions> = {}
 ): ConsultantCoordinationSet {
   const opts: ConsultantOptions = { ...DEFAULT_CONSULTANT_OPTIONS, ...options };
-  
+
   const coordination: ConsultantCoordinationSet = {
     structural: generateStructuralDrawings(project, opts),
     mep: generateMEPDrawings(project, opts),
@@ -160,7 +160,7 @@ function generateStructuralDrawings(project: PSGProject, opts: ConsultantOptions
 
 function generateFoundationPlanSVG(project: PSGProject, opts: ConsultantOptions): string {
   const paper = PAPER_SIZES[opts.paper];
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="rebarPattern" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
@@ -278,7 +278,7 @@ function generateFoundationPlanSVG(project: PSGProject, opts: ConsultantOptions)
 
 function generateStructuralFramingPlanSVG(project: PSGProject, opts: ConsultantOptions): string {
   const paper = PAPER_SIZES[opts.paper];
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="steelBeam" x="0" y="0" width="20" height="4" patternUnits="userSpaceOnUse">
@@ -395,20 +395,6 @@ function generateStructuralFramingPlanSVG(project: PSGProject, opts: ConsultantO
       <text x="180" y="55" text-anchor="middle" font-size="5" fill="#374151">C-5</text>
       <text x="180" y="135" text-anchor="middle" font-size="5" fill="#374151">C-6</text>
       <text x="180" y="195" text-anchor="middle" font-size="5" fill="#374151">C-7</text>
-    </g>
-    
-    <!-- Span Directions -->
-    <g transform="translate(${paper.width * 0.2}, ${paper.height * 0.2})">
-      <g stroke="#3b82f6" stroke-width="1" fill="none" stroke-dasharray="2,2">
-        <path d="M 30 25 L 30 35 M 25 30 L 35 30"/>
-        <path d="M 90 25 L 90 35 M 85 30 L 95 30"/>
-        <path d="M 150 25 L 150 35 M 145 30 L 155 30"/>
-        <path d="M 210 25 L 210 35 M 205 30 L 215 30"/>
-        
-        <path d="M 25 90 L 35 90 M 30 85 L 30 95"/>
-        <path d="M 25 150 L 35 150 M 30 145 L 30 155"/>
-        <path d="M 25 210 L 35 210 M 30 205 L 30 215"/>
-      </g>
     </g>
     
     <!-- Legend -->
@@ -566,243 +552,11 @@ function generateBeamScheduleHTML(project: PSGProject, opts: ConsultantOptions):
 </html>`;
 }
 
-function generateEquipmentSchedulesHTML(project: PSGProject, opts: ConsultantOptions): string {
+function generateColumnScheduleHTML(project: PSGProject, opts: ConsultantOptions): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>MEP Equipment Schedules - ${project.name}</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; }
-    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    h1 { color: #1e3a8a; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
-    h2 { color: #374151; margin-top: 30px; border-left: 4px solid #3b82f6; padding-left: 15px; }
-    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-    th { background: #1e3a8a; color: white; padding: 12px; text-align: left; font-weight: bold; }
-    td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
-    tr:nth-child(even) { background: #f8fafc; }
-    .equipment-id { font-weight: bold; color: #1e40af; }
-    .specs { font-size: 0.9em; color: #6b7280; }
-    .notes { background: #fef3c7; padding: 15px; border-left: 4px solid #eab308; margin: 20px 0; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>MEP EQUIPMENT SCHEDULES</h1>
-    <p><strong>Project:</strong> ${escapeXml(project.name)} | <strong>Date:</strong> ${opts.date} | <strong>System:</strong> ${opts.hvacSystem.replace('_', ' ')}</p>
-    
-    <h2>HVAC EQUIPMENT</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Equipment Type</th>
-          <th>Model/Size</th>
-          <th>Capacity</th>
-          <th>Efficiency</th>
-          <th>Electrical</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="equipment-id">AHU-1</td>
-          <td>Air Handler</td>
-          <td>2,000 CFM</td>
-          <td>5 Ton</td>
-          <td>16 SEER</td>
-          <td>240V/30A</td>
-          <td>Mechanical Room</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">HP-1</td>
-          <td>Heat Pump</td>
-          <td>3 Ton</td>
-          <td>36,000 BTU</td>
-          <td>16 SEER/9.5 HSPF</td>
-          <td>240V/25A</td>
-          <td>Exterior Pad</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">EF-1</td>
-          <td>Exhaust Fan</td>
-          <td>200 CFM</td>
-          <td>200 CFM</td>
-          <td>Energy Star</td>
-          <td>120V/2A</td>
-          <td>Bathroom</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">ERV-1</td>
-          <td>ERV Unit</td>
-          <td>100 CFM</td>
-          <td>100 CFM</td>
-          <td>70% Efficiency</td>
-          <td>120V/1A</td>
-          <td>Attic</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <h2>ELECTRICAL EQUIPMENT</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Equipment Type</th>
-          <th>Size/Rating</th>
-          <th>Main Breaker</th>
-          <th>Branch Circuits</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="equipment-id">MSB-1</td>
-          <td>Main Service Panel</td>
-          <td>200A</td>
-          <td>200A</td>
-          <td>40 Spaces</td>
-          <td>Garage Wall</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">SP-1</td>
-          <td>Sub Panel</td>
-          <td>60A</td>
-          <td>60A</td>
-          <td>12 Spaces</td>
-          <td>Basement</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">GFI-1</td>
-          <td>GFCI Receptacle</td>
-          <td>20A</td>
-          <td>20A</td>
-          <td>N/A</td>
-          <td>Bathroom</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">AFI-1</td>
-          <td>AFCI Breaker</td>
-          <td>15A</td>
-          <td>15A</td>
-          <td>Bedroom Circuit</td>
-          <td>Main Panel</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <h2>PLUMBING EQUIPMENT</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Equipment Type</th>
-          <th>Model/Size</th>
-          <th>Capacity</th>
-          <th>Fuel Type</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="equipment-id">WH-1</td>
-          <td>Water Heater</td>
-          <td>50 Gallon</td>
-          <td>50 Gallon</td>
-          <td>Natural Gas</td>
-          <td>Basement</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">SUMP-1</td>
-          <td>Sump Pump</td>
-          <td>1/3 HP</td>
-          <td>2,000 GPH</td>
-          <td>Electric</td>
-          <td>Basement</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">EJECT-1</td>
-          <td>Sewage Ejector</td>
-          <td>1/2 HP</td>
-          <td>5,000 GPH</td>
-          <td>Electric</td>
-          <td>Basement</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">PB-1</td>
-          <td>Pressure Booster</td>
-          <td>3/4 HP</td>
-          <td>15 GPM</td>
-          <td>Electric</td>
-          <td>Mechanical Room</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <h2>FIRE PROTECTION EQUIPMENT</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Equipment Type</th>
-          <th>Model/Size</th>
-          <th>Capacity</th>
-          <th>Pressure</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="equipment-id">SP-1</td>
-          <td>Sprinkler Pump</td>
-          <td>5 HP</td>
-          <td>100 GPM</td>
-          <td>50 PSI</td>
-          <td>Mechanical Room</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">JOC-1</td>
-          <td>Jockey Pump</td>
-          <td>1 HP</td>
-          <td>10 GPM</td>
-          <td>60 PSI</td>
-          <td>Mechanical Room</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">TK-1</td>
-          <td>Storage Tank</td>
-          <td>1,000 Gal</td>
-          <td>1,000 Gal</td>
-          <td>Atmospheric</td>
-          <td>Exterior</td>
-        </tr>
-        <tr>
-          <td class="equipment-id">ALARM-1</td>
-          <td>Fire Alarm Panel</td>
-          <td>Addressable</td>
-          <td>200 Points</td>
-          <td>24VDC</td>
-          <td>Entry Hall</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <div class="notes">
-      <h3>EQUIPMENT NOTES:</h3>
-      <p>1. All equipment shall be installed per manufacturer's specifications and applicable codes.</p>
-      <p>2. Provide proper clearances for maintenance and service access.</p>
-      <p>3. Coordinate electrical requirements with electrical contractor.</p>
-      <p>4. Provide vibration isolation for rotating equipment.</p>
-      <p>5. All equipment shall be Energy Star rated where applicable.</p>
-      <p>6. Provide proper drainage and water connections for plumbing equipment.</p>
-      <p>7. Fire protection equipment shall be listed and labeled by approved agency.</p>
-      <p>8. Provide startup and commissioning services for all equipment.</p>
-    </div>
-  </div>
-</body>
-</html>`;
-}
   <title>Column Schedule - ${project.name}</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; }
@@ -829,7 +583,7 @@ function generateEquipmentSchedulesHTML(project: PSGProject, opts: ConsultantOpt
           <th>Height (ft)</th>
           <th>Quantity</th>
           <th>Axial Load (kips)</th>
-          <th>Moment (ft-kips)</th>
+          <th>Max Moment (ft-kips)</th>
           <th>Base Plate</th>
           <th>Location</th>
         </tr>
@@ -855,56 +609,6 @@ function generateEquipmentSchedulesHTML(project: PSGProject, opts: ConsultantOpt
           <td>12"×12"×1"</td>
           <td>Grid B-2, B-4</td>
         </tr>
-        <tr>
-          <td class="mark">C-3</td>
-          <td>W8×24</td>
-          <td>10</td>
-          <td>2</td>
-          <td>150</td>
-          <td>35</td>
-          <td>12"×12"×1"</td>
-          <td>Grid C-2, C-4</td>
-        </tr>
-        <tr>
-          <td class="mark">C-4</td>
-          <td>W8×24</td>
-          <td>10</td>
-          <td>2</td>
-          <td>140</td>
-          <td>30</td>
-          <td>12"×12"×1"</td>
-          <td>Grid B-3, B-5</td>
-        </tr>
-        <tr>
-          <td class="mark">C-5</td>
-          <td>W8×24</td>
-          <td>10</td>
-          <td>2</td>
-          <td>140</td>
-          <td>30</td>
-          <td>12"×12"×1"</td>
-          <td>Grid D-2, D-4</td>
-        </tr>
-        <tr>
-          <td class="mark">C-6</td>
-          <td>W8×24</td>
-          <td>10</td>
-          <td>2</td>
-          <td>150</td>
-          <td>35</td>
-          <td>12"×12"×1"</td>
-          <td>Grid C-1, C-5</td>
-        </tr>
-        <tr>
-          <td class="mark">C-7</td>
-          <td>W8×24</td>
-          <td>10</td>
-          <td>2</td>
-          <td>140</td>
-          <td>30</td>
-          <td>12"×12"×1"</td>
-          <td>Grid D-3, D-5</td>
-        </tr>
       </tbody>
     </table>
     
@@ -914,8 +618,6 @@ function generateEquipmentSchedulesHTML(project: PSGProject, opts: ConsultantOpt
       <p>2. Column base plates shall be ASTM A36 steel</p>
       <p>3. Provide 4-3/4" diameter anchor bolts per base plate</p>
       <p>4. Grout base plates with non-shrink grout</p>
-      <p>5. Provide lateral bracing at maximum spacing of 8'-0"</p>
-      <p>6. Fireproof columns as required by code</p>
     </div>
   </div>
 </body>
@@ -924,7 +626,7 @@ function generateEquipmentSchedulesHTML(project: PSGProject, opts: ConsultantOpt
 
 function generateConnectionDetailsSVG(project: PSGProject, opts: ConsultantOptions): string[] {
   const paper = PAPER_SIZES[opts.paper];
-  
+
   const connection1 = `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="boltPattern" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
@@ -988,7 +690,7 @@ function generateConnectionDetailsSVG(project: PSGProject, opts: ConsultantOptio
       <text x="10" y="45" font-size="6" fill="#374151">Date: ${opts.date}</text>
     </g>
   </svg>`;
-  
+
   return [connection1];
 }
 
@@ -1053,92 +755,94 @@ function generateLoadCalculationsHTML(project: PSGProject, opts: ConsultantOptio
       <p>Maximum Shear: V_u = w_uL/2 = 1,087(24)/2 = 13,044 lb = 13.0 kips</p>
       <p>Deflection: Δ_L = 5w_LL⁴/(384EI) = 0.42 in < L/240 = 1.2 in ✓</p>
     </div>
-    
-    <h2>TYPICAL COLUMN CALCULATIONS</h2>
-    <div class="calculation">
-      <h3>Column C-1 (W8×24):</h3>
-      <p>Height: 10 ft | Tributary Area: 288 ft²</p>
-      <p>Dead Load: P_D = 266 plf × 24 ft = 6,384 lb = 6.4 kips</p>
-      <p>Live Load: P_L = 480 plf × 24 ft = 11,520 lb = 11.5 kips</p>
-      <p>Factored Load: P_u = 1.2(6.4) + 1.6(11.5) = 26.1 kips</p>
-      <p>Slenderness Ratio: KL/r = 1.0(120)/2.03 = 59 < 200 ✓</p>
-      <p>Design Capacity: φP_n = 180 kips > 26.1 kips ✓</p>
-    </div>
-    
-    <h2>LOAD COMBINATIONS</h2>
+  </div>
+</body>
+</html>`;
+}
+
+function generateEquipmentSchedulesHTML(project: PSGProject, opts: ConsultantOptions): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MEP Equipment Schedules - ${project.name}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    h1 { color: #1e3a8a; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th { background: #1e3a8a; color: white; padding: 12px; text-align: left; font-weight: bold; }
+    td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
+    tr:nth-child(even) { background: #f8fafc; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MEP EQUIPMENT SCHEDULES</h1>
     <table>
       <thead>
         <tr>
-          <th>Load Combination</th>
-          <th>Formula</th>
-          <th>Application</th>
+          <th>ID</th>
+          <th>Equipment Type</th>
+          <th>Model/Size</th>
+          <th>Location</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>Basic</td>
-          <td>1.4D</td>
-          <td>Dead load only</td>
-        </tr>
-        <tr>
-          <td>Basic</td>
-          <td>1.2D + 1.6L + 0.5(L_r or S or R)</td>
-          <td>Typical floor and roof</td>
-        </tr>
-        <tr>
-          <td>Wind</td>
-          <td>1.2D + 1.0W + L + 0.5(L_r or S or R)</td>
-          <td>Wind dominant</td>
-        </tr>
-        <tr>
-          <td>Seismic</td>
-          <td>1.2D + 1.0E + L + 0.2S</td>
-          <td>Seismic dominant</td>
+          <td>AHU-1</td>
+          <td>Air Handler</td>
+          <td>2,000 CFM</td>
+          <td>Mechanical Room</td>
         </tr>
       </tbody>
     </table>
-    
-    <h2>DEFLECTION LIMITS</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Member Type</th>
-          <th>Live Load</th>
-          <th>Total Load</th>
-          <th>Wind/Seismic</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Roof Beams:</td>
-          <td>L/240</td>
-          <td>L/180</td>
-          <td>L/120</td>
-        </tr>
-        <tr>
-          <td>Floor Beams:</td>
-          <td>L/360</td>
-          <td>L/240</td>
-          <td>L/240</td>
-        </tr>
-        <tr>
-          <td>Columns:</td>
-          <td>L/240</td>
-          <td>L/180</td>
-          <td>L/120</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <p><strong>Code Reference:</strong> <span class="code-reference">ASCE 7-22 Minimum Design Loads and Associated Criteria</span></p>
   </div>
 </body>
 </html>`;
 }
 
 // =============================================================================
-// HELPER FUNCTIONS
+// MEP ENGINEERING DRAWINGS
 // =============================================================================
+
+function generateMEPDrawings(project: PSGProject, opts: ConsultantOptions): MEPDrawings {
+  return {
+    hvacPlan: "HVAC Plan Placeholder",
+    electricalPowerPlan: "Electrical Power Plan Placeholder",
+    electricalLightingPlan: "Electrical Lighting Plan Placeholder",
+    plumbingPlan: "Plumbing Plan Placeholder",
+    fireProtectionPlan: "Fire Protection Plan Placeholder",
+    equipmentSchedules: generateEquipmentSchedulesHTML(project, opts)
+  };
+}
+
+// =============================================================================
+// CIVIL ENGINEERING DRAWINGS
+// =============================================================================
+
+function generateCivilDrawings(project: PSGProject, opts: ConsultantOptions): CivilDrawings {
+  return {
+    siteGradingPlan: "Site Grading Plan Placeholder",
+    utilityPlan: "Utility Plan Placeholder",
+    drainagePlan: "Drainage Plan Placeholder",
+    erosionControlPlan: "Erosion Control Plan Placeholder",
+    pavementPlan: "Pavement Plan Placeholder"
+  };
+}
+
+// =============================================================================
+// COORDINATION DRAWINGS
+// =============================================================================
+
+function generateCoordinationDrawings(project: PSGProject, opts: ConsultantOptions): CoordinationDrawings {
+  return {
+    mepCoordinationPlan: "MEP Coordination Plan Placeholder",
+    penetrationSchedule: "Penetration Schedule Placeholder",
+    conflictResolution: "Conflict Resolution Placeholder",
+    interfaceDetails: ["Interface Detail Placeholder"]
+  };
+}
 
 function escapeXml(str: string): string {
   return str

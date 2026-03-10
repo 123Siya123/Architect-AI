@@ -143,7 +143,7 @@ export function generateConstructionDocuments(
   options: Partial<ConstructionDocumentOptions> = {}
 ): ConstructionDocumentSet {
   const opts: ConstructionDocumentOptions = { ...DEFAULT_CONSTRUCTION_OPTIONS, ...options };
-  
+
   const documents: ConstructionDocumentSet = {
     titleSheet: generateTitleSheet(project, opts),
     sitePlan: generateSitePlan(project, opts),
@@ -169,7 +169,7 @@ export function generateConstructionDocuments(
 function generateTitleSheet(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
   const projectInfo = extractProjectInfo(project);
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#fff;font-family:'Arial',sans-serif;">
     <defs>
       <linearGradient id="titleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -264,7 +264,7 @@ function generateTitleSheet(project: PSGProject, opts: ConstructionDocumentOptio
 function generateSitePlan(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
   const siteInfo = extractSiteInfo(project);
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f0f9ff;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="propertyLine" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -353,9 +353,9 @@ function generateFloorPlans(project: PSGProject, opts: ConstructionDocumentOptio
   const maxY = Math.max(...Object.values(project.nodes)
     .filter(n => n.type === 'Wall' || n.type === 'Room')
     .map(n => n.position.y));
-  
+
   const totalFloors = Math.max(1, Math.ceil(maxY / 2.5));
-  
+
   for (let floor = 0; floor < totalFloors; floor++) {
     const title = floor === 0 ? 'Ground Floor Plan' : `Level ${floor} Plan`;
     const svg = generateFloorPlanSVG(project, floor, {
@@ -367,7 +367,7 @@ function generateFloorPlans(project: PSGProject, opts: ConstructionDocumentOptio
     });
     floorPlans.push(svg);
   }
-  
+
   return floorPlans;
 }
 
@@ -378,7 +378,7 @@ function generateFloorPlans(project: PSGProject, opts: ConstructionDocumentOptio
 function generateRoofPlan(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
   const roofInfo = extractRoofInfo(project);
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <marker id="slopeArrow" viewBox="0 0 20 20" refX="10" refY="10" markerWidth="12" markerHeight="12" orient="auto">
@@ -458,7 +458,7 @@ function generateRoofPlan(project: PSGProject, opts: ConstructionDocumentOptions
 function generateElevations(project: PSGProject, opts: ConstructionDocumentOptions): string[] {
   const elevations: string[] = [];
   const sides: ('North' | 'South' | 'East' | 'West')[] = ['North', 'South', 'East', 'West'];
-  
+
   sides.forEach(side => {
     const elevation = generateElevationSVG(project, side, {
       ...opts,
@@ -468,7 +468,7 @@ function generateElevations(project: PSGProject, opts: ConstructionDocumentOptio
     });
     elevations.push(elevation);
   });
-  
+
   return elevations;
 }
 
@@ -478,22 +478,22 @@ function generateElevations(project: PSGProject, opts: ConstructionDocumentOptio
 
 function generateBuildingSections(project: PSGProject, opts: ConstructionDocumentOptions): string[] {
   const sections: string[] = [];
-  
+
   // Generate longitudinal section
   const longitudinalSection = generateBuildingSectionSVG(project, 'longitudinal', opts);
   sections.push(longitudinalSection);
-  
+
   // Generate transverse section
   const transverseSection = generateBuildingSectionSVG(project, 'transverse', opts);
   sections.push(transverseSection);
-  
+
   return sections;
 }
 
 function generateBuildingSectionSVG(project: PSGProject, type: 'longitudinal' | 'transverse', opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
   const sectionInfo = extractSectionInfo(project, type);
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="insulation" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
@@ -568,21 +568,21 @@ function generateBuildingSectionSVG(project: PSGProject, type: 'longitudinal' | 
 
 function generateWallSections(project: PSGProject, opts: ConstructionDocumentOptions): string[] {
   const sections: string[] = [];
-  
+
   // Generate typical wall sections
   const exteriorWallSection = generateWallSectionSVG(project, 'exterior', opts);
   sections.push(exteriorWallSection);
-  
+
   const foundationWallSection = generateWallSectionSVG(project, 'foundation', opts);
   sections.push(foundationWallSection);
-  
+
   return sections;
 }
 
 function generateWallSectionSVG(project: PSGProject, type: 'exterior' | 'foundation', opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
   const wallInfo = extractWallSectionInfo(project, type);
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="brickPattern" x="0" y="0" width="8" height="4" patternUnits="userSpaceOnUse">
@@ -690,26 +690,26 @@ function generateWallSectionSVG(project: PSGProject, type: 'exterior' | 'foundat
 
 function generateDetailSheets(project: PSGProject, opts: ConstructionDocumentOptions): string[] {
   const details: string[] = [];
-  
+
   // Generate stair details
   const stairDetail = generateStairDetailSVG(project, opts);
   details.push(stairDetail);
-  
+
   // Generate window details
   const windowDetail = generateWindowDetailSVG(project, opts);
   details.push(windowDetail);
-  
+
   // Generate door details
   const doorDetail = generateDoorDetailSVG(project, opts);
   details.push(doorDetail);
-  
+
   return details;
 }
 
 function generateStairDetailSVG(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
   const stairInfo = extractStairInfo(project);
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <marker id="dimensionArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
@@ -773,7 +773,7 @@ function generateStairDetailSVG(project: PSGProject, opts: ConstructionDocumentO
 
 function generateWindowDetailSVG(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="glazingPattern" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
@@ -838,7 +838,7 @@ function generateWindowDetailSVG(project: PSGProject, opts: ConstructionDocument
 
 function generateDoorDetailSVG(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const paper = PAPER_SIZES[opts.paper];
-  
+
   return `<svg viewBox="0 0 ${paper.width} ${paper.height}" xmlns="http://www.w3.org/2000/svg" style="background:#f8fafc;font-family:'Arial',sans-serif;">
     <defs>
       <pattern id="doorPattern" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
@@ -928,7 +928,7 @@ function generateDoorDetailSVG(project: PSGProject, opts: ConstructionDocumentOp
 
 function generateDoorWindowSchedule(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const schedule = extractDoorWindowSchedule(project);
-  
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1042,7 +1042,7 @@ function generateDoorWindowSchedule(project: PSGProject, opts: ConstructionDocum
 
 function generateFinishSchedule(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const schedule = extractFinishSchedule(project);
-  
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1138,7 +1138,7 @@ function generateFinishSchedule(project: PSGProject, opts: ConstructionDocumentO
 
 function generateTechnicalSpecifications(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const specs = extractTechnicalSpecifications(project, opts);
-  
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1333,7 +1333,7 @@ function generateTechnicalSpecifications(project: PSGProject, opts: Construction
 
 function generateCodeComplianceDocument(project: PSGProject, opts: ConstructionDocumentOptions): string {
   const compliance = extractCodeCompliance(project, opts);
-  
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1565,14 +1565,14 @@ function extractProjectInfo(project: PSGProject) {
   const nodes = Object.values(project.nodes);
   const walls = nodes.filter(n => n.type === 'Wall' || n.type === 'Partition');
   const rooms = nodes.filter(n => n.type === 'Room');
-  
+
   const totalArea = rooms.reduce((sum, room) => {
     return sum + (room.dimensions.x * room.dimensions.z);
   }, 0);
-  
+
   const maxY = Math.max(...walls.map(w => w.position.y));
   const floors = Math.max(1, Math.ceil(maxY / 2.5));
-  
+
   return {
     buildingType: 'Residential',
     location: 'To be determined',
@@ -1588,12 +1588,13 @@ function extractSiteInfo(project: PSGProject) {
   const buildingArea = nodes.filter(n => n.type === 'Slab').reduce((sum, slab) => {
     return sum + (slab.dimensions.x * slab.dimensions.z);
   }, 0);
-  
+
   const propertyArea = buildingArea * 4; // Assume 25% building coverage
-  const buildingCoverage = ((buildingArea / propertyArea) * 100).toFixed(1);
-  const imperviousSurface = (buildingCoverage * 1.5).toFixed(1); // Rough estimate
+  const buildingCoverageNum = (buildingArea / propertyArea) * 100;
+  const buildingCoverage = buildingCoverageNum.toFixed(1);
+  const imperviousSurface = (buildingCoverageNum * 1.5).toFixed(1); // Rough estimate
   const landscapeArea = (100 - parseFloat(imperviousSurface)).toFixed(1);
-  
+
   return {
     propertyArea: propertyArea.toFixed(1),
     buildingArea: buildingArea.toFixed(1),
@@ -1611,7 +1612,7 @@ function extractRoofInfo(project: PSGProject) {
   const roofArea = nodes.filter(n => n.type === 'Slab' && n.position.y > 2).reduce((sum, slab) => {
     return sum + (slab.dimensions.x * slab.dimensions.z);
   }, 0);
-  
+
   return {
     roofArea: roofArea.toFixed(1),
     roofSlope: '4',
@@ -1626,12 +1627,12 @@ function extractSectionInfo(project: PSGProject, type: 'longitudinal' | 'transve
   const nodes = Object.values(project.nodes);
   const walls = nodes.filter(n => n.type === 'Wall' || n.type === 'Partition');
   const slabs = nodes.filter(n => n.type === 'Slab');
-  
+
   const maxY = Math.max(...walls.map(w => w.position.y + w.dimensions.y));
   const maxHeight = maxY + 1; // Add roof height
   const buildingWidth = type === 'longitudinal' ? 12 : 8;
   const floorCount = Math.max(1, Math.ceil(maxY / 2.5));
-  
+
   return {
     buildingHeight: maxHeight.toFixed(1),
     buildingWidth: buildingWidth.toFixed(1),
@@ -1794,7 +1795,7 @@ function extractCodeCompliance(project: PSGProject, opts: ConstructionDocumentOp
   const nodes = Object.values(project.nodes);
   const rooms = nodes.filter(n => n.type === 'Room');
   const totalArea = rooms.reduce((sum, room) => sum + (room.dimensions.x * room.dimensions.z), 0);
-  
+
   return {
     overallStatus: 'Compliant with conditions',
     compliantItems: 24,

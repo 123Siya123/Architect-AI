@@ -57,15 +57,15 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const architectName = 'Principal AI Architect';
-  const architectTitle = 'Design Lead';
+  const architectName = 'Professional Architect';
+  const architectTitle = 'Your Design Consultant';
 
   useEffect(() => {
     // Initialize with welcome message
     const welcomeMessage: ChatMessage = {
       id: '1',
       role: 'architect',
-      content: `Hello! I am your ${architectName}, ${architectTitle}. I am excited to help bring your vision to life. This initial consultation will help me understand your needs, budget, site conditions, and design preferences so we can create something truly exceptional together.\n\nLet's start with some basic information about you and your project.`,
+      content: `Hello! I'm your ${architectName}, ${architectTitle}. I'm excited to help bring your vision to life. This initial consultation will help me understand your needs, budget, site conditions, and design preferences so we can create something truly exceptional together.\n\nLet's start with some basic information about you and your project.`,
       timestamp: new Date(),
       type: 'text'
     };
@@ -192,53 +192,66 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-lg">
+    <div className="flex flex-col h-full bg-[#12121a] rounded-2xl shadow-2xl border border-white/5 overflow-hidden">
       {/* Header */}
-      <div className="bg-[#1a1a2e] text-white p-8 border-b border-white/10">
-        <h2 className="text-3xl font-extrabold tracking-tight mb-2">Architectural Consultation</h2>
-        <p className="text-blue-400 font-medium">Phase {currentPhase + 1} of {INTERVIEW_PHASES.length}: {INTERVIEW_PHASES[currentPhase].title}</p>
-        <p className="text-sm text-gray-400 mt-2 italic">{INTERVIEW_PHASES[currentPhase].description}</p>
+      <div className="bg-[#1a1a2e] p-8 border-b border-white/10 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+        <div className="relative z-10">
+          <h2 className="text-3xl font-extrabold tracking-tight mb-2 text-white">Professional Client Consultation</h2>
+          <div className="flex items-center gap-3">
+            <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs font-bold uppercase rounded-full border border-blue-600/30">
+              Phase {currentPhase + 1} of {INTERVIEW_PHASES.length}
+            </span>
+            <span className="text-white/60 font-medium">{INTERVIEW_PHASES[currentPhase].title}</span>
+          </div>
+          <p className="text-sm text-gray-400 mt-3 italic font-light">{INTERVIEW_PHASES[currentPhase].description}</p>
+        </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-gray-100 p-4">
+      <div className="bg-[#12121a] px-8 py-4 border-b border-white/5">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">Progress </span>
-          <span className="text-sm text-gray-500">{currentPhase + 1} / {INTERVIEW_PHASES.length}</span>
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Interview Progress</span>
+          <span className="text-xs font-bold text-blue-400">{Math.round(((currentPhase + 1) / INTERVIEW_PHASES.length) * 100)}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+        <div className="w-full bg-white/5 rounded-full h-1 overflow-hidden">
           <div
-            className="bg-blue-600 h-full rounded-full transition-all duration-500 ease-out"
+            className="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-1000 ease-in-out"
             style={{ width: `${((currentPhase + 1) / INTERVIEW_PHASES.length) * 100}%` }}
           />
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
         {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.role === 'client' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-3xl ${message.role === 'client' ? 'order-2' : 'order-1'}`}>
-              <div className={`p-4 rounded-lg ${message.role === 'client'
-                ? 'bg-blue-600 text-white'
+          <div key={message.id} className={`flex ${message.role === 'client' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-500`}>
+            <div className={`max-w-[85%] ${message.role === 'client' ? 'order-2' : 'order-1'} group`}>
+              <div className={`p-5 rounded-2xl ${message.role === 'client'
+                ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-900/20'
                 : message.type === 'summary'
-                  ? 'bg-green-50 border-2 border-green-200 text-green-800'
-                  : 'bg-gray-100 text-gray-800'
+                  ? 'bg-green-500/10 border border-green-500/30 text-green-400 shadow-lg shadow-green-900/10'
+                  : 'bg-white/5 border border-white/10 text-gray-200 backdrop-blur-md'
                 }`}>
-                <div className="prose prose-sm max-w-none whitespace-pre-wrap" style={{ fontSize: '0.875rem', lineHeight: '1.5' }}>
+                <div
+                  className={`prose prose-invert prose-sm max-w-none ${message.role === 'client' ? 'text-white' : 'text-gray-200'}`}
+                  style={{ fontSize: '0.95rem', lineHeight: '1.6' }}
+                >
                   <ReactMarkdown>{message.content}</ReactMarkdown>
                 </div>
                 {message.attachments && message.attachments.length > 0 && (
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
                     {message.attachments.map((attachment, index) => (
-                      <div key={index} className="text-xs opacity-75">
-                        📎 {attachment.name}
+                      <div key={index} className="flex items-center gap-2 text-xs font-medium px-3 py-2 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                        <span className="text-lg">{attachment.type === 'image' ? '🖼️' : '📄'}</span>
+                        <span className="truncate">{attachment.name}</span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-              <div className={`text-xs text-gray-500 mt-1 ${message.role === 'client' ? 'text-right' : ''}`}>
+              <div className={`text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-2 flex items-center gap-2 ${message.role === 'client' ? 'justify-end' : 'justify-start'}`}>
+                {message.role === 'architect' && <span className="text-blue-500">Principal Architect</span>}
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
@@ -247,11 +260,11 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
 
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-gray-800 p-4 rounded-lg">
+            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-blue-500/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-blue-500/80 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
             </div>
           </div>
@@ -260,26 +273,18 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
         <div ref={messagesEndRef} />
       </div>
 
-      {/* File Upload Preview */}
-      {uploadedFiles.length > 0 && (
-        <div className="px-6 pb-4">
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">Files to upload:</span>
-              <button
-                onClick={() => setUploadedFiles([])}
-                className="text-red-500 hover:text-red-700 text-sm"
-              >
-                Clear all
-              </button>
-            </div>
-            <div className="space-y-1">
+      {/* Input Area */}
+      <div className="border-t border-white/5 p-8 bg-[#161623]">
+        {/* File Upload Preview */}
+        {uploadedFiles.length > 0 && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2">
               {uploadedFiles.map((file, index) => (
-                <div key={index} className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">{file.name}</span>
+                <div key={index} className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-white group">
+                  <span className="truncate max-w-[150px]">{file.name}</span>
                   <button
                     onClick={() => removeFile(index)}
-                    className="text-red-500 hover:text-red-700 ml-2"
+                    className="hover:text-red-400 transition-colors"
                   >
                     ✕
                   </button>
@@ -287,39 +292,48 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Input Area */}
-      <div className="border-t border-gray-200 p-6">
-        <div className="flex items-end space-x-3">
-          <div className="flex-1">
+        <div className="flex flex-col gap-4">
+          <div className="relative group">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Describe your architectural vision or answer the questions above..."
-              className="w-full p-4 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 text-gray-800"
-              rows={2}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder="Type your message here..."
+              className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl resize-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-white placeholder:text-gray-500 outline-none scrollbar-none"
+              rows={3}
               disabled={isTyping}
             />
+            <div className="absolute bottom-4 right-4 flex items-center gap-2">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isTyping}
+                className="p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                title="Attach Files"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                </svg>
+              </button>
+              <button
+                onClick={handleSendMessage}
+                disabled={isTyping || (!inputValue.trim() && uploadedFiles.length === 0)}
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-600/20 disabled:opacity-30 disabled:grayscale transition-all flex items-center gap-2 active:scale-95"
+              >
+                <span>Send</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div className="flex flex-col space-y-2">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isTyping}
-              className="p-3 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              📎
-            </button>
-            <button
-              onClick={handleSendMessage}
-              disabled={isTyping || (!inputValue.trim() && uploadedFiles.length === 0)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-blue-500/20 active:scale-95 flex items-center justify-center"
-            >
-              Send
-            </button>
-          </div>
+          <p className="text-[10px] text-gray-500 text-center uppercase tracking-widest font-medium">Professional Consultation Protocol • AI Architect v4.2</p>
         </div>
         <input
           ref={fileInputRef}
@@ -328,7 +342,6 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
           accept="image/*,.pdf,.doc,.docx,.txt"
           onChange={handleFileUpload}
           className="hidden"
-          style={{ display: 'none', position: 'absolute', width: 0, height: 0, opacity: 0 }}
         />
       </div>
     </div>

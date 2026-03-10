@@ -103,7 +103,7 @@ function snapVec3(vec: Vec3, gridSize: number): Vec3 {
 export function applyOperation(
     project: PSGProject,
     operation: PSGOperation
-): OperationResult & { project?: PSGProject } {
+): OperationResult & { project?: PSGProject; nodeId?: string } {
     // Step 1: Validate
     const validation = validateOperation(operation, project);
 
@@ -201,6 +201,7 @@ export function applyOperation(
         success: true,
         operation,
         project: updatedProject,
+        nodeId: operation.type === 'add_node' ? (updatedProject.nodes[Object.keys(updatedProject.nodes).pop()!]?.id) : operation.target_id,
         warnings: validation.warnings,
         errors: [],
     };

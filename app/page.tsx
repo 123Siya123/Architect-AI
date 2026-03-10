@@ -60,7 +60,9 @@ export default function HomePage() {
           <div className="hero-buttons">
             <button className="btn-primary" onClick={() => handleSelectTemplate('empty')}>Start Designing</button>
             <button className="btn-secondary" onClick={() => router.push('/professional-client')}>Professional Project</button>
-            <button className="btn-secondary" onClick={() => setShowHistory(!showHistory)}>History</button>
+            <button className="btn-secondary history-btn" onClick={() => setShowHistory(!showHistory)}>
+              {showHistory ? 'Hide History' : 'History'}
+            </button>
           </div>
         </div>
       </section>
