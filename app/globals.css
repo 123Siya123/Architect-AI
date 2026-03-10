@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /**
  * =============================================================================
  * APP/GLOBALS.CSS — Global Design System Styles
@@ -1619,7 +1621,7 @@ button:disabled {
 .export-modal {
   width: 500px;
   max-width: 90vw;
-  max-height: 90vh;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   background: var(--bg-panel-solid);
@@ -1662,7 +1664,7 @@ button:disabled {
   padding: var(--space-4);
   overflow-y: auto;
   flex: 1;
-  min-height: 0;
+  min-height: 200px;
 }
 
 @keyframes modalIn {

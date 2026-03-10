@@ -544,6 +544,7 @@ export interface AIChatRequest {
     type: string;
     data: string;
   }[];
+  professionalContext?: string; // Professional client project context
 }
 
 /** Response from the AI chat endpoint */
@@ -601,18 +602,3 @@ export type ExportFormat =
   | 'bill_of_quantities' // Detailed BoQ
   | 'full_package';    // Everything above
 
-/** Request to generate 3D model from a single image */
-export interface ImageTo3DRequest {
-  image_data: string;          // base64 encoded image
-  reference_measurement: string; // e.g., "The front door is 2.1m high"
-  project: PSGProject;           // Current state of the house (to add to)
-  budget: number;
-  currency: string;
-}
-
-/** Response with operations to build the 3D model from the image */
-export interface ImageTo3DResponse {
-  message: string;             // AI's text response
-  operations: PSGOperation[];  // Edits to apply (add_node)
-  warnings: OperationWarning[];
-}
