@@ -1,0 +1,401 @@
+{
+  "id": "3ea7da3b-68b5-4772-9f10-6a900836a9ac",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-10T15:42:00.190Z",
+  "modified_at": "2026-03-10T15:44:29.976Z",
+  "version": 8,
+  "root_node_id": "house_32467bdf",
+  "nodes": {
+    "house_32467bdf": {
+      "id": "house_32467bdf",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground"
+      ],
+      "created_at": "2026-03-10T15:42:00.190Z",
+      "modified_at": "2026-03-10T15:44:29.972Z",
+      "version": 1
+    },
+    "floor_ground": {
+      "id": "floor_ground",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_32467bdf",
+      "children_ids": [
+        "slab_ground",
+        "room_main"
+      ],
+      "created_at": "2026-03-10T15:44:29.972Z",
+      "modified_at": "2026-03-10T15:44:29.973Z",
+      "version": 1
+    },
+    "slab_ground": {
+      "id": "slab_ground",
+      "type": "Slab",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 0,
+        "y": -0.05,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 51,
+        "y": 0.1,
+        "z": 26
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [],
+      "created_at": "2026-03-10T15:44:29.973Z",
+      "modified_at": "2026-03-10T15:44:29.973Z",
+      "version": 1
+    },
+    "room_main": {
+      "id": "room_main",
+      "type": "Room",
+      "name": "Main Residence",
+      "position": {
+        "x": 0,
+        "y": 2.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 51,
+        "y": 4.5,
+        "z": 26
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [
+        "wall_p5nh372v",
+        "wall_6ypkwuh1",
+        "wall_7mly4xma",
+        "wall_fjrzxbhe"
+      ],
+      "created_at": "2026-03-10T15:44:29.973Z",
+      "modified_at": "2026-03-10T15:44:29.976Z",
+      "version": 1
+    },
+    "wall_p5nh372v": {
+      "id": "wall_p5nh372v",
+      "type": "Wall",
+      "name": "North Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 2.25,
+        "z": -12.9
+      },
+      "dimensions": {
+        "x": 51,
+        "y": 4.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "assembly": [
+        {
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_render_white"
+        },
+        {
+          "material_id": "mat_concrete_block",
+          "thickness": 0.18,
+          "role": "structural",
+          "order": 1
+        }
+      ],
+      "created_at": "2026-03-10T15:44:29.974Z",
+      "modified_at": "2026-03-10T15:44:29.974Z",
+      "version": 1
+    },
+    "wall_6ypkwuh1": {
+      "id": "wall_6ypkwuh1",
+      "type": "Wall",
+      "name": "South Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 2.25,
+        "z": 12.9
+      },
+      "dimensions": {
+        "x": 51,
+        "y": 4.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_render_white",
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 0
+        },
+        {
+          "material_id": "mat_concrete_block",
+          "thickness": 0.18,
+          "role": "structural",
+          "order": 1
+        }
+      ],
+      "created_at": "2026-03-10T15:44:29.975Z",
+      "modified_at": "2026-03-10T15:44:29.975Z",
+      "version": 1
+    },
+    "wall_7mly4xma": {
+      "id": "wall_7mly4xma",
+      "type": "Wall",
+      "name": "East Exterior Wall",
+      "position": {
+        "x": 25.400000000000002,
+        "y": 2.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 25.6,
+        "y": 4.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_render_white",
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 0
+        },
+        {
+          "order": 1,
+          "role": "structural",
+          "thickness": 0.18,
+          "material_id": "mat_concrete_block"
+        }
+      ],
+      "created_at": "2026-03-10T15:44:29.976Z",
+      "modified_at": "2026-03-10T15:44:29.976Z",
+      "version": 1
+    },
+    "wall_fjrzxbhe": {
+      "id": "wall_fjrzxbhe",
+      "type": "Wall",
+      "name": "West Exterior Wall",
+      "position": {
+        "x": -25.400000000000002,
+        "y": 2.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 25.6,
+        "y": 4.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "assembly": [
+        {
+          "thickness": 0.02,
+          "material_id": "mat_render_white",
+          "order": 0,
+          "role": "finish"
+        },
+        {
+          "thickness": 0.18,
+          "material_id": "mat_concrete_block",
+          "order": 1,
+          "role": "structural"
+        }
+      ],
+      "created_at": "2026-03-10T15:44:29.976Z",
+      "modified_at": "2026-03-10T15:44:29.976Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 38188.8,
+    "remaining": 161811.2,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

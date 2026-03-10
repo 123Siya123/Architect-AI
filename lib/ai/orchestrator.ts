@@ -72,10 +72,6 @@ import {
     INTERIOR_ARCHITECT_PROMPT,
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
-import { IdempotencyRegistry, NodeRegistryEntry } from './idempotency-registry';
-import { OperationOutcome, PhysicsViolation } from './types';
-import { wallCenterY, floorTopY, STANDARDS } from './geometry-formulas';
-import { checkCompletionGates, GateResult } from './completion-gates';
 
 
 /**
@@ -83,36 +79,11 @@ import { checkCompletionGates, GateResult } from './completion-gates';
  */
 interface TurnRecord {
     turn: number;
-    agent: string;
-    decision: string;
+    agent: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'orchestrator' | 'aesthetic_designer';
+    instruction: string;
     operations: string[];
+    result: 'SUCCESS' | 'FAILED';
     violations: string[];
-    result: 'SUCCESS' | 'FAILED' | 'SKIPPED_DUPLICATE' | 'NEEDS_PHYSICS_FIX';
-    outcome?: OperationOutcome;
-}
-
-async function applyPhysicsAutoFix(
-    violation: PhysicsViolation,
-    project: PSGProject
-): Promise<PSGOperation | null> {
-    const nodeId = violation.nodeId;
-    const existingNode = project.nodes[nodeId];
-    if (!existingNode) {
-        console.error(`[AutoFix] ABORT: node ${nodeId} not found. Will not create new node.`);
-        return null;
-    }
-
-    return {
-        type: "set_node_position",
-        target_id: nodeId,
-        params: {
-            position_x: violation.suggestedFix.x ?? existingNode.position.x,
-            position_y: violation.suggestedFix.y ?? existingNode.position.y,
-            position_z: violation.suggestedFix.z ?? existingNode.position.z,
-            source: "physics_autofix"
-        },
-        timestamp: new Date().toISOString()
-    };
 }
 
 // =============================================================================
@@ -123,35 +94,22 @@ interface OrchestratorDecision {
     reasoning: string;
     delegate_to: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'aesthetic_designer' | 'DESIGN_COMPLETE';
     instruction: string;
-    phase: OrchestratorPhase;
     priority?: 'critical' | 'high' | 'normal';
-}
-
-export type OrchestratorPhase =
-    | 'PHASE_0_TEMPLATE_CHECK'
-    | 'PHASE_1_SITE_ANALYSIS'
-    | 'PHASE_2_MASSING'
-    | 'PHASE_3_ROOM_LAYOUT'
-    | 'PHASE_4_OPENINGS'
-    | 'PHASE_5_VERTICAL'
-    | 'PHASE_6_ROOF'
-    | 'PHASE_7_DETAILS'
-    | 'PHASE_8_MATERIALS'
-    | 'PHASE_9_EXPORT_PREP'
-    | 'PHASE_COMPLETE';
-
-export interface BuildingBrief {
-    buildingType: string;
-    floorCount: number;
-    style: string;
-    rooms: string[];
-    specialFeatures: string[];
-    budgetHint?: string;
 }
 
 interface PhysicsValidation {
     status: 'PHYSICS_VALID' | 'VIOLATIONS_FOUND';
-    violations: PhysicsViolation[];
+    violations: Array<{
+        element_id?: string;
+        issue: string;
+        severity: 'CRITICAL' | 'WARNING' | 'INFO';
+        suggested_fix?: {
+            action: string;
+            target_id?: string;
+            exact_coordinates?: { x?: number, y?: number, z?: number };
+            params?: Record<string, unknown>;
+        };
+    }>;
     summary: string;
 }
 
@@ -193,217 +151,770 @@ export async function sendChatToAI(
     signal?: AbortSignal
 ): Promise<AIChatResponse> {
     const progressLog: string[] = [];
+    const attachments = request.attachments; // Extract attachments
+
     const log = (message: string) => {
         progressLog.push(message);
-        console.log(`[Orchestrator] ${message}`);
-        onProgress?.({ type: 'log', content: message });
+        console.log(`[Orchestrator] ${message}`); // Add console logging for visibility
+        try {
+            onProgress?.({ type: 'log', content: message });
+        } catch (e) {
+            // Ignore errors when sending progress (e.g. if client disconnected)
+        }
+    };
+    const emitOperation = (operation: PSGOperation, turn: number, agent: TurnRecord['agent']) => {
+        onProgress?.({ type: 'operation', operation, turn, agent });
     };
 
-    const emitOperation = (operation: PSGOperation, turn: number, agent: string) => {
-        onProgress?.({ type: 'operation', operation, turn, agent: agent as any });
-    };
+    console.log('[Orchestrator] ═══ PARALLEL COGNITIVE ARCHITECTURE STARTING ═══');
 
     let currentProject = { ...request.project, nodes: { ...request.project.nodes } };
     const allValidatedOps: PSGOperation[] = [];
     const maxTurns = 20;
     let finalMessage = '';
+    const decisionHistory = new DecisionHistory();
     const turnHistory: TurnRecord[] = [];
-    const registry = new IdempotencyRegistry();
-    let currentPhase: OrchestratorPhase = 'PHASE_1_SITE_ANALYSIS';
-    const config = getProviderConfig();
-
     const structuralTargets = inferStructuralTargets(request.message);
-    let pendingViolations: PhysicsViolation[] = [];
 
-    // Intervene if precision is low
+    let lastEngineerActions: string[] = [];
+    let structuralChangesSinceAestheticReview = 0;
+    let pendingViolations: PhysicsValidation['violations'] = [];
+    let wallSurfaceInsights: string[] = [];
+
     const precisionBootstrap = ensureConstructionPrecision(currentProject);
     if (precisionBootstrap) {
-        log(`   🛠️ SYSTEM INTERVENTION: Bootstrapping construction precision (0.5mm)...`);
-        const opResult = applyOperation(currentProject, precisionBootstrap);
-        if (opResult.success && opResult.project) {
-            currentProject = opResult.project;
-            allValidatedOps.push(precisionBootstrap);
-            log('🎯 Precision set to construction level (0.5mm)');
+        const bootstrapValidation = validateOperation(precisionBootstrap, currentProject);
+        if (bootstrapValidation.valid) {
+            const bootstrapApplied = applyOperation(currentProject, precisionBootstrap);
+            if (bootstrapApplied.project) {
+                currentProject = bootstrapApplied.project;
+                allValidatedOps.push(precisionBootstrap);
+                log('   🎯 Precision set to construction level (0.5mm)');
+            }
         }
     }
+
+    clearLogs();
+
+    log('═══ PARALLEL COGNITIVE ARCHITECTURE ═══');
+    log(`Goal: ${request.message}`);
+    log(`Target Floors: ${structuralTargets.requiredFloors}`);
+    log(`Complexity: ${structuralTargets.complexity} (Min Turns: ${structuralTargets.minTurns})`);
 
     for (let turn = 1; turn <= maxTurns; turn++) {
-        log(`\n───── 🔄 TURN ${turn}/${maxTurns} ── Phase: ${currentPhase} ───`);
+        log(`\n───── 🔄 TURN ${turn}/${maxTurns} ─────`);
 
-        const gateResults = checkCompletionGates(currentProject, pendingViolations);
-        const gatesPrompt = gateResults.map(g => `${g.passed ? '✅' : '❌'} ${g.name}${g.failReason ? ': ' + g.failReason : ''}`).join('\n');
+        let turnSuccess = false;
+        let turnRetries = 0;
+        const MAX_TURN_RETRIES = 5;
 
-        const context = `
-CURRENT PROJECT STATE (NODE TREE):
-${prepare3DNodeTree(currentProject)}
+        while (!turnSuccess && turnRetries < MAX_TURN_RETRIES) {
+            try {
+                // =============================================================
+                // STEP 1: ORCHESTRATOR — Analyze and Delegate
+                // =============================================================
+                const config = getProviderConfig();
 
-IDEMPOTENCY GUARD:
-${registry.getPromptBlock()}
-
-GEOMETRY STANDARDS (CONSTANTS):
-- Wall Height (STD): ${STANDARDS.WALL_HEIGHT_STD}m
-- Floor Slab Thickness: ${STANDARDS.SLAB_THICKNESS}m
-- Exterior Wall Thickness: ${STANDARDS.WALL_THICKNESS}m
-- Interior Wall Thickness: ${STANDARDS.INTERIOR_WALL_THICK}m
-
-COMPLETION STATUS:
-${gatesPrompt}
-
-PENDING PHYSICS VIOLATIONS:
-${pendingViolations.length > 0 ? pendingViolations.map(v => `- [${v.severity}] on ${v.nodeId}: ${v.description}`).join('\n') : 'None.'}
-
-TURN HISTORY:
-${formatTurnHistory(turnHistory)}
-`;
-
-        const orchestratorMessages = [
-            { role: 'system', content: ORCHESTRATOR_PROMPT },
-            { role: 'user', content: `USER COMMAND: ${request.message}\n\nCURRENT DESIGN STATE:\n${context}` }
-        ];
-
-        const orchestratorResult = await callProviderNoTools(config, orchestratorMessages as any, undefined, signal);
-        const decision = extractOrchestratorDecision(orchestratorResult.text);
-
-        log(`   🎯 DECISION: Delegate to ${decision.delegate_to}`);
-        log(`   📖 RATIONALE: ${decision.reasoning}`);
-        log(`   📜 INSTRUCTION: ${decision.instruction}`);
-
-        // Specialist delegation
-        const agentPrompt = decision.delegate_to === 'structural_engineer' ? STRUCTURAL_ENGINEER_PROMPT :
-            decision.delegate_to === 'interior_architect' ? INTERIOR_ARCHITECT_PROMPT :
-                decision.delegate_to === 'spatial_physicist' ? SPATIAL_PHYSICIST_PROMPT :
-                    AESTHETIC_DESIGNER_PROMPT;
-
-        const specialistMessages = [
-            { role: 'system', content: agentPrompt },
-            { role: 'user', content: `ORCHESTRATOR INSTRUCTION:\n${decision.instruction}\n\nCURRENT DESIGN STATE:\n${context}` }
-        ];
-
-        const useTools = decision.delegate_to === 'structural_engineer' || decision.delegate_to === 'interior_architect';
-        const specialistResult = useTools
-            ? await callProviderWithTools(config, specialistMessages as any, undefined, signal)
-            : await callProviderNoTools(config, specialistMessages as any, undefined, signal);
-
-        const turnOps: PSGOperation[] = [];
-        let successCount = 0;
-        let turnResult: 'SUCCESS' | 'FAILED' | 'SKIPPED_DUPLICATE' | 'NEEDS_PHYSICS_FIX' = 'FAILED';
-
-        if (specialistResult.toolCalls && specialistResult.toolCalls.length > 0) {
-            for (const tc of specialistResult.toolCalls) {
-                const op = toolCallToOperation(tc.name, tc.args);
-
-                // Idempotency check for add_node
-                if (op.type === 'add_node') {
-                    const semanticRole = (op.params.name as string) || (op.params.type as string);
-                    if (registry.checkExists(semanticRole)) {
-                        log(`   ⏭️ SKIPPED DUPLICATE: ${op.type} (${semanticRole})`);
-                        turnResult = 'SKIPPED_DUPLICATE';
-                        continue;
-                    }
-                    registry.register(semanticRole, 'pending');
+                if (attachments && attachments.length > 0 && config.provider !== 'gemini') {
+                    log(`   ⚠️ WARNING: Attachments ignored. Provider ${config.provider} does not support images.`);
                 }
 
-                const validation = validateOperation(op, currentProject);
-                if (validation.valid) {
-                    const opResult = applyOperation(currentProject, op);
-                    if (opResult.success && opResult.project) {
-                        currentProject = opResult.project;
-                        allValidatedOps.push(op);
-                        turnOps.push(op);
-                        successCount++;
+                const asciiPlan = generateASCIIFloorPlan(currentProject);
+                const nodeTree = prepare3DNodeTree(currentProject);
+                const checklist = prepareProgressChecklist(currentProject);
+                const budgetContext = prepareBudgetContext(currentProject);
+                const materialContext = prepareMaterialContext(materials);
+                const preTurnCompletion = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                const hasBlockingViolations = pendingViolations.some(v => v.severity === 'CRITICAL' || v.severity === 'WARNING');
 
-                        // Update registry with correct ID
-                        if (op.type === 'add_node') {
-                            const semanticRole = (op.params.name as string) || (op.params.type as string);
-                            // We need to find the new node ID. Usually applyOperation returns it.
-                            // In our PSG implementation, we can look at the parent's last child or something.
-                            // But for now, let's just use the ID we generated in toolCallToOperation if it's there.
-                            registry.updateId(semanticRole, opResult.nodeId || 'unknown');
+                if (preTurnCompletion.complete && !hasBlockingViolations) {
+                    finalMessage = `Design completed in ${turn - 1} turns.`;
+                    decisionHistory.add({
+                        turn,
+                        agent: 'orchestrator',
+                        decision: 'Auto-stop on deterministic completion',
+                        reasoning: `All completion gates satisfied with no blocking violations`,
+                        result: 'success'
+                    });
+                    log(`   ✨ AUTO STOP: All completion gates satisfied. Ending early.`);
+                    turn = maxTurns + 1;
+                    turnSuccess = true;
+                    break;
+                }
+
+                // =============================================================
+                // STEP 0: SYSTEM INTERVENTION — Auto-fix Criticals
+                // =============================================================
+                const systemFixes = pendingViolations.filter(v =>
+                    v.severity === 'CRITICAL' &&
+                    v.suggested_fix &&
+                    (v.suggested_fix.exact_coordinates || v.suggested_fix.params)
+                );
+
+                if (systemFixes.length > 0) {
+                    log(`   🔧 SYSTEM INTERVENTION: Auto-applying ${systemFixes.length} critical fixes...`);
+                    let fixCount = 0;
+                    const systemActions: string[] = [];
+
+                    for (const fix of systemFixes) {
+                        try {
+                            const sf = fix.suggested_fix!;
+                            const args = {
+                                target_id: sf.target_id,
+                                ...(sf.params || {}),
+                                ...(sf.exact_coordinates ? {
+                                    position_x: sf.exact_coordinates.x,
+                                    position_y: sf.exact_coordinates.y,
+                                    position_z: sf.exact_coordinates.z
+                                } : {})
+                            };
+
+                            const op = toolCallToOperation(sf.action, args);
+                            const validation = validateOperation(op, currentProject);
+
+                            if (validation.valid) {
+                                allValidatedOps.push(op);
+                                emitOperation(op, turn, 'orchestrator');
+                                const applied = applyOperation(currentProject, op);
+                                if (applied.project) {
+                                    currentProject = applied.project;
+                                    fixCount++;
+                                    systemActions.push(`✅ ${sf.action} on ${sf.target_id}`);
+                                }
+                            } else {
+                                log(`   ⚠️ System Fix Rejected: ${sf.action} — ${validation.errors[0]}`);
+                            }
+                        } catch (e) {
+                            console.error('System fix failed', e);
                         }
-                        emitOperation(op, turn, decision.delegate_to);
                     }
+
+                    if (fixCount > 0) {
+                        // Reload state to be safe
+                        currentProject = await reloadProjectState(currentProject.id, currentProject);
+
+                        // Validate changes immediately
+                        log(`   🔬 SPATIAL PHYSICIST: Validating system fixes...`);
+                        const physicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
+
+                        const physicistResult = await callProviderNoTools(config, [
+                            { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                            { role: 'user', content: `SYSTEM INTERVENTION APPLIED:\n${systemActions.join('\n')}\n\n${physicistState}` }
+                        ], undefined, signal);
+
+                        const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
+                        if (physicsResult) {
+                            if (physicsResult.status === 'PHYSICS_VALID') {
+                                log(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                                pendingViolations = [];
+                            } else {
+                                pendingViolations = physicsResult.violations;
+                                log(`   ⚠️ VIOLATIONS REMAINING: ${pendingViolations.length}`);
+                            }
+                        }
+
+                        decisionHistory.add({
+                            turn, agent: 'orchestrator',
+                            decision: `System applied ${fixCount} critical fixes`,
+                            reasoning: 'Direct execution of physicist suggested fixes to break loop',
+                            result: 'success'
+                        });
+
+                        turnHistory.push({
+                            turn,
+                            agent: 'orchestrator',
+                            instruction: 'System Intervention',
+                            operations: systemActions,
+                            result: 'SUCCESS',
+                            violations: pendingViolations.map(v => v.issue)
+                        });
+
+                        turnSuccess = true;
+                        continue; // Skip to next turn
+                    }
+                }
+
+                // 🔴 ADD THIS: Detect loops before asking orchestrator to decide
+                const loopDetection = detectLoop(turnHistory);
+
+                // Build orchestrator context
+                let orchestratorContext = `USER REQUEST: ${request.message}\n\n`;
+                orchestratorContext += `CURRENT STATE:\n${asciiPlan}\n\n`;
+                orchestratorContext += `${nodeTree}\n\n`;
+                orchestratorContext += `${checklist}\n\n`;
+                orchestratorContext += `Budget: ${budgetContext}\n`;
+                orchestratorContext += `Available Materials: ${materialContext}\n\n`;
+
+                if (loopDetection.isLoop) {
+                    orchestratorContext += `
+🚨🚨🚨 CRITICAL: LOOP DETECTED 🚨🚨🚨
+
+LOOP TYPE: ${loopDetection.loopType}
+REPEATED: ${loopDetection.repeatedCount} times
+EVIDENCE:
+${loopDetection.evidence?.map(e => `  - ${e}`).join('\n')}
+
+🔴 MANDATORY ACTION REQUIRED:
+${loopDetection.suggestedAction}
+
+YOU MUST NOT delegate the same action again. Try:
+1. Different tool (set_node_position instead of move_node)
+2. Delete and rebuild the failing elements
+3. Escalate to human if geometrically impossible
+
+RECENT TURN HISTORY (for context):
+${formatTurnHistory(turnHistory.slice(-5))}
+
+═══════════════════════════════════════════════════\n\n`;
                 } else {
-                    log(`   ❌ REJECTED ${op.type}: ${validation.errors[0]}`);
+                    orchestratorContext += `RECENT TURN HISTORY:\n${formatTurnHistory(turnHistory.slice(-3))}\n\n`;
                 }
-            }
 
-            if (successCount > 0) turnResult = 'SUCCESS';
-
-            // Physics validation if we made changes
-            if (successCount > 0) {
-                const physicsState = `LATEST CHANGES:\n${turnOps.map(o => `${o.type} on ${o.target_id}`).join('\n')}\n\nFULL STATE:\n${prepare3DNodeTree(currentProject)}`;
-                const physicsResultLLM = await callProviderNoTools(config, [
-                    { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
-                    { role: 'user', content: physicsState }
-                ], undefined, signal);
-                const physParsed = extractPhysicsViolations(physicsResultLLM.text);
-
-                pendingViolations = physParsed.violations;
-                if (physParsed.status !== 'PHYSICS_VALID') {
-                    log(`   ⚠️ PHYSICS VIOLATIONS: Found ${pendingViolations.length} issues`);
-                    turnResult = 'NEEDS_PHYSICS_FIX';
+                orchestratorContext += `DECISION HISTORY:\n${decisionHistory.formatRecent(15)}\n\n`;
+                if (wallSurfaceInsights.length > 0) {
+                    orchestratorContext += `WALL SURFACE INSIGHTS:\n${wallSurfaceInsights.join('\n')}\n\n`;
                 }
-            }
-        } else {
-            // Non-tool response (analysis or designer feedback)
-            log(`   ℹ️ specialist provided text response only`);
-            if (decision.delegate_to === 'spatial_physicist') {
-                const physParsed = extractPhysicsViolations(specialistResult.text);
-                pendingViolations = physParsed.violations;
-                turnResult = physParsed.status === 'PHYSICS_VALID' ? 'SUCCESS' : 'NEEDS_PHYSICS_FIX';
-            } else if (decision.delegate_to === 'aesthetic_designer') {
-                turnResult = 'SUCCESS';
-            }
-        }
 
-        // Auto-fix critical violations
-        const criticalsToFix = pendingViolations.filter(v => v.severity === 'CRITICAL' && v.autoFixable);
-        if (criticalsToFix.length > 0) {
-            log(`🔧 AUTO-FIXING ${criticalsToFix.length} critical violations...`);
-            for (const v of criticalsToFix) {
-                const fixOp = await applyPhysicsAutoFix(v, currentProject);
-                if (fixOp) {
-                    const opResult = applyOperation(currentProject, fixOp);
-                    if (opResult.success && opResult.project) {
-                        currentProject = opResult.project;
-                        allValidatedOps.push(fixOp);
-                        emitOperation(fixOp, turn, 'system');
+                if (pendingViolations.length > 0) {
+                    orchestratorContext += `⚠️ PENDING PHYSICS VIOLATIONS (MUST ADDRESS):\n`;
+                    for (const v of pendingViolations) {
+                        orchestratorContext += `  - [${v.severity}] ${v.issue}`;
+                        if (v.suggested_fix) {
+                            orchestratorContext += ` → Fix: ${v.suggested_fix.action}`;
+                            if (v.suggested_fix.target_id) orchestratorContext += ` on ${v.suggested_fix.target_id}`;
+                            if (v.suggested_fix.exact_coordinates) {
+                                orchestratorContext += ` to [${v.suggested_fix.exact_coordinates.x}, ${v.suggested_fix.exact_coordinates.y}, ${v.suggested_fix.exact_coordinates.z}]`;
+                            }
+                        }
+                        orchestratorContext += '\n';
                     }
+                    orchestratorContext += '\n';
+                }
+
+                // Add conversation history
+                if (request.history && request.history.length > 0) {
+                    orchestratorContext += `CONVERSATION HISTORY:\n`;
+                    for (const msg of request.history.slice(-6)) {
+                        orchestratorContext += `[${msg.role}]: ${msg.content.substring(0, 200)}\n`;
+                    }
+                    orchestratorContext += '\n';
+                }
+
+                log(`   🧠 ORCHESTRATOR: Analyzing state...`);
+
+                logAgentStep({
+                    phase: 'ORCHESTRATOR',
+                    iteration: turn,
+                    model: config.model,
+                    status: 'pending',
+                    prompt: orchestratorContext.substring(0, 500) + '...'
+                });
+
+                log(`   🤖 Calling ${config.provider} (${config.model})...`); // Debug log
+
+                const orchestratorResult = await callProviderNoTools(config, [
+                    { role: 'system', content: ORCHESTRATOR_PROMPT },
+                    { role: 'user', content: orchestratorContext }
+                ], attachments, signal); // Pass attachments here
+
+                let decision = extractJSON<OrchestratorDecision>(orchestratorResult.text);
+
+                if (!decision) {
+                    log(`   ⚠️ Orchestrator returned non-JSON. Using text as guidance.`);
+                    finalMessage = orchestratorResult.text;
+                    // Try to continue — treat as delegation to engineer
+                    decisionHistory.add({
+                        turn, agent: 'orchestrator',
+                        decision: 'Non-structured response',
+                        reasoning: orchestratorResult.text.substring(0, 200),
+                        result: 'success'
+                    });
+                    turnSuccess = true;
+                    continue;
+                }
+
+                const completionStatus = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                const criticalPending = pendingViolations.filter(v => v.severity === 'CRITICAL');
+                const surfaceSculptPending = shouldApplySurfaceSculpt(currentProject, structuralTargets);
+
+                if (criticalPending.length > 0 && decision.delegate_to !== 'structural_engineer') {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'structural_engineer',
+                        instruction: buildCriticalFixInstruction(criticalPending),
+                        reasoning: `${decision.reasoning} | Overridden: CRITICAL violations must be fixed before other work.`
+                    };
+                } else if (decision.delegate_to !== 'structural_engineer' && !completionStatus.structureReady) {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'structural_engineer',
+                        instruction: completionStatus.nextInstruction,
+                        reasoning: `${decision.reasoning} | Overridden: core structure incomplete.`
+                    };
+                } else if (surfaceSculptPending) {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'interior_architect',
+                        instruction: buildSurfaceMatrixInstruction(currentProject, structuralTargets),
+                        reasoning: `${decision.reasoning} | Overridden: custom matrix sculpting requested and not yet applied.`
+                    };
+                } else if (decision.delegate_to === 'DESIGN_COMPLETE' && !completionStatus.complete) {
+                    decision = {
+                        ...decision,
+                        delegate_to: 'structural_engineer',
+                        instruction: completionStatus.nextInstruction,
+                        reasoning: `${decision.reasoning} | Overridden: design not complete (${completionStatus.missing.join('; ')}).`
+                    };
+                }
+
+                log(`   📋 Decision: delegate to ${decision.delegate_to}`);
+                log(`   💭 Reasoning: "${decision.reasoning.substring(0, 100)}..."`);
+
+                logAgentStep({
+                    phase: 'ORCHESTRATOR',
+                    iteration: turn,
+                    model: config.model,
+                    status: 'success',
+                    response: JSON.stringify(decision),
+                    reasoning: decision.reasoning
+                });
+
+                // =============================================================
+                // CHECK: Is design complete?
+                // =============================================================
+                if (decision.delegate_to === 'DESIGN_COMPLETE') {
+                    log(`   ✨ DESIGN COMPLETE — Orchestrator declared the design finished.`);
+                    finalMessage = decision.reasoning;
+                    decisionHistory.add({
+                        turn, agent: 'orchestrator',
+                        decision: 'Design declared complete',
+                        reasoning: decision.reasoning,
+                        result: 'success'
+                    });
+                    turn = maxTurns + 1; // Exit loop
+                    turnSuccess = true;
+                    break;
+                }
+
+                // =============================================================
+                // STEP 2: DELEGATE TO SPECIALIST
+                // =============================================================
+                if (decision.delegate_to === 'structural_engineer') {
+                    // --- STRUCTURAL ENGINEER ---
+                    log(`   🏗️ STRUCTURAL ENGINEER: Executing...`);
+
+                    const engineerContext = `INSTRUCTION FROM LEAD ARCHITECT:\n${decision.instruction}\n\n`;
+                    const insightsBlock = wallSurfaceInsights.length > 0
+                        ? `\n\nWALL SURFACE INSIGHTS:\n${wallSurfaceInsights.join('\n')}`
+                        : '';
+                    const engineerState = `CURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\nBudget: ${budgetContext}\nMaterials: ${materialContext}${insightsBlock}`;
+
+                    const engineerMessages = [
+                        { role: 'system', content: STRUCTURAL_ENGINEER_PROMPT },
+                        { role: 'user', content: engineerContext + engineerState }
+                    ];
+
+                    const engineerResult = await callProviderWithTools(config, normalizeMessages(engineerMessages), attachments, signal);
+
+                    logAgentStep({
+                        phase: 'STRUCTURAL_ENGINEER',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: engineerResult.text,
+                        toolCalls: engineerResult.toolCalls
+                    });
+
+                    if (engineerResult.text) {
+                        finalMessage = engineerResult.text;
+                    }
+
+                    lastEngineerActions = [];
+
+                    if (engineerResult.toolCalls && engineerResult.toolCalls.length > 0) {
+                        log(`   🛠️ Engineer issued ${engineerResult.toolCalls.length} operation(s)`);
+                        let successCount = 0;
+
+                        for (const tc of engineerResult.toolCalls) {
+                            try {
+                                if (tc.name === 'get_wall_surface') {
+                                    const wallId = tc.args.target_id as string;
+                                    const surfaceInsight = summarizeWallSurface(currentProject, wallId);
+                                    wallSurfaceInsights = [surfaceInsight, ...wallSurfaceInsights].slice(0, 8);
+                                    lastEngineerActions.push(`Queried surface of ${wallId}`);
+                                    log(`   🔎 ${surfaceInsight}`);
+                                    continue;
+                                }
+
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'structural_engineer');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                        lastEngineerActions.push(`✅ ${tc.name} on ${op.target_id}`);
+                                    }
+                                } else {
+                                    lastEngineerActions.push(`❌ ${tc.name} rejected: ${validation.errors.join(', ')}`);
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                }
+                            } catch (e) {
+                                lastEngineerActions.push(`❌ ${tc.name} runtime error`);
+                            }
+                        }
+
+                        log(`   ✅ ${successCount}/${engineerResult.toolCalls.length} operations applied`);
+                        structuralChangesSinceAestheticReview += successCount;
+
+                        decisionHistory.add({
+                            turn, agent: 'structural_engineer',
+                            decision: `Applied ${successCount} operations: ${decision.instruction.substring(0, 80)}`,
+                            reasoning: engineerResult.text?.substring(0, 150) || '',
+                            result: successCount > 0 ? 'success' : 'failed'
+                        });
+
+                        // 🔴 CRITICAL FIX: Re-read the ACTUAL state after operations
+                        // This ensures we see the NEW coordinates, not cached values
+                        currentProject = await reloadProjectState(currentProject.id, currentProject);
+
+                        // =============================================================
+                        // STEP 3: SPATIAL PHYSICIST — Validate after structural changes
+                        // =============================================================
+                        if (successCount > 0) {
+                            log(`   🔬 SPATIAL PHYSICIST: Validating...`);
+
+                            const physicistContext = `LATEST CHANGES:\n${lastEngineerActions.join('\n')}\n\n`;
+                            const physicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
+
+                            const physicistResult = await callProviderNoTools(config, [
+                                { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                                { role: 'user', content: physicistContext + physicistState }
+                            ], undefined, signal);
+
+                            logAgentStep({
+                                phase: 'SPATIAL_PHYSICIST',
+                                iteration: turn,
+                                model: config.model,
+                                status: 'success',
+                                response: physicistResult.text
+                            });
+
+                            const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
+
+                            if (physicsResult) {
+                                if (physicsResult.status === 'PHYSICS_VALID') {
+                                    log(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                                    pendingViolations = [];
+                                    decisionHistory.add({
+                                        turn, agent: 'spatial_physicist',
+                                        decision: 'All checks passed',
+                                        reasoning: physicsResult.summary,
+                                        result: 'success'
+                                    });
+                                } else {
+                                    const criticals = physicsResult.violations.filter(v => v.severity === 'CRITICAL');
+                                    const warnings = physicsResult.violations.filter(v => v.severity === 'WARNING');
+
+                                    log(`   ⚠️ VIOLATIONS: ${criticals.length} critical, ${warnings.length} warnings`);
+                                    for (const v of physicsResult.violations) {
+                                        log(`      [${v.severity}] ${v.issue}`);
+                                    }
+
+                                    // Store violations for the orchestrator to address
+                                    pendingViolations = physicsResult.violations;
+                                    decisionHistory.add({
+                                        turn, agent: 'spatial_physicist',
+                                        decision: `Found ${physicsResult.violations.length} violation(s)`,
+                                        reasoning: physicsResult.summary,
+                                        result: 'violation'
+                                    });
+                                }
+
+                                turnHistory.push({
+                                    turn: turn,
+                                    agent: 'structural_engineer',
+                                    instruction: decision.instruction,
+                                    operations: engineerResult.toolCalls?.map(tc => tc.name) || [],
+                                    result: physicsResult.status === 'PHYSICS_VALID' ? 'SUCCESS' : 'FAILED',
+                                    violations: physicsResult.violations.map(v => v.issue)
+                                });
+                            } else {
+                                log(`   ⚠️ Physicist returned non-structured response`);
+                                pendingViolations = [];
+                            }
+                        }
+
+                    } else {
+                        // Engineer returned text but no tool calls
+                        log(`   ℹ️ Engineer provided analysis but no operations`);
+                        decisionHistory.add({
+                            turn, agent: 'structural_engineer',
+                            decision: 'No operations (constraint violation or analysis)',
+                            reasoning: engineerResult.text?.substring(0, 150) || 'No response',
+                            result: 'failed'
+                        });
+                    }
+
+                } else if (decision.delegate_to === 'interior_architect') {
+                    // --- INTERIOR ARCHITECT ---
+                    log(`   🪑 INTERIOR ARCHITECT: Executing...`);
+
+                    const architectContext = `ORCHESTRATOR INSTRUCTION:\n${decision.instruction}\n\n`;
+                    const insightsBlock = wallSurfaceInsights.length > 0
+                        ? `WALL SURFACE INSIGHTS:\n${wallSurfaceInsights.join('\n')}\n\n`
+                        : '';
+                    const architectState = `LATEST 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n${insightsBlock}`;
+
+                    const architectMessages = [
+                        { role: 'system', content: INTERIOR_ARCHITECT_PROMPT },
+                        { role: 'user', content: architectContext + architectState }
+                    ];
+
+                    const architectResult = await callProviderWithTools(config, architectMessages, attachments, signal);
+
+                    logAgentStep({
+                        phase: 'INTERIOR_ARCHITECT',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: architectResult.text,
+                        reasoning: `Called ${architectResult.toolCalls?.length || 0} tools`,
+                    });
+
+                    if (architectResult.toolCalls && architectResult.toolCalls.length > 0) {
+                        log(`   🪑 Proposed ${architectResult.toolCalls.length} operations`);
+                        let successCount = 0;
+                        const lastArchitectActions: string[] = [];
+
+                        for (const tc of architectResult.toolCalls) {
+                            try {
+                                if (tc.name === 'get_wall_surface') {
+                                    const wallId = tc.args.target_id as string;
+                                    const surfaceInsight = summarizeWallSurface(currentProject, wallId);
+                                    wallSurfaceInsights = [surfaceInsight, ...wallSurfaceInsights].slice(0, 8);
+                                    lastArchitectActions.push(`Queried surface of ${wallId}`);
+                                    log(`   🔎 ${surfaceInsight}`);
+                                    continue;
+                                }
+
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'interior_architect');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                        lastArchitectActions.push(`✅ ${tc.name} on ${op.target_id}`);
+                                    }
+                                } else {
+                                    lastArchitectActions.push(`❌ ${tc.name} rejected: ${validation.errors.join(', ')}`);
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                }
+                            } catch (e) {
+                                lastArchitectActions.push(`❌ ${tc.name} runtime error`);
+                            }
+                        }
+
+                        log(`   ✅ ${successCount}/${architectResult.toolCalls.length} operations applied`);
+
+                        // 🔴 CRITICAL FIX: Fresh reload here too
+                        currentProject = await reloadProjectState(currentProject.id, currentProject);
+                        const architectPhysicistState = `UPDATED 3D STATE:\n${prepare3DNodeTree(currentProject)}\n\n${generateASCIIFloorPlan(currentProject)}`;
+
+                        const architectPhysicistResult = await callProviderNoTools(config, [
+                            { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                            { role: 'user', content: `LATEST CHANGES:\n${lastArchitectActions.join('\n')}\n\n${architectPhysicistState}` }
+                        ], undefined, signal);
+
+                        const archPhysicsParsed = extractJSON<PhysicsValidation>(architectPhysicistResult.text);
+
+                        if (archPhysicsParsed) {
+                            if (archPhysicsParsed.status === 'PHYSICS_VALID') {
+                                log(`   ✅ PHYSICS VALID: ${archPhysicsParsed.summary}`);
+                                pendingViolations = [];
+                            } else {
+                                pendingViolations = archPhysicsParsed.violations;
+                                log(`   ⚠️ VIOLATIONS: Found ${pendingViolations.length} issues`);
+                                for (const v of pendingViolations) {
+                                    log(`      [${v.severity}] ${v.issue}`);
+                                }
+                            }
+
+                            // 🔴 ADD THIS: Record for interior architect too
+                            turnHistory.push({
+                                turn: turn,
+                                agent: 'interior_architect',
+                                instruction: decision.instruction,
+                                operations: architectResult.toolCalls?.map(tc => tc.name) || [],
+                                result: archPhysicsParsed.status === 'PHYSICS_VALID' ? 'SUCCESS' : 'FAILED',
+                                violations: archPhysicsParsed.violations.map(v => v.issue)
+                            });
+                        }
+
+                        decisionHistory.add({
+                            turn, agent: 'interior_architect',
+                            decision: `Applied ${successCount} operations: ${decision.instruction.substring(0, 80)}`,
+                            reasoning: architectResult.text?.substring(0, 150) || '',
+                            result: successCount > 0 ? 'success' : 'failed'
+                        });
+                    } else {
+                        log(`   ℹ️ Interior architect provided analysis but no operations`);
+                        decisionHistory.add({
+                            turn, agent: 'interior_architect',
+                            decision: 'No operations',
+                            reasoning: architectResult.text?.substring(0, 150) || 'No response',
+                            result: 'failed'
+                        });
+                    }
+
+                } else if (decision.delegate_to === 'aesthetic_designer') {
+                    // --- AESTHETIC DESIGNER ---
+                    log(`   🎨 AESTHETIC DESIGNER: Reviewing...`);
+
+                    const aestheticContext = `DESIGN INTENT: ${request.message}\n\n`;
+                    const aestheticState = `CURRENT STATE:\n${nodeTree}\n\n${asciiPlan}\n\nMaterials: ${materialContext}`;
+
+                    const aestheticResult = await callProviderNoTools(config, [
+                        { role: 'system', content: AESTHETIC_DESIGNER_PROMPT },
+                        { role: 'user', content: aestheticContext + aestheticState }
+                    ], attachments, signal);
+
+                    logAgentStep({
+                        phase: 'AESTHETIC_DESIGNER',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: aestheticResult.text
+                    });
+
+                    const review = extractJSON<AestheticReview>(aestheticResult.text);
+
+                    if (review) {
+                        log(`   🎨 Score: ${review.aesthetic_score}/10 — ${review.summary}`);
+                        for (const rec of review.recommendations.slice(0, 5)) {
+                            log(`      💡 ${rec.suggestion}`);
+                        }
+                        structuralChangesSinceAestheticReview = 0;
+                        decisionHistory.add({
+                            turn, agent: 'aesthetic_designer',
+                            decision: `Score: ${review.aesthetic_score}/10, ${review.recommendations.length} recommendations`,
+                            reasoning: review.summary,
+                            result: 'success'
+                        });
+                    } else {
+                        log(`   ℹ️ Aesthetic review returned non-structured response`);
+                    }
+
+                } else if (decision.delegate_to === 'spatial_physicist') {
+                    // --- DIRECT PHYSICIST CALL (Orchestrator requested explicit validation) ---
+                    log(`   🔬 SPATIAL PHYSICIST: Full validation requested...`);
+
+                    const physicistState = `FULL 3D STATE:\n${nodeTree}\n\n${asciiPlan}`;
+
+                    const physicistResult = await callProviderNoTools(config, [
+                        { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
+                        { role: 'user', content: `ORCHESTRATOR REQUEST: ${decision.instruction}\n\n${physicistState}` }
+                    ], undefined, signal);
+
+                    logAgentStep({
+                        phase: 'SPATIAL_PHYSICIST',
+                        iteration: turn,
+                        model: config.model,
+                        status: 'success',
+                        response: physicistResult.text
+                    });
+
+                    const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
+                    if (physicsResult) {
+                        if (physicsResult.status === 'PHYSICS_VALID') {
+                            log(`   ✅ PHYSICS VALID: ${physicsResult.summary}`);
+                            pendingViolations = [];
+                        } else {
+                            pendingViolations = physicsResult.violations;
+                            for (const v of physicsResult.violations) {
+                                log(`      [${v.severity}] ${v.issue}`);
+                            }
+                        }
+                    }
+
+                    decisionHistory.add({
+                        turn, agent: 'spatial_physicist',
+                        decision: 'Full validation pass',
+                        reasoning: physicsResult?.summary || physicistResult.text.substring(0, 150),
+                        result: physicsResult?.status === 'PHYSICS_VALID' ? 'success' : 'violation'
+                    });
+                }
+
+                const postTurnCompletion = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                const hasPostBlockingViolations = pendingViolations.some(v => v.severity === 'CRITICAL' || v.severity === 'WARNING');
+                if (postTurnCompletion.complete && !hasPostBlockingViolations) {
+                    finalMessage = finalMessage || `Design completed in ${turn} turns.`;
+                    decisionHistory.add({
+                        turn,
+                        agent: 'orchestrator',
+                        decision: 'Auto-stop on deterministic completion',
+                        reasoning: `All completion gates satisfied with no blocking violations`,
+                        result: 'success'
+                    });
+                    log(`   ✨ AUTO STOP: All completion gates satisfied. Ending early.`);
+                    turn = maxTurns + 1;
+                    turnSuccess = true;
+                    break;
+                }
+
+                turnSuccess = true;
+
+            } catch (error) {
+                const errMsg = error instanceof Error ? error.message : String(error);
+
+                // Only break on genuine user cancellation
+                if (errMsg.includes('User cancelled') || signal?.aborted) {
+                    console.log('[Orchestrator] Operation cancelled by user');
+                    break; // Exit loop immediately
+                }
+
+                turnRetries++;
+                console.error(`[Orchestrator] Turn ${turn} failed (Attempt ${turnRetries}/${MAX_TURN_RETRIES}):`, errMsg);
+
+                logAgentStep({
+                    phase: `TURN_${turn}`,
+                    iteration: turn,
+                    model: 'various',
+                    status: 'failed',
+                    error: errMsg
+                });
+
+                if (turnRetries < MAX_TURN_RETRIES) {
+                    // Escalating backoff: 1s, 2s, 3s, 4s, etc.
+                    const backoff = Math.min(1000 * turnRetries, 5000);
+                    log(`   ❌ Turn ${turn} failed (${errMsg.substring(0, 60)}). Retrying in ${backoff / 1000}s (${turnRetries}/${MAX_TURN_RETRIES})...`);
+                    await new Promise(r => setTimeout(r, backoff));
+                } else {
+                    log(`   ❌ CRITICAL: Turn ${turn} failed after ${MAX_TURN_RETRIES} attempts. Skipping to next turn...`);
+                    // Instead of terminating everything, just skip this turn
+                    break;
                 }
             }
-            // Rapid re-validation after auto-fix
-            const reval = await callProviderNoTools(config, [
-                { role: 'system', content: SPATIAL_PHYSICIST_PROMPT },
-                { role: 'user', content: `STATE AFTER AUTO-FIX:\n${prepare3DNodeTree(currentProject)}` }
-            ], undefined, signal);
-            pendingViolations = extractPhysicsViolations(reval.text).violations;
-        }
-
-        turnHistory.push({
-            turn,
-            agent: decision.delegate_to,
-            decision: decision.instruction,
-            operations: turnOps.map(o => o.type),
-            violations: pendingViolations.map(v => v.description),
-            result: turnOps.length > 0 ? 'SUCCESS' : 'FAILED'
-        });
-
-        if (turnOps.length > 0) {
-            currentProject = await reloadProjectState(currentProject.id, currentProject);
         }
     }
 
+    log(`\n═══ ARCHITECTURE COMPLETE: ${allValidatedOps.length} total operation(s) ═══`);
+    log(`Decision Trail: ${decisionHistory.getAll().length} decisions recorded`);
+
     return {
-        project: currentProject,
-        message: finalMessage || "Design session ended.",
+        message: finalMessage + '\n\n' + progressLog.join('\n'),
         operations: allValidatedOps,
         warnings: [],
-        history: turnHistory as any
+        suggestions: [],
     };
 }
-
-
-
 
 
 // =============================================================================
@@ -1606,16 +2117,17 @@ function evaluateCompletion(
     return { structureReady, complete, missing, nextInstruction };
 }
 
-function buildCriticalFixInstruction(criticals: PhysicsViolation[]): string {
+function buildCriticalFixInstruction(criticals: PhysicsValidation['violations']): string {
     const fixes = criticals
-        .filter(v => v.suggestedFix?.operation)
+        .filter(v => v.suggested_fix?.target_id && v.suggested_fix?.action)
         .slice(0, 6)
         .map(v => {
-            const fix = v.suggestedFix!;
-            const coordText = fix.x !== undefined || fix.y !== undefined || fix.z !== undefined
-                ? ` to [${fix.x ?? 'keep'}, ${fix.y ?? 'keep'}, ${fix.z ?? 'keep'}]`
+            const fix = v.suggested_fix!;
+            const coords = fix.exact_coordinates;
+            const coordText = coords
+                ? ` to [${coords.x ?? 'keep'}, ${coords.y ?? 'keep'}, ${coords.z ?? 'keep'}]`
                 : '';
-            return `${fix.operation} ${v.nodeId}${coordText}`;
+            return `${fix.action} ${fix.target_id}${coordText}`;
         });
 
     if (fixes.length === 0) {
@@ -1629,7 +2141,7 @@ function shouldApplySurfaceSculpt(project: PSGProject, targets: StructuralTarget
     if (!targets.customSurfaceRequested) return false;
     const nodes = Object.values(project.nodes);
     const wallCandidates = nodes.filter(n => n.type === 'Wall' || n.type === 'Partition');
-
+    
     // CRITICAL FIX: Do not sculpt if there are no walls to sculpt
     if (wallCandidates.length === 0) return false;
 
@@ -1720,59 +2232,4 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 6
         }
         throw error;
     }
-}
-
-function extractOrchestratorDecision(text: string): OrchestratorDecision {
-    const json = extractJSON<any>(text);
-    if (!json) {
-        return {
-            delegate_to: 'structural_engineer',
-            instruction: "Proceed with design construction.",
-            reasoning: "Failed to parse JSON, falling back to default.",
-            phase: 'PHASE_1_SITE_ANALYSIS'
-        };
-    }
-    return {
-        delegate_to: json.delegate_to || 'structural_engineer',
-        instruction: json.instruction || json.instruction_for_agent || "Proceed with design.",
-        reasoning: json.reasoning || json.rationale || "Standard delegation.",
-        phase: (json.phase || 'PHASE_1_SITE_ANALYSIS') as OrchestratorPhase
-    };
-}
-
-function extractPhysicsViolations(text: string): PhysicsValidation {
-    const json = extractJSON<any>(text);
-    if (!json) {
-        return {
-            status: 'PHYSICS_VALID',
-            summary: "Physicist provided non-structured response.",
-            violations: []
-        };
-    }
-    // Handle both { status, violations } and raw violations array
-    const violationsRaw = Array.isArray(json) ? json : (json.violations || []);
-    const status = json.status || (violationsRaw.length > 0 ? 'VIOLATIONS_FOUND' : 'PHYSICS_VALID');
-
-    const violations: PhysicsViolation[] = violationsRaw.map((v: any) => ({
-        severity: v.severity || 'INFO',
-        code: v.code || 'UNKNOWN',
-        nodeId: v.nodeId || v.element_id || 'unknown',
-        nodeSemanticRole: v.nodeSemanticRole || '',
-        description: v.description || v.issue || 'No description provided.',
-        currentValue: v.currentValue ?? 0,
-        expectedValue: v.expectedValue ?? 0,
-        suggestedFix: v.suggestedFix || v.suggested_fix || {
-            operation: (v.suggested_fix?.action === 'move' || v.suggested_fix?.action === 'set_node_position') ? 'set_node_position' : 'resize_node',
-            x: v.suggested_fix?.exact_coordinates?.x,
-            y: v.suggested_fix?.exact_coordinates?.y,
-            z: v.suggested_fix?.exact_coordinates?.z
-        },
-        autoFixable: v.autoFixable ?? (v.severity === 'CRITICAL')
-    }));
-
-    return {
-        status,
-        summary: json.summary || `Found ${violations.length} violations.`,
-        violations
-    };
 }

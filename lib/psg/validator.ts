@@ -324,14 +324,11 @@ function validateStructural(
         // Check if anything above depends on this node
         const dependents = findDependentNodes(node.id, project);
         if (dependents.length > 0) {
-            // RELAXED: Physicist overrides Code. Allow deletion but warn heavily.
-            warnings.push({
-                severity: 'warning',
-                message: `CRITICAL: Deleting load-bearing "${node.name}" which supports: ` +
-                    dependents.map(d => d.name).join(', ') +
-                    `. Ensure you have a plan to support these elements or delete them too.`,
-                suggestion: 'This action is structurally risky. Proceed only if the Physicist explicitly requested it.',
-            });
+            errors.push(
+                `Cannot delete load-bearing "${node.name}" — it supports: ` +
+                dependents.map(d => d.name).join(', ') +
+                `. Consider replacing with a beam or column instead.`
+            );
         } else {
             warnings.push({
                 severity: 'warning',
@@ -350,7 +347,7 @@ function validateStructural(
  */
 function findDependentNodes(nodeId: string, project: PSGProject): PSGNode[] {
     return Object.values(project.nodes).filter(
-        (n) => n.constraints.connected_to?.includes(nodeId)
+        (n) => n.constraints.connected_to?.includes(nodeId) ?? false
     );
 }
 
@@ -429,20 +426,15 @@ function validatePhysics(
             const newHeight = params.height ?? node.dimensions.y;
 
             if (newWidth > parentWall.dimensions.x - 0.2) {
-                // RELAXED: Physicist overrides Code. Allow oversize windows.
-                warnings.push({
-                    severity: 'warning',
-                    message: `${node.type} width (${newWidth}m) exceeds wall width (${parentWall.dimensions.x}m). Check if this is intended.`,
-                    suggestion: 'Resize the window or the wall.',
-                });
+                errors.push(
+                    `${node.type} width (${newWidth}m) would exceed wall width (${parentWall.dimensions.x}m). ` +
+                    `Leave at least 0.1m on each side.`
+                );
             }
             if (newHeight > parentWall.dimensions.y - 0.1) {
-                // RELAXED: Physicist overrides Code. Allow oversize windows.
-                warnings.push({
-                    severity: 'warning',
-                    message: `${node.type} height (${newHeight}m) exceeds wall height (${parentWall.dimensions.y}m). Check if this is intended.`,
-                    suggestion: 'Resize the window or the wall.',
-                });
+                errors.push(
+                    `${node.type} height (${newHeight}m) would exceed wall height (${parentWall.dimensions.y}m).`
+                );
             }
         }
     }
@@ -469,19 +461,19 @@ function validatePhysics(
     // Check for floating roof
     if ((operation.type === 'move_node' || operation.type === 'set_node_position' || operation.type === 'resize_node') && node.type === 'Roof') {
         const params = operation.params as Record<string, number>;
-
+        
         // Calculate proposed geometry
         let newY = node.position.y;
         let newHeight = node.dimensions.y;
-
+        
         if (operation.type === 'move_node') {
-            newY += (params.delta_y || 0);
+             newY += (params.delta_y || 0);
         } else if (operation.type === 'set_node_position') {
-            newY = params.position_y !== undefined ? params.position_y : newY;
+             newY = params.position_y !== undefined ? params.position_y : newY;
         }
-
+        
         if (operation.type === 'resize_node') {
-            newHeight = params.height !== undefined ? params.height : newHeight;
+             newHeight = params.height !== undefined ? params.height : newHeight;
         }
 
         const roofBottom = newY - newHeight / 2;
@@ -489,7 +481,7 @@ function validatePhysics(
         // Find the highest wall top in the project
         let maxWallTop = -Infinity;
         let highestWallName = '';
-
+        
         for (const otherNode of Object.values(project.nodes)) {
             if (otherNode.type === 'Wall') {
                 const wallTop = otherNode.position.y + otherNode.dimensions.y / 2;
@@ -505,12 +497,10 @@ function validatePhysics(
             const gap = roofBottom - maxWallTop;
             // Tolerance: 0.05m (5cm)
             if (gap > 0.05) {
-                // RELAXED: Physicist overrides Code. Allow floating roofs (temporarily).
-                warnings.push({
-                    severity: 'warning',
-                    message: `Roof "${node.name}" is floating by ${gap.toFixed(3)}m above the highest wall.`,
-                    suggestion: 'Ensure this is intentional (e.g., flying roof) or lower it.',
-                });
+                errors.push(
+                    `Roof "${node.name}" is floating! Bottom (Y=${roofBottom.toFixed(3)}) is ${gap.toFixed(3)}m above the highest wall "${highestWallName}" (Top Y=${maxWallTop.toFixed(3)}). ` +
+                    `Action blocked. You must lower the roof to Y=${(maxWallTop + newHeight/2).toFixed(3)}.`
+                );
             }
         }
     }

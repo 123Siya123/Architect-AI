@@ -32,7 +32,10 @@ export const AI_TOOLS = [
                 'Add a new architectural element to the house. IMPORTANT: Use the correct parent_id — ' +
                 'walls go inside rooms, windows/doors go inside walls, rooms go inside floors. ' +
                 'Position is the CENTER POINT of the element in meters. ' +
-                'Example: For a 2.7m wall at ground level, position_y=1.35. For stairs spanning 2.7m height at ground level, position_y=1.35.',
+                'Example: For a 2.7m wall at ground level, position_y=1.35. For stairs spanning 2.7m height at ground level, position_y=1.35. ' +
+                'DEDUPLICATION RULE: Before adding Roof, Floor, Foundation, or any singleton type, you MUST check the operationLog to see if this element already exists. If it exists, use set_node_position or resize_node instead — NEVER add a duplicate. ' +
+                'WINDOW/DOOR DEPTH RULE: Always set depth equal to the parent wall\'s depth so it cuts through completely. ' +
+                'POSITION RULE: For a wall of height H starting at Y=floorSurface, set position_y = floorSurface + (H/2). Never place elements at Y=0 unless the floor surface is at Y=0.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -559,7 +562,12 @@ export const AI_TOOLS = [
                 '• smooth / normalize / invert / set_cell / reset.\n\n' +
                 'Values: low=thin, high=thick, value<=hole_threshold creates holes.\n\n' +
                 'Matrix orientation for set_matrix data:\n' +
-                'data[0][0]=upper-left, data[0][last]=upper-right, data[last][0]=lower-left, data[last][last]=lower-right.',
+                'data[0][0]=upper-left, data[0][last]=upper-right, data[last][0]=lower-left, data[last][last]=lower-right.\n\n' +
+                'USAGE MANDATE: This tool MUST be used by the facade_artist on every exterior wall of landmark structures. ' +
+                'For fortress walls, use stamp or set_matrix to create battlements. For curved walls, use set_code with a sine formula. ' +
+                'For castle/kremlin walls specifically: the swallow-tail (Ghibelline) merlon pattern is a double-notch at the top of each merlon — ' +
+                'model this as 4-column-wide repeating groups: [solid, gap, gap, solid] at the top 2 rows. ' +
+                'Always call get_wall_surface FIRST to read the current state before any set_matrix operation.',
             parameters: {
                 type: 'object',
                 properties: {

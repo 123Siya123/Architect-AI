@@ -1,0 +1,424 @@
+{
+  "id": "b8d91894-a5d9-473f-a027-1b3681f72abe",
+  "name": "New Project",
+  "description": "",
+  "created_at": "2026-03-10T17:32:13.165Z",
+  "modified_at": "2026-03-10T17:34:34.994Z",
+  "version": 12,
+  "root_node_id": "house_b72d34ac",
+  "nodes": {
+    "house_b72d34ac": {
+      "id": "house_b72d34ac",
+      "type": "House",
+      "name": "New Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_0"
+      ],
+      "created_at": "2026-03-10T17:32:13.165Z",
+      "modified_at": "2026-03-10T17:33:21.972Z",
+      "version": 1
+    },
+    "floor_0": {
+      "id": "floor_0",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 28,
+        "y": 0.30000000000000004,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b72d34ac",
+      "children_ids": [
+        "room_tower"
+      ],
+      "created_at": "2026-03-10T17:33:21.972Z",
+      "modified_at": "2026-03-10T17:34:34.991Z",
+      "version": 2
+    },
+    "room_tower": {
+      "id": "room_tower",
+      "type": "Room",
+      "name": "Kremlin Base",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 6,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0",
+      "children_ids": [
+        "wall_t5glzfnk",
+        "wall_0dsb85p3",
+        "wall_fhinqjvk",
+        "wall_paffo1pd",
+        "wall_ndpp4qsr",
+        "wall_jye3ksdc",
+        "roof_lnosh1me"
+      ],
+      "created_at": "2026-03-10T17:33:21.973Z",
+      "modified_at": "2026-03-10T17:34:34.994Z",
+      "version": 2
+    },
+    "wall_t5glzfnk": {
+      "id": "wall_t5glzfnk",
+      "type": "Wall",
+      "name": "Tower North Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -3.75
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_tower",
+      "children_ids": [],
+      "created_at": "2026-03-10T17:33:21.973Z",
+      "modified_at": "2026-03-10T17:33:21.973Z",
+      "version": 1
+    },
+    "wall_0dsb85p3": {
+      "id": "wall_0dsb85p3",
+      "type": "Wall",
+      "name": "Tower South Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 3.75
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_tower",
+      "children_ids": [],
+      "created_at": "2026-03-10T17:33:21.974Z",
+      "modified_at": "2026-03-10T17:33:21.974Z",
+      "version": 1
+    },
+    "wall_fhinqjvk": {
+      "id": "wall_fhinqjvk",
+      "type": "Wall",
+      "name": "Tower East Wall",
+      "position": {
+        "x": 3.75,
+        "y": 3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_tower",
+      "children_ids": [],
+      "created_at": "2026-03-10T17:33:21.974Z",
+      "modified_at": "2026-03-10T17:33:21.974Z",
+      "version": 1
+    },
+    "wall_paffo1pd": {
+      "id": "wall_paffo1pd",
+      "type": "Wall",
+      "name": "Tower West Wall",
+      "position": {
+        "x": -3.75,
+        "y": 3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_tower",
+      "children_ids": [],
+      "created_at": "2026-03-10T17:33:21.974Z",
+      "modified_at": "2026-03-10T17:33:21.974Z",
+      "version": 1
+    },
+    "wall_ndpp4qsr": {
+      "id": "wall_ndpp4qsr",
+      "type": "Wall",
+      "name": "Flanking Wall Left",
+      "position": {
+        "x": -9,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_tower",
+      "children_ids": [],
+      "created_at": "2026-03-10T17:33:21.974Z",
+      "modified_at": "2026-03-10T17:33:21.974Z",
+      "version": 1
+    },
+    "wall_jye3ksdc": {
+      "id": "wall_jye3ksdc",
+      "type": "Wall",
+      "name": "Flanking Wall Right",
+      "position": {
+        "x": 9,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_tower",
+      "children_ids": [],
+      "created_at": "2026-03-10T17:33:21.975Z",
+      "modified_at": "2026-03-10T17:33:21.975Z",
+      "version": 1
+    },
+    "roof_lnosh1me": {
+      "id": "roof_lnosh1me",
+      "type": "Roof",
+      "name": "Spasskaya Tower Roof",
+      "position": {
+        "x": 0,
+        "y": 11,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 10,
+        "z": 8.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_roof",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_tower",
+      "children_ids": [],
+      "roof_style": "pyramid",
+      "created_at": "2026-03-10T17:34:34.993Z",
+      "modified_at": "2026-03-10T17:34:34.993Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 250000,
+    "spent": 11437110,
+    "remaining": -11187110,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

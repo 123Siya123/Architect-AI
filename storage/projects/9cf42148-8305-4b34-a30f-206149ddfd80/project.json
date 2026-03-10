@@ -1,0 +1,345 @@
+{
+  "id": "9cf42148-8305-4b34-a30f-206149ddfd80",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-10T15:41:12.025Z",
+  "modified_at": "2026-03-10T15:45:44.960Z",
+  "version": 8,
+  "root_node_id": "house_8682711e",
+  "nodes": {
+    "house_8682711e": {
+      "id": "house_8682711e",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground"
+      ],
+      "created_at": "2026-03-10T15:41:12.024Z",
+      "modified_at": "2026-03-10T15:45:44.958Z",
+      "version": 1
+    },
+    "floor_ground": {
+      "id": "floor_ground",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8682711e",
+      "children_ids": [
+        "room_lair",
+        "slab_40olhke2"
+      ],
+      "created_at": "2026-03-10T15:45:44.958Z",
+      "modified_at": "2026-03-10T15:45:44.958Z",
+      "version": 1
+    },
+    "room_lair": {
+      "id": "room_lair",
+      "type": "Room",
+      "name": "Main Lair Room",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [
+        "wall_wajp7v13",
+        "wall_9agds115",
+        "wall_3tv4o64q",
+        "wall_9davxd93"
+      ],
+      "created_at": "2026-03-10T15:45:44.958Z",
+      "modified_at": "2026-03-10T15:45:44.960Z",
+      "version": 1
+    },
+    "slab_40olhke2": {
+      "id": "slab_40olhke2",
+      "type": "Slab",
+      "name": "Concrete Foundation Slab",
+      "position": {
+        "x": 0,
+        "y": -0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [],
+      "created_at": "2026-03-10T15:45:44.958Z",
+      "modified_at": "2026-03-10T15:45:44.958Z",
+      "version": 1
+    },
+    "wall_wajp7v13": {
+      "id": "wall_wajp7v13",
+      "type": "Wall",
+      "name": "North Concrete Wall",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": -3.85
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 3.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-10T15:45:44.959Z",
+      "modified_at": "2026-03-10T15:45:44.959Z",
+      "version": 1
+    },
+    "wall_9agds115": {
+      "id": "wall_9agds115",
+      "type": "Wall",
+      "name": "South Concrete Wall",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": 3.85
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 3.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-10T15:45:44.959Z",
+      "modified_at": "2026-03-10T15:45:44.959Z",
+      "version": 1
+    },
+    "wall_3tv4o64q": {
+      "id": "wall_3tv4o64q",
+      "type": "Wall",
+      "name": "West Concrete Wall",
+      "position": {
+        "x": -5.8500000000000005,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.4,
+        "y": 3.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-10T15:45:44.959Z",
+      "modified_at": "2026-03-10T15:45:44.959Z",
+      "version": 1
+    },
+    "wall_9davxd93": {
+      "id": "wall_9davxd93",
+      "type": "Wall",
+      "name": "East Concrete Wall",
+      "position": {
+        "x": 5.8500000000000005,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.4,
+        "y": 3.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_lair",
+      "children_ids": [],
+      "created_at": "2026-03-10T15:45:44.960Z",
+      "modified_at": "2026-03-10T15:45:44.960Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 20027.52,
+    "remaining": 179972.48,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

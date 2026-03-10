@@ -1,0 +1,386 @@
+{
+  "id": "682ffa39-428a-41fe-91ad-6549e739c515",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-10T15:41:59.555Z",
+  "modified_at": "2026-03-10T15:45:21.076Z",
+  "version": 9,
+  "root_node_id": "house_500a6076",
+  "nodes": {
+    "house_500a6076": {
+      "id": "house_500a6076",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_0"
+      ],
+      "created_at": "2026-03-10T15:41:59.555Z",
+      "modified_at": "2026-03-10T15:44:27.557Z",
+      "version": 1
+    },
+    "floor_0": {
+      "id": "floor_0",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.30000000000000004,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_500a6076",
+      "children_ids": [
+        "room_keep"
+      ],
+      "created_at": "2026-03-10T15:44:27.557Z",
+      "modified_at": "2026-03-10T15:45:21.076Z",
+      "version": 2
+    },
+    "room_keep": {
+      "id": "room_keep",
+      "type": "Room",
+      "name": "Main Keep",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.4,
+        "y": 4,
+        "z": 10.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0",
+      "children_ids": [
+        "wall_hcvo0bbj",
+        "wall_6mns3c8t",
+        "wall_mzdusrtb",
+        "wall_v3r0lpkw"
+      ],
+      "room_function": "living",
+      "created_at": "2026-03-10T15:44:27.558Z",
+      "modified_at": "2026-03-10T15:45:21.076Z",
+      "version": 2
+    },
+    "wall_hcvo0bbj": {
+      "id": "wall_hcvo0bbj",
+      "type": "Wall",
+      "name": "North Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -5.6000000000000005
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "assembly": [
+        {
+          "role": "finish",
+          "material_id": "mat_stone_limestone",
+          "order": 0,
+          "thickness": 0.1
+        },
+        {
+          "thickness": 0.6,
+          "order": 1,
+          "role": "structural",
+          "material_id": "mat_concrete_block"
+        },
+        {
+          "material_id": "mat_stone_limestone",
+          "role": "finish",
+          "thickness": 0.1,
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-10T15:44:27.560Z",
+      "modified_at": "2026-03-10T15:44:27.560Z",
+      "version": 1
+    },
+    "wall_6mns3c8t": {
+      "id": "wall_6mns3c8t",
+      "type": "Wall",
+      "name": "South Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": 5.6000000000000005
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "assembly": [
+        {
+          "role": "finish",
+          "material_id": "mat_stone_limestone",
+          "order": 0,
+          "thickness": 0.1
+        },
+        {
+          "order": 1,
+          "thickness": 0.6,
+          "material_id": "mat_concrete_block",
+          "role": "structural"
+        },
+        {
+          "thickness": 0.1,
+          "order": 2,
+          "role": "finish",
+          "material_id": "mat_stone_limestone"
+        }
+      ],
+      "created_at": "2026-03-10T15:44:27.561Z",
+      "modified_at": "2026-03-10T15:44:27.561Z",
+      "version": 1
+    },
+    "wall_mzdusrtb": {
+      "id": "wall_mzdusrtb",
+      "type": "Wall",
+      "name": "East Wall",
+      "position": {
+        "x": 5.6000000000000005,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.4,
+        "y": 4,
+        "z": 0.8
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "assembly": [
+        {
+          "role": "finish",
+          "material_id": "mat_stone_limestone",
+          "order": 0,
+          "thickness": 0.1
+        },
+        {
+          "order": 1,
+          "thickness": 0.6,
+          "material_id": "mat_concrete_block",
+          "role": "structural"
+        },
+        {
+          "thickness": 0.1,
+          "order": 2,
+          "material_id": "mat_stone_limestone",
+          "role": "finish"
+        }
+      ],
+      "created_at": "2026-03-10T15:44:27.561Z",
+      "modified_at": "2026-03-10T15:44:27.561Z",
+      "version": 1
+    },
+    "wall_v3r0lpkw": {
+      "id": "wall_v3r0lpkw",
+      "type": "Wall",
+      "name": "West Wall",
+      "position": {
+        "x": -5.6000000000000005,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.4,
+        "y": 4,
+        "z": 0.8
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_stone_limestone",
+          "role": "finish",
+          "order": 0,
+          "thickness": 0.1
+        },
+        {
+          "role": "structural",
+          "material_id": "mat_concrete_block",
+          "thickness": 0.6,
+          "order": 1
+        },
+        {
+          "thickness": 0.1,
+          "order": 2,
+          "material_id": "mat_stone_limestone",
+          "role": "finish"
+        }
+      ],
+      "created_at": "2026-03-10T15:44:27.562Z",
+      "modified_at": "2026-03-10T15:44:27.562Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

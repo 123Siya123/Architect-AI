@@ -559,8 +559,6 @@ export interface AIChatResponse {
   warnings: OperationWarning[];
   suggestions?: string[];      // Follow-up suggestions
   progress_log?: string[];     // Internal steps taken by the AI team
-  project?: PSGProject;        // NEW: Final project state
-  history?: any[];             // NEW: Turn history
 }
 
 /** Request to generate initial house from description */
