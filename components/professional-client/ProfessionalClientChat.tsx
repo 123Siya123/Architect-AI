@@ -1,349 +1,811 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { ProjectSpecs, ChatMessage } from '@/types/professional-client';
+import React, { useState, useRef } from 'react';
+import { ProjectSpecs } from '@/types/professional-client';
 
 interface ProfessionalClientChatProps {
   onComplete: (specs: ProjectSpecs) => void;
 }
 
-const INTERVIEW_PHASES = [
-  {
-    id: 'intro',
-    title: 'Vision & Project Identity',
-    description: 'Establishing the core concept and goals of your architectural journey.'
-  },
-  {
-    id: 'site',
-    title: 'Site Assessment',
-    description: 'Understanding your land and location'
-  },
-  {
-    id: 'budget',
-    title: 'Budget & Timeline',
-    description: 'Discussing financial constraints and schedule'
-  },
-  {
-    id: 'requirements',
-    title: 'Design Requirements',
-    description: 'Your specific needs and preferences'
-  },
-  {
-    id: 'lifestyle',
-    title: 'Lifestyle & Functionality',
-    description: 'How you live and what matters to you'
-  },
-  {
-    id: 'style',
-    title: 'Style & Aesthetics',
-    description: 'Visual preferences and inspiration'
-  },
-  {
-    id: 'documents',
-    title: 'Documents & Images',
-    description: 'Upload site plans, photos, and inspiration'
-  }
+// ── Step Data ────────────────────────────────────────────
+const PROJECT_TYPES = [
+  { id: 'new-build', label: 'New Build', icon: '🏗️', desc: 'Start from scratch' },
+  { id: 'renovation', label: 'Renovation', icon: '🔨', desc: 'Transform existing' },
+  { id: 'extension', label: 'Extension', icon: '📐', desc: 'Expand your home' },
+  { id: 'interior', label: 'Interior', icon: '🎨', desc: 'Redesign spaces' },
 ];
 
+const STYLE_OPTIONS = [
+  { id: 'modern', label: 'Modern', icon: '◻️' },
+  { id: 'traditional', label: 'Traditional', icon: '🏛️' },
+  { id: 'minimalist', label: 'Minimalist', icon: '▫️' },
+  { id: 'contemporary', label: 'Contemporary', icon: '🔷' },
+  { id: 'industrial', label: 'Industrial', icon: '⚙️' },
+  { id: 'mediterranean', label: 'Mediterranean', icon: '🌊' },
+];
+
+const PRIORITY_OPTIONS = [
+  { id: 'natural-light', label: 'Natural Light', icon: '☀️' },
+  { id: 'open-plan', label: 'Open Plan', icon: '🚪' },
+  { id: 'privacy', label: 'Privacy', icon: '🔒' },
+  { id: 'outdoor-living', label: 'Outdoor Living', icon: '🌿' },
+  { id: 'smart-home', label: 'Smart Home', icon: '📱' },
+  { id: 'energy-efficient', label: 'Energy Efficient', icon: '⚡' },
+  { id: 'home-office', label: 'Home Office', icon: '💻' },
+  { id: 'entertainment', label: 'Entertainment', icon: '🎉' },
+];
+
+const BUDGET_RANGES = [
+  { id: 'starter', label: '€100K – €250K', min: 100000, max: 250000, tag: 'Starter' },
+  { id: 'mid', label: '€250K – €500K', min: 250000, max: 500000, tag: 'Mid-Range' },
+  { id: 'premium', label: '€500K – €1M', min: 500000, max: 1000000, tag: 'Premium' },
+  { id: 'luxury', label: '€1M+', min: 1000000, max: 5000000, tag: 'Luxury' },
+];
+
+// ── Component ────────────────────────────────────────────
 export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [currentPhase, setCurrentPhase] = useState(0);
-  const [isTyping, setIsTyping] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [projectSpecs, setProjectSpecs] = useState<Partial<ProjectSpecs>>({});
-  const [conversationHistory, setConversationHistory] = useState<any[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [step, setStep] = useState(0);
+  const [animating, setAnimating] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const architectName = 'Professional Architect';
-  const architectTitle = 'Your Design Consultant';
+  // Step 1: Vision
+  const [projectType, setProjectType] = useState('');
+  const [vision, setVision] = useState('');
 
-  useEffect(() => {
-    // Initialize with welcome message
-    const welcomeMessage: ChatMessage = {
-      id: '1',
-      role: 'architect',
-      content: `Hello! I'm your ${architectName}, ${architectTitle}. I'm excited to help bring your vision to life. This initial consultation will help me understand your needs, budget, site conditions, and design preferences so we can create something truly exceptional together.\n\nLet's start with some basic information about you and your project.`,
-      timestamp: new Date(),
-      type: 'text'
-    };
-    setMessages([welcomeMessage]);
-  }, []);
+  // Step 2: Essentials
+  const [bedrooms, setBedrooms] = useState(3);
+  const [bathrooms, setBathrooms] = useState(2);
+  const [floors, setFloors] = useState(1);
+  const [style, setStyle] = useState('');
+  const [budgetRange, setBudgetRange] = useState('');
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  // Step 3: Priorities
+  const [priorities, setPriorities] = useState<string[]>([]);
+  const [familySize, setFamilySize] = useState(4);
+  const [additionalNotes, setAdditionalNotes] = useState('');
 
-  const addMessage = (message: ChatMessage) => {
-    setMessages(prev => [...prev, message]);
-  };
+  const STEPS = [
+    { label: 'Vision', icon: '✨' },
+    { label: 'Essentials', icon: '🏠' },
+    { label: 'Priorities', icon: '🎯' },
+  ];
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() && uploadedFiles.length === 0) return;
-
-    const clientMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'client',
-      content: inputValue,
-      timestamp: new Date(),
-      type: 'text',
-      attachments: uploadedFiles.length > 0 ? uploadedFiles.map(file => ({
-        type: file.type.startsWith('image/') ? 'image' : 'document',
-        name: file.name,
-        url: URL.createObjectURL(file)
-      })) : undefined
-    };
-
-    addMessage(clientMessage);
-    setInputValue('');
-    setUploadedFiles([]);
-    setIsTyping(true);
-
-    try {
-      // Call the professional client AI API
-      const response = await fetch('/api/ai/professional-client', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: inputValue,
-          conversationHistory: conversationHistory,
-          attachments: uploadedFiles.length > 0 ? uploadedFiles.map(file => ({
-            type: file.type.startsWith('image/') ? 'image' : 'document',
-            name: file.name,
-            content: 'base64_encoded_content' // In real implementation, convert file to base64
-          })) : undefined
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get AI response');
-      }
-
-      const data = await response.json();
-
-      // Add AI response to messages
-      const architectMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'architect',
-        content: data.response,
-        timestamp: new Date(),
-        type: data.isComplete ? 'summary' : 'text'
-      };
-
-      addMessage(architectMessage);
-
-      // Update conversation history
-      setConversationHistory(data.conversationHistory);
-
-      // Update project specs
-      setProjectSpecs(prev => ({ ...prev, ...data.extractedData }));
-
-      // Check if we should move to next phase
-      if (data.nextPhase) {
-        setTimeout(() => {
-          const nextPhaseIndex = INTERVIEW_PHASES.findIndex(phase => phase.id === data.nextPhase);
-          if (nextPhaseIndex !== -1) {
-            setCurrentPhase(nextPhaseIndex);
-          }
-        }, 1000);
-      }
-
-      // Check if interview is complete
-      if (data.isComplete) {
-        setTimeout(() => {
-          onComplete(data.collectedSpecs);
-        }, 2000);
-      }
-
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      // Fallback to simple response
-      const fallbackMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'architect',
-        content: "Thank you for that information. Let me continue gathering details about your project.",
-        timestamp: new Date(),
-        type: 'text'
-      };
-      addMessage(fallbackMessage);
-    } finally {
-      setIsTyping(false);
+  const canProceed = () => {
+    switch (step) {
+      case 0: return projectType !== '' && vision.trim().length > 0;
+      case 1: return style !== '' && budgetRange !== '';
+      case 2: return priorities.length > 0;
+      default: return false;
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setUploadedFiles(prev => [...prev, ...files]);
-  };
-
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      handleSendMessage();
+  const goNext = () => {
+    if (!canProceed()) return;
+    if (step < STEPS.length - 1) {
+      setAnimating(true);
+      setTimeout(() => {
+        setStep(s => s + 1);
+        setAnimating(false);
+      }, 300);
+    } else {
+      handleComplete();
     }
+  };
+
+  const goBack = () => {
+    if (step > 0) {
+      setAnimating(true);
+      setTimeout(() => {
+        setStep(s => s - 1);
+        setAnimating(false);
+      }, 300);
+    }
+  };
+
+  const togglePriority = (id: string) => {
+    setPriorities(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    );
+  };
+
+  const selectedBudget = BUDGET_RANGES.find(b => b.id === budgetRange);
+
+  const handleComplete = () => {
+    const specs: ProjectSpecs = {
+      clientName: '',
+      clientContact: '',
+      projectType: PROJECT_TYPES.find(p => p.id === projectType)?.label || projectType,
+      projectLocation: '',
+      budget: {
+        total: selectedBudget?.max || 250000,
+        currency: 'EUR',
+        flexibility: 'flexible',
+      },
+      timeline: {
+        startDate: new Date().toISOString().split('T')[0],
+        targetCompletion: '',
+        urgency: 'medium',
+      },
+      site: {
+        size: 0,
+        topography: 'flat',
+        orientation: '',
+        access: 'easy',
+        utilities: { electricity: true, water: true, sewer: true, gas: true, internet: true },
+        constraints: [],
+      },
+      zoning: {
+        zone: '',
+        setbacks: { front: 0, rear: 0, sides: 0 },
+        heightRestrictions: 0,
+        far: 0,
+        coverage: 0,
+        parkingRequirements: 0,
+      },
+      requirements: {
+        bedrooms,
+        bathrooms,
+        floors,
+        garage: false,
+        basement: false,
+        attic: false,
+        outdoorSpaces: priorities.includes('outdoor-living') ? ['patio', 'garden'] : [],
+        specialRooms: priorities.filter(p => ['home-office', 'entertainment'].includes(p)),
+        accessibility: false,
+        energyEfficiency: priorities.includes('energy-efficient') ? 'excellent' : 'good',
+      },
+      style: {
+        architectural: STYLE_OPTIONS.find(s => s.id === style)?.label || style,
+        interior: '',
+        materials: [],
+        colors: [],
+        inspiration: [],
+      },
+      lifestyle: {
+        familySize,
+        ageGroups: [],
+        workFromHome: priorities.includes('home-office'),
+        entertaining: priorities.includes('entertainment') ? 'frequently' : 'occasionally',
+        cooking: 'enthusiast',
+        hobbies: [],
+        pets: [],
+      },
+      sustainability: {
+        solarPanels: priorities.includes('energy-efficient'),
+        rainwaterHarvesting: false,
+        greywaterSystem: false,
+        smartHome: priorities.includes('smart-home') ? 'advanced' : 'none',
+        greenRoof: false,
+        geothermal: false,
+      },
+      vision,
+      practicalNeeds: additionalNotes,
+      concerns: [],
+      mustHaves: priorities.map(p => PRIORITY_OPTIONS.find(o => o.id === p)?.label || p),
+      niceToHaves: [],
+      absoluteNoGos: [],
+      documents: { photos: [], inspirationImages: [], documents: [] },
+    };
+    onComplete(specs);
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#12121a] rounded-2xl shadow-2xl border border-white/5 overflow-hidden">
-      {/* Header */}
-      <div className="bg-[#1a1a2e] p-8 border-b border-white/10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-        <div className="relative z-10">
-          <h2 className="text-3xl font-extrabold tracking-tight mb-2 text-white">Professional Client Consultation</h2>
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs font-bold uppercase rounded-full border border-blue-600/30">
-              Phase {currentPhase + 1} of {INTERVIEW_PHASES.length}
-            </span>
-            <span className="text-white/60 font-medium">{INTERVIEW_PHASES[currentPhase].title}</span>
-          </div>
-          <p className="text-sm text-gray-400 mt-3 italic font-light">{INTERVIEW_PHASES[currentPhase].description}</p>
-        </div>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="bg-[#12121a] px-8 py-4 border-b border-white/5">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Interview Progress</span>
-          <span className="text-xs font-bold text-blue-400">{Math.round(((currentPhase + 1) / INTERVIEW_PHASES.length) * 100)}%</span>
-        </div>
-        <div className="w-full bg-white/5 rounded-full h-1 overflow-hidden">
-          <div
-            className="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-1000 ease-in-out"
-            style={{ width: `${((currentPhase + 1) / INTERVIEW_PHASES.length) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20">
-        {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.role === 'client' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-500`}>
-            <div className={`max-w-[85%] ${message.role === 'client' ? 'order-2' : 'order-1'} group`}>
-              <div className={`p-5 rounded-2xl ${message.role === 'client'
-                ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-900/20'
-                : message.type === 'summary'
-                  ? 'bg-green-500/10 border border-green-500/30 text-green-400 shadow-lg shadow-green-900/10'
-                  : 'bg-white/5 border border-white/10 text-gray-200 backdrop-blur-md'
-                }`}>
-                <div
-                  className={`prose prose-invert prose-sm max-w-none ${message.role === 'client' ? 'text-white' : 'text-gray-200'}`}
-                  style={{ fontSize: '0.95rem', lineHeight: '1.6' }}
-                >
-                  <ReactMarkdown>{message.content}</ReactMarkdown>
-                </div>
-                {message.attachments && message.attachments.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
-                    {message.attachments.map((attachment, index) => (
-                      <div key={index} className="flex items-center gap-2 text-xs font-medium px-3 py-2 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-                        <span className="text-lg">{attachment.type === 'image' ? '🖼️' : '📄'}</span>
-                        <span className="truncate">{attachment.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className={`text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-2 flex items-center gap-2 ${message.role === 'client' ? 'justify-end' : 'justify-start'}`}>
-                {message.role === 'architect' && <span className="text-blue-500">Principal Architect</span>}
-                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
+    <div className="wizard-root" ref={containerRef}>
+      {/* ── Progress Dots ─────────────────────────────────── */}
+      <div className="wizard-progress">
+        {STEPS.map((s, i) => (
+          <div key={i} className={`progress-step ${i === step ? 'active' : ''} ${i < step ? 'done' : ''}`}>
+            <div className="step-dot">
+              {i < step ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              ) : (
+                <span>{s.icon}</span>
+              )}
             </div>
+            <span className="step-name">{s.label}</span>
           </div>
         ))}
+        <div className="progress-line">
+          <div className="progress-fill" style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }} />
+        </div>
+      </div>
 
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
-              <div className="flex items-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-blue-500/80 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-              </div>
+      {/* ── Step Content ─────────────────────────────────── */}
+      <div className={`wizard-content ${animating ? 'fade-out' : 'fade-in'}`}>
+
+        {/* ── Step 1: Vision ─────────────────────────────── */}
+        {step === 0 && (
+          <div className="step-card">
+            <h2 className="step-title">What kind of home are you dreaming of?</h2>
+            <p className="step-subtitle">Choose your project type and describe your vision</p>
+
+            <div className="type-grid">
+              {PROJECT_TYPES.map(t => (
+                <button
+                  key={t.id}
+                  className={`type-card ${projectType === t.id ? 'selected' : ''}`}
+                  onClick={() => setProjectType(t.id)}
+                >
+                  <span className="type-icon">{t.icon}</span>
+                  <span className="type-label">{t.label}</span>
+                  <span className="type-desc">{t.desc}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="vision-input-group">
+              <label htmlFor="vision-input">Describe your dream home in a few sentences</label>
+              <textarea
+                id="vision-input"
+                value={vision}
+                onChange={e => setVision(e.target.value)}
+                placeholder="e.g. A bright, open home with lots of natural light, a modern kitchen, and a cozy reading nook..."
+                rows={3}
+              />
             </div>
           </div>
         )}
 
-        <div ref={messagesEndRef} />
-      </div>
+        {/* ── Step 2: Essentials ──────────────────────────── */}
+        {step === 1 && (
+          <div className="step-card">
+            <h2 className="step-title">The essentials</h2>
+            <p className="step-subtitle">Rooms, style, and budget</p>
 
-      {/* Input Area */}
-      <div className="border-t border-white/5 p-8 bg-[#161623]">
-        {/* File Upload Preview */}
-        {uploadedFiles.length > 0 && (
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-2">
-              {uploadedFiles.map((file, index) => (
-                <div key={index} className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-white group">
-                  <span className="truncate max-w-[150px]">{file.name}</span>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="hover:text-red-400 transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
+            <div className="counter-row">
+              <CounterInput label="Bedrooms" value={bedrooms} onChange={setBedrooms} min={1} max={10} />
+              <CounterInput label="Bathrooms" value={bathrooms} onChange={setBathrooms} min={1} max={8} />
+              <CounterInput label="Floors" value={floors} onChange={setFloors} min={1} max={4} />
+            </div>
+
+            <div className="section-label">Architectural Style</div>
+            <div className="style-grid">
+              {STYLE_OPTIONS.map(s => (
+                <button
+                  key={s.id}
+                  className={`style-chip ${style === s.id ? 'selected' : ''}`}
+                  onClick={() => setStyle(s.id)}
+                >
+                  <span>{s.icon}</span>
+                  <span>{s.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="section-label">Budget Range</div>
+            <div className="budget-grid">
+              {BUDGET_RANGES.map(b => (
+                <button
+                  key={b.id}
+                  className={`budget-card ${budgetRange === b.id ? 'selected' : ''}`}
+                  onClick={() => setBudgetRange(b.id)}
+                >
+                  <span className="budget-tag">{b.tag}</span>
+                  <span className="budget-amount">{b.label}</span>
+                </button>
               ))}
             </div>
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
-          <div className="relative group">
-            <textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              placeholder="Type your message here..."
-              className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl resize-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-white placeholder:text-gray-500 outline-none scrollbar-none"
-              rows={3}
-              disabled={isTyping}
-            />
-            <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isTyping}
-                className="p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                title="Attach Files"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                </svg>
-              </button>
-              <button
-                onClick={handleSendMessage}
-                disabled={isTyping || (!inputValue.trim() && uploadedFiles.length === 0)}
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-600/20 disabled:opacity-30 disabled:grayscale transition-all flex items-center gap-2 active:scale-95"
-              >
-                <span>Send</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-              </button>
+        {/* ── Step 3: Priorities ──────────────────────────── */}
+        {step === 2 && (
+          <div className="step-card">
+            <h2 className="step-title">What matters most to you?</h2>
+            <p className="step-subtitle">Select your top priorities — pick as many as you like</p>
+
+            <div className="priority-grid">
+              {PRIORITY_OPTIONS.map(p => (
+                <button
+                  key={p.id}
+                  className={`priority-chip ${priorities.includes(p.id) ? 'selected' : ''}`}
+                  onClick={() => togglePriority(p.id)}
+                >
+                  <span className="priority-icon">{p.icon}</span>
+                  <span>{p.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="counter-row" style={{ marginTop: '1.5rem' }}>
+              <CounterInput label="Family Size" value={familySize} onChange={setFamilySize} min={1} max={12} />
+            </div>
+
+            <div className="vision-input-group" style={{ marginTop: '1rem' }}>
+              <label htmlFor="notes-input">Anything else we should know? <span className="optional">(optional)</span></label>
+              <textarea
+                id="notes-input"
+                value={additionalNotes}
+                onChange={e => setAdditionalNotes(e.target.value)}
+                placeholder="Special requirements, accessibility needs, must-haves..."
+                rows={2}
+              />
             </div>
           </div>
-          <p className="text-[10px] text-gray-500 text-center uppercase tracking-widest font-medium">Professional Consultation Protocol • AI Architect v4.2</p>
-        </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*,.pdf,.doc,.docx,.txt"
-          onChange={handleFileUpload}
-          className="hidden"
-        />
+        )}
       </div>
+
+      {/* ── Navigation ────────────────────────────────────── */}
+      <div className="wizard-nav">
+        {step > 0 ? (
+          <button className="nav-back" onClick={goBack}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </button>
+        ) : <div />}
+        <button
+          className={`nav-next ${!canProceed() ? 'disabled' : ''}`}
+          onClick={goNext}
+          disabled={!canProceed()}
+        >
+          {step === STEPS.length - 1 ? 'Start Designing' : 'Continue'}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <style jsx>{`
+        .wizard-root {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          max-width: 680px;
+          margin: 0 auto;
+          padding: 2rem 1rem 1.5rem;
+        }
+
+        /* ── Progress ─────────────────────────────────────── */
+        .wizard-progress {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          gap: 3rem;
+          margin-bottom: 2.5rem;
+          position: relative;
+        }
+        .progress-step {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          z-index: 2;
+        }
+        .step-dot {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.06);
+          border: 2px solid rgba(255,255,255,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          color: rgba(255,255,255,0.4);
+          transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .progress-step.active .step-dot {
+          background: linear-gradient(135deg, #6c63ff, #00d4aa);
+          border-color: transparent;
+          color: white;
+          box-shadow: 0 0 24px rgba(108,99,255,0.4);
+          transform: scale(1.1);
+        }
+        .progress-step.done .step-dot {
+          background: #00d4aa;
+          border-color: transparent;
+          color: white;
+        }
+        .step-name {
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: rgba(255,255,255,0.3);
+          transition: color 0.3s;
+        }
+        .progress-step.active .step-name,
+        .progress-step.done .step-name {
+          color: rgba(255,255,255,0.8);
+        }
+        .progress-line {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 200px;
+          height: 2px;
+          background: rgba(255,255,255,0.08);
+          border-radius: 2px;
+          z-index: 1;
+        }
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #00d4aa, #6c63ff);
+          border-radius: 2px;
+          transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* ── Content ──────────────────────────────────────── */
+        .wizard-content {
+          flex: 1;
+          overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+        .wizard-content.fade-out {
+          opacity: 0;
+          transform: translateY(8px);
+          transition: all 0.2s ease;
+        }
+        .wizard-content.fade-in {
+          opacity: 1;
+          transform: translateY(0);
+          transition: all 0.35s ease;
+        }
+
+        .step-card {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 20px;
+          padding: 2rem;
+        }
+
+        .step-title {
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: white;
+          margin: 0 0 0.4rem;
+          line-height: 1.3;
+        }
+        .step-subtitle {
+          font-size: 0.9rem;
+          color: rgba(255,255,255,0.45);
+          margin: 0 0 1.8rem;
+        }
+
+        /* ── Type Grid ────────────────────────────────────── */
+        .type-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.75rem;
+          margin-bottom: 1.8rem;
+        }
+        .type-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.35rem;
+          padding: 1rem 0.5rem;
+          border-radius: 14px;
+          background: rgba(255,255,255,0.04);
+          border: 1.5px solid rgba(255,255,255,0.08);
+          cursor: pointer;
+          transition: all 0.25s ease;
+          color: rgba(255,255,255,0.6);
+        }
+        .type-card:hover {
+          border-color: rgba(108,99,255,0.3);
+          background: rgba(108,99,255,0.06);
+        }
+        .type-card.selected {
+          border-color: #6c63ff;
+          background: rgba(108,99,255,0.12);
+          color: white;
+          box-shadow: 0 0 20px rgba(108,99,255,0.15);
+        }
+        .type-icon { font-size: 1.5rem; }
+        .type-label { font-size: 0.8rem; font-weight: 600; }
+        .type-desc { font-size: 0.65rem; opacity: 0.6; }
+
+        /* ── Vision Input ─────────────────────────────────── */
+        .vision-input-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .vision-input-group label {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: rgba(255,255,255,0.5);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+        .optional {
+          text-transform: none;
+          font-weight: 400;
+          opacity: 0.6;
+        }
+        .vision-input-group textarea {
+          width: 100%;
+          padding: 0.85rem 1rem;
+          border-radius: 12px;
+          border: 1.5px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.04);
+          color: white;
+          font-size: 0.9rem;
+          line-height: 1.5;
+          resize: none;
+          outline: none;
+          font-family: inherit;
+          transition: border-color 0.2s;
+        }
+        .vision-input-group textarea::placeholder {
+          color: rgba(255,255,255,0.2);
+        }
+        .vision-input-group textarea:focus {
+          border-color: rgba(108,99,255,0.5);
+        }
+
+        /* ── Counter Row ──────────────────────────────────── */
+        .counter-row {
+          display: flex;
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        /* ── Style Grid ───────────────────────────────────── */
+        .section-label {
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: rgba(255,255,255,0.4);
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-bottom: 0.6rem;
+        }
+        .style-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+        }
+        .style-chip {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.5rem 0.9rem;
+          border-radius: 100px;
+          background: rgba(255,255,255,0.04);
+          border: 1.5px solid rgba(255,255,255,0.08);
+          color: rgba(255,255,255,0.6);
+          font-size: 0.8rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .style-chip:hover {
+          border-color: rgba(108,99,255,0.3);
+        }
+        .style-chip.selected {
+          background: rgba(108,99,255,0.15);
+          border-color: #6c63ff;
+          color: white;
+        }
+
+        /* ── Budget Grid ──────────────────────────────────── */
+        .budget-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.6rem;
+        }
+        .budget-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.3rem;
+          padding: 0.8rem 0.4rem;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.04);
+          border: 1.5px solid rgba(255,255,255,0.08);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: rgba(255,255,255,0.5);
+        }
+        .budget-card:hover {
+          border-color: rgba(0,212,170,0.3);
+        }
+        .budget-card.selected {
+          background: rgba(0,212,170,0.1);
+          border-color: #00d4aa;
+          color: white;
+          box-shadow: 0 0 16px rgba(0,212,170,0.12);
+        }
+        .budget-tag {
+          font-size: 0.6rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          opacity: 0.6;
+        }
+        .budget-card.selected .budget-tag {
+          color: #00d4aa;
+          opacity: 1;
+        }
+        .budget-amount {
+          font-size: 0.8rem;
+          font-weight: 600;
+        }
+
+        /* ── Priority Grid ────────────────────────────────── */
+        .priority-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.6rem;
+        }
+        .priority-chip {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.3rem;
+          padding: 0.85rem 0.4rem;
+          border-radius: 14px;
+          background: rgba(255,255,255,0.04);
+          border: 1.5px solid rgba(255,255,255,0.08);
+          cursor: pointer;
+          transition: all 0.25s ease;
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: rgba(255,255,255,0.5);
+        }
+        .priority-chip:hover {
+          border-color: rgba(108,99,255,0.3);
+          background: rgba(108,99,255,0.05);
+        }
+        .priority-chip.selected {
+          background: rgba(108,99,255,0.12);
+          border-color: #6c63ff;
+          color: white;
+        }
+        .priority-icon {
+          font-size: 1.3rem;
+        }
+
+        /* ── Navigation ───────────────────────────────────── */
+        .wizard-nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 1.5rem;
+          margin-top: 0.5rem;
+        }
+        .nav-back {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.65rem 1.2rem;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.6);
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .nav-back:hover {
+          background: rgba(255,255,255,0.1);
+          color: white;
+        }
+        .nav-next {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.75rem 1.8rem;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #6c63ff, #00d4aa);
+          border: none;
+          color: white;
+          font-size: 0.9rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+          box-shadow: 0 4px 20px rgba(108,99,255,0.3);
+        }
+        .nav-next:hover:not(.disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(108,99,255,0.45);
+        }
+        .nav-next.disabled {
+          opacity: 0.35;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+
+        @media (max-width: 640px) {
+          .type-grid { grid-template-columns: repeat(2, 1fr); }
+          .budget-grid { grid-template-columns: repeat(2, 1fr); }
+          .priority-grid { grid-template-columns: repeat(2, 1fr); }
+          .counter-row { flex-wrap: wrap; }
+          .progress-line { width: 140px; }
+          .wizard-progress { gap: 2rem; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── Counter Input Sub-Component ─────────────────────────
+function CounterInput({
+  label,
+  value,
+  onChange,
+  min = 0,
+  max = 99,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <div className="counter-input">
+      <span className="counter-label">{label}</span>
+      <div className="counter-controls">
+        <button
+          className="counter-btn"
+          onClick={() => onChange(Math.max(min, value - 1))}
+          disabled={value <= min}
+        >−</button>
+        <span className="counter-value">{value}</span>
+        <button
+          className="counter-btn"
+          onClick={() => onChange(Math.min(max, value + 1))}
+          disabled={value >= max}
+        >+</button>
+      </div>
+
+      <style jsx>{`
+        .counter-input {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .counter-label {
+          font-size: 0.7rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: rgba(255,255,255,0.4);
+        }
+        .counter-controls {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          background: rgba(255,255,255,0.04);
+          border: 1.5px solid rgba(255,255,255,0.08);
+          border-radius: 12px;
+          padding: 0.3rem;
+        }
+        .counter-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          border: none;
+          background: rgba(255,255,255,0.08);
+          color: white;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s;
+        }
+        .counter-btn:hover:not(:disabled) {
+          background: rgba(108,99,255,0.3);
+        }
+        .counter-btn:disabled {
+          opacity: 0.25;
+          cursor: not-allowed;
+        }
+        .counter-value {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: white;
+          min-width: 28px;
+          text-align: center;
+        }
+      `}</style>
     </div>
   );
 }

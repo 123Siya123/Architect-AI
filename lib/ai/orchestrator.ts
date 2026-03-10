@@ -70,8 +70,19 @@ import {
     SPATIAL_PHYSICIST_PROMPT,
     AESTHETIC_DESIGNER_PROMPT,
     INTERIOR_ARCHITECT_PROMPT,
+    DETAIL_SPECIALIST_PROMPT,
+    FACADE_ARTIST_PROMPT,
+    MATERIALS_SPECIALIST_PROMPT,
+    MASTER_PLANNER_PROMPT,
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
+import { classifyComplexity, type ComplexityClassification } from './complexity';
+import { evaluateCompletionState, formatCompletionState, updateChecklist, type CompletionState, type ChecklistItem } from './completion';
+import { getPhaseStartNarrative, getPhaseCompleteNarrative, generateCompletionReveal, type BuildPhase, type NarrativeContext, type PhaseStats } from './narrator';
+import { checkBeforeAdd, autoCorrectOpeningDepth, validateGeometryPossible, OperationLog } from './deduplication';
+import { getKnownLandmarkChecklist, parseChecklistFromBrief, mergeChecklists, formatChecklist } from './landmark-checklists';
+import { RESEARCH_SPECIALIST_PROMPT, formatBuildBrief, validateBuildBrief, type BuildBrief } from './agents/research-specialist';
+import { QUALITY_INSPECTOR_PROMPT, validateQualityReport, formatQualityReport } from './agents/quality-inspector';
 
 
 /**
@@ -79,7 +90,7 @@ import { logAgentStep, clearLogs } from './logger';
  */
 interface TurnRecord {
     turn: number;
-    agent: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'orchestrator' | 'aesthetic_designer';
+    agent: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'orchestrator' | 'aesthetic_designer' | 'facade_artist' | 'materials_specialist' | 'detail_specialist' | 'master_planner' | 'research_specialist' | 'quality_inspector';
     instruction: string;
     operations: string[];
     result: 'SUCCESS' | 'FAILED';
@@ -92,7 +103,7 @@ interface TurnRecord {
 
 interface OrchestratorDecision {
     reasoning: string;
-    delegate_to: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'aesthetic_designer' | 'DESIGN_COMPLETE';
+    delegate_to: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'aesthetic_designer' | 'facade_artist' | 'materials_specialist' | 'detail_specialist' | 'master_planner' | 'quality_inspector' | 'DESIGN_COMPLETE';
     instruction: string;
     priority?: 'critical' | 'high' | 'normal';
 }
@@ -170,11 +181,36 @@ export async function sendChatToAI(
 
     let currentProject = { ...request.project, nodes: { ...request.project.nodes } };
     const allValidatedOps: PSGOperation[] = [];
-    const maxTurns = 20;
     let finalMessage = '';
     const decisionHistory = new DecisionHistory();
     const turnHistory: TurnRecord[] = [];
     const structuralTargets = inferStructuralTargets(request.message);
+
+    // --- v2.0: Complexity Classification ---
+    const complexity = classifyComplexity(request.message);
+    const maxTurns = complexity.maxTurns;
+
+    // --- v2.0: Operation Log for Deduplication ---
+    const operationLog = new OperationLog();
+    operationLog.initFromProject(currentProject);
+
+    // --- v2.0: Landmark Checklist ---
+    let checklistItems: ChecklistItem[] = [];
+    if (complexity.requiresLandmarkChecklist) {
+        const knownChecklist = getKnownLandmarkChecklist(request.message);
+        if (knownChecklist) {
+            checklistItems = knownChecklist;
+        }
+    }
+
+    // --- v2.0: Build Brief (populated by research phase) ---
+    let buildBrief: BuildBrief | null = null;
+
+    // --- v2.0: Narrative Context ---
+    const narrativeContext: NarrativeContext = {
+        projectName: request.message.substring(0, 50),
+        complexity,
+    };
 
     let lastEngineerActions: string[] = [];
     let structuralChangesSinceAestheticReview = 0;
@@ -196,10 +232,13 @@ export async function sendChatToAI(
 
     clearLogs();
 
-    log('═══ PARALLEL COGNITIVE ARCHITECTURE ═══');
+    log('═══ ARCHITECT AI v2.0 — PARALLEL COGNITIVE ARCHITECTURE ═══');
     log(`Goal: ${request.message}`);
-    log(`Target Floors: ${structuralTargets.requiredFloors}`);
-    log(`Complexity: ${structuralTargets.complexity} (Min Turns: ${structuralTargets.minTurns})`);
+    log(`Complexity: ${complexity.tier} (${complexity.minTurns}-${complexity.maxTurns} turns)`);
+    log(`Required Phases: ${complexity.requiredPhases.join(' → ')}`);
+    if (checklistItems.length > 0) {
+        log(`Landmark Checklist: ${checklistItems.length} items loaded`);
+    }
 
     for (let turn = 1; turn <= maxTurns; turn++) {
         log(`\n───── 🔄 TURN ${turn}/${maxTurns} ─────`);
@@ -224,19 +263,33 @@ export async function sendChatToAI(
                 const checklist = prepareProgressChecklist(currentProject);
                 const budgetContext = prepareBudgetContext(currentProject);
                 const materialContext = prepareMaterialContext(materials);
-                const preTurnCompletion = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                // --- v2.0: Update landmark checklist from scene tree ---
+                checklistItems = updateChecklist(checklistItems, currentProject);
+                
+                // --- v2.0: Multi-condition completion evaluation ---
+                const completionState = evaluateCompletionState(
+                    currentProject, complexity, pendingViolations, turn, checklistItems
+                );
+                narrativeContext.completionState = completionState;
                 const hasBlockingViolations = pendingViolations.some(v => v.severity === 'CRITICAL' || v.severity === 'WARNING');
 
-                if (preTurnCompletion.complete && !hasBlockingViolations) {
-                    finalMessage = `Design completed in ${turn - 1} turns.`;
+                if (completionState.autoStopAllowed && !hasBlockingViolations) {
+                    const reveal = generateCompletionReveal(
+                        narrativeContext.projectName,
+                        completionState,
+                        allValidatedOps.length,
+                        turn - 1
+                    );
+                    log(reveal);
+                    finalMessage = `Design completed in ${turn - 1} turns. Score: ${completionState.totalScore}/100`;
                     decisionHistory.add({
                         turn,
                         agent: 'orchestrator',
-                        decision: 'Auto-stop on deterministic completion',
-                        reasoning: `All completion gates satisfied with no blocking violations`,
+                        decision: 'Auto-stop on v2.0 completion gate',
+                        reasoning: completionState.reason,
                         result: 'success'
                     });
-                    log(`   ✨ AUTO STOP: All completion gates satisfied. Ending early.`);
+                    log(`   ✨ AUTO STOP: ${completionState.reason}`);
                     turn = maxTurns + 1;
                     turnSuccess = true;
                     break;
@@ -344,6 +397,22 @@ export async function sendChatToAI(
                 orchestratorContext += `${checklist}\n\n`;
                 orchestratorContext += `Budget: ${budgetContext}\n`;
                 orchestratorContext += `Available Materials: ${materialContext}\n\n`;
+                
+                // --- v2.0: Inject completion state ---
+                orchestratorContext += `${formatCompletionState(completionState)}\n\n`;
+                
+                // --- v2.0: Inject landmark checklist ---
+                if (checklistItems.length > 0) {
+                    orchestratorContext += `${formatChecklist(checklistItems)}\n\n`;
+                }
+                
+                // --- v2.0: Inject build brief ---
+                if (buildBrief) {
+                    orchestratorContext += `${formatBuildBrief(buildBrief)}\n\n`;
+                }
+                
+                // --- v2.0: Inject operation log ---
+                orchestratorContext += `${operationLog.serialize()}\n\n`;
 
                 if (loopDetection.isLoop) {
                     orchestratorContext += `
@@ -433,7 +502,8 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     continue;
                 }
 
-                const completionStatus = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                const completionStatus = evaluateCompletionState(currentProject, complexity, pendingViolations, turn, checklistItems);
+                log(`   📊 Score: ${completionStatus.totalScore}/100 (S:${completionStatus.structuralScore}/30 D:${completionStatus.detailScore}/30 M:${completionStatus.materialScore}/20 L:${completionStatus.landmarkScore}/20)`);
                 const criticalPending = pendingViolations.filter(v => v.severity === 'CRITICAL');
                 const surfaceSculptPending = shouldApplySurfaceSculpt(currentProject, structuralTargets);
 
@@ -444,11 +514,11 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         instruction: buildCriticalFixInstruction(criticalPending),
                         reasoning: `${decision.reasoning} | Overridden: CRITICAL violations must be fixed before other work.`
                     };
-                } else if (decision.delegate_to !== 'structural_engineer' && !completionStatus.structureReady) {
+                } else if (decision.delegate_to !== 'structural_engineer' && completionStatus.structuralScore < 20) {
                     decision = {
                         ...decision,
                         delegate_to: 'structural_engineer',
-                        instruction: completionStatus.nextInstruction,
+                        instruction: `Structure incomplete (score: ${completionStatus.structuralScore}/30). Missing: ${completionStatus.missingElements.join(', ')}. Build the missing structural elements.`,
                         reasoning: `${decision.reasoning} | Overridden: core structure incomplete.`
                     };
                 } else if (surfaceSculptPending) {
@@ -458,12 +528,12 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         instruction: buildSurfaceMatrixInstruction(currentProject, structuralTargets),
                         reasoning: `${decision.reasoning} | Overridden: custom matrix sculpting requested and not yet applied.`
                     };
-                } else if (decision.delegate_to === 'DESIGN_COMPLETE' && !completionStatus.complete) {
+                } else if (decision.delegate_to === 'DESIGN_COMPLETE' && !completionStatus.autoStopAllowed) {
                     decision = {
                         ...decision,
                         delegate_to: 'structural_engineer',
-                        instruction: completionStatus.nextInstruction,
-                        reasoning: `${decision.reasoning} | Overridden: design not complete (${completionStatus.missing.join('; ')}).`
+                        instruction: `Design not complete (score: ${completionStatus.totalScore}/100). Missing: ${completionStatus.missingElements.join('; ')}. Continue building.`,
+                        reasoning: `${decision.reasoning} | Overridden: completion score ${completionStatus.totalScore}/100, need 95+.`
                     };
                 }
 
@@ -546,6 +616,22 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                     continue;
                                 }
 
+                                // --- v2.0: Deduplication check ---
+                                if (tc.name === 'add_node' && tc.args.parent_id && tc.args.type) {
+                                    const dedupeCheck = checkBeforeAdd(tc.args.parent_id as string, tc.args.type as PSGNode['type'], currentProject);
+                                    if (dedupeCheck.action === 'BLOCK') {
+                                        log(`   🚫 DEDUP BLOCK: ${dedupeCheck.message}`);
+                                        lastEngineerActions.push(`🚫 ${tc.name} blocked: ${dedupeCheck.message}`);
+                                        continue;
+                                    }
+                                    // Auto-correct window/door depth
+                                    const depthCorrection = autoCorrectOpeningDepth(tc.args, currentProject);
+                                    if (depthCorrection.corrected) {
+                                        tc.args = depthCorrection.args;
+                                        log(`   🔧 ${depthCorrection.message}`);
+                                    }
+                                }
+
                                 const op = toolCallToOperation(tc.name, tc.args);
                                 const validation = validateOperation(op, currentProject);
 
@@ -557,6 +643,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                         currentProject = applied.project;
                                         successCount++;
                                         lastEngineerActions.push(`✅ ${tc.name} on ${op.target_id}`);
+                                        // Register in operation log
+                                        if (tc.name === 'add_node' && applied.project.nodes[op.target_id]) {
+                                            operationLog.autoRegister(applied.project.nodes[op.target_id]);
+                                        }
                                     }
                                 } else {
                                     lastEngineerActions.push(`❌ ${tc.name} rejected: ${validation.errors.join(', ')}`);
@@ -850,20 +940,243 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         reasoning: physicsResult?.summary || physicistResult.text.substring(0, 150),
                         result: physicsResult?.status === 'PHYSICS_VALID' ? 'success' : 'violation'
                     });
+
+                } else if (decision.delegate_to === 'facade_artist') {
+                    // --- v2.0: FACADE ARTIST ---
+                    log(`   🎭 FACADE ARTIST: Sculpting surfaces...`);
+                    log(getPhaseStartNarrative('facades', narrativeContext));
+
+                    const facadeContext = `INSTRUCTION: ${decision.instruction}\n\nCURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n${buildBrief ? formatBuildBrief(buildBrief) : ''}\n\n${operationLog.serialize()}`;
+
+                    const facadeResult = await callProviderWithTools(config, normalizeMessages([
+                        { role: 'system', content: FACADE_ARTIST_PROMPT },
+                        { role: 'user', content: facadeContext }
+                    ]), attachments, signal);
+
+                    if (facadeResult.toolCalls && facadeResult.toolCalls.length > 0) {
+                        let successCount = 0;
+                        for (const tc of facadeResult.toolCalls) {
+                            try {
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'facade_artist');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                    }
+                                } else {
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                }
+                            } catch (e) { /* skip */ }
+                        }
+                        log(`   ✅ Facade: ${successCount}/${facadeResult.toolCalls.length} operations applied`);
+                    }
+                    if (facadeResult.text) finalMessage = facadeResult.text;
+
+                    decisionHistory.add({
+                        turn, agent: 'facade_artist',
+                        decision: `Applied facade operations: ${decision.instruction.substring(0, 80)}`,
+                        reasoning: facadeResult.text?.substring(0, 150) || '',
+                        result: 'success'
+                    });
+
+                } else if (decision.delegate_to === 'materials_specialist') {
+                    // --- v2.0: MATERIALS SPECIALIST ---
+                    log(`   🎨 MATERIALS SPECIALIST: Applying materials...`);
+                    log(getPhaseStartNarrative('materials' as BuildPhase, narrativeContext));
+
+                    const materialsContext = `INSTRUCTION: ${decision.instruction}\n\nCURRENT 3D STATE:\n${nodeTree}\n\nMaterials: ${materialContext}\n\n${buildBrief ? formatBuildBrief(buildBrief) : ''}`;
+
+                    const materialsResult = await callProviderWithTools(config, normalizeMessages([
+                        { role: 'system', content: MATERIALS_SPECIALIST_PROMPT },
+                        { role: 'user', content: materialsContext }
+                    ]), attachments, signal);
+
+                    if (materialsResult.toolCalls && materialsResult.toolCalls.length > 0) {
+                        let successCount = 0;
+                        for (const tc of materialsResult.toolCalls) {
+                            try {
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'materials_specialist');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                    }
+                                } else {
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                }
+                            } catch (e) { /* skip */ }
+                        }
+                        log(`   ✅ Materials: ${successCount}/${materialsResult.toolCalls.length} operations applied`);
+                    }
+                    if (materialsResult.text) finalMessage = materialsResult.text;
+
+                    decisionHistory.add({
+                        turn, agent: 'materials_specialist',
+                        decision: `Applied material operations: ${decision.instruction.substring(0, 80)}`,
+                        reasoning: materialsResult.text?.substring(0, 150) || '',
+                        result: 'success'
+                    });
+
+                } else if (decision.delegate_to === 'detail_specialist') {
+                    // --- v2.0: DETAIL SPECIALIST ---
+                    log(`   🔧 DETAIL SPECIALIST: Adding fine details...`);
+                    log(getPhaseStartNarrative('details' as BuildPhase, narrativeContext));
+
+                    const detailContext = `INSTRUCTION: ${decision.instruction}\n\nCURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n${buildBrief ? formatBuildBrief(buildBrief) : ''}\n\n${checklistItems.length > 0 ? formatChecklist(checklistItems) : ''}`;
+
+                    const detailResult = await callProviderWithTools(config, normalizeMessages([
+                        { role: 'system', content: DETAIL_SPECIALIST_PROMPT },
+                        { role: 'user', content: detailContext }
+                    ]), attachments, signal);
+
+                    if (detailResult.toolCalls && detailResult.toolCalls.length > 0) {
+                        let successCount = 0;
+                        for (const tc of detailResult.toolCalls) {
+                            try {
+                                // Deduplication check for add_node
+                                if (tc.name === 'add_node' && tc.args.parent_id && tc.args.type) {
+                                    const dedupeCheck = checkBeforeAdd(tc.args.parent_id as string, tc.args.type as PSGNode['type'], currentProject);
+                                    if (dedupeCheck.action === 'BLOCK') {
+                                        log(`   🚫 DEDUP BLOCK: ${dedupeCheck.message}`);
+                                        continue;
+                                    }
+                                }
+
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'detail_specialist');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                        // Register in operation log
+                                        if (tc.name === 'add_node' && applied.project.nodes[op.target_id]) {
+                                            operationLog.autoRegister(applied.project.nodes[op.target_id]);
+                                        }
+                                    }
+                                } else {
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                }
+                            } catch (e) { /* skip */ }
+                        }
+                        log(`   ✅ Details: ${successCount}/${detailResult.toolCalls.length} operations applied`);
+                    }
+                    if (detailResult.text) finalMessage = detailResult.text;
+
+                    decisionHistory.add({
+                        turn, agent: 'detail_specialist',
+                        decision: `Applied detail operations: ${decision.instruction.substring(0, 80)}`,
+                        reasoning: detailResult.text?.substring(0, 150) || '',
+                        result: 'success'
+                    });
+
+                } else if (decision.delegate_to === 'master_planner') {
+                    // --- v2.0: MASTER PLANNER ---
+                    log(`   📐 MASTER PLANNER: Planning site layout...`);
+                    log(getPhaseStartNarrative('site_plan', narrativeContext));
+
+                    const plannerContext = `INSTRUCTION: ${decision.instruction}\n\n${buildBrief ? formatBuildBrief(buildBrief) : 'No build brief available.'}\n\nCURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}`;
+
+                    const plannerResult = await callProviderWithTools(config, normalizeMessages([
+                        { role: 'system', content: MASTER_PLANNER_PROMPT },
+                        { role: 'user', content: plannerContext }
+                    ]), attachments, signal);
+
+                    if (plannerResult.toolCalls && plannerResult.toolCalls.length > 0) {
+                        let successCount = 0;
+                        for (const tc of plannerResult.toolCalls) {
+                            try {
+                                if (tc.name === 'add_node' && tc.args.parent_id && tc.args.type) {
+                                    const dedupeCheck = checkBeforeAdd(tc.args.parent_id as string, tc.args.type as PSGNode['type'], currentProject);
+                                    if (dedupeCheck.action === 'BLOCK') {
+                                        log(`   🚫 DEDUP BLOCK: ${dedupeCheck.message}`);
+                                        continue;
+                                    }
+                                }
+
+                                const op = toolCallToOperation(tc.name, tc.args);
+                                const validation = validateOperation(op, currentProject);
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'master_planner');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        successCount++;
+                                        if (tc.name === 'add_node' && applied.project.nodes[op.target_id]) {
+                                            operationLog.autoRegister(applied.project.nodes[op.target_id]);
+                                        }
+                                    }
+                                } else {
+                                    log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
+                                }
+                            } catch (e) { /* skip */ }
+                        }
+                        log(`   ✅ Planner: ${successCount}/${plannerResult.toolCalls.length} operations applied`);
+                    }
+                    if (plannerResult.text) finalMessage = plannerResult.text;
+
+                    decisionHistory.add({
+                        turn, agent: 'master_planner',
+                        decision: `Site layout: ${decision.instruction.substring(0, 80)}`,
+                        reasoning: plannerResult.text?.substring(0, 150) || '',
+                        result: 'success'
+                    });
+
+                } else if (decision.delegate_to === 'quality_inspector') {
+                    // --- v2.0: QUALITY INSPECTOR ---
+                    log(`   🔍 QUALITY INSPECTOR: Final audit...`);
+                    log(getPhaseStartNarrative('inspection' as BuildPhase, narrativeContext));
+
+                    const inspectorContext = `INSTRUCTION: ${decision.instruction}\n\nCURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\n${formatCompletionState(completionState)}\n\n${checklistItems.length > 0 ? formatChecklist(checklistItems) : ''}\n\n${operationLog.serialize()}`;
+
+                    const inspectorResult = await callProviderNoTools(config, normalizeMessages([
+                        { role: 'system', content: QUALITY_INSPECTOR_PROMPT },
+                        { role: 'user', content: inspectorContext }
+                    ]), undefined, signal);
+
+                    log(`   📋 Quality Report:\n${inspectorResult.text?.substring(0, 500) || 'No report generated'}`);
+                    if (inspectorResult.text) finalMessage = inspectorResult.text;
+
+                    decisionHistory.add({
+                        turn, agent: 'quality_inspector',
+                        decision: 'Quality audit completed',
+                        reasoning: inspectorResult.text?.substring(0, 150) || '',
+                        result: 'success'
+                    });
                 }
 
-                const postTurnCompletion = evaluateCompletion(currentProject, structuralTargets, pendingViolations, turn);
+                // --- v2.0: Post-turn completion check ---
+                checklistItems = updateChecklist(checklistItems, currentProject);
+                const postTurnCompletion = evaluateCompletionState(currentProject, complexity, pendingViolations, turn, checklistItems);
                 const hasPostBlockingViolations = pendingViolations.some(v => v.severity === 'CRITICAL' || v.severity === 'WARNING');
-                if (postTurnCompletion.complete && !hasPostBlockingViolations) {
-                    finalMessage = finalMessage || `Design completed in ${turn} turns.`;
+                if (postTurnCompletion.autoStopAllowed && !hasPostBlockingViolations) {
+                    const reveal = generateCompletionReveal(
+                        narrativeContext.projectName,
+                        postTurnCompletion,
+                        allValidatedOps.length,
+                        turn
+                    );
+                    log(reveal);
+                    finalMessage = finalMessage || `Design completed in ${turn} turns. Score: ${postTurnCompletion.totalScore}/100`;
                     decisionHistory.add({
                         turn,
                         agent: 'orchestrator',
-                        decision: 'Auto-stop on deterministic completion',
-                        reasoning: `All completion gates satisfied with no blocking violations`,
+                        decision: 'Auto-stop on v2.0 completion gate',
+                        reasoning: postTurnCompletion.reason,
                         result: 'success'
                     });
-                    log(`   ✨ AUTO STOP: All completion gates satisfied. Ending early.`);
+                    log(`   ✨ AUTO STOP: ${postTurnCompletion.reason}`);
                     turn = maxTurns + 1;
                     turnSuccess = true;
                     break;
