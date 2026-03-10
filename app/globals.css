@@ -92,7 +92,7 @@
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 400ms ease;
-  
+
   /* ── Accessibility ─────────────────────────────────────────── */
   --focus-ring: 0 0 0 2px var(--accent-primary);
   --focus-ring-offset: 2px;
@@ -146,7 +146,7 @@
 
   --border-color: #ffffff;
   --border-focus: #00ffff;
-  
+
   --shadow-sm: none;
   --shadow-md: none;
   --shadow-lg: none;
@@ -184,7 +184,10 @@
 
 /* Reduce motion if requested */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -996,7 +999,8 @@ button:disabled {
   right: -2px;
   top: 0;
   bottom: 0;
-  z-index: 21; /* Increase hit area */
+  z-index: 21;
+  /* Increase hit area */
 }
 
 .sidebar-tabs {
@@ -2359,4 +2363,60 @@ select:focus-visible {
     overflow-x: auto;
     white-space: nowrap;
   }
+}
+
+/* =============================================================================
+   9. MARKDOWN CONTENT
+   ============================================================================= */
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: inherit;
+}
+
+.markdown-content h1 {
+  font-size: 1.5rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.25rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.125rem;
+}
+
+.markdown-content p {
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+.markdown-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1em;
+}
+
+.markdown-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1em;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5em;
+}
+
+.markdown-content strong {
+  font-weight: 700;
+}
+
+.markdown-content a {
+  text-decoration: underline;
+  color: var(--accent-primary);
 }

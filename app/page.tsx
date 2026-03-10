@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useDesignStore } from '@/store/useDesignStore';
 import { TEMPLATES } from '@/lib/psg/templates';
@@ -9,25 +8,6 @@ import { TEMPLATES } from '@/lib/psg/templates';
 export default function HomePage() {
   const router = useRouter();
   const loadProject = useDesignStore((s) => s.loadProject);
-  const [recentProjects, setRecentProjects] = useState<any[]>([]);
-  const [isLoadingRecent, setIsLoadingRecent] = useState(true);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch('/api/projects');
-        if (res.ok) {
-          const data = await res.json();
-          setRecentProjects(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        console.error('Failed to fetch projects:', err);
-      } finally {
-        setIsLoadingRecent(false);
-      }
-    };
-    fetchProjects();
-  }, []);
 
   const handleSelectTemplate = async (templateSlug: string) => {
     const template = TEMPLATES.find(t => t.slug === templateSlug);
@@ -56,75 +36,14 @@ export default function HomePage() {
       {/* ── Hero Section ─────────────────────────────────────── */}
       <section className="landing-hero">
         <div className="hero-content">
-          <h1>AI House Designer</h1>
+          <h1>Complex house design made simpe an accurate</h1>
           <p>
             The most advanced AI-powered architectural planning tool.
             Design, visualize, and calculate costs in real-time.
           </p>
-        </div>
-      </section>
-
-      {/* ── Dashboard: Templates & Recents ───────────────────────── */}
-      <section className="dashboard-grid">
-        <div className="dashboard-column templates-column">
-          <div className="column-header">
-            <h2>New Project</h2>
-            <p>Choose a base template to start your design</p>
-          </div>
-          <div className="template-cards-mini">
-            {TEMPLATES.map((template) => (
-              <div
-                key={template.slug}
-                className="template-card-mini"
-                onClick={() => handleSelectTemplate(template.slug)}
-              >
-                <div className="card-mini-visual">
-                  {template.slug === 'empty' ? (
-                    <span className="icon">📁</span>
-                  ) : (
-                    <img src={template.preview_image} alt={template.name} />
-                  )}
-                </div>
-                <div className="card-mini-info">
-                  <h3>{template.name}</h3>
-                  <span className="style-tag">{template.style}</span>
-                </div>
-                <button className="btn-start">Start →</button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="dashboard-column recent-column">
-          <div className="column-header">
-            <h2>Recent Projects</h2>
-            <p>Continue working on your saved designs</p>
-          </div>
-          <div className="recent-projects-list">
-            {isLoadingRecent ? (
-              <div className="status-message">Loading projects...</div>
-            ) : recentProjects.length > 0 ? (
-              recentProjects.map((project) => (
-                <Link
-                  key={project.id}
-                  href={`/design?id=${project.id}`}
-                  className="recent-project-card"
-                >
-                  <div className="project-icon">🏛️</div>
-                  <div className="project-details">
-                    <h4>{project.name}</h4>
-                    <span className="project-meta">
-                      {project.preview_summary} • {new Date(project.modified_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <button className="btn-open">Open</button>
-                </Link>
-              ))
-            ) : (
-              <div className="empty-projects">
-                <p>No projects found yet. Start a new one!</p>
-              </div>
-            )}
+          <div className="hero-buttons">
+            <button className="btn-primary" onClick={() => handleSelectTemplate('empty')}>Start Designing</button>
+            <button className="btn-secondary" onClick={() => router.push('/professional-client')}>Professional Project</button>
           </div>
         </div>
       </section>
@@ -153,6 +72,25 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Inspiration Gallery ────────────────────────────────────── */}
+      <section className="inspiration-gallery">
+        <div className="gallery-header">
+          <h2>Gallery for Inspiration</h2>
+          <p>Explore what's possible with our AI House Designer</p>
+        </div>
+        <div className="gallery-grid">
+          {TEMPLATES.filter(t => t.slug !== 'empty').map((template) => (
+            <div key={template.slug} className="gallery-item">
+              <img src={template.preview_image} alt={template.name} />
+              <div className="gallery-overlay">
+                <h3>{template.name}</h3>
+                <span className="style-tag">{template.style}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <style jsx>{`
                 .dashboard-page {
                     padding-bottom: 80px;
@@ -161,180 +99,194 @@ export default function HomePage() {
                 .hero-content {
                     max-width: 800px;
                     margin: 0 auto;
+                    text-align: center;
                 }
 
-                .dashboard-grid {
+                .landing-hero h1 {
+                    font-size: 3.5rem;
+                    background: linear-gradient(45deg, #6c63ff, #00d4aa);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    margin-bottom: 24px;
+                    line-height: 1.2;
+                }
+
+                .landing-hero p {
+                    font-size: 1.2rem;
+                    color: #a0a0b8;
+                    margin-bottom: 40px;
+                }
+
+                .hero-buttons {
+                    display: flex;
+                    justify-content: center;
+                    gap: 16px;
+                    margin-top: 32px;
+                }
+
+                .hero-buttons button {
+                    padding: 14px 32px;
+                    border-radius: 12px;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                .hero-buttons .btn-primary {
+                    background: linear-gradient(45deg, #6c63ff, #00d4aa);
+                    color: white;
+                    border: none;
+                    box-shadow: 0 10px 20px rgba(108, 99, 255, 0.2);
+                }
+
+                .hero-buttons .btn-primary:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 15px 30px rgba(108, 99, 255, 0.4);
+                }
+
+                .hero-buttons .btn-secondary {
+                    background: rgba(255, 255, 255, 0.05);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(10px);
+                }
+
+                .hero-buttons .btn-secondary:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-color: rgba(255, 255, 255, 0.3);
+                }
+
+                .landing-features {
                     max-width: 1400px;
-                    margin: -80px auto 40px;
+                    margin: 60px auto;
                     display: grid;
-                    grid-template-columns: 1fr 400px;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                     gap: 32px;
                     padding: 0 40px;
                     position: relative;
                     z-index: 10;
                 }
 
-                @media (max-width: 1100px) {
-                    .dashboard-grid { grid-template-columns: 1fr; margin-top: 40px; }
-                }
-
-                .dashboard-column {
+                .feature-card {
                     background: rgba(18, 18, 26, 0.8);
                     backdrop-filter: blur(20px);
                     border: 1px solid rgba(255, 255, 255, 0.08);
                     border-radius: 24px;
                     padding: 32px;
-                    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+                    transition: transform 0.3s ease;
                 }
 
-                .column-header {
-                    margin-bottom: 32px;
-                }
-
-                .column-header h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
-                .column-header p { color: #8888a0; font-size: 0.9rem; }
-
-                /* Templates */
-                .template-cards-mini {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    gap: 16px;
-                    max-height: 50vh;
-                    overflow-y: auto;
-                    padding-right: 8px;
-                    scrollbar-width: thin;
-                    scrollbar-color: rgba(108, 99, 255, 0.3) transparent;
-                }
-
-                .template-cards-mini::-webkit-scrollbar {
-                    width: 6px;
-                }
-
-                .template-cards-mini::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-
-                .template-cards-mini::-webkit-scrollbar-thumb {
-                    background-color: rgba(108, 99, 255, 0.3);
-                    border-radius: 20px;
-                }
-
-                .template-card-mini {
-                    background: rgba(255, 255, 255, 0.03);
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                    border-radius: 16px;
-                    padding: 16px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    position: relative;
-                }
-
-                .template-card-mini:hover {
-                    background: rgba(108, 99, 255, 0.1);
+                .feature-card:hover {
+                    transform: translateY(-5px);
                     border-color: rgba(108, 99, 255, 0.3);
-                    transform: translateY(-4px);
                 }
 
-                .card-mini-visual {
-                    height: 100px;
-                    background: #0a0a0f;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    margin-bottom: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                .feature-icon {
+                    font-size: 3rem;
+                    margin-bottom: 24px;
                 }
 
-                .card-mini-visual img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-                .card-mini-visual .icon { font-size: 2rem; opacity: 0.3; }
-
-                .card-mini-info h3 { font-size: 1rem; margin-bottom: 4px; }
-                .style-tag { font-size: 0.65rem; color: #6c63ff; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-
-                .btn-start {
-                    margin-top: 16px;
-                    width: 100%;
-                    padding: 8px;
-                    border-radius: 8px;
-                    background: rgba(255, 255, 255, 0.05);
+                .feature-card h3 {
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    margin-bottom: 16px;
                     color: white;
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                    transition: all 0.2s;
                 }
 
-                .template-card-mini:hover .btn-start { background: #6c63ff; }
+                .feature-card p {
+                    color: #8888a0;
+                    line-height: 1.6;
+                }
 
-                /* Recent Projects */
-                .recent-projects-list {
+                .inspiration-gallery {
+                    max-width: 1400px;
+                    margin: 80px auto;
+                    padding: 0 40px;
+                }
+
+                .gallery-header {
+                    text-align: center;
+                    margin-bottom: 48px;
+                }
+
+                .gallery-header h2 {
+                    font-size: 2.5rem;
+                    font-weight: 800;
+                    margin-bottom: 12px;
+                    color: white;
+                }
+
+                .gallery-header p {
+                    color: #8888a0;
+                    font-size: 1.1rem;
+                }
+
+                .gallery-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                    gap: 32px;
+                }
+
+                .gallery-item {
+                    position: relative;
+                    border-radius: 24px;
+                    overflow: hidden;
+                    aspect-ratio: 4/3;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+                    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    background: #12121a;
+                }
+
+                .gallery-item:hover {
+                    transform: translateY(-10px);
+                }
+
+                .gallery-item img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.6s ease;
+                }
+
+                .gallery-item:hover img {
+                    transform: scale(1.08);
+                }
+
+                .gallery-overlay {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    padding: 40px 24px 24px;
+                    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+                    color: white;
                     display: flex;
                     flex-direction: column;
-                    gap: 12px;
-                    max-height: 50vh;
-                    overflow-y: auto;
-                    padding-right: 8px;
-                    scrollbar-width: thin;
-                    scrollbar-color: rgba(0, 212, 170, 0.3) transparent;
+                    align-items: flex-start;
                 }
 
-                .recent-projects-list::-webkit-scrollbar {
-                    width: 6px;
+                .gallery-overlay h3 {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    margin-bottom: 8px;
                 }
 
-                .recent-projects-list::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-
-                .recent-projects-list::-webkit-scrollbar-thumb {
-                    background-color: rgba(0, 212, 170, 0.3);
-                    border-radius: 20px;
-                }
-
-                .recent-project-card {
-                    display: flex;
-                    align-items: center;
-                    gap: 16px;
-                    padding: 16px;
-                    background: rgba(255, 255, 255, 0.02);
-                    border: 1px solid rgba(255, 255, 255, 0.04);
-                    border-radius: 16px;
-                    text-decoration: none;
+                .style-tag {
+                    background: rgba(108, 99, 255, 0.8);
                     color: white;
-                    transition: all 0.2s;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
                 }
 
-                .recent-project-card:hover {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-color: rgba(255, 255, 255, 0.1);
-                }
-
-                .project-icon {
-                    width: 48px;
-                    height: 48px;
-                    background: rgba(0, 212, 170, 0.1);
-                    color: #00d4aa;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.2rem;
-                    border-radius: 12px;
-                }
-
-                .project-details { flex: 1; }
-                .project-details h4 { font-size: 0.95rem; margin-bottom: 2px; }
-                .project-meta { font-size: 0.75rem; color: #555566; }
-
-                .btn-open { font-size: 0.75rem; font-weight: 700; color: #6c63ff; opacity: 0; transition: opacity 0.2s; }
-                .recent-project-card:hover .btn-open { opacity: 1; }
-
-                .empty-projects, .status-message {
-                    text-align: center;
-                    padding: 40px 0;
-                    color: #555566;
-                    font-size: 0.9rem;
-                    border: 1px dashed rgba(255, 255, 255, 0.05);
-                    border-radius: 16px;
+                @media (max-width: 768px) {
+                    .landing-hero h1 { font-size: 2.5rem; }
+                    .hero-buttons { flex-direction: column; }
+                    .gallery-grid { grid-template-columns: 1fr; }
                 }
             `}</style>
     </div>
