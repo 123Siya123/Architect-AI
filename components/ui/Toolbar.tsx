@@ -47,6 +47,19 @@ export default function Toolbar() {
     const undoStack = useDesignStore((s) => s.undoStack);
     const redoStack = useDesignStore((s) => s.redoStack);
     const project = useDesignStore((s) => s.project);
+    const setTotalBudget = useDesignStore((s) => s.setTotalBudget);
+
+    const handleBudgetClick = () => {
+        const currentTotal = project.budget.total_budget;
+        const newBudgetStr = window.prompt(`Enter new total budget (${project.budget.currency || 'EUR'}):`, String(currentTotal));
+
+        if (newBudgetStr !== null) {
+            const parsed = parseFloat(newBudgetStr);
+            if (!isNaN(parsed) && parsed > 0) {
+                setTotalBudget(parsed);
+            }
+        }
+    };
 
     const budgetPercent = project.budget.total_budget > 0
         ? Math.round((project.budget.spent / project.budget.total_budget) * 100)
@@ -145,7 +158,12 @@ export default function Toolbar() {
             )}
 
             {/* Budget Display */}
-            <div className="toolbar-group budget-group">
+            <div
+                className="toolbar-group budget-group"
+                onClick={handleBudgetClick}
+                style={{ cursor: 'pointer' }}
+                title={`Total Budget: ${project.budget.total_budget}. Click to change.`}
+            >
                 <span className="toolbar-label">Budget</span>
                 <div className="budget-bar-container">
                     <div
@@ -162,6 +180,12 @@ export default function Toolbar() {
                         currency: project.budget.currency || 'EUR',
                         maximumFractionDigits: 0,
                     }).format(project.budget.spent)}
+                    {' / '}
+                    {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: project.budget.currency || 'EUR',
+                        maximumFractionDigits: 0,
+                    }).format(project.budget.total_budget)}
                 </span>
             </div>
 
@@ -170,6 +194,7 @@ export default function Toolbar() {
 
             {/* Export Action */}
             <div className="toolbar-group">
+                <SpecificationsButton />
                 <SaveButton />
                 <ImageTo3DButton />
                 <ExportButton />
@@ -204,12 +229,12 @@ function SaveButton() {
             disabled={isLoading}
             title={lastSaved ? `Last saved: ${new Date(lastSaved).toLocaleTimeString()}` : 'Save project'}
         >
-            {isLoading 
-                ? '⌛ Saving...' 
-                : justSaved 
-                    ? '✅ Saved' 
-                    : isDirty 
-                        ? '💾 Save*' 
+            {isLoading
+                ? '⌛ Saving...'
+                : justSaved
+                    ? '✅ Saved'
+                    : isDirty
+                        ? '💾 Save*'
                         : '☁️ Saved'}
         </button>
     );
@@ -249,7 +274,24 @@ function FloorSelector() {
 
 import ExportModal from './ExportModal';
 import ImageTo3DModal from './ImageTo3DModal';
+import SpecificationsModal from './SpecificationsModal';
 import { useState } from 'react';
+
+function SpecificationsButton() {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <>
+            <button
+                className="toolbar-btn export-btn"
+                onClick={() => setIsOpen(true)}
+            >
+                📋 Specifications
+            </button>
+            <SpecificationsModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        </>
+    );
+}
 
 function ExportButton() {
     const [isExportOpen, setIsExportOpen] = useState(false);

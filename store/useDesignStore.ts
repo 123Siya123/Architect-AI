@@ -59,11 +59,16 @@ interface DesignState {
     aiThinkingLogs: string[];
     undoStack: PSGOperation[];
     redoStack: PSGOperation[];
-    
+
     // Autosave & Status
     isDirty: boolean;
     lastSaved: string | null;
     autosaveTimer: ReturnType<typeof setTimeout> | null;
+
+    // Professional Client Project Support
+    professionalSpecs: any | null;
+    isProfessionalProject: boolean;
+    userSpecifications: string;
 
     // Actions
     loadProject: (project: PSGProject) => void;
@@ -89,6 +94,10 @@ interface DesignState {
     saveProject: (isAutosave?: boolean) => Promise<void>;
     triggerAutosave: () => void;
     loadFromServer: (id: string) => Promise<void>;
+    setProfessionalSpecs: (specs: any) => void;
+    getProfessionalContext: () => string;
+    setTotalBudget: (amount: number) => void;
+    setUserSpecifications: (specs: string) => void;
 }
 
 // Defaults
@@ -128,12 +137,15 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     isDirty: false,
     lastSaved: null,
     autosaveTimer: null,
+    professionalSpecs: null,
+    isProfessionalProject: false,
+    userSpecifications: '',
 
-    loadProject: (project) => set({ 
-        project: projectWithCalculatedCost(project), 
-        selection: defaultSelection, 
-        undoStack: [], 
-        redoStack: [], 
+    loadProject: (project) => set({
+        project: projectWithCalculatedCost(project),
+        selection: defaultSelection,
+        undoStack: [],
+        redoStack: [],
         error: null,
         isDirty: false,
         lastSaved: null,
@@ -144,11 +156,11 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         const { project, undoStack, triggerAutosave } = get();
         const result = applyOperation(project, operation);
         if (result.success && result.project) {
-            set({ 
-                project: projectWithCalculatedCost(result.project), 
-                undoStack: [...undoStack, operation], 
+            set({
+                project: projectWithCalculatedCost(result.project),
+                undoStack: [...undoStack, operation],
                 redoStack: [],
-                isDirty: true 
+                isDirty: true
             });
             triggerAutosave();
         }
@@ -159,9 +171,9 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         const { project, undoStack, triggerAutosave } = get();
         const result = applyBatchOperations(project, operations);
         if (result.success && result.project) {
-            set({ 
-                project: projectWithCalculatedCost(result.project), 
-                undoStack: [...undoStack, ...operations], 
+            set({
+                project: projectWithCalculatedCost(result.project),
+                undoStack: [...undoStack, ...operations],
                 redoStack: [],
                 isDirty: true
             });
@@ -178,9 +190,9 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         if (undoOp) {
             const result = applyOperation(project, undoOp);
             if (result.success && result.project) {
-                set({ 
-                    project: projectWithCalculatedCost(result.project), 
-                    undoStack: undoStack.slice(0, -1), 
+                set({
+                    project: projectWithCalculatedCost(result.project),
+                    undoStack: undoStack.slice(0, -1),
                     redoStack: [...redoStack, lastOp],
                     isDirty: true
                 });
@@ -195,9 +207,9 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         const redoOp = redoStack[redoStack.length - 1];
         const result = applyOperation(project, redoOp);
         if (result.success && result.project) {
-            set({ 
-                project: projectWithCalculatedCost(result.project), 
-                undoStack: [...undoStack, redoOp], 
+            set({
+                project: projectWithCalculatedCost(result.project),
+                undoStack: [...undoStack, redoOp],
                 redoStack: redoStack.slice(0, -1),
                 isDirty: true
             });
@@ -223,10 +235,13 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     setActiveFloorId: (id) => set({ activeFloorId: id }),
     addChatMessage: (message) => set({ chatMessages: [...get().chatMessages, message] }),
     sendMessageToAI: async (text: string, attachments?: { name: string; type: string; data: string }[]) => {
-        const { isAIThinking, project, chatMessages, addChatMessage, setAIThinking, setAIThinkingLogs, triggerAutosave } = get();
+        const { isAIThinking, project, chatMessages, addChatMessage, setAIThinking, setAIThinkingLogs, triggerAutosave, getProfessionalContext } = get();
         if ((!text.trim() && (!attachments || attachments.length === 0)) || isAIThinking) return;
 
         const projectSnapshot = JSON.parse(JSON.stringify(project));
+        const professionalContext = getProfessionalContext();
+        const userSpecsContext = get().userSpecifications ? `User Global Specifications:\n${get().userSpecifications}\n\n` : '';
+        const combinedContext = [userSpecsContext, professionalContext].filter(Boolean).join('\n') || undefined;
 
         const userMsg: ChatMessage = {
             id: `msg_${Date.now()}`,
@@ -248,7 +263,8 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                     message: text.trim(),
                     project,
                     history: chatMessages,
-                    attachments: attachments
+                    attachments: attachments,
+                    professionalContext: combinedContext
                 }),
             });
 
@@ -294,8 +310,8 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                                     hasChanges = true;
                                     // FORCE UPDATE: Trigger a re-render by creating a new object reference
                                     // This is sometimes needed if Zustand's shallow compare misses deep changes
-                                    set((state) => ({ 
-                                        project: { ...state.project } 
+                                    set((state) => ({
+                                        project: { ...state.project }
                                     }));
                                 } else {
                                     streamedFailCount++;
@@ -343,7 +359,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             if (allOps.length > 0) {
                 console.log(`[Store] Applied ${successCount}/${allOps.length} operations (${failCount} failed)`);
             }
-            
+
             if (hasChanges) {
                 triggerAutosave();
             }
@@ -402,43 +418,43 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     triggerAutosave: () => {
         const { autosaveTimer, saveProject } = get();
         if (autosaveTimer) clearTimeout(autosaveTimer);
-        
+
         // Debounce for 2 seconds
         const timer = setTimeout(() => {
             saveProject(true);
         }, 2000);
-        
+
         set({ autosaveTimer: timer });
     },
 
     saveProject: async (isAutosave = false) => {
         const { project, setLoading, setError } = get();
         if (!isAutosave) setLoading(true);
-        
+
         try {
             // Use PUT to update existing project
             // Add ?revision=true if manual save or periodic autosave? 
             // Maybe we only create revision on manual save?
             // Or create revision on autosave too? Let's say yes for now but maybe limit frequency.
             // For now, let's create revision on EVERY save to be safe (backend limits to 50 anyway).
-            
+
             const url = `/api/projects/${project.id}?revision=${isAutosave ? 'true' : 'true'}`;
-            
+
             const res = await fetch(url, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(project)
             });
-            
+
             if (!res.ok) throw new Error('Failed to save project');
-            
+
             console.log(`[Store] Project saved (${isAutosave ? 'Autosave' : 'Manual'})`);
-            set({ 
-                isDirty: false, 
+            set({
+                isDirty: false,
                 lastSaved: new Date().toISOString(),
-                autosaveTimer: null 
+                autosaveTimer: null
             });
-            
+
         } catch (err) {
             console.error('Save failed:', err);
             if (!isAutosave) setError((err as Error).message);
@@ -460,5 +476,63 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         } finally {
             setLoading(false);
         }
+    },
+
+    setProfessionalSpecs: (specs) => {
+        set({
+            professionalSpecs: specs,
+            isProfessionalProject: true
+        });
+
+        // Add professional context to the first AI message
+        const { addChatMessage } = get();
+        const contextMessage: ChatMessage = {
+            id: `professional-context-${Date.now()}`,
+            role: 'system',
+            content: `Professional Client Project Context: ${specs.clientName} - ${specs.projectType}. Budget: ${specs.budget.total} ${specs.budget.currency}. Key requirements: ${specs.requirements.bedrooms} bed, ${specs.requirements.bathrooms} bath, ${specs.requirements.floors} floors. Site: ${specs.site.size}m², ${specs.site.topography} topography.`,
+            timestamp: new Date().toISOString(),
+            type: 'context'
+        };
+        addChatMessage(contextMessage);
+    },
+
+    getProfessionalContext: () => {
+        const { professionalSpecs } = get();
+        if (!professionalSpecs) return '';
+
+        return `
+Professional Client Context:
+- Client: ${professionalSpecs.clientName}
+- Project: ${professionalSpecs.projectType}
+- Budget: ${professionalSpecs.budget.total} ${professionalSpecs.budget.currency} (${professionalSpecs.budget.flexibility})
+- Timeline: ${professionalSpecs.timeline.startDate} to ${professionalSpecs.timeline.targetCompletion}
+- Site: ${professionalSpecs.site.size}m², ${professionalSpecs.site.topography} topography
+- Requirements: ${professionalSpecs.requirements.bedrooms} bed, ${professionalSpecs.requirements.bathrooms} bath, ${professionalSpecs.requirements.floors} floors
+- Style: ${professionalSpecs.style.architectural} architecture, ${professionalSpecs.style.interior} interior
+- Energy Efficiency: ${professionalSpecs.requirements.energyEfficiency}
+- Must-haves: ${professionalSpecs.mustHaves.join(', ')}
+- Absolute no-gos: ${professionalSpecs.absoluteNoGos.join(', ')}
+`;
+    },
+
+    setTotalBudget: (amount: number) => {
+        const { project, triggerAutosave } = get();
+        set({
+            project: {
+                ...project,
+                budget: {
+                    ...project.budget,
+                    total_budget: amount,
+                    remaining: amount - project.budget.spent,
+                },
+            },
+            isDirty: true,
+        });
+        triggerAutosave();
+    },
+
+    setUserSpecifications: (specs: string) => {
+        set({ userSpecifications: specs });
+        get().triggerAutosave();
     },
 }));
