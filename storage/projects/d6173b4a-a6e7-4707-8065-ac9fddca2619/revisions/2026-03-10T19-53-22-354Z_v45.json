@@ -3,8 +3,8 @@
   "name": "New Project",
   "description": "",
   "created_at": "2026-03-10T19:18:10.230Z",
-  "modified_at": "2026-03-10T19:54:56.743Z",
-  "version": 46,
+  "modified_at": "2026-03-10T19:53:19.399Z",
+  "version": 45,
   "root_node_id": "house_f333387a",
   "nodes": {
     "house_f333387a": {
@@ -853,7 +853,7 @@
       },
       "dimensions": {
         "x": 4,
-        "y": 4,
+        "y": 2.7,
         "z": 4
       },
       "rotation": {
@@ -882,8 +882,8 @@
         "roof_v5eeol26"
       ],
       "created_at": "2026-03-10T19:36:41.288Z",
-      "modified_at": "2026-03-10T19:54:56.743Z",
-      "version": 11
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 10
     },
     "wall_9clqwx39": {
       "id": "wall_9clqwx39",
