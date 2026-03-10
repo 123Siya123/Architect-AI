@@ -52,7 +52,7 @@ export default function HomePage() {
       {/* ── Hero Section ─────────────────────────────────────── */}
       <section className="landing-hero">
         <div className="hero-content">
-          <h1>Complex house design made simpe an accurate</h1>
+          <h1>Complex house design made simple and accurate</h1>
           <p>
             The most advanced AI-powered architectural planning tool.
             Design, visualize, and calculate costs in real-time.

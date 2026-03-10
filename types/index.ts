@@ -222,7 +222,7 @@ export interface NodeConstraints {
   max_height?: number;
   min_thickness?: number;
   fixed_position?: boolean; // Cannot be moved (e.g., foundation)
-  connected_to: string[];   // IDs of nodes this MUST touch/connect to
+  connected_to?: string[];   // IDs of nodes this MUST touch/connect to
 }
 
 /** System connections — tracks which building systems pass through this node */
@@ -363,6 +363,9 @@ export interface PSGProject {
 
   // Budget
   budget: BudgetConfig;
+
+  // Professional Client Specs (Optional)
+  professional_specs?: any;
 }
 
 export interface ProjectSettings {
@@ -531,6 +534,8 @@ export interface ChatMessage {
   snapshot?: PSGProject;
   // Internal pipeline logs for transparency (optional)
   pipeline_log?: string[];
+  // Message type (optional)
+  type?: string;
 }
 
 /** Request to the AI chat endpoint */
@@ -600,5 +605,9 @@ export type ExportFormat =
   | 'electrical'       // Electrical layout drawings
   | 'plumbing'         // Plumbing layout drawings
   | 'bill_of_quantities' // Detailed BoQ
+  | 'construction_documents'
+  | 'door_window_schedule'
+  | 'finish_schedule'
+  | 'technical_specifications'
   | 'full_package';    // Everything above
 
