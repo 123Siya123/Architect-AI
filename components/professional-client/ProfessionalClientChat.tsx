@@ -11,8 +11,8 @@ interface ProfessionalClientChatProps {
 const INTERVIEW_PHASES = [
   {
     id: 'intro',
-    title: 'Welcome & Introduction',
-    description: 'Getting to know you and your project vision'
+    title: 'Vision & Project Identity',
+    description: 'Establishing the core concept and goals of your architectural journey.'
   },
   {
     id: 'site',
@@ -57,8 +57,8 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const architectName = 'AI Design Architect';
-  const architectTitle = 'Your Virtual Consultant';
+  const architectName = 'Principal AI Architect';
+  const architectTitle = 'Design Lead';
 
   useEffect(() => {
     // Initialize with welcome message
@@ -194,10 +194,10 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow-lg">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-lg">
-        <h2 className="text-2xl font-bold mb-2">Professional Client Consultation</h2>
-        <p className="text-blue-100">Phase {currentPhase + 1} of {INTERVIEW_PHASES.length}: {INTERVIEW_PHASES[currentPhase].title}</p>
-        <p className="text-sm text-blue-200 mt-1">{INTERVIEW_PHASES[currentPhase].description}</p>
+      <div className="bg-[#1a1a2e] text-white p-8 border-b border-white/10">
+        <h2 className="text-3xl font-extrabold tracking-tight mb-2">Architectural Consultation</h2>
+        <p className="text-blue-400 font-medium">Phase {currentPhase + 1} of {INTERVIEW_PHASES.length}: {INTERVIEW_PHASES[currentPhase].title}</p>
+        <p className="text-sm text-gray-400 mt-2 italic">{INTERVIEW_PHASES[currentPhase].description}</p>
       </div>
 
       {/* Progress Bar */}
@@ -206,9 +206,9 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
           <span className="text-sm font-medium text-gray-700">Progress </span>
           <span className="text-sm text-gray-500">{currentPhase + 1} / {INTERVIEW_PHASES.length}</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className="bg-blue-600 h-full rounded-full transition-all duration-500 ease-out"
             style={{ width: `${((currentPhase + 1) / INTERVIEW_PHASES.length) * 100}%` }}
           />
         </div>
@@ -298,9 +298,9 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your message here..."
-              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={3}
+              placeholder="Describe your architectural vision or answer the questions above..."
+              className="w-full p-4 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 text-gray-800"
+              rows={2}
               disabled={isTyping}
             />
           </div>
@@ -315,7 +315,7 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
             <button
               onClick={handleSendMessage}
               disabled={isTyping || (!inputValue.trim() && uploadedFiles.length === 0)}
-              className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-blue-500/20 active:scale-95 flex items-center justify-center"
             >
               Send
             </button>
@@ -328,7 +328,7 @@ export function ProfessionalClientChat({ onComplete }: ProfessionalClientChatPro
           accept="image/*,.pdf,.doc,.docx,.txt"
           onChange={handleFileUpload}
           className="hidden"
-          style={{ display: 'none' }}
+          style={{ display: 'none', position: 'absolute', width: 0, height: 0, opacity: 0 }}
         />
       </div>
     </div>

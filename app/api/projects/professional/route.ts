@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { PSGProject } from '@/types';
+import { createEmptyProject } from '@/lib/psg/schema';
 
 const STORAGE_DIR = path.join(process.cwd(), 'storage', 'projects');
 
@@ -47,54 +48,15 @@ export async function POST(request: NextRequest) {
     const projectId = uuidv4();
 
     // Create base project structure
-    const baseProject: PSGProject = {
-      id: projectId,
-      name: name || `${specs.clientName} - Professional Project`,
-      description: `Professional client project for ${specs.clientName}`,
-      created_at: new Date().toISOString(),
-      modified_at: new Date().toISOString(),
-      version: 1,
-      root_node_id: 'root_house',
-      nodes: {
-        'root_house': {
-          id: 'root_house',
-          type: 'House',
-          name: 'Main House',
-          position: { x: 0, y: 0, z: 0 },
-          dimensions: { x: 0, y: 0, z: 0 },
-          rotation: { yaw: 0, pitch: 0, roll: 0 },
-          material_id: 'mat_concrete_cast',
-          opacity: 1,
-          tags: [],
-          constraints: {},
-          systems: { electrical: [], plumbing: [], hvac: [] },
-          parent_id: null,
-          children_ids: [],
-          created_at: new Date().toISOString(),
-          modified_at: new Date().toISOString(),
-          version: 1
-        }
-      },
-      settings: {
-        unit: 'metric',
-        grid_size: 0.1,
-        precision_level: 1,
-        building_standard: 'eurocode',
-        default_wall_height: 2.7,
-        default_wall_thickness: 0.25,
-        locale: 'en-US',
-        currency: specs.budget?.currency || 'EUR'
-      },
-      budget: {
-        total_budget: budget || specs.budget?.total || 250000,
-        spent: 0,
-        remaining: budget || specs.budget?.total || 250000,
-        currency: specs.budget?.currency || 'EUR',
-        warnings_enabled: true,
-        warning_threshold: 10
-      },
-      professional_specs: specs // This will requires update to types/index.ts
-    };
+    const baseProject: PSGProject = createEmptyProject(
+      name || `${specs.clientName} - Professional Project`,
+      budget || specs.budget?.total || 250000,
+      specs.budget?.currency || 'EUR'
+    );
+
+    baseProject.id = projectId;
+    baseProject.description = `Professional client project for ${specs.clientName}`;
+    baseProject.professional_specs = specs;
 
     // Create project directory
     const projectDir = path.join(STORAGE_DIR, projectId);
@@ -131,8 +93,8 @@ export async function POST(request: NextRequest) {
       description: baseProject.description,
       created_at: baseProject.created_at,
       modified_at: baseProject.modified_at,
-      budget: baseProject.budget,
-      currency: baseProject.currency,
+      budget: baseProject.budget.total_budget,
+      currency: baseProject.budget.currency,
       is_professional: true,
       client_name: specs.clientName,
       project_type: specs.projectType,
