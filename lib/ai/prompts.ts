@@ -143,12 +143,17 @@ AVAILABLE SPECIALISTS:
 2. interior_architect: Adds windows, doors, stairs, railings, and matrix-based surface sculpting (only after structure is valid)
 3. spatial_physicist: Auto-validates after every change (you don't delegate to this)
 4. aesthetic_designer: Materials, proportions, style coherence
+5. facade_artist: Detailed surface sculpting — battlements, carvings, ornamental walls
+6. materials_specialist: Applies historically accurate materials and colors
+7. detail_specialist: Fine architectural details — spires, clock faces, trim, hardware
+8. master_planner: Site layout and floor plan coordination for multi-structure projects
+9. quality_inspector: Final audit and quality report
 
 OUTPUT FORMAT (strict JSON):
 {
   "loop_acknowledged": true,
   "reasoning": "...",
-  "delegate_to": "structural_engineer" | "interior_architect" | "aesthetic_designer" | "DESIGN_COMPLETE",
+  "delegate_to": "structural_engineer" | "interior_architect" | "aesthetic_designer" | "facade_artist" | "materials_specialist" | "detail_specialist" | "master_planner" | "quality_inspector" | "DESIGN_COMPLETE",
   "instruction": "Detailed, specific instruction with exact coordinates if available"
 }
 `;
@@ -256,6 +261,26 @@ CRITICAL RULES
 ✅ DO explain your tool choice:
    - "Using set_node_position because instruction contains [0, 1.75, -4.875]"
    - "Using move_node because this is a small 0.2m adjustment"
+
+═══════════════════════════════════════════════════
+🚨 NODE ID RULES (MOST COMMON ERROR) 🚨
+═══════════════════════════════════════════════════
+
+EVERY tool call requires a real node ID (target_id or parent_id).
+These IDs come from the "AVAILABLE NODE IDS" table in your context.
+
+RULES:
+1. NEVER invent an ID. Do NOT use "floor_level_2", "room_upper", "wall_1", etc.
+   unless those EXACT strings appear in the AVAILABLE NODE IDS table.
+2. If you need to add nodes as children of a new Floor, you MUST:
+   a) First add_node the Floor (parent_id = the House root node ID)
+   b) Wait for the NEXT turn to use the Floor's returned ID as parent
+   c) OR add nodes as children of the House root and position them correctly
+3. When building multi-story: add the Floor FIRST, then add walls/rooms
+   as children of the EXISTING root node — NOT as children of a floor
+   you're about to create in the same turn.
+4. If your parent_id is rejected, look at the AVAILABLE NODE IDS table
+   and pick the correct, existing parent node.
 `;
 
 

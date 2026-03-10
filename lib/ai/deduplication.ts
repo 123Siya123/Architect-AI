@@ -30,7 +30,7 @@ export interface DedupeResult {
 }
 
 // Singleton types — only one per parent is allowed
-const SINGLETON_TYPES: NodeType[] = ['Roof', 'Foundation', 'Floor'];
+const SINGLETON_TYPES: NodeType[] = ['Roof', 'Foundation'];
 
 // =============================================================================
 // OPERATION LOG — Persistent map of semantic labels → node IDs

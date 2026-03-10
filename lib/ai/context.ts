@@ -94,10 +94,26 @@ export function prepare3DNodeTree(project: PSGProject): string {
         return 'EMPTY — No nodes in the building.';
     }
 
-    lines.push('3D NODE TREE:');
+    lines.push('3D NODE TREE (use the IDs in [brackets] for all operations):');
     for (const rootId of rootIds) {
         printNode(rootId, 0);
     }
+
+    // Add flat ID reference table — impossible for agents to miss
+    lines.push('');
+    lines.push('═══════════════════════════════════════════════════════════════');
+    lines.push('🚨 AVAILABLE NODE IDS — YOU MUST USE THESE EXACT IDs 🚨');
+    lines.push('═══════════════════════════════════════════════════════════════');
+    lines.push('DO NOT INVENT IDs. If a node does not exist in this list, you');
+    lines.push('CANNOT use it as a parent_id or target_id. Create it first.');
+    lines.push('───────────────────────────────────────────────────────────────');
+    
+    const allNodes = Object.values(nodes).sort((a, b) => a.type.localeCompare(b.type));
+    for (const node of allNodes) {
+        const parentInfo = node.parent_id ? ` (parent: ${node.parent_id})` : ' (ROOT)';
+        lines.push(`  ${node.type.padEnd(12)} │ ID: ${node.id} │ "${node.name}"${parentInfo}`);
+    }
+    lines.push('───────────────────────────────────────────────────────────────');
 
     return lines.join('\n');
 }

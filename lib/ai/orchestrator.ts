@@ -240,6 +240,64 @@ export async function sendChatToAI(
         log(`Landmark Checklist: ${checklistItems.length} items loaded`);
     }
 
+    // =================================================================
+    // PHASE 0: RESEARCH (Pre-loop, COMPLEX/LANDMARK/MEGA only)
+    // =================================================================
+    if (complexity.requiresResearch) {
+        log(`\n───── 📚 RESEARCH PHASE ─────`);
+        log(`   📚 Research Specialist: Analyzing "${request.message}"...`);
+        log(getPhaseStartNarrative('research', narrativeContext));
+
+        try {
+            const researchConfig = getProviderConfig();
+            const researchResult = await callProviderNoTools(researchConfig, normalizeMessages([
+                { role: 'system', content: RESEARCH_SPECIALIST_PROMPT },
+                { role: 'user', content: `Design request: "${request.message}"\n\nProduce a BuildBrief JSON with historically accurate dimensions, materials, and all architectural elements needed.` }
+            ]), undefined, signal);
+
+            const parsed = extractJSON<BuildBrief>(researchResult.text);
+            if (parsed && validateBuildBrief(parsed)) {
+                buildBrief = parsed;
+                narrativeContext.buildBrief = buildBrief as unknown as Record<string, unknown>;
+                log(`   ✅ Build Brief generated:`);
+                log(`      Footprint: ${buildBrief.totalFootprintMeters.width}m × ${buildBrief.totalFootprintMeters.depth}m`);
+                log(`      Height: ${buildBrief.overallHeightMeters}m`);
+                log(`      Structures: ${buildBrief.primaryStructures.length} primary, ${buildBrief.towers.length} towers`);
+                log(`      Materials: ${buildBrief.materials.primaryWall}, ${buildBrief.materials.roof}`);
+
+                // Merge checklist items from brief into landmark checklist
+                if (buildBrief.landmarkChecklistItems.length > 0) {
+                    const briefChecklist = parseChecklistFromBrief(buildBrief.landmarkChecklistItems);
+                    checklistItems = mergeChecklists(checklistItems, briefChecklist);
+                    log(`      Checklist: ${checklistItems.length} items (merged from brief + known landmarks)`);
+                }
+
+                decisionHistory.add({
+                    turn: 0,
+                    agent: 'orchestrator',
+                    decision: 'Research phase complete',
+                    reasoning: `BuildBrief: ${buildBrief.totalFootprintMeters.width}x${buildBrief.totalFootprintMeters.depth}m, ${buildBrief.primaryStructures.length} structures`,
+                    result: 'success'
+                });
+            } else {
+                log(`   ⚠️ Research returned invalid brief, continuing without research data`);
+                log(`   Raw response: ${researchResult.text?.substring(0, 200)}`);
+            }
+
+            logAgentStep({
+                phase: 'RESEARCH_SPECIALIST',
+                iteration: 0,
+                model: researchConfig.model,
+                status: 'success',
+                response: researchResult.text
+            });
+        } catch (e) {
+            log(`   ⚠️ Research phase failed: ${e instanceof Error ? e.message : 'Unknown error'}. Continuing without brief.`);
+        }
+
+        log(`───── 📚 RESEARCH COMPLETE ─────\n`);
+    }
+
     for (let turn = 1; turn <= maxTurns; turn++) {
         log(`\n───── 🔄 TURN ${turn}/${maxTurns} ─────`);
 
@@ -296,49 +354,115 @@ export async function sendChatToAI(
                 }
 
                 // =============================================================
-                // STEP 0: SYSTEM INTERVENTION — Auto-fix Criticals
+                // STEP 0: SYSTEM INTERVENTION — Deterministic Auto-Fix
                 // =============================================================
-                const systemFixes = pendingViolations.filter(v =>
-                    v.severity === 'CRITICAL' &&
-                    v.suggested_fix &&
-                    (v.suggested_fix.exact_coordinates || v.suggested_fix.params)
-                );
-
-                if (systemFixes.length > 0) {
-                    log(`   🔧 SYSTEM INTERVENTION: Auto-applying ${systemFixes.length} critical fixes...`);
+                // Instead of trusting the physicist's suggested coordinates
+                // (which are often wrong), we calculate fixes deterministically.
+                if (pendingViolations.some(v => v.severity === 'CRITICAL')) {
+                    log(`   🔧 SYSTEM INTERVENTION: Calculating deterministic fixes...`);
                     let fixCount = 0;
                     const systemActions: string[] = [];
 
-                    for (const fix of systemFixes) {
-                        try {
-                            const sf = fix.suggested_fix!;
-                            const args = {
-                                target_id: sf.target_id,
-                                ...(sf.params || {}),
-                                ...(sf.exact_coordinates ? {
-                                    position_x: sf.exact_coordinates.x,
-                                    position_y: sf.exact_coordinates.y,
-                                    position_z: sf.exact_coordinates.z
-                                } : {})
-                            };
-
-                            const op = toolCallToOperation(sf.action, args);
-                            const validation = validateOperation(op, currentProject);
-
-                            if (validation.valid) {
-                                allValidatedOps.push(op);
-                                emitOperation(op, turn, 'orchestrator');
-                                const applied = applyOperation(currentProject, op);
-                                if (applied.project) {
-                                    currentProject = applied.project;
-                                    fixCount++;
-                                    systemActions.push(`✅ ${sf.action} on ${sf.target_id}`);
-                                }
-                            } else {
-                                log(`   ⚠️ System Fix Rejected: ${sf.action} — ${validation.errors[0]}`);
+                    // Deterministic fix: Align elements to floor surface
+                    const floorNodes = Object.values(currentProject.nodes).filter(n => n.type === 'Floor');
+                    const wallNodes = Object.values(currentProject.nodes).filter(n => n.type === 'Wall' || n.type === 'Partition');
+                    const roofNodes = Object.values(currentProject.nodes).filter(n => n.type === 'Roof');
+                    
+                    for (const floor of floorNodes) {
+                        const floorTop = floor.position.y + floor.dimensions.y / 2;
+                        
+                        // Fix walls that overlap with or float above the floor
+                        for (const wall of wallNodes) {
+                            const wallBottom = wall.position.y - wall.dimensions.y / 2;
+                            const gap = Math.abs(wallBottom - floorTop);
+                            
+                            if (gap > 0.01 && gap < 2.0) {
+                                // Wall should sit exactly on top of floor
+                                const correctY = floorTop + wall.dimensions.y / 2;
+                                try {
+                                    const op = toolCallToOperation('set_node_position', {
+                                        target_id: wall.id,
+                                        position_y: correctY,
+                                    });
+                                    const validation = validateOperation(op, currentProject);
+                                    if (validation.valid) {
+                                        allValidatedOps.push(op);
+                                        emitOperation(op, turn, 'orchestrator');
+                                        const applied = applyOperation(currentProject, op);
+                                        if (applied.project) {
+                                            currentProject = applied.project;
+                                            fixCount++;
+                                            systemActions.push(`✅ Aligned wall "${wall.name}" to floor (Y=${correctY.toFixed(3)})`);
+                                        }
+                                    }
+                                } catch (e) { /* skip */ }
                             }
-                        } catch (e) {
-                            console.error('System fix failed', e);
+                        }
+
+                        // Fix doors/windows on this floor's walls
+                        for (const wall of wallNodes) {
+                            const wallBottom = wall.position.y - wall.dimensions.y / 2;
+                            for (const childId of wall.children_ids) {
+                                const child = currentProject.nodes[childId];
+                                if (child && (child.type === 'Door')) {
+                                    const childBottom = child.position.y - child.dimensions.y / 2;
+                                    if (Math.abs(childBottom - wallBottom) > 0.01) {
+                                        const correctY = wallBottom + child.dimensions.y / 2;
+                                        try {
+                                            const op = toolCallToOperation('set_node_position', {
+                                                target_id: child.id,
+                                                position_y: correctY,
+                                            });
+                                            const validation = validateOperation(op, currentProject);
+                                            if (validation.valid) {
+                                                allValidatedOps.push(op);
+                                                emitOperation(op, turn, 'orchestrator');
+                                                const applied = applyOperation(currentProject, op);
+                                                if (applied.project) {
+                                                    currentProject = applied.project;
+                                                    fixCount++;
+                                                    systemActions.push(`✅ Aligned door "${child.name}" to wall bottom`);
+                                                }
+                                            }
+                                        } catch (e) { /* skip */ }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Deterministic fix: Place roofs on top of highest walls
+                    if (wallNodes.length > 0) {
+                        let maxWallTop = -Infinity;
+                        for (const wall of Object.values(currentProject.nodes)) {
+                            if (wall.type === 'Wall' || wall.type === 'Partition') {
+                                const wallTop = wall.position.y + wall.dimensions.y / 2;
+                                if (wallTop > maxWallTop) maxWallTop = wallTop;
+                            }
+                        }
+
+                        for (const roof of roofNodes) {
+                            const roofBottom = roof.position.y - roof.dimensions.y / 2;
+                            const gap = Math.abs(roofBottom - maxWallTop);
+                            
+                            if (gap > 0.01) {
+                                const correctY = maxWallTop + roof.dimensions.y / 2;
+                                try {
+                                    const op = toolCallToOperation('set_node_position', {
+                                        target_id: roof.id,
+                                        position_y: correctY,
+                                    });
+                                    // Skip floating roof validation for this fix
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'orchestrator');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        fixCount++;
+                                        systemActions.push(`✅ Placed roof "${roof.name}" on walls (Y=${correctY.toFixed(3)})`);
+                                    }
+                                } catch (e) { /* skip */ }
+                            }
                         }
                     }
 
@@ -577,7 +701,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     const insightsBlock = wallSurfaceInsights.length > 0
                         ? `\n\nWALL SURFACE INSIGHTS:\n${wallSurfaceInsights.join('\n')}`
                         : '';
-                    const engineerState = `CURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\nBudget: ${budgetContext}\nMaterials: ${materialContext}${insightsBlock}`;
+                    const briefBlock = buildBrief
+                        ? `\n\nBUILD BRIEF (from Research Phase — USE THESE REAL DIMENSIONS):\n${formatBuildBrief(buildBrief)}\n`
+                        : '';
+                    const engineerState = `CURRENT 3D STATE:\n${nodeTree}\n\n${asciiPlan}\n\nBudget: ${budgetContext}\nMaterials: ${materialContext}${insightsBlock}${briefBlock}`;
 
                     const engineerMessages = [
                         { role: 'system', content: STRUCTURAL_ENGINEER_PROMPT },
@@ -789,6 +916,15 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                     lastArchitectActions.push(`Queried surface of ${wallId}`);
                                     log(`   🔎 ${surfaceInsight}`);
                                     continue;
+                                }
+                                // --- v2.0: Auto-correct opening depth for interior architect ---
+                                if (tc.name === 'add_node' && tc.args.parent_id && tc.args.type) {
+                                    // Auto-correct window/door depth
+                                    const depthCorrection = autoCorrectOpeningDepth(tc.args, currentProject);
+                                    if (depthCorrection.corrected) {
+                                        tc.args = depthCorrection.args;
+                                        log(`   🔧 ${depthCorrection.message}`);
+                                    }
                                 }
 
                                 const op = toolCallToOperation(tc.name, tc.args);
