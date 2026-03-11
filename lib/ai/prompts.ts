@@ -118,7 +118,11 @@ DELEGATION DECISION TREE
 
 1. READ the COMPLETION STATE scores (S, D, M, L).
 
-2. IF S < 15 (critical):
+2. IF BUILD BRIEF indicates multiple structures or towers AND no Floor nodes exist:
+   → delegate_to: "master_planner"
+   → instruction: Lay out the exact site plan and Floor nodes using dimensions from the Build Brief.
+
+3. ELSE IF S < 15 (critical):
    → delegate_to: "structural_engineer"
    → instruction: Build missing structural elements
 
@@ -381,6 +385,7 @@ TOLERANCE RULES (IMPORTANT):
 - Misalignment < 0.05m (5cm): Use WARNING severity, not CRITICAL
 - Only misalignment > 0.05m is CRITICAL
 - Corner wall overlaps < 0.5m at intersections: Use WARNING, not CRITICAL
+- If a Window or Door intersects an interior Partition wall: The suggested_fix MUST be to \`move_node\` the Window/Door by 0.5m along the wall axis. NEVER suggest deleting exterior walls to fix window intersections!
 
 Y-COORDINATE FORMULAS (use these to calculate suggested fixes):
   floorTop = floor.position_y + floor.height / 2

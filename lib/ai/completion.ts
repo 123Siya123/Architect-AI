@@ -86,12 +86,15 @@ export function evaluateCompletionState(
     }
 
     // Walls (0-8)
+    // ONLY count 'Wall' nodes (exterior/structural) for the base structural score.
+    // If we count 'Partition', the AI can delete all exterior walls and still score +8!
+    const exteriorWalls = count('Wall');
     const requiredWalls = complexity.requiredFloors * 4;
-    if (walls >= requiredWalls) {
+    if (exteriorWalls >= requiredWalls) {
         structuralScore += 8;
     } else {
-        structuralScore += Math.floor((walls / requiredWalls) * 8);
-        missingElements.push(`${requiredWalls - walls} more wall(s)`);
+        structuralScore += Math.floor((exteriorWalls / requiredWalls) * 8);
+        missingElements.push(`${requiredWalls - exteriorWalls} more structural wall(s)`);
     }
 
     // Roof (0-6)
