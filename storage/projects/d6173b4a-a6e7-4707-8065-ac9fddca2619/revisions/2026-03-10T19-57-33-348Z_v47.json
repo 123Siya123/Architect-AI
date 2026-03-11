@@ -3,8 +3,8 @@
   "name": "New Project",
   "description": "",
   "created_at": "2026-03-10T19:18:10.230Z",
-  "modified_at": "2026-03-10T20:01:51.610Z",
-  "version": 52,
+  "modified_at": "2026-03-10T19:57:30.697Z",
+  "version": 47,
   "root_node_id": "house_f333387a",
   "nodes": {
     "house_f333387a": {
@@ -40,14 +40,10 @@
       },
       "parent_id": null,
       "children_ids": [
-        "floor_ground",
-        "custom_vowdiyc3",
-        "custom_5oflbx96",
-        "custom_f1rpjihb",
-        "custom_we9fl49k"
+        "floor_ground"
       ],
       "created_at": "2026-03-10T19:18:10.230Z",
-      "modified_at": "2026-03-10T20:00:09.039Z",
+      "modified_at": "2026-03-10T19:19:19.989Z",
       "version": 1
     },
     "floor_ground": {
@@ -56,7 +52,7 @@
       "name": "Ground Floor",
       "position": {
         "x": 0,
-        "y": -2.2,
+        "y": -2.1,
         "z": 0
       },
       "dimensions": {
@@ -90,8 +86,8 @@
         "room_tower_tier_2"
       ],
       "created_at": "2026-03-10T19:19:19.989Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 17
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 16
     },
     "room_center": {
       "id": "room_center",
@@ -99,7 +95,7 @@
       "name": "Central Tower Base",
       "position": {
         "x": 0,
-        "y": -2.2,
+        "y": -2.1,
         "z": 0
       },
       "dimensions": {
@@ -135,8 +131,8 @@
       ],
       "room_function": "living",
       "created_at": "2026-03-10T19:19:19.989Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 17
+      "modified_at": "2026-03-10T19:57:30.697Z",
+      "version": 16
     },
     "room_left": {
       "id": "room_left",
@@ -144,7 +140,7 @@
       "name": "Left Flanking Room",
       "position": {
         "x": -8,
-        "y": -2.2,
+        "y": -2.1,
         "z": 0
       },
       "dimensions": {
@@ -179,8 +175,8 @@
       ],
       "room_function": "living",
       "created_at": "2026-03-10T19:19:19.990Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 17
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 16
     },
     "room_right": {
       "id": "room_right",
@@ -188,7 +184,7 @@
       "name": "Right Flanking Room",
       "position": {
         "x": 8,
-        "y": -2.2,
+        "y": -2.1,
         "z": 0
       },
       "dimensions": {
@@ -223,8 +219,8 @@
       ],
       "room_function": "living",
       "created_at": "2026-03-10T19:19:19.990Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 17
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 16
     },
     "wall_fuxjvwad": {
       "id": "wall_fuxjvwad",
@@ -232,7 +228,7 @@
       "name": "Center North Wall",
       "position": {
         "x": 0,
-        "y": -0.2,
+        "y": -0.1,
         "z": -3
       },
       "dimensions": {
@@ -262,8 +258,8 @@
       "parent_id": "room_center",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.990Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_9bcp4ysw": {
       "id": "wall_9bcp4ysw",
@@ -271,7 +267,7 @@
       "name": "Center South Wall",
       "position": {
         "x": 0,
-        "y": -0.2,
+        "y": -0.1,
         "z": 3
       },
       "dimensions": {
@@ -301,8 +297,8 @@
       "parent_id": "room_center",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.990Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_0k00oyuy": {
       "id": "wall_0k00oyuy",
@@ -310,7 +306,7 @@
       "name": "Center East Wall",
       "position": {
         "x": 3,
-        "y": -0.2,
+        "y": -0.1,
         "z": 0
       },
       "dimensions": {
@@ -340,8 +336,8 @@
       "parent_id": "room_center",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.990Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_05gg4kkk": {
       "id": "wall_05gg4kkk",
@@ -349,7 +345,7 @@
       "name": "Center West Wall",
       "position": {
         "x": -3,
-        "y": -0.2,
+        "y": -0.1,
         "z": 0
       },
       "dimensions": {
@@ -379,8 +375,8 @@
       "parent_id": "room_center",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.991Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_7ay4bqkq": {
       "id": "wall_7ay4bqkq",
@@ -388,7 +384,7 @@
       "name": "Left North Wall",
       "position": {
         "x": -8,
-        "y": -0.2,
+        "y": -0.1,
         "z": -2
       },
       "dimensions": {
@@ -418,8 +414,8 @@
       "parent_id": "room_left",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.992Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_xeiqem5z": {
       "id": "wall_xeiqem5z",
@@ -427,7 +423,7 @@
       "name": "Left South Wall",
       "position": {
         "x": -8,
-        "y": -0.2,
+        "y": -0.1,
         "z": 2
       },
       "dimensions": {
@@ -457,8 +453,8 @@
       "parent_id": "room_left",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.992Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_r5eb2zh4": {
       "id": "wall_r5eb2zh4",
@@ -466,7 +462,7 @@
       "name": "Left East Wall",
       "position": {
         "x": -3,
-        "y": -0.2,
+        "y": -0.1,
         "z": 0
       },
       "dimensions": {
@@ -496,8 +492,8 @@
       "parent_id": "room_left",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.993Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_ps18utrd": {
       "id": "wall_ps18utrd",
@@ -505,7 +501,7 @@
       "name": "Left West Wall",
       "position": {
         "x": -13,
-        "y": -0.2,
+        "y": -0.1,
         "z": 0
       },
       "dimensions": {
@@ -535,8 +531,8 @@
       "parent_id": "room_left",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.993Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_s2e32v84": {
       "id": "wall_s2e32v84",
@@ -544,7 +540,7 @@
       "name": "Right North Wall",
       "position": {
         "x": 8,
-        "y": -0.2,
+        "y": -0.1,
         "z": -2
       },
       "dimensions": {
@@ -574,8 +570,8 @@
       "parent_id": "room_right",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.993Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_onxowqon": {
       "id": "wall_onxowqon",
@@ -583,7 +579,7 @@
       "name": "Right South Wall",
       "position": {
         "x": 8,
-        "y": -0.2,
+        "y": -0.1,
         "z": 2
       },
       "dimensions": {
@@ -613,8 +609,8 @@
       "parent_id": "room_right",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.993Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_a98o7f7g": {
       "id": "wall_a98o7f7g",
@@ -622,7 +618,7 @@
       "name": "Right East Wall",
       "position": {
         "x": 13,
-        "y": -0.2,
+        "y": -0.1,
         "z": 0
       },
       "dimensions": {
@@ -652,8 +648,8 @@
       "parent_id": "room_right",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.994Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "wall_cvu35eil": {
       "id": "wall_cvu35eil",
@@ -661,7 +657,7 @@
       "name": "Right West Wall",
       "position": {
         "x": 3,
-        "y": -0.2,
+        "y": -0.1,
         "z": 0
       },
       "dimensions": {
@@ -691,8 +687,8 @@
       "parent_id": "room_right",
       "children_ids": [],
       "created_at": "2026-03-10T19:19:19.994Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "roof_2o0asoaq": {
       "id": "roof_2o0asoaq",
@@ -700,7 +696,7 @@
       "name": "Center Tower Roof",
       "position": {
         "x": 0,
-        "y": 1.8,
+        "y": 1.9000000000000001,
         "z": 0
       },
       "dimensions": {
@@ -729,8 +725,8 @@
       "children_ids": [],
       "roof_style": "pyramid",
       "created_at": "2026-03-10T19:23:50.897Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "roof_f4gse38g": {
       "id": "roof_f4gse38g",
@@ -738,7 +734,7 @@
       "name": "Left Flanking Roof",
       "position": {
         "x": -8,
-        "y": 1.8,
+        "y": 1.9000000000000001,
         "z": 0
       },
       "dimensions": {
@@ -767,8 +763,8 @@
       "children_ids": [],
       "roof_style": "hip",
       "created_at": "2026-03-10T19:23:50.898Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "roof_n2dauwv9": {
       "id": "roof_n2dauwv9",
@@ -776,7 +772,7 @@
       "name": "Right Flanking Roof",
       "position": {
         "x": 8,
-        "y": 1.8,
+        "y": 1.9000000000000001,
         "z": 0
       },
       "dimensions": {
@@ -805,8 +801,8 @@
       "children_ids": [],
       "roof_style": "hip",
       "created_at": "2026-03-10T19:23:50.898Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 16
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 15
     },
     "slab_eqq68ul5": {
       "id": "slab_eqq68ul5",
@@ -814,7 +810,7 @@
       "name": "Tower Second Tier Slab",
       "position": {
         "x": 0,
-        "y": 1.9000000000000001,
+        "y": 2,
         "z": 0
       },
       "dimensions": {
@@ -844,8 +840,8 @@
       "parent_id": "floor_ground",
       "children_ids": [],
       "created_at": "2026-03-10T19:36:41.288Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 11
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 10
     },
     "room_tower_tier_2": {
       "id": "room_tower_tier_2",
@@ -853,7 +849,7 @@
       "name": "Tower Second Tier",
       "position": {
         "x": 0,
-        "y": 2,
+        "y": 2.1,
         "z": 0
       },
       "dimensions": {
@@ -887,8 +883,8 @@
         "roof_v5eeol26"
       ],
       "created_at": "2026-03-10T19:36:41.288Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 12
+      "modified_at": "2026-03-10T19:54:56.743Z",
+      "version": 11
     },
     "wall_9clqwx39": {
       "id": "wall_9clqwx39",
@@ -896,7 +892,7 @@
       "name": "Tier 2 North Wall",
       "position": {
         "x": 0,
-        "y": 3.9000000000000004,
+        "y": 4,
         "z": -2
       },
       "dimensions": {
@@ -926,8 +922,8 @@
       "parent_id": "room_tower_tier_2",
       "children_ids": [],
       "created_at": "2026-03-10T19:36:41.289Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 11
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 10
     },
     "wall_l3s57wtt": {
       "id": "wall_l3s57wtt",
@@ -935,7 +931,7 @@
       "name": "Tier 2 South Wall",
       "position": {
         "x": 0,
-        "y": 3.9000000000000004,
+        "y": 4,
         "z": 2
       },
       "dimensions": {
@@ -965,8 +961,8 @@
       "parent_id": "room_tower_tier_2",
       "children_ids": [],
       "created_at": "2026-03-10T19:36:41.290Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 11
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 10
     },
     "wall_5rtvk3l9": {
       "id": "wall_5rtvk3l9",
@@ -974,7 +970,7 @@
       "name": "Tier 2 East Wall",
       "position": {
         "x": 2,
-        "y": 3.9000000000000004,
+        "y": 4,
         "z": 0
       },
       "dimensions": {
@@ -1004,8 +1000,8 @@
       "parent_id": "room_tower_tier_2",
       "children_ids": [],
       "created_at": "2026-03-10T19:36:41.290Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 11
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 10
     },
     "wall_ju6wjc4i": {
       "id": "wall_ju6wjc4i",
@@ -1013,7 +1009,7 @@
       "name": "Tier 2 West Wall",
       "position": {
         "x": -2,
-        "y": 3.9000000000000004,
+        "y": 4,
         "z": 0
       },
       "dimensions": {
@@ -1043,8 +1039,8 @@
       "parent_id": "room_tower_tier_2",
       "children_ids": [],
       "created_at": "2026-03-10T19:36:41.291Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 11
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 10
     },
     "roof_v5eeol26": {
       "id": "roof_v5eeol26",
@@ -1052,7 +1048,7 @@
       "name": "Tower Second Tier Roof",
       "position": {
         "x": 0,
-        "y": 7.800000000000001,
+        "y": 7.9,
         "z": 0
       },
       "dimensions": {
@@ -1081,8 +1077,8 @@
       "children_ids": [],
       "roof_style": "pyramid",
       "created_at": "2026-03-10T19:36:41.291Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 11
+      "modified_at": "2026-03-10T19:53:19.399Z",
+      "version": 10
     },
     "stairs_gpbuscrp": {
       "id": "stairs_gpbuscrp",
@@ -1090,7 +1086,7 @@
       "name": "Tower Staircase",
       "position": {
         "x": 0,
-        "y": -0.1,
+        "y": 0.025,
         "z": 0
       },
       "dimensions": {
@@ -1119,185 +1115,7 @@
       "children_ids": [],
       "stair_style": "spiral",
       "created_at": "2026-03-10T19:57:30.697Z",
-      "modified_at": "2026-03-10T20:01:51.610Z",
-      "version": 2
-    },
-    "custom_vowdiyc3": {
-      "id": "custom_vowdiyc3",
-      "type": "Custom",
-      "name": "Kremlin Ruby Star",
-      "position": {
-        "x": 0,
-        "y": 10.9,
-        "z": 0
-      },
-      "dimensions": {
-        "x": 1.5,
-        "y": 1.5,
-        "z": 0.2
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "",
-      "opacity": 1,
-      "tags": [
-        "custom"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_f333387a",
-      "children_ids": [],
-      "custom_geometry": {
-        "code": "const shape = new THREE.Shape(); const outerRadius = 0.75; const innerRadius = 0.3; for(let i=0; i<10; i++) { const r = i%2===0 ? outerRadius : innerRadius; const a = (i/10) * Math.PI * 2 + Math.PI/2; if(i===0) shape.moveTo(Math.cos(a)*r, Math.sin(a)*r); else shape.lineTo(Math.cos(a)*r, Math.sin(a)*r); } shape.closePath(); const geo = new THREE.ExtrudeGeometry(shape, {depth: 0.2, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02}); geo.translate(0, 0, -0.1); return geo;",
-        "type": "code"
-      },
-      "cad_script": "# Custom element: Kremlin Ruby Star\n# Description: A glowing red ruby star at the peak of the Kremlin tower roof.\n# TODO: Replace with CadQuery script when backend is ready",
-      "created_at": "2026-03-10T20:00:09.038Z",
-      "modified_at": "2026-03-10T20:00:09.038Z",
-      "version": 1
-    },
-    "custom_5oflbx96": {
-      "id": "custom_5oflbx96",
-      "type": "Custom",
-      "name": "Left Swallowtail Battlements",
-      "position": {
-        "x": -8,
-        "y": 2.4000000000000004,
-        "z": 2.3000000000000003
-      },
-      "dimensions": {
-        "x": 9.8,
-        "y": 1,
-        "z": 0.2
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "",
-      "opacity": 1,
-      "tags": [
-        "custom"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_f333387a",
-      "children_ids": [],
-      "custom_geometry": {
-        "code": "const group = new THREE.Group(); const w = 9.75, h = 1, d = 0.2; const base = new THREE.Mesh(new THREE.BoxGeometry(w, h*0.5, d)); base.position.y = -h*0.25; group.add(base); const merlonW = 0.8; const gapW = 0.4; const count = Math.floor(w / (merlonW + gapW)); const startX = -w/2 + merlonW/2 + (w - count*(merlonW+gapW) + gapW)/2; for(let i=0; i<count; i++) { const mx = startX + i*(merlonW+gapW); const mShape = new THREE.Shape(); mShape.moveTo(-merlonW/2, 0); mShape.lineTo(merlonW/2, 0); mShape.lineTo(merlonW/2, h*0.5); mShape.lineTo(merlonW/4, h*0.5); mShape.lineTo(0, h*0.2); mShape.lineTo(-merlonW/4, h*0.5); mShape.lineTo(-merlonW/2, h*0.5); mShape.closePath(); const mGeo = new THREE.ExtrudeGeometry(mShape, {depth: d, bevelEnabled: false}); mGeo.translate(mx, 0, -d/2); const mMesh = new THREE.Mesh(mGeo); group.add(mMesh); } return group;",
-        "type": "code"
-      },
-      "cad_script": "# Custom element: Left Swallowtail Battlements\n# Description: Swallowtail (Ghibelline) battlements in front of the left roof.\n# TODO: Replace with CadQuery script when backend is ready",
-      "created_at": "2026-03-10T20:00:09.038Z",
-      "modified_at": "2026-03-10T20:00:09.038Z",
-      "version": 1
-    },
-    "custom_f1rpjihb": {
-      "id": "custom_f1rpjihb",
-      "type": "Custom",
-      "name": "Right Swallowtail Battlements",
-      "position": {
-        "x": 8,
-        "y": 2.4000000000000004,
-        "z": 2.3000000000000003
-      },
-      "dimensions": {
-        "x": 9.8,
-        "y": 1,
-        "z": 0.2
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "",
-      "opacity": 1,
-      "tags": [
-        "custom"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_f333387a",
-      "children_ids": [],
-      "custom_geometry": {
-        "code": "const group = new THREE.Group(); const w = 9.75, h = 1, d = 0.2; const base = new THREE.Mesh(new THREE.BoxGeometry(w, h*0.5, d)); base.position.y = -h*0.25; group.add(base); const merlonW = 0.8; const gapW = 0.4; const count = Math.floor(w / (merlonW + gapW)); const startX = -w/2 + merlonW/2 + (w - count*(merlonW+gapW) + gapW)/2; for(let i=0; i<count; i++) { const mx = startX + i*(merlonW+gapW); const mShape = new THREE.Shape(); mShape.moveTo(-merlonW/2, 0); mShape.lineTo(merlonW/2, 0); mShape.lineTo(merlonW/2, h*0.5); mShape.lineTo(merlonW/4, h*0.5); mShape.lineTo(0, h*0.2); mShape.lineTo(-merlonW/4, h*0.5); mShape.lineTo(-merlonW/2, h*0.5); mShape.closePath(); const mGeo = new THREE.ExtrudeGeometry(mShape, {depth: d, bevelEnabled: false}); mGeo.translate(mx, 0, -d/2); const mMesh = new THREE.Mesh(mGeo); group.add(mMesh); } return group;",
-        "type": "code"
-      },
-      "cad_script": "# Custom element: Right Swallowtail Battlements\n# Description: Swallowtail (Ghibelline) battlements in front of the right roof.\n# TODO: Replace with CadQuery script when backend is ready",
-      "created_at": "2026-03-10T20:00:09.039Z",
-      "modified_at": "2026-03-10T20:00:09.039Z",
-      "version": 1
-    },
-    "custom_we9fl49k": {
-      "id": "custom_we9fl49k",
-      "type": "Custom",
-      "name": "White Stone Arch Trim",
-      "position": {
-        "x": 0,
-        "y": 1,
-        "z": 3.1
-      },
-      "dimensions": {
-        "x": 3,
-        "y": 2,
-        "z": 0.1
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "",
-      "opacity": 1,
-      "tags": [
-        "custom"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_f333387a",
-      "children_ids": [],
-      "custom_geometry": {
-        "type": "arch",
-        "height": 2,
-        "depth": 0.1,
-        "thickness": 0.3
-      },
-      "cad_script": "# Custom element: White Stone Arch Trim\n# Description: White stone arch trim on the central tower base.\n# TODO: Replace with CadQuery script when backend is ready",
-      "created_at": "2026-03-10T20:00:09.039Z",
-      "modified_at": "2026-03-10T20:00:09.039Z",
+      "modified_at": "2026-03-10T19:57:30.697Z",
       "version": 1
     }
   },
@@ -1312,9 +1130,9 @@
     "currency": "EUR"
   },
   "budget": {
-    "total_budget": 5000000,
+    "total_budget": 250000,
     "spent": 6964204,
-    "remaining": -1964204,
+    "remaining": -6714204,
     "currency": "EUR",
     "warnings_enabled": true,
     "warning_threshold": 90

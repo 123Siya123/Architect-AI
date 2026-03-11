@@ -1,0 +1,166 @@
+{
+  "id": "4c08cc48-7352-49ba-ae5d-043f8a68ba66",
+  "name": "New Build – Industrial",
+  "description": "Professional client project for ",
+  "created_at": "2026-03-10T20:07:43.799Z",
+  "modified_at": "2026-03-10T20:07:43.799Z",
+  "version": 1,
+  "root_node_id": "house_03cbeb14",
+  "nodes": {
+    "house_03cbeb14": {
+      "id": "house_03cbeb14",
+      "type": "House",
+      "name": "New Build – Industrial",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-10T20:07:43.799Z",
+      "modified_at": "2026-03-10T20:07:43.799Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": {
+      "total": 5000000,
+      "currency": "EUR",
+      "flexibility": "flexible"
+    },
+    "spent": 0,
+    "remaining": {
+      "total": 5000000,
+      "currency": "EUR",
+      "flexibility": "flexible"
+    },
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  },
+  "professional_specs": {
+    "clientName": "",
+    "clientContact": "",
+    "projectType": "New Build",
+    "projectLocation": "",
+    "budget": {
+      "total": 5000000,
+      "currency": "EUR",
+      "flexibility": "flexible"
+    },
+    "timeline": {
+      "startDate": "2026-03-10",
+      "targetCompletion": "",
+      "urgency": "medium"
+    },
+    "site": {
+      "size": 0,
+      "topography": "flat",
+      "orientation": "",
+      "access": "easy",
+      "utilities": {
+        "electricity": true,
+        "water": true,
+        "sewer": true,
+        "gas": true,
+        "internet": true
+      },
+      "constraints": []
+    },
+    "zoning": {
+      "zone": "",
+      "setbacks": {
+        "front": 0,
+        "rear": 0,
+        "sides": 0
+      },
+      "heightRestrictions": 0,
+      "far": 0,
+      "coverage": 0,
+      "parkingRequirements": 0
+    },
+    "requirements": {
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "floors": 1,
+      "garage": false,
+      "basement": false,
+      "attic": false,
+      "outdoorSpaces": [],
+      "specialRooms": [],
+      "accessibility": false,
+      "energyEfficiency": "good"
+    },
+    "style": {
+      "architectural": "Industrial",
+      "interior": "",
+      "materials": [],
+      "colors": [],
+      "inspiration": []
+    },
+    "lifestyle": {
+      "familySize": 7,
+      "ageGroups": [],
+      "workFromHome": false,
+      "entertaining": "occasionally",
+      "cooking": "enthusiast",
+      "hobbies": [],
+      "pets": []
+    },
+    "sustainability": {
+      "solarPanels": false,
+      "rainwaterHarvesting": false,
+      "greywaterSystem": false,
+      "smartHome": "advanced",
+      "greenRoof": false,
+      "geothermal": false
+    },
+    "vision": "A Industrial loft (exposed materials) family home that looks like a Bond villan home with black and red elements.",
+    "practicalNeeds": "",
+    "concerns": [],
+    "mustHaves": [
+      "Smart Home",
+      "Open Plan"
+    ],
+    "niceToHaves": [],
+    "absoluteNoGos": [],
+    "documents": {
+      "photos": [],
+      "inspirationImages": [],
+      "documents": []
+    }
+  }
+}

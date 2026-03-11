@@ -1,0 +1,785 @@
+{
+  "id": "2db3bca2-4fcd-430b-a23e-81f592a50002",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T04:19:33.749Z",
+  "modified_at": "2026-03-11T04:41:53.434Z",
+  "version": 19,
+  "root_node_id": "house_5db13064",
+  "nodes": {
+    "house_5db13064": {
+      "id": "house_5db13064",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground_1"
+      ],
+      "created_at": "2026-03-11T04:19:33.749Z",
+      "modified_at": "2026-03-11T04:25:15.102Z",
+      "version": 1
+    },
+    "floor_ground_1": {
+      "id": "floor_ground_1",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_5db13064",
+      "children_ids": [
+        "slab_3tn4q2yj",
+        "wall_kua7xjkx",
+        "wall_qpso7za0",
+        "wall_iymsy5q9",
+        "wall_8rd1v7nv",
+        "roof_a5cegdtj",
+        "wall_y6ubp9e6",
+        "wall_2v1am1ep",
+        "wall_spzcylud",
+        "wall_b03e7iad",
+        "wall_qxh7uy3d",
+        "wall_5143ow00",
+        "column_2n3k2dkn",
+        "wall_riw0gufo",
+        "wall_2v92eqpr",
+        "wall_aajkn9lp",
+        "wall_ubke78yf"
+      ],
+      "created_at": "2026-03-11T04:25:15.102Z",
+      "modified_at": "2026-03-11T04:41:53.434Z",
+      "version": 1
+    },
+    "slab_3tn4q2yj": {
+      "id": "slab_3tn4q2yj",
+      "type": "Slab",
+      "name": "Foundation Slab",
+      "position": {
+        "x": 0,
+        "y": 0.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 0.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:15.102Z",
+      "modified_at": "2026-03-11T04:25:15.102Z",
+      "version": 1
+    },
+    "wall_kua7xjkx": {
+      "id": "wall_kua7xjkx",
+      "type": "Wall",
+      "name": "Wall North",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": -12.25
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 8,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:26:12.704Z",
+      "modified_at": "2026-03-11T04:26:12.704Z",
+      "version": 1
+    },
+    "wall_qpso7za0": {
+      "id": "wall_qpso7za0",
+      "type": "Wall",
+      "name": "Wall South",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": 2.25
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 8,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:26:12.706Z",
+      "modified_at": "2026-03-11T04:26:12.706Z",
+      "version": 1
+    },
+    "wall_iymsy5q9": {
+      "id": "wall_iymsy5q9",
+      "type": "Wall",
+      "name": "Wall East",
+      "position": {
+        "x": 9.75,
+        "y": 4.5,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 8,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:26:12.706Z",
+      "modified_at": "2026-03-11T04:26:12.706Z",
+      "version": 1
+    },
+    "wall_8rd1v7nv": {
+      "id": "wall_8rd1v7nv",
+      "type": "Wall",
+      "name": "Wall West",
+      "position": {
+        "x": -9.75,
+        "y": 4.5,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 8,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:26:12.707Z",
+      "modified_at": "2026-03-11T04:26:12.707Z",
+      "version": 1
+    },
+    "roof_a5cegdtj": {
+      "id": "roof_a5cegdtj",
+      "type": "Roof",
+      "name": "Primary Habitat Roof",
+      "position": {
+        "x": 0,
+        "y": 3.75,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_roof",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T04:27:49.838Z",
+      "modified_at": "2026-03-11T04:27:49.838Z",
+      "version": 1
+    },
+    "wall_y6ubp9e6": {
+      "id": "wall_y6ubp9e6",
+      "type": "Wall",
+      "name": "Wall East Rebuilt",
+      "position": {
+        "x": 9.75,
+        "y": 2,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:31:10.032Z",
+      "modified_at": "2026-03-11T04:31:10.032Z",
+      "version": 1
+    },
+    "wall_2v1am1ep": {
+      "id": "wall_2v1am1ep",
+      "type": "Wall",
+      "name": "Wall West Rebuilt",
+      "position": {
+        "x": -9.75,
+        "y": 2,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:31:10.032Z",
+      "modified_at": "2026-03-11T04:31:10.032Z",
+      "version": 1
+    },
+    "wall_spzcylud": {
+      "id": "wall_spzcylud",
+      "type": "Wall",
+      "name": "Maintenance Bay North Wall",
+      "position": {
+        "x": -12,
+        "y": 2,
+        "z": 0.25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:31:10.032Z",
+      "modified_at": "2026-03-11T04:31:10.032Z",
+      "version": 1
+    },
+    "wall_b03e7iad": {
+      "id": "wall_b03e7iad",
+      "type": "Wall",
+      "name": "Maintenance Bay South Wall",
+      "position": {
+        "x": -12,
+        "y": 2,
+        "z": 9.75
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:31:10.032Z",
+      "modified_at": "2026-03-11T04:31:10.032Z",
+      "version": 1
+    },
+    "wall_qxh7uy3d": {
+      "id": "wall_qxh7uy3d",
+      "type": "Wall",
+      "name": "Maintenance Bay East Wall",
+      "position": {
+        "x": -7.25,
+        "y": 2,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 9,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:31:10.032Z",
+      "modified_at": "2026-03-11T04:31:10.032Z",
+      "version": 1
+    },
+    "wall_5143ow00": {
+      "id": "wall_5143ow00",
+      "type": "Wall",
+      "name": "Maintenance Bay West Wall",
+      "position": {
+        "x": -16.75,
+        "y": 2,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 9,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:31:10.032Z",
+      "modified_at": "2026-03-11T04:31:10.032Z",
+      "version": 1
+    },
+    "column_2n3k2dkn": {
+      "id": "column_2n3k2dkn",
+      "type": "Column",
+      "name": "Sensor Spire",
+      "position": {
+        "x": 10,
+        "y": 8,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 15,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:31:10.033Z",
+      "modified_at": "2026-03-11T04:31:10.033Z",
+      "version": 1
+    },
+    "wall_riw0gufo": {
+      "id": "wall_riw0gufo",
+      "type": "Wall",
+      "name": "Maintenance Bay North Wall",
+      "position": {
+        "x": -20,
+        "y": 1.6500000000000001,
+        "z": 0.25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:41:53.433Z",
+      "modified_at": "2026-03-11T04:41:53.433Z",
+      "version": 1
+    },
+    "wall_2v92eqpr": {
+      "id": "wall_2v92eqpr",
+      "type": "Wall",
+      "name": "Maintenance Bay South Wall",
+      "position": {
+        "x": -20,
+        "y": 1.6500000000000001,
+        "z": 9.75
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:41:53.433Z",
+      "modified_at": "2026-03-11T04:41:53.433Z",
+      "version": 1
+    },
+    "wall_aajkn9lp": {
+      "id": "wall_aajkn9lp",
+      "type": "Wall",
+      "name": "Maintenance Bay East Wall",
+      "position": {
+        "x": -15.25,
+        "y": 1.6500000000000001,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 9,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:41:53.434Z",
+      "modified_at": "2026-03-11T04:41:53.434Z",
+      "version": 1
+    },
+    "wall_ubke78yf": {
+      "id": "wall_ubke78yf",
+      "type": "Wall",
+      "name": "Maintenance Bay West Wall",
+      "position": {
+        "x": -24.75,
+        "y": 1.6500000000000001,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 9,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:41:53.434Z",
+      "modified_at": "2026-03-11T04:41:53.434Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 2000000000,
+    "spent": 6532920,
+    "remaining": 1993467080,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

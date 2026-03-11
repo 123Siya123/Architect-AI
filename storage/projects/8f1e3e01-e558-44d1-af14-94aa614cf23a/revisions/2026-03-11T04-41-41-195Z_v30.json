@@ -1,0 +1,1424 @@
+{
+  "id": "8f1e3e01-e558-44d1-af14-94aa614cf23a",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T04:18:31.888Z",
+  "modified_at": "2026-03-11T04:41:39.165Z",
+  "version": 30,
+  "root_node_id": "house_35ae5b43",
+  "nodes": {
+    "house_35ae5b43": {
+      "id": "house_35ae5b43",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground"
+      ],
+      "created_at": "2026-03-11T04:18:31.887Z",
+      "modified_at": "2026-03-11T04:22:59.374Z",
+      "version": 1
+    },
+    "floor_ground": {
+      "id": "floor_ground",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 100.2,
+        "y": 0.1,
+        "z": 100.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_insulation_eps",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_35ae5b43",
+      "children_ids": [
+        "room_kremlin_base"
+      ],
+      "created_at": "2026-03-11T04:22:59.374Z",
+      "modified_at": "2026-03-11T04:32:38.616Z",
+      "version": 4
+    },
+    "room_kremlin_base": {
+      "id": "room_kremlin_base",
+      "type": "Room",
+      "name": "Kremlin Compound Base",
+      "position": {
+        "x": 0,
+        "y": 0.55,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [
+        "wall_l2y4sl61",
+        "wall_da0hutts",
+        "wall_lcbim11r",
+        "wall_3nzfck50",
+        "wall_d59gely5",
+        "wall_873z4mf2",
+        "wall_o68wlpj3",
+        "wall_6pwljv4g",
+        "wall_nej0yy9o",
+        "wall_1uk4evr7",
+        "wall_4r51ozlf",
+        "wall_g90fln2m",
+        "wall_yd80azqz",
+        "wall_opyg7mmi",
+        "wall_atu0qqas",
+        "wall_jdlhpphn",
+        "roof_jf19m6xe",
+        "wall_wkjao72a",
+        "wall_ggw0047u",
+        "wall_v4um53lu",
+        "wall_ldr415ru",
+        "slab_zocth0k6",
+        "slab_h37w0mfm",
+        "slab_avmwwkq2"
+      ],
+      "created_at": "2026-03-11T04:29:21.363Z",
+      "modified_at": "2026-03-11T04:41:39.165Z",
+      "version": 1
+    },
+    "wall_l2y4sl61": {
+      "id": "wall_l2y4sl61",
+      "type": "Wall",
+      "name": "Perimeter North Wall",
+      "position": {
+        "x": 0,
+        "y": 0.55,
+        "z": -50
+      },
+      "dimensions": {
+        "x": 100,
+        "y": 1,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 0,
+          "material_id": "mat_brick_red"
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "material_id": "mat_brick_red",
+          "order": 2,
+          "role": "finish",
+          "thickness": 0.02
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.363Z",
+      "modified_at": "2026-03-11T04:29:21.363Z",
+      "version": 1
+    },
+    "wall_da0hutts": {
+      "id": "wall_da0hutts",
+      "type": "Wall",
+      "name": "Perimeter South Wall",
+      "position": {
+        "x": 0,
+        "y": 0.55,
+        "z": 50
+      },
+      "dimensions": {
+        "x": 100,
+        "y": 1,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "material_id": "mat_brick_red",
+          "order": 2,
+          "role": "finish",
+          "thickness": 0.02
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.364Z",
+      "modified_at": "2026-03-11T04:29:21.364Z",
+      "version": 1
+    },
+    "wall_lcbim11r": {
+      "id": "wall_lcbim11r",
+      "type": "Wall",
+      "name": "Perimeter East Wall",
+      "position": {
+        "x": 50,
+        "y": 0.55,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 100,
+        "y": 1,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.364Z",
+      "modified_at": "2026-03-11T04:29:21.364Z",
+      "version": 1
+    },
+    "wall_3nzfck50": {
+      "id": "wall_3nzfck50",
+      "type": "Wall",
+      "name": "Perimeter West Wall",
+      "position": {
+        "x": -50,
+        "y": 0.55,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 100,
+        "y": 1,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 0
+        },
+        {
+          "order": 1,
+          "material_id": "mat_insulation_eps",
+          "thickness": 0.16,
+          "role": "structural"
+        },
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.364Z",
+      "modified_at": "2026-03-11T04:29:21.364Z",
+      "version": 1
+    },
+    "wall_d59gely5": {
+      "id": "wall_d59gely5",
+      "type": "Wall",
+      "name": "Palace North Wall",
+      "position": {
+        "x": -10,
+        "y": 4.75,
+        "z": -13
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 9.4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.364Z",
+      "modified_at": "2026-03-11T04:29:21.364Z",
+      "version": 1
+    },
+    "wall_873z4mf2": {
+      "id": "wall_873z4mf2",
+      "type": "Wall",
+      "name": "Palace South Wall",
+      "position": {
+        "x": -10,
+        "y": 4.75,
+        "z": -7
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 9.4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 0
+        },
+        {
+          "order": 1,
+          "material_id": "mat_insulation_eps",
+          "thickness": 0.16,
+          "role": "structural"
+        },
+        {
+          "order": 2,
+          "material_id": "mat_brick_red",
+          "thickness": 0.02,
+          "role": "finish"
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.365Z",
+      "modified_at": "2026-03-11T04:29:21.365Z",
+      "version": 1
+    },
+    "wall_o68wlpj3": {
+      "id": "wall_o68wlpj3",
+      "type": "Wall",
+      "name": "Palace East Wall",
+      "position": {
+        "x": 2.5,
+        "y": 4.75,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 9.4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "thickness": 0.16,
+          "role": "structural",
+          "order": 1,
+          "material_id": "mat_insulation_eps"
+        },
+        {
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 2,
+          "material_id": "mat_brick_red"
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.365Z",
+      "modified_at": "2026-03-11T04:29:21.365Z",
+      "version": 1
+    },
+    "wall_6pwljv4g": {
+      "id": "wall_6pwljv4g",
+      "type": "Wall",
+      "name": "Palace West Wall",
+      "position": {
+        "x": -22.5,
+        "y": 4.75,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 9.4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 0,
+          "material_id": "mat_brick_red"
+        },
+        {
+          "order": 1,
+          "material_id": "mat_insulation_eps",
+          "thickness": 0.16,
+          "role": "structural"
+        },
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.365Z",
+      "modified_at": "2026-03-11T04:29:21.365Z",
+      "version": 1
+    },
+    "wall_nej0yy9o": {
+      "id": "wall_nej0yy9o",
+      "type": "Wall",
+      "name": "Ivan North Wall",
+      "position": {
+        "x": 12,
+        "y": 8.15,
+        "z": -1.5
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 16.2,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "order": 1,
+          "material_id": "mat_insulation_eps",
+          "thickness": 0.16,
+          "role": "structural"
+        },
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.365Z",
+      "modified_at": "2026-03-11T04:29:21.365Z",
+      "version": 1
+    },
+    "wall_1uk4evr7": {
+      "id": "wall_1uk4evr7",
+      "type": "Wall",
+      "name": "Ivan South Wall",
+      "position": {
+        "x": 12,
+        "y": 8.15,
+        "z": 1.5
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 16.2,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 0,
+          "material_id": "mat_brick_red"
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "order": 2,
+          "material_id": "mat_brick_red",
+          "thickness": 0.02,
+          "role": "finish"
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.365Z",
+      "modified_at": "2026-03-11T04:29:21.365Z",
+      "version": 1
+    },
+    "wall_4r51ozlf": {
+      "id": "wall_4r51ozlf",
+      "type": "Wall",
+      "name": "Ivan East Wall",
+      "position": {
+        "x": 13.5,
+        "y": 8.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 16.2,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "order": 0,
+          "material_id": "mat_brick_red",
+          "thickness": 0.02,
+          "role": "finish"
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 2,
+          "material_id": "mat_brick_red"
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.366Z",
+      "modified_at": "2026-03-11T04:29:21.366Z",
+      "version": 1
+    },
+    "wall_g90fln2m": {
+      "id": "wall_g90fln2m",
+      "type": "Wall",
+      "name": "Ivan West Wall",
+      "position": {
+        "x": 10.5,
+        "y": 8.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 16.2,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 0,
+          "material_id": "mat_brick_red"
+        },
+        {
+          "material_id": "mat_insulation_eps",
+          "order": 1,
+          "role": "structural",
+          "thickness": 0.16
+        },
+        {
+          "material_id": "mat_brick_red",
+          "order": 2,
+          "role": "finish",
+          "thickness": 0.02
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.366Z",
+      "modified_at": "2026-03-11T04:29:21.366Z",
+      "version": 1
+    },
+    "wall_yd80azqz": {
+      "id": "wall_yd80azqz",
+      "type": "Wall",
+      "name": "Spasskaya North Wall",
+      "position": {
+        "x": 30,
+        "y": 7.15,
+        "z": 8.6
+      },
+      "dimensions": {
+        "x": 2.8000000000000003,
+        "y": 14.200000000000001,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "thickness": 0.02,
+          "role": "finish",
+          "order": 0,
+          "material_id": "mat_brick_red"
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "order": 2,
+          "material_id": "mat_brick_red",
+          "thickness": 0.02,
+          "role": "finish"
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.366Z",
+      "modified_at": "2026-03-11T04:29:21.366Z",
+      "version": 1
+    },
+    "wall_opyg7mmi": {
+      "id": "wall_opyg7mmi",
+      "type": "Wall",
+      "name": "Spasskaya South Wall",
+      "position": {
+        "x": 30,
+        "y": 7.15,
+        "z": 11.4
+      },
+      "dimensions": {
+        "x": 2.8000000000000003,
+        "y": 14.200000000000001,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "material_id": "mat_brick_red",
+          "order": 2,
+          "role": "finish",
+          "thickness": 0.02
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.366Z",
+      "modified_at": "2026-03-11T04:29:21.366Z",
+      "version": 1
+    },
+    "wall_atu0qqas": {
+      "id": "wall_atu0qqas",
+      "type": "Wall",
+      "name": "Spasskaya East Wall",
+      "position": {
+        "x": 31.400000000000002,
+        "y": 7.15,
+        "z": 10
+      },
+      "dimensions": {
+        "x": 2.8000000000000003,
+        "y": 14.200000000000001,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "order": 1,
+          "material_id": "mat_insulation_eps",
+          "thickness": 0.16,
+          "role": "structural"
+        },
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.366Z",
+      "modified_at": "2026-03-11T04:29:21.366Z",
+      "version": 1
+    },
+    "wall_jdlhpphn": {
+      "id": "wall_jdlhpphn",
+      "type": "Wall",
+      "name": "Spasskaya West Wall",
+      "position": {
+        "x": 28.6,
+        "y": 7.15,
+        "z": 10
+      },
+      "dimensions": {
+        "x": 2.8000000000000003,
+        "y": 14.200000000000001,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "assembly": [
+        {
+          "material_id": "mat_brick_red",
+          "order": 0,
+          "role": "finish",
+          "thickness": 0.02
+        },
+        {
+          "role": "structural",
+          "thickness": 0.16,
+          "material_id": "mat_insulation_eps",
+          "order": 1
+        },
+        {
+          "role": "finish",
+          "thickness": 0.02,
+          "material_id": "mat_brick_red",
+          "order": 2
+        }
+      ],
+      "created_at": "2026-03-11T04:29:21.367Z",
+      "modified_at": "2026-03-11T04:29:21.367Z",
+      "version": 1
+    },
+    "roof_jf19m6xe": {
+      "id": "roof_jf19m6xe",
+      "type": "Roof",
+      "name": "Palace Roof",
+      "position": {
+        "x": -10,
+        "y": 9.5,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 25.2,
+        "y": 0.1,
+        "z": 6.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_copper",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T04:34:38.630Z",
+      "modified_at": "2026-03-11T04:34:38.630Z",
+      "version": 1
+    },
+    "wall_wkjao72a": {
+      "id": "wall_wkjao72a",
+      "type": "Wall",
+      "name": "Assumption North Wall",
+      "position": {
+        "x": 4,
+        "y": 4.55,
+        "z": -3.5
+      },
+      "dimensions": {
+        "x": 7,
+        "y": 9,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:39:21.980Z",
+      "modified_at": "2026-03-11T04:39:21.980Z",
+      "version": 1
+    },
+    "wall_ggw0047u": {
+      "id": "wall_ggw0047u",
+      "type": "Wall",
+      "name": "Assumption South Wall",
+      "position": {
+        "x": 4,
+        "y": 4.55,
+        "z": 3.5
+      },
+      "dimensions": {
+        "x": 7,
+        "y": 9,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:39:21.981Z",
+      "modified_at": "2026-03-11T04:39:21.981Z",
+      "version": 1
+    },
+    "wall_v4um53lu": {
+      "id": "wall_v4um53lu",
+      "type": "Wall",
+      "name": "Assumption East Wall",
+      "position": {
+        "x": 7.4,
+        "y": 4.55,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.8,
+        "y": 9,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:39:21.981Z",
+      "modified_at": "2026-03-11T04:39:21.981Z",
+      "version": 1
+    },
+    "wall_ldr415ru": {
+      "id": "wall_ldr415ru",
+      "type": "Wall",
+      "name": "Assumption West Wall",
+      "position": {
+        "x": 0.6,
+        "y": 4.55,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6.8,
+        "y": 9,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:39:21.981Z",
+      "modified_at": "2026-03-11T04:39:21.981Z",
+      "version": 1
+    },
+    "slab_zocth0k6": {
+      "id": "slab_zocth0k6",
+      "type": "Slab",
+      "name": "Assumption Cathedral Roof",
+      "position": {
+        "x": 4,
+        "y": 9.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7,
+        "y": 0.1,
+        "z": 7.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_copper",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:41:39.164Z",
+      "modified_at": "2026-03-11T04:41:39.164Z",
+      "version": 1
+    },
+    "slab_h37w0mfm": {
+      "id": "slab_h37w0mfm",
+      "type": "Slab",
+      "name": "Ivan Bell Tower Roof",
+      "position": {
+        "x": 12,
+        "y": 16.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 3.2,
+        "y": 0.1,
+        "z": 3.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_copper",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:41:39.165Z",
+      "modified_at": "2026-03-11T04:41:39.165Z",
+      "version": 1
+    },
+    "slab_avmwwkq2": {
+      "id": "slab_avmwwkq2",
+      "type": "Slab",
+      "name": "Spasskaya Tower Roof",
+      "position": {
+        "x": 30,
+        "y": 14.3,
+        "z": 10
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 0.1,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_copper",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_kremlin_base",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:41:39.165Z",
+      "modified_at": "2026-03-11T04:41:39.165Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 2000000000,
+    "spent": 1544247.76,
+    "remaining": 1998455752.24,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

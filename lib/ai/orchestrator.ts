@@ -79,7 +79,7 @@ import { logAgentStep, clearLogs } from './logger';
 import { classifyComplexity, type ComplexityClassification } from './complexity';
 import { evaluateCompletionState, formatCompletionState, updateChecklist, type CompletionState, type ChecklistItem } from './completion';
 import { getPhaseStartNarrative, getPhaseCompleteNarrative, generateCompletionReveal, type BuildPhase, type NarrativeContext, type PhaseStats } from './narrator';
-import { checkBeforeAdd, autoCorrectOpeningDepth, validateGeometryPossible, OperationLog } from './deduplication';
+import { checkBeforeAdd, autoCorrectOpeningDepth, autoCorrectYPosition, validateGeometryPossible, OperationLog } from './deduplication';
 import { getKnownLandmarkChecklist, parseChecklistFromBrief, mergeChecklists, formatChecklist } from './landmark-checklists';
 import { RESEARCH_SPECIALIST_PROMPT, formatBuildBrief, validateBuildBrief, type BuildBrief } from './agents/research-specialist';
 import { QUALITY_INSPECTOR_PROMPT, validateQualityReport, formatQualityReport } from './agents/quality-inspector';
@@ -367,65 +367,75 @@ export async function sendChatToAI(
                     const floorNodes = Object.values(currentProject.nodes).filter(n => n.type === 'Floor');
                     const wallNodes = Object.values(currentProject.nodes).filter(n => n.type === 'Wall' || n.type === 'Partition');
                     const roofNodes = Object.values(currentProject.nodes).filter(n => n.type === 'Roof');
+                    const MAX_SYSTEM_FIXES = 20; // Don't spend entire turn on fixes
                     
-                    for (const floor of floorNodes) {
-                        const floorTop = floor.position.y + floor.dimensions.y / 2;
+                    // For each wall, find the nearest floor below it and align
+                    for (const wall of wallNodes) {
+                        if (fixCount >= MAX_SYSTEM_FIXES) break;
+                        const wallBottom = wall.position.y - wall.dimensions.y / 2;
                         
-                        // Fix walls that overlap with or float above the floor
-                        for (const wall of wallNodes) {
-                            const wallBottom = wall.position.y - wall.dimensions.y / 2;
+                        // Find the floor whose top is closest to this wall's bottom
+                        let bestFloor: typeof floorNodes[0] | null = null;
+                        let bestGap = Infinity;
+                        for (const floor of floorNodes) {
+                            const floorTop = floor.position.y + floor.dimensions.y / 2;
                             const gap = Math.abs(wallBottom - floorTop);
-                            
-                            if (gap > 0.01 && gap < 2.0) {
-                                // Wall should sit exactly on top of floor
-                                const correctY = floorTop + wall.dimensions.y / 2;
-                                try {
-                                    const op = toolCallToOperation('set_node_position', {
-                                        target_id: wall.id,
-                                        position_y: correctY,
-                                    });
-                                    const validation = validateOperation(op, currentProject);
-                                    if (validation.valid) {
-                                        allValidatedOps.push(op);
-                                        emitOperation(op, turn, 'orchestrator');
-                                        const applied = applyOperation(currentProject, op);
-                                        if (applied.project) {
-                                            currentProject = applied.project;
-                                            fixCount++;
-                                            systemActions.push(`✅ Aligned wall "${wall.name}" to floor (Y=${correctY.toFixed(3)})`);
-                                        }
-                                    }
-                                } catch (e) { /* skip */ }
+                            if (gap < bestGap) {
+                                bestGap = gap;
+                                bestFloor = floor;
                             }
                         }
-
-                        // Fix doors/windows on this floor's walls
-                        for (const wall of wallNodes) {
-                            const wallBottom = wall.position.y - wall.dimensions.y / 2;
-                            for (const childId of wall.children_ids) {
-                                const child = currentProject.nodes[childId];
-                                if (child && (child.type === 'Door')) {
-                                    const childBottom = child.position.y - child.dimensions.y / 2;
-                                    if (Math.abs(childBottom - wallBottom) > 0.01) {
-                                        const correctY = wallBottom + child.dimensions.y / 2;
-                                        try {
-                                            const op = toolCallToOperation('set_node_position', {
-                                                target_id: child.id,
-                                                position_y: correctY,
-                                            });
-                                            const validation = validateOperation(op, currentProject);
-                                            if (validation.valid) {
-                                                allValidatedOps.push(op);
-                                                emitOperation(op, turn, 'orchestrator');
-                                                const applied = applyOperation(currentProject, op);
-                                                if (applied.project) {
-                                                    currentProject = applied.project;
-                                                    fixCount++;
-                                                    systemActions.push(`✅ Aligned door "${child.name}" to wall bottom`);
-                                                }
-                                            }
-                                        } catch (e) { /* skip */ }
+                        
+                        if (bestFloor && bestGap > 0.02 && bestGap < 5.0) {
+                            const floorTop = bestFloor.position.y + bestFloor.dimensions.y / 2;
+                            const correctY = floorTop + wall.dimensions.y / 2;
+                            try {
+                                const op = toolCallToOperation('set_node_position', {
+                                    target_id: wall.id,
+                                    position_y: correctY,
+                                });
+                                const validation = validateOperation(op, currentProject);
+                                if (validation.valid) {
+                                    allValidatedOps.push(op);
+                                    emitOperation(op, turn, 'orchestrator');
+                                    const applied = applyOperation(currentProject, op);
+                                    if (applied.project) {
+                                        currentProject = applied.project;
+                                        fixCount++;
+                                        systemActions.push(`✅ Aligned wall "${wall.name}" to floor (Y=${correctY.toFixed(3)})`);
                                     }
+                                }
+                            } catch (e) { /* skip */ }
+                        }
+                    }
+
+                    // Deterministic fix: Align doors to wall bottoms
+                    for (const wall of wallNodes) {
+                        if (fixCount >= MAX_SYSTEM_FIXES) break;
+                        const wallBottom = wall.position.y - wall.dimensions.y / 2;
+                        for (const childId of wall.children_ids) {
+                            const child = currentProject.nodes[childId];
+                            if (child && (child.type === 'Door')) {
+                                const childBottom = child.position.y - child.dimensions.y / 2;
+                                if (Math.abs(childBottom - wallBottom) > 0.02) {
+                                    const correctY = wallBottom + child.dimensions.y / 2;
+                                    try {
+                                        const op = toolCallToOperation('set_node_position', {
+                                            target_id: child.id,
+                                            position_y: correctY,
+                                        });
+                                        const validation = validateOperation(op, currentProject);
+                                        if (validation.valid) {
+                                            allValidatedOps.push(op);
+                                            emitOperation(op, turn, 'orchestrator');
+                                            const applied = applyOperation(currentProject, op);
+                                            if (applied.project) {
+                                                currentProject = applied.project;
+                                                fixCount++;
+                                                systemActions.push(`✅ Aligned door "${child.name}" to wall bottom`);
+                                            }
+                                        }
+                                    } catch (e) { /* skip */ }
                                 }
                             }
                         }
@@ -442,10 +452,11 @@ export async function sendChatToAI(
                         }
 
                         for (const roof of roofNodes) {
+                            if (fixCount >= MAX_SYSTEM_FIXES) break;
                             const roofBottom = roof.position.y - roof.dimensions.y / 2;
                             const gap = Math.abs(roofBottom - maxWallTop);
                             
-                            if (gap > 0.01) {
+                            if (gap > 0.02) {
                                 const correctY = maxWallTop + roof.dimensions.y / 2;
                                 try {
                                     const op = toolCallToOperation('set_node_position', {
@@ -559,6 +570,24 @@ RECENT TURN HISTORY (for context):
 ${formatTurnHistory(turnHistory.slice(-5))}
 
 ═══════════════════════════════════════════════════\n\n`;
+
+                    // 🔴 HARD LOOP BREAKER (code-level, not LLM-level)
+                    // If the LLM has failed to break the loop 3+ times,
+                    // force-skip the failing operations at the code level.
+                    if (loopDetection.repeatedCount && loopDetection.repeatedCount >= 3) {
+                        if (loopDetection.loopType === 'SAME_VIOLATION') {
+                            // Demote the repeated violations to WARNING so the system moves on
+                            log(`   🔴 HARD LOOP BREAK: Demoting ${pendingViolations.length} repeated violations to WARNING`);
+                            pendingViolations = pendingViolations.map(v => ({
+                                ...v,
+                                severity: v.severity === 'CRITICAL' ? 'WARNING' as const : v.severity,
+                            }));
+                        } else if (loopDetection.loopType === 'OSCILLATING' && loopDetection.repeatedCount >= 4) {
+                            // Accept the degraded state — skip remaining fixes
+                            log(`   🔴 HARD LOOP BREAK: Accepting degraded state after ${loopDetection.repeatedCount} oscillations`);
+                            pendingViolations = pendingViolations.filter(v => v.severity !== 'CRITICAL');
+                        }
+                    }
                 } else {
                     orchestratorContext += `RECENT TURN HISTORY:\n${formatTurnHistory(turnHistory.slice(-3))}\n\n`;
                 }
@@ -757,6 +786,12 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                         tc.args = depthCorrection.args;
                                         log(`   🔧 ${depthCorrection.message}`);
                                     }
+                                    // Auto-correct Y position (fixes wall Y = height/2 instead of floorTop + height/2)
+                                    const yCorrection = autoCorrectYPosition(tc.args, currentProject);
+                                    if (yCorrection.corrected) {
+                                        tc.args = yCorrection.args;
+                                        log(`   🔧 ${yCorrection.message}`);
+                                    }
                                 }
 
                                 const op = toolCallToOperation(tc.name, tc.args);
@@ -924,6 +959,12 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                     if (depthCorrection.corrected) {
                                         tc.args = depthCorrection.args;
                                         log(`   🔧 ${depthCorrection.message}`);
+                                    }
+                                    // Auto-correct Y position
+                                    const yCorrection = autoCorrectYPosition(tc.args, currentProject);
+                                    if (yCorrection.corrected) {
+                                        tc.args = yCorrection.args;
+                                        log(`   🔧 ${yCorrection.message}`);
                                     }
                                 }
 

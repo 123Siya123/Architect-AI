@@ -160,10 +160,13 @@ export function checkBeforeAdd(
         .filter(child => child && child.type === type);
 
     if (existingSiblings.length > 0) {
+        const existing = existingSiblings[0];
+        const dims = existing.dimensions;
+        const pos = existing.position;
         return {
             action: 'BLOCK',
-            existingId: existingSiblings[0].id,
-            message: `${type} already exists as node ${existingSiblings[0].id} (\"${existingSiblings[0].name}\"). Use resize_node or set_node_position instead.`,
+            existingId: existing.id,
+            message: `${type} already exists: ID="${existing.id}" ("${existing.name}") at Y=${pos.y.toFixed(2)}, size=${dims.x.toFixed(1)}×${dims.y.toFixed(1)}×${dims.z.toFixed(1)}m. Use resize_node(target_id="${existing.id}", ...) or set_node_position(target_id="${existing.id}", ...) instead of add_node.`,
         };
     }
 
@@ -171,12 +174,8 @@ export function checkBeforeAdd(
 }
 
 /**
- * Auto-correct window/door depth to match parent wall thickness.
- * Prevents the "window doesn't cut through wall" bug.
- *
- * @param args - The add_node arguments
- * @param project - Current project
- * @returns Modified args with corrected depth if applicable
+ * Auto-correct window/door depth to match parent wall thickness,
+ * but CAPPED at a reasonable maximum to prevent absurdities like 9m deep doors.
  */
 export function autoCorrectOpeningDepth(
     args: Record<string, unknown>,
@@ -194,16 +193,109 @@ export function autoCorrectOpeningDepth(
         return { args, corrected: false };
     }
 
-    const wallDepth = parentWall.dimensions.z; // Wall thickness
+    const MAX_DOOR_DEPTH = 0.6;   // 60cm max — even for castle doors
+    const MAX_WINDOW_DEPTH = 0.5; // 50cm max — deep embrasures
+
+    const wallThickness = parentWall.dimensions.z;
+    const maxDepth = type === 'Door' ? MAX_DOOR_DEPTH : MAX_WINDOW_DEPTH;
     const currentDepth = args.depth as number | undefined;
 
-    if (currentDepth === undefined || currentDepth < wallDepth) {
-        const correctedArgs = { ...args, depth: wallDepth };
+    // Correct depth: match wall thickness, but never exceed reasonable cap
+    const targetDepth = Math.min(wallThickness, maxDepth);
+
+    if (currentDepth === undefined || currentDepth < targetDepth * 0.8 || currentDepth > maxDepth) {
+        const correctedArgs = { ...args, depth: targetDepth };
         return {
             args: correctedArgs,
             corrected: true,
-            message: `AUTO-CORRECTED: ${type} depth set to wall thickness: ${wallDepth}m`,
+            message: `AUTO-CORRECTED: ${type} depth = ${targetDepth.toFixed(2)}m (wall=${wallThickness.toFixed(2)}m, cap=${maxDepth}m)`,
         };
+    }
+
+    return { args, corrected: false };
+}
+
+// =============================================================================
+// AUTO-CORRECT: Y-Position (Bug #1 — systemic Y-coordinate confusion)
+// =============================================================================
+
+/**
+ * Auto-correct Y position for add_node operations.
+ * The most common agent error: using wallHeight/2 as Y instead of floorTop + wallHeight/2.
+ * This deterministic pre-processor catches and fixes it BEFORE the operation is submitted.
+ */
+export function autoCorrectYPosition(
+    args: Record<string, unknown>,
+    project: PSGProject
+): { args: Record<string, unknown>; corrected: boolean; message?: string } {
+    const type = args.type as string;
+    const parentId = args.parent_id as string;
+    const posY = args.position_y as number | undefined;
+    const height = args.height as number | undefined;
+
+    if (!posY || !height) return { args, corrected: false };
+
+    // Find the floor this element should sit on
+    const floors = Object.values(project.nodes).filter(n => n.type === 'Floor');
+    if (floors.length === 0) return { args, corrected: false };
+
+    // Sort floors by Y position (lowest first)
+    floors.sort((a, b) => a.position.y - b.position.y);
+
+    if (type === 'Wall' || type === 'Partition') {
+        // Wall Y should be floorTop + height/2
+        // Detect if agent used height/2 (forgot floor offset)
+        for (const floor of floors) {
+            const floorTop = floor.position.y + floor.dimensions.y / 2;
+            const correctY = floorTop + height / 2;
+            const naiveY = height / 2; // What agents incorrectly calculate
+
+            // Check if the agent used the naive formula (within tolerance)
+            if (Math.abs(posY - naiveY) < 0.02 && Math.abs(posY - correctY) > 0.02) {
+                const correctedArgs = { ...args, position_y: correctY };
+                return {
+                    args: correctedArgs,
+                    corrected: true,
+                    message: `Y-FIX: Wall Y ${posY.toFixed(3)} → ${correctY.toFixed(3)} (floorTop=${floorTop.toFixed(3)} + h/2)`,
+                };
+            }
+        }
+    } else if (type === 'Roof') {
+        // Roof Y should be on top of the highest wall
+        const walls = Object.values(project.nodes).filter(n => n.type === 'Wall' || n.type === 'Partition');
+        if (walls.length > 0) {
+            let maxWallTop = -Infinity;
+            for (const wall of walls) {
+                const wallTop = wall.position.y + wall.dimensions.y / 2;
+                if (wallTop > maxWallTop) maxWallTop = wallTop;
+            }
+            const correctY = maxWallTop + height / 2;
+
+            if (Math.abs(posY - correctY) > 0.05) {
+                const correctedArgs = { ...args, position_y: correctY };
+                return {
+                    args: correctedArgs,
+                    corrected: true,
+                    message: `Y-FIX: Roof Y ${posY.toFixed(3)} → ${correctY.toFixed(3)} (wallTop=${maxWallTop.toFixed(3)} + h/2)`,
+                };
+            }
+        }
+    } else if (type === 'Door') {
+        // Door bottom should sit on the floor / wall bottom
+        const parent = project.nodes[parentId];
+        if (parent && (parent.type === 'Wall' || parent.type === 'Partition')) {
+            const wallBottom = parent.position.y - parent.dimensions.y / 2;
+            const correctY = wallBottom + height / 2;
+
+            if (Math.abs(posY - correctY) > 0.05) {
+                const correctedArgs = { ...args, position_y: correctY };
+                return {
+                    args: correctedArgs,
+                    corrected: true,
+                    message: `Y-FIX: Door Y ${posY.toFixed(3)} → ${correctY.toFixed(3)} (wallBottom + h/2)`,
+                };
+            }
+        }
     }
 
     return { args, corrected: false };
@@ -232,3 +324,4 @@ export function validateGeometryPossible(
 
     return { valid: true };
 }
+

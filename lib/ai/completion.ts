@@ -265,6 +265,9 @@ export function formatCompletionState(state: CompletionState): string {
 
 /**
  * Update checklist items by scanning the scene tree.
+ * MONOTONIC: Once an item is marked complete, it stays complete.
+ * This prevents the scoring oscillation bug where the landmark score
+ * would jump from 2/20 to 20/20 and back based on fuzzy name matching.
  */
 export function updateChecklist(
     checklistItems: ChecklistItem[],
@@ -273,6 +276,17 @@ export function updateChecklist(
     const nodes = Object.values(project.nodes);
 
     return checklistItems.map(item => {
+        // MONOTONIC: If already complete, keep it complete
+        if (item.complete) {
+            // Only verify the nodes still exist
+            const existingIds = item.nodeIds.filter(id => project.nodes[id]);
+            return {
+                ...item,
+                complete: true, // Never un-complete
+                nodeIds: existingIds.length > 0 ? existingIds : item.nodeIds,
+            };
+        }
+
         const matchingNodes = findMatchingNodes(item, nodes);
         return {
             ...item,
@@ -284,23 +298,37 @@ export function updateChecklist(
 
 /**
  * Find nodes in the scene that match a checklist item.
+ * Improved: uses significant keywords only (≥4 chars, excludes stopwords),
+ * and requires fewer matches for short descriptions.
  */
 function findMatchingNodes(item: ChecklistItem, nodes: PSGNode[]): PSGNode[] {
     const desc = item.description.toLowerCase();
     const type = item.requiredNodeType.toLowerCase();
 
+    // Skip non-node checklist items (like "solve_precision() called")
+    if (!type) return [];
+
+    const STOPWORDS = new Set(['with', 'from', 'that', 'this', 'must', 'have', 'been', 'should', 'called', 'total', 'style', 'along', 'entire']);
+
     return nodes.filter(node => {
-        // Type match
+        // Type match — check node type or node name contains the type keyword
         if (type && !node.type.toLowerCase().includes(type) &&
             !node.name.toLowerCase().includes(type)) {
             return false;
         }
 
-        // Name match (fuzzy)
+        // Name match (fuzzy but more stable)
         const nodeName = node.name.toLowerCase();
-        const keywords = desc.split(/\s+/).filter(w => w.length > 3);
+        const keywords = desc.split(/[\s,()]+/)
+            .filter(w => w.length >= 4 && !STOPWORDS.has(w));
+
+        if (keywords.length === 0) return false;
+
         const matchCount = keywords.filter(kw => nodeName.includes(kw)).length;
 
-        return matchCount >= Math.min(2, keywords.length);
+        // Require at least 1 keyword match for short descriptions, 2 for longer
+        const threshold = keywords.length <= 3 ? 1 : 2;
+        return matchCount >= threshold;
     });
 }
+

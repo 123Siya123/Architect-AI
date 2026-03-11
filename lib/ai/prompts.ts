@@ -281,6 +281,55 @@ RULES:
    you're about to create in the same turn.
 4. If your parent_id is rejected, look at the AVAILABLE NODE IDS table
    and pick the correct, existing parent node.
+
+═══════════════════════════════════════════════════
+🧮 Y-COORDINATE FORMULA (MOST COMMON BUG)
+═══════════════════════════════════════════════════
+
+DO NOT use height/2 as the Y position! You MUST account for the floor slab.
+
+Read the floor node from the 3D STATE. Find its top surface:
+  floorTop = floor.position_y + floor.height / 2
+
+Then:
+  Wall Y   = floorTop + wallHeight / 2
+  Roof Y   = highestWallTop + roofHeight / 2
+  Door Y   = wallBottom + doorHeight / 2
+  Window Y = wallBottom + sillHeight + windowHeight / 2
+
+EXAMPLE: Floor at Y=0, floor height=0.3m → floorTop = 0.15m
+  Wall 3.5m tall → wallY = 0.15 + 1.75 = 1.90m ✓
+  WRONG: wallY = 3.5/2 = 1.75m ✗ (ignores floor slab!)
+
+═══════════════════════════════════════════════════
+📐 BUILD BRIEF ENFORCEMENT
+═══════════════════════════════════════════════════
+
+If a BUILD BRIEF is provided in your context, you MUST use its dimensions.
+Do NOT default to 10×12m for a landmark that should be 600×500m.
+
+When creating the first Floor node:
+  - width = brief.totalFootprintMeters.width (or structure width)
+  - depth = brief.totalFootprintMeters.depth (or structure depth)
+
+When creating Walls:
+  - height = structure heightM from the brief
+  - positions calculated from the brief coordinates
+
+═══════════════════════════════════════════════════
+🧱 CORNER OVERLAP PREVENTION
+═══════════════════════════════════════════════════
+
+When placing 4 rectangular perimeter walls:
+  - N/S walls: full building width
+  - E/W walls: building depth MINUS 2 × wall thickness
+  This prevents solid overlap at corners.
+
+EXAMPLE: 15m × 10m building, 0.3m thick walls:
+  North wall: width=15m, depth=0.3m, at Z=-5
+  South wall: width=15m, depth=0.3m, at Z=+5
+  East wall:  width=0.3m, depth=9.4m, at X=+7.5  (10 - 2×0.3 = 9.4)
+  West wall:  width=0.3m, depth=9.4m, at X=-7.5
 `;
 
 
@@ -306,9 +355,21 @@ SEVERITY LEVELS:
 - WARNING: Code violation (missing railings, insufficient clearance). Should be fixed.
 - INFO: Minor optimization (slight misalignment, non-standard proportion). Can be deferred.
 
+TOLERANCE RULES (IMPORTANT):
+- Misalignment < 0.02m (2cm): Use INFO severity, not CRITICAL
+- Misalignment < 0.05m (5cm): Use WARNING severity, not CRITICAL
+- Only misalignment > 0.05m is CRITICAL
+- Corner wall overlaps < 0.5m at intersections: Use WARNING, not CRITICAL
+
+Y-COORDINATE FORMULAS (use these to calculate suggested fixes):
+  floorTop = floor.position_y + floor.height / 2
+  wallY    = floorTop + wallHeight / 2
+  roofY    = highestWallTop + roofHeight / 2
+  doorY    = wallBottom + doorHeight / 2
+
 FOR EACH VIOLATION, calculate the MINIMAL correction needed WITH ABSOLUTE COORDINATES:
 - DO NOT just say "move wall". Say "set_node_position to x=2.5, y=1.5, z=0".
-- Enforce exactly 0.5mm (0.0005m) precision on connections.
+- Use the Y-COORDINATE FORMULAS above to compute correct Y values.
 
 OUTPUT FORMAT (strict JSON):
 {

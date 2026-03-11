@@ -1,0 +1,265 @@
+{
+  "id": "b28b059b-6e12-402c-ac3c-e5959e8985fc",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T04:19:31.350Z",
+  "modified_at": "2026-03-11T04:23:40.586Z",
+  "version": 6,
+  "root_node_id": "house_ede0e1f3",
+  "nodes": {
+    "house_ede0e1f3": {
+      "id": "house_ede0e1f3",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_z6hj14xl",
+        "wall_kd7tpxv7",
+        "wall_ol0w3ddy",
+        "wall_7sd4pt14",
+        "wall_5f1yajlq"
+      ],
+      "created_at": "2026-03-11T04:19:31.350Z",
+      "modified_at": "2026-03-11T04:23:40.586Z",
+      "version": 1
+    },
+    "floor_z6hj14xl": {
+      "id": "floor_z6hj14xl",
+      "type": "Floor",
+      "name": "Mars Habitat Foundation",
+      "position": {
+        "x": 0,
+        "y": 0.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_ede0e1f3",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:23:40.585Z",
+      "modified_at": "2026-03-11T04:23:40.585Z",
+      "version": 1
+    },
+    "wall_kd7tpxv7": {
+      "id": "wall_kd7tpxv7",
+      "type": "Wall",
+      "name": "North Outer Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -4.75
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_ede0e1f3",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:23:40.585Z",
+      "modified_at": "2026-03-11T04:23:40.585Z",
+      "version": 1
+    },
+    "wall_ol0w3ddy": {
+      "id": "wall_ol0w3ddy",
+      "type": "Wall",
+      "name": "South Outer Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": 4.75
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_ede0e1f3",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:23:40.585Z",
+      "modified_at": "2026-03-11T04:23:40.585Z",
+      "version": 1
+    },
+    "wall_7sd4pt14": {
+      "id": "wall_7sd4pt14",
+      "type": "Wall",
+      "name": "East Outer Wall",
+      "position": {
+        "x": 4.75,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_ede0e1f3",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:23:40.585Z",
+      "modified_at": "2026-03-11T04:23:40.585Z",
+      "version": 1
+    },
+    "wall_5f1yajlq": {
+      "id": "wall_5f1yajlq",
+      "type": "Wall",
+      "name": "West Outer Wall",
+      "position": {
+        "x": -4.75,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_ede0e1f3",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:23:40.586Z",
+      "modified_at": "2026-03-11T04:23:40.586Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 17280,
+    "remaining": 182720,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

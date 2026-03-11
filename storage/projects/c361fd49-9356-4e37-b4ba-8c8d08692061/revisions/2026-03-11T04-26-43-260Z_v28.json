@@ -1,0 +1,672 @@
+{
+  "id": "c361fd49-9356-4e37-b4ba-8c8d08692061",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T04:19:32.535Z",
+  "modified_at": "2026-03-11T04:26:41.217Z",
+  "version": 28,
+  "root_node_id": "house_98887783",
+  "nodes": {
+    "house_98887783": {
+      "id": "house_98887783",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "custom_oi9v3htu",
+        "floor_rotunda"
+      ],
+      "created_at": "2026-03-11T04:19:32.535Z",
+      "modified_at": "2026-03-11T04:25:17.950Z",
+      "version": 1
+    },
+    "custom_oi9v3htu": {
+      "id": "custom_oi9v3htu",
+      "type": "Custom",
+      "name": "Rotunda Foundation Slab",
+      "position": {
+        "x": 0,
+        "y": -0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 41,
+        "y": 0.1,
+        "z": 41
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_98887783",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "cylinder",
+        "height": 0.15,
+        "radius": 20.5
+      },
+      "cad_script": "# Custom element: Rotunda Foundation Slab\n# Description: A 41m diameter circular reinforced concrete foundation slab for the Central Command Rotunda.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T04:25:17.949Z",
+      "modified_at": "2026-03-11T04:25:17.949Z",
+      "version": 1
+    },
+    "floor_rotunda": {
+      "id": "floor_rotunda",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_98887783",
+      "children_ids": [
+        "room_rotunda"
+      ],
+      "created_at": "2026-03-11T04:25:17.950Z",
+      "modified_at": "2026-03-11T04:25:17.950Z",
+      "version": 1
+    },
+    "room_rotunda": {
+      "id": "room_rotunda",
+      "type": "Room",
+      "name": "Central Command Rotunda",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_rotunda",
+      "children_ids": [
+        "wall_rotunda_1",
+        "wall_rotunda_2",
+        "wall_rotunda_3",
+        "wall_rotunda_4",
+        "wall_rotunda_5",
+        "wall_rotunda_6",
+        "wall_rotunda_7",
+        "wall_rotunda_8",
+        "wall_rotunda_9",
+        "wall_rotunda_10",
+        "wall_rotunda_11",
+        "wall_rotunda_12"
+      ],
+      "room_function": "office",
+      "created_at": "2026-03-11T04:25:17.950Z",
+      "modified_at": "2026-03-11T04:25:17.955Z",
+      "version": 1
+    },
+    "wall_rotunda_1": {
+      "id": "wall_rotunda_1",
+      "type": "Wall",
+      "name": "Rotunda Wall 1",
+      "position": {
+        "x": 0,
+        "y": 6.2,
+        "z": -19.3
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.951Z",
+      "modified_at": "2026-03-11T04:26:41.214Z",
+      "version": 2
+    },
+    "wall_rotunda_2": {
+      "id": "wall_rotunda_2",
+      "type": "Wall",
+      "name": "Rotunda Wall 2",
+      "position": {
+        "x": 9.700000000000001,
+        "y": 6.2,
+        "z": -16.7
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 30,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.951Z",
+      "modified_at": "2026-03-11T04:26:41.214Z",
+      "version": 2
+    },
+    "wall_rotunda_3": {
+      "id": "wall_rotunda_3",
+      "type": "Wall",
+      "name": "Rotunda Wall 3",
+      "position": {
+        "x": 16.7,
+        "y": 6.2,
+        "z": -9.700000000000001
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 60,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.951Z",
+      "modified_at": "2026-03-11T04:26:41.215Z",
+      "version": 2
+    },
+    "wall_rotunda_4": {
+      "id": "wall_rotunda_4",
+      "type": "Wall",
+      "name": "Rotunda Wall 4",
+      "position": {
+        "x": 19.3,
+        "y": 6.2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.952Z",
+      "modified_at": "2026-03-11T04:26:41.215Z",
+      "version": 2
+    },
+    "wall_rotunda_5": {
+      "id": "wall_rotunda_5",
+      "type": "Wall",
+      "name": "Rotunda Wall 5",
+      "position": {
+        "x": 16.7,
+        "y": 6.2,
+        "z": 9.700000000000001
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 120,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.952Z",
+      "modified_at": "2026-03-11T04:26:41.215Z",
+      "version": 2
+    },
+    "wall_rotunda_6": {
+      "id": "wall_rotunda_6",
+      "type": "Wall",
+      "name": "Rotunda Wall 6",
+      "position": {
+        "x": 9.700000000000001,
+        "y": 6.2,
+        "z": 16.7
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 150,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.953Z",
+      "modified_at": "2026-03-11T04:26:41.216Z",
+      "version": 2
+    },
+    "wall_rotunda_7": {
+      "id": "wall_rotunda_7",
+      "type": "Wall",
+      "name": "Rotunda Wall 7",
+      "position": {
+        "x": 0,
+        "y": 6.2,
+        "z": 19.3
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 180,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.953Z",
+      "modified_at": "2026-03-11T04:26:41.216Z",
+      "version": 2
+    },
+    "wall_rotunda_8": {
+      "id": "wall_rotunda_8",
+      "type": "Wall",
+      "name": "Rotunda Wall 8",
+      "position": {
+        "x": -9.700000000000001,
+        "y": 6.2,
+        "z": 16.7
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 210,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.953Z",
+      "modified_at": "2026-03-11T04:26:41.216Z",
+      "version": 2
+    },
+    "wall_rotunda_9": {
+      "id": "wall_rotunda_9",
+      "type": "Wall",
+      "name": "Rotunda Wall 9",
+      "position": {
+        "x": -16.7,
+        "y": 6.2,
+        "z": 9.700000000000001
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 240,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.954Z",
+      "modified_at": "2026-03-11T04:26:41.217Z",
+      "version": 2
+    },
+    "wall_rotunda_10": {
+      "id": "wall_rotunda_10",
+      "type": "Wall",
+      "name": "Rotunda Wall 10",
+      "position": {
+        "x": -19.3,
+        "y": 6.2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 270,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.954Z",
+      "modified_at": "2026-03-11T04:26:41.217Z",
+      "version": 2
+    },
+    "wall_rotunda_11": {
+      "id": "wall_rotunda_11",
+      "type": "Wall",
+      "name": "Rotunda Wall 11",
+      "position": {
+        "x": -16.7,
+        "y": 6.2,
+        "z": -9.700000000000001
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 300,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.954Z",
+      "modified_at": "2026-03-11T04:26:41.217Z",
+      "version": 2
+    },
+    "wall_rotunda_12": {
+      "id": "wall_rotunda_12",
+      "type": "Wall",
+      "name": "Rotunda Wall 12",
+      "position": {
+        "x": -9.700000000000001,
+        "y": 6.2,
+        "z": -16.7
+      },
+      "dimensions": {
+        "x": 10.353,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 330,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_block",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_rotunda",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:17.954Z",
+      "modified_at": "2026-03-11T04:26:41.217Z",
+      "version": 2
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 149477.6,
+    "remaining": 50522.4,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

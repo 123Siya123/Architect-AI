@@ -1,0 +1,146 @@
+{
+  "id": "2db3bca2-4fcd-430b-a23e-81f592a50002",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T04:19:33.749Z",
+  "modified_at": "2026-03-11T04:25:15.102Z",
+  "version": 3,
+  "root_node_id": "house_5db13064",
+  "nodes": {
+    "house_5db13064": {
+      "id": "house_5db13064",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground_1"
+      ],
+      "created_at": "2026-03-11T04:19:33.749Z",
+      "modified_at": "2026-03-11T04:25:15.102Z",
+      "version": 1
+    },
+    "floor_ground_1": {
+      "id": "floor_ground_1",
+      "type": "Floor",
+      "name": "Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_5db13064",
+      "children_ids": [
+        "slab_3tn4q2yj"
+      ],
+      "created_at": "2026-03-11T04:25:15.102Z",
+      "modified_at": "2026-03-11T04:25:15.102Z",
+      "version": 1
+    },
+    "slab_3tn4q2yj": {
+      "id": "slab_3tn4q2yj",
+      "type": "Slab",
+      "name": "Foundation Slab",
+      "position": {
+        "x": 0,
+        "y": 0.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 0.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground_1",
+      "children_ids": [],
+      "created_at": "2026-03-11T04:25:15.102Z",
+      "modified_at": "2026-03-11T04:25:15.102Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 210000,
+    "remaining": -10000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -1312,9 +1312,9 @@
     "currency": "EUR"
   },
   "budget": {
-    "total_budget": 5000000,
+    "total_budget": 250000,
     "spent": 6964204,
-    "remaining": -1964204,
+    "remaining": -6714204,
     "currency": "EUR",
     "warnings_enabled": true,
     "warning_threshold": 90

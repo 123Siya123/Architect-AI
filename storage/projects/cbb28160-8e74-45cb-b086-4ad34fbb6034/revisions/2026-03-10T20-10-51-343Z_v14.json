@@ -1,0 +1,572 @@
+{
+  "id": "cbb28160-8e74-45cb-b086-4ad34fbb6034",
+  "name": "New Project",
+  "description": "",
+  "created_at": "2026-03-10T20:08:06.462Z",
+  "modified_at": "2026-03-10T20:10:49.193Z",
+  "version": 14,
+  "root_node_id": "house_6177ec49",
+  "nodes": {
+    "house_6177ec49": {
+      "id": "house_6177ec49",
+      "type": "House",
+      "name": "New Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "slab_3swg7p7d",
+        "wall_ndofjbf1",
+        "wall_jeg250qy",
+        "wall_lqk9iyei",
+        "wall_lpwzfo1p",
+        "roof_ft5nuulx",
+        "partition_67tcn8w9",
+        "partition_zra78pdh",
+        "partition_sspwer8g",
+        "partition_9o239fc5",
+        "partition_yoclummc",
+        "partition_qvhazx5b",
+        "partition_lo0eebb6"
+      ],
+      "created_at": "2026-03-10T20:08:06.462Z",
+      "modified_at": "2026-03-10T20:10:49.193Z",
+      "version": 1
+    },
+    "slab_3swg7p7d": {
+      "id": "slab_3swg7p7d",
+      "type": "Slab",
+      "name": "Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:09:14.433Z",
+      "modified_at": "2026-03-10T20:09:14.433Z",
+      "version": 1
+    },
+    "wall_ndofjbf1": {
+      "id": "wall_ndofjbf1",
+      "type": "Wall",
+      "name": "North Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": -4.8500000000000005
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:09:14.433Z",
+      "modified_at": "2026-03-10T20:09:14.433Z",
+      "version": 1
+    },
+    "wall_jeg250qy": {
+      "id": "wall_jeg250qy",
+      "type": "Wall",
+      "name": "South Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": 4.8500000000000005
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:09:14.434Z",
+      "modified_at": "2026-03-10T20:09:14.434Z",
+      "version": 1
+    },
+    "wall_lqk9iyei": {
+      "id": "wall_lqk9iyei",
+      "type": "Wall",
+      "name": "East Wall",
+      "position": {
+        "x": 7.3500000000000005,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3,
+        "z": 9.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:09:14.434Z",
+      "modified_at": "2026-03-10T20:09:14.434Z",
+      "version": 1
+    },
+    "wall_lpwzfo1p": {
+      "id": "wall_lpwzfo1p",
+      "type": "Wall",
+      "name": "West Wall",
+      "position": {
+        "x": -7.3500000000000005,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3,
+        "z": 9.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:09:14.434Z",
+      "modified_at": "2026-03-10T20:09:14.434Z",
+      "version": 1
+    },
+    "roof_ft5nuulx": {
+      "id": "roof_ft5nuulx",
+      "type": "Roof",
+      "name": "Flat Roof Slab",
+      "position": {
+        "x": 0,
+        "y": 3.45,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15.6,
+        "y": 0.3,
+        "z": 10.6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-10T20:09:14.434Z",
+      "modified_at": "2026-03-10T20:09:14.434Z",
+      "version": 1
+    },
+    "partition_67tcn8w9": {
+      "id": "partition_67tcn8w9",
+      "type": "Partition",
+      "name": "Living Split North",
+      "position": {
+        "x": 0.8,
+        "y": 1.8,
+        "z": -2.65
+      },
+      "dimensions": {
+        "x": 4.1,
+        "y": 3,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:10:49.192Z",
+      "modified_at": "2026-03-10T20:10:49.192Z",
+      "version": 1
+    },
+    "partition_zra78pdh": {
+      "id": "partition_zra78pdh",
+      "type": "Partition",
+      "name": "Living Split South",
+      "position": {
+        "x": 0.8,
+        "y": 1.8,
+        "z": 2.65
+      },
+      "dimensions": {
+        "x": 4.1,
+        "y": 3,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:10:49.192Z",
+      "modified_at": "2026-03-10T20:10:49.192Z",
+      "version": 1
+    },
+    "partition_sspwer8g": {
+      "id": "partition_sspwer8g",
+      "type": "Partition",
+      "name": "Hallway North",
+      "position": {
+        "x": -1.2,
+        "y": 1.8,
+        "z": -0.6
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:10:49.193Z",
+      "modified_at": "2026-03-10T20:10:49.193Z",
+      "version": 1
+    },
+    "partition_9o239fc5": {
+      "id": "partition_9o239fc5",
+      "type": "Partition",
+      "name": "Hallway South",
+      "position": {
+        "x": -1.2,
+        "y": 1.8,
+        "z": 0.6
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:10:49.193Z",
+      "modified_at": "2026-03-10T20:10:49.193Z",
+      "version": 1
+    },
+    "partition_yoclummc": {
+      "id": "partition_yoclummc",
+      "type": "Partition",
+      "name": "West Bedrooms Split",
+      "position": {
+        "x": -5.2,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:10:49.193Z",
+      "modified_at": "2026-03-10T20:10:49.193Z",
+      "version": 1
+    },
+    "partition_qvhazx5b": {
+      "id": "partition_qvhazx5b",
+      "type": "Partition",
+      "name": "Main Corridor West",
+      "position": {
+        "x": -3.2,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 9.4,
+        "y": 3,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:10:49.193Z",
+      "modified_at": "2026-03-10T20:10:49.193Z",
+      "version": 1
+    },
+    "partition_lo0eebb6": {
+      "id": "partition_lo0eebb6",
+      "type": "Partition",
+      "name": "Bathrooms Split",
+      "position": {
+        "x": -1.2,
+        "y": 1.8,
+        "z": 2.65
+      },
+      "dimensions": {
+        "x": 4.1,
+        "y": 3,
+        "z": 0.15
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_6177ec49",
+      "children_ids": [],
+      "created_at": "2026-03-10T20:10:49.193Z",
+      "modified_at": "2026-03-10T20:10:49.193Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 250000000,
+    "spent": 0,
+    "remaining": 250000000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}
