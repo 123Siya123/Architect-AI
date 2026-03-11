@@ -1,0 +1,522 @@
+{
+  "id": "7147f4cf-ad59-49f3-8696-0dadd46e940a",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T17:20:05.141Z",
+  "modified_at": "2026-03-11T17:30:12.599Z",
+  "version": 12,
+  "root_node_id": "house_62aca7ba",
+  "nodes": {
+    "house_62aca7ba": {
+      "id": "house_62aca7ba",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_bu2ghm9h",
+        "wall_jjfmvhdh",
+        "custom_8wt2ajyt",
+        "wall_t5pbgo9v",
+        "wall_t6hz81ch",
+        "custom_wri8ovyc",
+        "custom_w2n9xja4",
+        "floor_k05bcgtv",
+        "stairs_vr64twjc",
+        "custom_070o6zxm",
+        "custom_0l4hhcx7"
+      ],
+      "created_at": "2026-03-11T17:20:05.141Z",
+      "modified_at": "2026-03-11T17:30:12.599Z",
+      "version": 1
+    },
+    "floor_bu2ghm9h": {
+      "id": "floor_bu2ghm9h",
+      "type": "Floor",
+      "name": "Massive Marble Plinth Foundation",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 100,
+        "y": 2,
+        "z": 80
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "created_at": "2026-03-11T17:21:37.418Z",
+      "modified_at": "2026-03-11T17:21:37.418Z",
+      "version": 1
+    },
+    "wall_jjfmvhdh": {
+      "id": "wall_jjfmvhdh",
+      "type": "Wall",
+      "name": "Central Mansion Block",
+      "position": {
+        "x": 0,
+        "y": 13,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 22,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "created_at": "2026-03-11T17:22:23.864Z",
+      "modified_at": "2026-03-11T17:22:23.864Z",
+      "version": 1
+    },
+    "custom_8wt2ajyt": {
+      "id": "custom_8wt2ajyt",
+      "type": "Custom",
+      "name": "Grand Greek Entrance Portico",
+      "position": {
+        "x": 0,
+        "y": 12,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 20,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Grand Greek Entrance Portico\n# Description: A grand Greek entrance portico detail with columns and a pediment.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:23:48.835Z",
+      "modified_at": "2026-03-11T17:23:48.835Z",
+      "version": 1
+    },
+    "wall_t5pbgo9v": {
+      "id": "wall_t5pbgo9v",
+      "type": "Wall",
+      "name": "Left Tiered Curved Colonnade",
+      "position": {
+        "x": -35,
+        "y": 11,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 18,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "created_at": "2026-03-11T17:24:28.222Z",
+      "modified_at": "2026-03-11T17:24:28.222Z",
+      "version": 1
+    },
+    "wall_t6hz81ch": {
+      "id": "wall_t6hz81ch",
+      "type": "Wall",
+      "name": "Right Tiered Curved Colonnade",
+      "position": {
+        "x": 35,
+        "y": 11,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 18,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "created_at": "2026-03-11T17:25:03.132Z",
+      "modified_at": "2026-03-11T17:25:03.132Z",
+      "version": 1
+    },
+    "custom_wri8ovyc": {
+      "id": "custom_wri8ovyc",
+      "type": "Custom",
+      "name": "Left Wing Belvedere Pavilion",
+      "position": {
+        "x": -42.5,
+        "y": 13,
+        "z": -35
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 22,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Left Wing Belvedere Pavilion\n# Description: A grand belvedere pavilion tower capping the left colonnade, providing unobstructed sightlines to the arena.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:26:06.935Z",
+      "modified_at": "2026-03-11T17:26:06.935Z",
+      "version": 1
+    },
+    "custom_w2n9xja4": {
+      "id": "custom_w2n9xja4",
+      "type": "Custom",
+      "name": "Right Wing Belvedere Pavilion",
+      "position": {
+        "x": 42.5,
+        "y": 13,
+        "z": -35
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 22,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Right Wing Belvedere Pavilion\n# Description: A grand belvedere pavilion tower capping the right colonnade, perfectly mirroring the left belvedere. Features classical detailing and sits flush on the foundation.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:26:55.454Z",
+      "modified_at": "2026-03-11T17:26:55.454Z",
+      "version": 1
+    },
+    "floor_k05bcgtv": {
+      "id": "floor_k05bcgtv",
+      "type": "Floor",
+      "name": "Elliptical Courtyard and Pool",
+      "position": {
+        "x": 0,
+        "y": 2.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 1,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "created_at": "2026-03-11T17:27:47.597Z",
+      "modified_at": "2026-03-11T17:27:47.597Z",
+      "version": 1
+    },
+    "stairs_vr64twjc": {
+      "id": "stairs_vr64twjc",
+      "type": "Stairs",
+      "name": "Monumental Marble Staircase",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": -2.5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "stair_style": "straight",
+      "created_at": "2026-03-11T17:28:39.923Z",
+      "modified_at": "2026-03-11T17:28:39.923Z",
+      "version": 1
+    },
+    "custom_070o6zxm": {
+      "id": "custom_070o6zxm",
+      "type": "Custom",
+      "name": "Left Marble Terrace",
+      "position": {
+        "x": -20,
+        "y": 6.5,
+        "z": -2.5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 1,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Left Marble Terrace\n# Description: Expansive white marble terrace connecting the central mansion to the left colonnade. Features classic balustrades, White Thassos Marble paving, and provides a luxurious viewing platform over the pool.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:30:12.599Z",
+      "modified_at": "2026-03-11T17:30:12.599Z",
+      "version": 1
+    },
+    "custom_0l4hhcx7": {
+      "id": "custom_0l4hhcx7",
+      "type": "Custom",
+      "name": "Right Marble Terrace",
+      "position": {
+        "x": 20,
+        "y": 6.5,
+        "z": -2.5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 1,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_62aca7ba",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Right Marble Terrace\n# Description: Expansive white marble terrace connecting the central mansion to the right colonnade. Features classic balustrades, White Thassos Marble paving, and provides a luxurious viewing platform over the pool.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:30:12.599Z",
+      "modified_at": "2026-03-11T17:30:12.599Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

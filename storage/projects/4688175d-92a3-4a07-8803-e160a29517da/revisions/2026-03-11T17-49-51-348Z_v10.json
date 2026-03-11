@@ -1,0 +1,455 @@
+{
+  "id": "4688175d-92a3-4a07-8803-e160a29517da",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T17:39:50.764Z",
+  "modified_at": "2026-03-11T17:49:49.098Z",
+  "version": 10,
+  "root_node_id": "house_bff87893",
+  "nodes": {
+    "house_bff87893": {
+      "id": "house_bff87893",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "custom_00nh8qo1",
+        "custom_et6s3jew",
+        "custom_rjpakfsw",
+        "custom_1tbdqllv",
+        "custom_jud75vi9",
+        "custom_ad54w19k",
+        "custom_88xpah93",
+        "custom_cioir10y",
+        "custom_7mdqourx"
+      ],
+      "created_at": "2026-03-11T17:39:50.764Z",
+      "modified_at": "2026-03-11T17:49:49.098Z",
+      "version": 1
+    },
+    "custom_00nh8qo1": {
+      "id": "custom_00nh8qo1",
+      "type": "Custom",
+      "name": "Central Amphitheater Courtyard",
+      "position": {
+        "x": 0,
+        "y": 2.5,
+        "z": 2.5
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 75
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const steps = 5; const stepWidth = 3; const stepHeight = height / steps; for (let i = 0; i < steps; i++) { const currentW = width - i * stepWidth * 2; const currentD = depth - i * stepWidth * 2; const currentH = height - i * stepHeight; if (i === steps - 1) { const geo = new THREE.BoxGeometry(currentW, currentH, currentD); const mesh = new THREE.Mesh(geo); mesh.position.y = -height / 2 + currentH / 2; group.add(mesh); } else { const shape = new THREE.Shape(); shape.moveTo(-currentW/2, -currentD/2); shape.lineTo(currentW/2, -currentD/2); shape.lineTo(currentW/2, currentD/2); shape.lineTo(-currentW/2, currentD/2); shape.lineTo(-currentW/2, -currentD/2); const holeW = currentW - stepWidth * 2; const holeD = currentD - stepWidth * 2; const hole = new THREE.Path(); hole.moveTo(-holeW/2, -holeD/2); hole.lineTo(-holeW/2, holeD/2); hole.lineTo(holeW/2, holeD/2); hole.lineTo(holeW/2, -holeD/2); hole.lineTo(-holeW/2, -holeD/2); shape.holes.push(hole); const extrudeSettings = { depth: currentH, bevelEnabled: false }; const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings); geo.rotateX(-Math.PI / 2); geo.translate(0, -height / 2, 0); const mesh = new THREE.Mesh(geo); group.add(mesh); } } return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Central Amphitheater Courtyard\n# Description: A stepped amphitheater courtyard foundation with 5 terraced levels stepping down towards the center.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:42:36.239Z",
+      "modified_at": "2026-03-11T17:42:36.239Z",
+      "version": 1
+    },
+    "custom_et6s3jew": {
+      "id": "custom_et6s3jew",
+      "type": "Custom",
+      "name": "Monumental Marble Staircase - Step 1",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": 64
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 1,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Monumental Marble Staircase - Step 1\n# Description: Brilliant white marble step 1 (lowest) of the monumental staircase\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:45:24.976Z",
+      "modified_at": "2026-03-11T17:45:24.976Z",
+      "version": 1
+    },
+    "custom_rjpakfsw": {
+      "id": "custom_rjpakfsw",
+      "type": "Custom",
+      "name": "Monumental Marble Staircase - Step 2",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 62
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Monumental Marble Staircase - Step 2\n# Description: Brilliant white marble step 2 of the monumental staircase\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:45:24.977Z",
+      "modified_at": "2026-03-11T17:45:24.977Z",
+      "version": 1
+    },
+    "custom_1tbdqllv": {
+      "id": "custom_1tbdqllv",
+      "type": "Custom",
+      "name": "Monumental Marble Staircase - Step 3",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 60
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 3,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Monumental Marble Staircase - Step 3\n# Description: Brilliant white marble step 3 of the monumental staircase\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:45:24.978Z",
+      "modified_at": "2026-03-11T17:45:24.978Z",
+      "version": 1
+    },
+    "custom_jud75vi9": {
+      "id": "custom_jud75vi9",
+      "type": "Custom",
+      "name": "Monumental Marble Staircase - Step 4",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": 58
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 4,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Monumental Marble Staircase - Step 4\n# Description: Brilliant white marble step 4 of the monumental staircase\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:45:24.978Z",
+      "modified_at": "2026-03-11T17:45:24.978Z",
+      "version": 1
+    },
+    "custom_ad54w19k": {
+      "id": "custom_ad54w19k",
+      "type": "Custom",
+      "name": "Monumental Marble Staircase - Step 5",
+      "position": {
+        "x": 0,
+        "y": 2.5,
+        "z": 56
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Monumental Marble Staircase - Step 5\n# Description: Brilliant white marble step 5 (highest) of the monumental staircase, flush with Z=55\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:45:24.978Z",
+      "modified_at": "2026-03-11T17:45:24.978Z",
+      "version": 1
+    },
+    "custom_88xpah93": {
+      "id": "custom_88xpah93",
+      "type": "Custom",
+      "name": "Grand Greek Colonnade",
+      "position": {
+        "x": 0,
+        "y": 9.5,
+        "z": 47.5
+      },
+      "dimensions": {
+        "x": 38,
+        "y": 14,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "cad_script": "# Custom element: Grand Greek Colonnade\n# Description: 16 classic Greek columns forming the portico colonnade with entasis\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:49:49.098Z",
+      "modified_at": "2026-03-11T17:49:49.098Z",
+      "version": 1
+    },
+    "custom_cioir10y": {
+      "id": "custom_cioir10y",
+      "type": "Custom",
+      "name": "Grand Greek Entablature",
+      "position": {
+        "x": 0,
+        "y": 17.8,
+        "z": 47.5
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 2.5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "cad_script": "# Custom element: Grand Greek Entablature\n# Description: Classic Greek entablature resting on the colonnade\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:49:49.098Z",
+      "modified_at": "2026-03-11T17:49:49.098Z",
+      "version": 1
+    },
+    "custom_7mdqourx": {
+      "id": "custom_7mdqourx",
+      "type": "Custom",
+      "name": "Grand Greek Pediment",
+      "position": {
+        "x": 0,
+        "y": 21.5,
+        "z": 47.5
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_bff87893",
+      "children_ids": [],
+      "cad_script": "# Custom element: Grand Greek Pediment\n# Description: Massive triangular pediment for the Greek portico\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T17:49:49.098Z",
+      "modified_at": "2026-03-11T17:49:49.098Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}
