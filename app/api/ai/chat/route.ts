@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendChatToAI } from '@/lib/ai/orchestrator';
+import { sendChatToAI_V3 as sendChatToAI } from '@/lib/ai/v3-orchestrator';
 import type { AIChatRequest, Material } from '@/types';
 import materialsJson from '@/data/materials.json';
 

@@ -1651,7 +1651,7 @@ export async function callProviderNoTools(
  * Calls the LLM WITH tools (for Structural Engineer).
  * Automatically detects rate limits, timeouts, marks the key for cooldown, rotates, and retries.
  */
-export async function callProviderWithTools(
+async function callProviderWithTools(
     initialConfig: AIProviderConfig,
     messages: Array<{ role: string; content: string }>,
     attachments?: { name: string; type: string; data: string }[],
@@ -2262,7 +2262,7 @@ function extractTextFromFailedGeneration(failedGen: string): string {
  * Normalizes message history to ensure strictly alternating roles (user <-> assistant).
  * Merges consecutive messages of the same role. Useful for agent loops with observations.
  */
-export function normalizeMessages(messages: Array<{ role: string; content: string }>): Array<{ role: string; content: string }> {
+function normalizeMessages(messages: Array<{ role: string; content: string }>): Array<{ role: string; content: string }> {
     const normalized: Array<{ role: string; content: string }> = [];
 
     // We keep system messages as they are (providers handle them separately)
@@ -2365,7 +2365,7 @@ function summarizeWallSurface(project: PSGProject, targetId: string): string {
  * Extracts a JSON object from a string that may contain markdown fences,
  * [PLAN] tags, or other text wrapping.
  */
-export function extractJSON<T>(text: string): T | null {
+function extractJSON<T>(text: string): T | null {
     // Try direct parse first
     try {
         return JSON.parse(text.trim());
@@ -2402,7 +2402,7 @@ export function extractJSON<T>(text: string): T | null {
  * Reloads the project from the source of truth (database/file/memory store)
  * This ensures we're not working with stale cached coordinates
  */
-export async function reloadProjectState(projectId: string, project: PSGProject): Promise<PSGProject> {
+async function reloadProjectState(projectId: string, project: PSGProject): Promise<PSGProject> {
     // Using deep clone to force re-serialization of coordinates
     return JSON.parse(JSON.stringify(project)) as PSGProject;
 }
