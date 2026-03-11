@@ -1,0 +1,781 @@
+{
+  "id": "5de27cf0-b4ca-416b-a29f-ad90280f71b6",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T15:33:04.770Z",
+  "modified_at": "2026-03-11T15:37:34.504Z",
+  "version": 19,
+  "root_node_id": "house_b6923267",
+  "nodes": {
+    "house_b6923267": {
+      "id": "house_b6923267",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_main",
+        "floor_east",
+        "floor_west"
+      ],
+      "created_at": "2026-03-11T15:33:04.770Z",
+      "modified_at": "2026-03-11T15:37:34.503Z",
+      "version": 1
+    },
+    "floor_main": {
+      "id": "floor_main",
+      "type": "Floor",
+      "name": "Main Residence Floor",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 0.3,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b6923267",
+      "children_ids": [
+        "room_main"
+      ],
+      "created_at": "2026-03-11T15:37:34.486Z",
+      "modified_at": "2026-03-11T15:37:34.493Z",
+      "version": 1
+    },
+    "room_main": {
+      "id": "room_main",
+      "type": "Room",
+      "name": "Main Residence Room",
+      "position": {
+        "x": 0,
+        "y": 0.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 15,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [
+        "wall_gb8drrmc",
+        "wall_xq09bp9j",
+        "wall_41orfhn8",
+        "wall_rp61ipny"
+      ],
+      "created_at": "2026-03-11T15:37:34.493Z",
+      "modified_at": "2026-03-11T15:37:34.500Z",
+      "version": 1
+    },
+    "wall_gb8drrmc": {
+      "id": "wall_gb8drrmc",
+      "type": "Wall",
+      "name": "Main North Wall",
+      "position": {
+        "x": 0,
+        "y": 7.8,
+        "z": -9.8
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 15,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.494Z",
+      "modified_at": "2026-03-11T15:37:34.494Z",
+      "version": 1
+    },
+    "wall_xq09bp9j": {
+      "id": "wall_xq09bp9j",
+      "type": "Wall",
+      "name": "Main South Wall",
+      "position": {
+        "x": 0,
+        "y": 7.8,
+        "z": 9.8
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 15,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.499Z",
+      "modified_at": "2026-03-11T15:37:34.499Z",
+      "version": 1
+    },
+    "wall_41orfhn8": {
+      "id": "wall_41orfhn8",
+      "type": "Wall",
+      "name": "Main East Wall",
+      "position": {
+        "x": 14.8,
+        "y": 7.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 15,
+        "z": 19.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.499Z",
+      "modified_at": "2026-03-11T15:37:34.499Z",
+      "version": 1
+    },
+    "wall_rp61ipny": {
+      "id": "wall_rp61ipny",
+      "type": "Wall",
+      "name": "Main West Wall",
+      "position": {
+        "x": -14.8,
+        "y": 7.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 15,
+        "z": 19.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.500Z",
+      "modified_at": "2026-03-11T15:37:34.500Z",
+      "version": 1
+    },
+    "floor_east": {
+      "id": "floor_east",
+      "type": "Floor",
+      "name": "East Wing Floor",
+      "position": {
+        "x": 22.5,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b6923267",
+      "children_ids": [
+        "room_east"
+      ],
+      "created_at": "2026-03-11T15:37:34.500Z",
+      "modified_at": "2026-03-11T15:37:34.501Z",
+      "version": 1
+    },
+    "room_east": {
+      "id": "room_east",
+      "type": "Room",
+      "name": "East Wing Room",
+      "position": {
+        "x": 22.5,
+        "y": 0.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 12,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_east",
+      "children_ids": [
+        "wall_2jcrp64t",
+        "wall_launcgun",
+        "wall_a24nhe3e",
+        "wall_dimo9ah6"
+      ],
+      "created_at": "2026-03-11T15:37:34.501Z",
+      "modified_at": "2026-03-11T15:37:34.502Z",
+      "version": 1
+    },
+    "wall_2jcrp64t": {
+      "id": "wall_2jcrp64t",
+      "type": "Wall",
+      "name": "East Wing North Wall",
+      "position": {
+        "x": 22.5,
+        "y": 6.3,
+        "z": -7.3
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_east",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.501Z",
+      "modified_at": "2026-03-11T15:37:34.501Z",
+      "version": 1
+    },
+    "wall_launcgun": {
+      "id": "wall_launcgun",
+      "type": "Wall",
+      "name": "East Wing South Wall",
+      "position": {
+        "x": 22.5,
+        "y": 6.3,
+        "z": 7.3
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_east",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.501Z",
+      "modified_at": "2026-03-11T15:37:34.501Z",
+      "version": 1
+    },
+    "wall_a24nhe3e": {
+      "id": "wall_a24nhe3e",
+      "type": "Wall",
+      "name": "East Wing East Wall",
+      "position": {
+        "x": 29.8,
+        "y": 6.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 12,
+        "z": 14.200000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_east",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.502Z",
+      "modified_at": "2026-03-11T15:37:34.502Z",
+      "version": 1
+    },
+    "wall_dimo9ah6": {
+      "id": "wall_dimo9ah6",
+      "type": "Wall",
+      "name": "East Wing West Wall",
+      "position": {
+        "x": 15.200000000000001,
+        "y": 6.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 12,
+        "z": 14.200000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_east",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.502Z",
+      "modified_at": "2026-03-11T15:37:34.502Z",
+      "version": 1
+    },
+    "floor_west": {
+      "id": "floor_west",
+      "type": "Floor",
+      "name": "West Wing Floor",
+      "position": {
+        "x": -22.5,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_b6923267",
+      "children_ids": [
+        "room_west"
+      ],
+      "created_at": "2026-03-11T15:37:34.502Z",
+      "modified_at": "2026-03-11T15:37:34.503Z",
+      "version": 1
+    },
+    "room_west": {
+      "id": "room_west",
+      "type": "Room",
+      "name": "West Wing Room",
+      "position": {
+        "x": -22.5,
+        "y": 0.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 12,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_west",
+      "children_ids": [
+        "wall_u8ylb0r3",
+        "wall_y6o2foro",
+        "wall_6v0j90rz",
+        "wall_0lp0qaen"
+      ],
+      "created_at": "2026-03-11T15:37:34.503Z",
+      "modified_at": "2026-03-11T15:37:34.504Z",
+      "version": 1
+    },
+    "wall_u8ylb0r3": {
+      "id": "wall_u8ylb0r3",
+      "type": "Wall",
+      "name": "West Wing North Wall",
+      "position": {
+        "x": -22.5,
+        "y": 6.3,
+        "z": -7.3
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.503Z",
+      "modified_at": "2026-03-11T15:37:34.503Z",
+      "version": 1
+    },
+    "wall_y6o2foro": {
+      "id": "wall_y6o2foro",
+      "type": "Wall",
+      "name": "West Wing South Wall",
+      "position": {
+        "x": -22.5,
+        "y": 6.3,
+        "z": 7.3
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 12,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.503Z",
+      "modified_at": "2026-03-11T15:37:34.503Z",
+      "version": 1
+    },
+    "wall_6v0j90rz": {
+      "id": "wall_6v0j90rz",
+      "type": "Wall",
+      "name": "West Wing East Wall",
+      "position": {
+        "x": -15.200000000000001,
+        "y": 6.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 12,
+        "z": 14.200000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.504Z",
+      "modified_at": "2026-03-11T15:37:34.504Z",
+      "version": 1
+    },
+    "wall_0lp0qaen": {
+      "id": "wall_0lp0qaen",
+      "type": "Wall",
+      "name": "West Wing West Wall",
+      "position": {
+        "x": -29.8,
+        "y": 6.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 12,
+        "z": 14.200000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west",
+      "children_ids": [],
+      "created_at": "2026-03-11T15:37:34.504Z",
+      "modified_at": "2026-03-11T15:37:34.504Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 4765305.6,
+    "remaining": -4565305.6,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

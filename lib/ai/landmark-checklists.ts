@@ -24,37 +24,7 @@ import type { ChecklistItem } from './completion';
  * Pre-defined checklist hints for well-known landmarks.
  * The research_specialist may augment these with additional items.
  */
-const KNOWN_LANDMARKS: Record<string, ChecklistItem[]> = {
-    kremlin: [
-        { id: 'kremlin_perimeter', description: 'Triangular perimeter wall (3 sides, 2.235km total)', requiredNodeType: 'Wall', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'kremlin_towers', description: '20 towers at correct positions along perimeter', requiredNodeType: 'Custom', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'kremlin_spasskaya', description: 'Spasskaya Tower (68m, main entrance, clock face)', requiredNodeType: 'Custom', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'kremlin_palace', description: 'Grand Kremlin Palace (125m wide)', requiredNodeType: 'Room', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'kremlin_dormition', description: 'Cathedral of the Dormition (5 gold onion domes)', requiredNodeType: 'Room', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'kremlin_archangel', description: 'Cathedral of the Archangel (5 gold domes)', requiredNodeType: 'Room', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'kremlin_bell_tower', description: 'Ivan the Great Bell Tower (81m, white+gold)', requiredNodeType: 'Custom', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'kremlin_arsenal', description: 'Arsenal building (yellow facade)', requiredNodeType: 'Room', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'kremlin_senate', description: 'Senate building (green dome, 1787)', requiredNodeType: 'Room', priority: 'P2', complete: false, nodeIds: [] },
-        { id: 'kremlin_borovitskaya', description: 'Borovitskaya Tower gate (arched gateway)', requiredNodeType: 'Custom', priority: 'P2', complete: false, nodeIds: [] },
-        { id: 'kremlin_brick', description: 'Red brick wall material on entire perimeter', requiredNodeType: 'Wall', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'kremlin_green_roof', description: 'Green copper roof on palace buildings', requiredNodeType: 'Roof', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'kremlin_stars', description: 'Ruby stars on 5 main towers', requiredNodeType: 'Custom', priority: 'P2', complete: false, nodeIds: [] },
-        { id: 'kremlin_merlons', description: 'Swallow-tail (Ghibelline) merlons on all walls', requiredNodeType: 'Wall', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'kremlin_precision', description: 'solve_precision() called for construction grade', requiredNodeType: '', priority: 'P0', complete: false, nodeIds: [] },
-    ],
-    white_house: [
-        { id: 'wh_main', description: 'Main residence building (center section)', requiredNodeType: 'Room', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'wh_east_wing', description: 'East Wing', requiredNodeType: 'Room', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'wh_west_wing', description: 'West Wing (Oval Office)', requiredNodeType: 'Room', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'wh_portico_north', description: 'North Portico with columns', requiredNodeType: 'Column', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'wh_portico_south', description: 'South Portico with curved facade', requiredNodeType: 'Column', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'wh_columns', description: 'Neoclassical columns (Ionic order)', requiredNodeType: 'Column', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'wh_roof', description: 'Flat roof with balustrade', requiredNodeType: 'Roof', priority: 'P0', complete: false, nodeIds: [] },
-        { id: 'wh_windows', description: 'Symmetrical window arrangement (134 windows)', requiredNodeType: 'Window', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'wh_white_paint', description: 'White painted exterior (Aquia Creek sandstone)', requiredNodeType: 'Wall', priority: 'P1', complete: false, nodeIds: [] },
-        { id: 'wh_precision', description: 'solve_precision() called', requiredNodeType: '', priority: 'P0', complete: false, nodeIds: [] },
-    ],
-};
+const KNOWN_LANDMARKS: Record<string, ChecklistItem[]> = {};
 
 // =============================================================================
 // CHECKLIST GENERATION

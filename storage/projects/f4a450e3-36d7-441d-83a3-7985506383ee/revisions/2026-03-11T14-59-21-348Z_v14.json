@@ -1,0 +1,597 @@
+{
+  "id": "f4a450e3-36d7-441d-83a3-7985506383ee",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T14:47:15.778Z",
+  "modified_at": "2026-03-11T14:59:18.605Z",
+  "version": 14,
+  "root_node_id": "house_60ac2579",
+  "nodes": {
+    "house_60ac2579": {
+      "id": "house_60ac2579",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_main",
+        "floor_mef3iu9u",
+        "floor_bnfc27gc",
+        "floor_mdsi173c"
+      ],
+      "created_at": "2026-03-11T14:47:15.777Z",
+      "modified_at": "2026-03-11T14:52:33.022Z",
+      "version": 1
+    },
+    "floor_main": {
+      "id": "floor_main",
+      "type": "Floor",
+      "name": "Main Residence Floor",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 0.3,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_marble",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_60ac2579",
+      "children_ids": [
+        "wall_f0vuizk4",
+        "wall_t83jogt4",
+        "wall_e5t5l5xt",
+        "wall_ofjroiqp",
+        "roof_93fdjfpl",
+        "room_sa638ty8",
+        "custom_zaqd71ch",
+        "custom_ifcmd5u4"
+      ],
+      "created_at": "2026-03-11T14:51:37.948Z",
+      "modified_at": "2026-03-11T14:59:18.605Z",
+      "version": 2
+    },
+    "wall_f0vuizk4": {
+      "id": "wall_f0vuizk4",
+      "type": "Wall",
+      "name": "Main North Wall",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": -9.85
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:52:32.986Z",
+      "modified_at": "2026-03-11T14:52:32.986Z",
+      "version": 1
+    },
+    "wall_t83jogt4": {
+      "id": "wall_t83jogt4",
+      "type": "Wall",
+      "name": "Main South Wall",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": 9.85
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:52:32.986Z",
+      "modified_at": "2026-03-11T14:52:32.986Z",
+      "version": 1
+    },
+    "wall_e5t5l5xt": {
+      "id": "wall_e5t5l5xt",
+      "type": "Wall",
+      "name": "Main East Wall",
+      "position": {
+        "x": 14.85,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 5,
+        "z": 19.400000000000002
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:52:33.020Z",
+      "modified_at": "2026-03-11T14:52:33.020Z",
+      "version": 1
+    },
+    "wall_ofjroiqp": {
+      "id": "wall_ofjroiqp",
+      "type": "Wall",
+      "name": "Main West Wall",
+      "position": {
+        "x": -14.85,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 5,
+        "z": 19.400000000000002
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:52:33.021Z",
+      "modified_at": "2026-03-11T14:52:33.021Z",
+      "version": 1
+    },
+    "floor_mef3iu9u": {
+      "id": "floor_mef3iu9u",
+      "type": "Floor",
+      "name": "East Wing Floor",
+      "position": {
+        "x": 22.5,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_60ac2579",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:52:33.021Z",
+      "modified_at": "2026-03-11T14:52:33.021Z",
+      "version": 1
+    },
+    "floor_bnfc27gc": {
+      "id": "floor_bnfc27gc",
+      "type": "Floor",
+      "name": "West Wing Floor",
+      "position": {
+        "x": -22.5,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_60ac2579",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:52:33.022Z",
+      "modified_at": "2026-03-11T14:52:33.022Z",
+      "version": 1
+    },
+    "floor_mdsi173c": {
+      "id": "floor_mdsi173c",
+      "type": "Floor",
+      "name": "Pool House Floor",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_60ac2579",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:52:33.022Z",
+      "modified_at": "2026-03-11T14:52:33.022Z",
+      "version": 1
+    },
+    "roof_93fdjfpl": {
+      "id": "roof_93fdjfpl",
+      "type": "Roof",
+      "name": "Main Residence Roof",
+      "position": {
+        "x": 0,
+        "y": 5.3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 3,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_tile_slate",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "roof_style": "hip",
+      "roof_pitch_degrees": 30,
+      "created_at": "2026-03-11T14:53:46.379Z",
+      "modified_at": "2026-03-11T14:53:46.379Z",
+      "version": 1
+    },
+    "room_sa638ty8": {
+      "id": "room_sa638ty8",
+      "type": "Room",
+      "name": "Grand Foyer",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "room_function": "hallway",
+      "created_at": "2026-03-11T14:56:23.432Z",
+      "modified_at": "2026-03-11T14:56:23.432Z",
+      "version": 1
+    },
+    "custom_zaqd71ch": {
+      "id": "custom_zaqd71ch",
+      "type": "Custom",
+      "name": "Tiered Stone Fountain",
+      "position": {
+        "x": 0,
+        "y": 1.6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 3,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "custom_geometry": {
+        "profile_points": [
+          [
+            0,
+            0
+          ],
+          [
+            1.5,
+            0
+          ],
+          [
+            1.5,
+            0.5
+          ],
+          [
+            0.5,
+            0.5
+          ],
+          [
+            0.5,
+            1.5
+          ],
+          [
+            1,
+            1.5
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0.3,
+            2
+          ],
+          [
+            0.3,
+            2.5
+          ],
+          [
+            0.6,
+            2.5
+          ],
+          [
+            0.6,
+            3
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "type": "lathe"
+      },
+      "cad_script": "# Custom element: Tiered Stone Fountain\n# Description: A classic 3-tier stone fountain serving as the centerpiece of the formal cobblestone motor court.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T14:58:56.895Z",
+      "modified_at": "2026-03-11T14:58:56.895Z",
+      "version": 1
+    },
+    "custom_ifcmd5u4": {
+      "id": "custom_ifcmd5u4",
+      "type": "Custom",
+      "name": "Wrought Iron Estate Gates",
+      "position": {
+        "x": 0,
+        "y": 1.6,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_steel_structural",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Wrought Iron Estate Gates\n# Description: Ornate wrought iron automated estate gates with stone pillars, marking the grand entrance to the property.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T14:58:56.895Z",
+      "modified_at": "2026-03-11T14:58:56.895Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 20000000,
+    "spent": 6049755,
+    "remaining": 13950245,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}
