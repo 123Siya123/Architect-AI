@@ -302,11 +302,10 @@ export function updateChecklist(
  * and requires fewer matches for short descriptions.
  */
 function findMatchingNodes(item: ChecklistItem, nodes: PSGNode[]): PSGNode[] {
-    const desc = item.description.toLowerCase();
-    const type = item.requiredNodeType.toLowerCase();
+    const desc = item.description?.toLowerCase() || '';
+    const type = item.requiredNodeType?.toLowerCase();
 
-    // Skip non-node checklist items (like "solve_precision() called")
-    if (!type) return [];
+    if (!desc) return [];
 
     const STOPWORDS = new Set(['with', 'from', 'that', 'this', 'must', 'have', 'been', 'should', 'called', 'total', 'style', 'along', 'entire']);
 
