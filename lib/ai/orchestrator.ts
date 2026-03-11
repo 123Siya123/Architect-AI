@@ -77,7 +77,7 @@ import {
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
 import { classifyComplexity, type ComplexityClassification } from './complexity';
-import { evaluateCompletionState, formatCompletionState, updateChecklist, type CompletionState, type ChecklistItem } from './completion';
+import { evaluateCompletionState, formatCompletionState, updateChecklist, getWeakestScoreAgent, type CompletionState, type ChecklistItem } from './completion';
 import { getPhaseStartNarrative, getPhaseCompleteNarrative, generateCompletionReveal, type BuildPhase, type NarrativeContext, type PhaseStats } from './narrator';
 import { checkBeforeAdd, autoCorrectOpeningDepth, autoCorrectYPosition, validateGeometryPossible, OperationLog } from './deduplication';
 import { getKnownLandmarkChecklist, parseChecklistFromBrief, mergeChecklists, formatChecklist } from './landmark-checklists';
@@ -453,11 +453,15 @@ export async function sendChatToAI(
 
                         for (const roof of roofNodes) {
                             if (fixCount >= MAX_SYSTEM_FIXES) break;
-                            const roofBottom = roof.position.y - roof.dimensions.y / 2;
+                            const isBaseOrigin = ['gable', 'hip', 'shed', 'cone', 'dome'].includes(roof.roof_style || '');
+                            
+                            // For base-origin geometries (gable), the bottom is exactly position_y.
+                            // For center-origin geometries (flat box), the bottom is position_y - height/2.
+                            const roofBottom = isBaseOrigin ? roof.position.y : (roof.position.y - roof.dimensions.y / 2);
                             const gap = Math.abs(roofBottom - maxWallTop);
                             
                             if (gap > 0.02) {
-                                const correctY = maxWallTop + roof.dimensions.y / 2;
+                                const correctY = isBaseOrigin ? maxWallTop : (maxWallTop + roof.dimensions.y / 2);
                                 try {
                                     const op = toolCallToOperation('set_node_position', {
                                         target_id: roof.id,
@@ -660,33 +664,89 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                 const criticalPending = pendingViolations.filter(v => v.severity === 'CRITICAL');
                 const surfaceSculptPending = shouldApplySurfaceSculpt(currentProject, structuralTargets);
 
-                if (criticalPending.length > 0 && decision.delegate_to !== 'structural_engineer') {
+                // =============================================================
+                // DESIGN PRESSURE SYSTEM (replaces hardcoded structural overrides)
+                // =============================================================
+                // The old system always funneled to structural_engineer, starving
+                // design agents (D-score stayed 0/30). This new system pivots
+                // to design once structure is "good enough".
+                //
+                // STRUCTURE THRESHOLD:
+                //   < 15/30 → FORCE structural_engineer (critical gap)
+                //   15-24   → Trust orchestrator LLM decision (balanced)
+                //   24+     → PUSH toward design agents (structure is done)
+                //
+                // DESIGN PRESSURE:
+                //   If S >= 24 and D < 10, actively override to design agents
+                //   If S >= 24 and M < 10, push materials_specialist
+                // =============================================================
+
+                const structureGoodEnough = completionStatus.structuralScore >= 24;
+                const structureCritical = completionStatus.structuralScore < 15;
+                const designStarved = completionStatus.detailScore < 10;
+                const materialsStarved = completionStatus.materialScore < 10;
+                const physicsClean = criticalPending.length === 0;
+
+                // OVERRIDE LAYER 1: Only force structural_engineer for truly critical situations
+                if (criticalPending.length > 0 && !structureGoodEnough) {
+                    // Structure is incomplete AND has critical violations — must fix
                     decision = {
                         ...decision,
                         delegate_to: 'structural_engineer',
                         instruction: buildCriticalFixInstruction(criticalPending),
-                        reasoning: `${decision.reasoning} | Overridden: CRITICAL violations must be fixed before other work.`
+                        reasoning: `${decision.reasoning} | Overridden: CRITICAL violations with incomplete structure.`
                     };
-                } else if (decision.delegate_to !== 'structural_engineer' && completionStatus.structuralScore < 20) {
+                } else if (structureCritical && decision.delegate_to !== 'structural_engineer') {
+                    // Structure is critically incomplete — need core structure first
                     decision = {
                         ...decision,
                         delegate_to: 'structural_engineer',
-                        instruction: `Structure incomplete (score: ${completionStatus.structuralScore}/30). Missing: ${completionStatus.missingElements.join(', ')}. Build the missing structural elements.`,
-                        reasoning: `${decision.reasoning} | Overridden: core structure incomplete.`
+                        instruction: `Structure critically incomplete (score: ${completionStatus.structuralScore}/30). Missing: ${completionStatus.missingElements.join(', ')}. Build the missing structural elements.`,
+                        reasoning: `${decision.reasoning} | Overridden: core structure critically incomplete.`
                     };
-                } else if (surfaceSculptPending) {
+                }
+                // OVERRIDE LAYER 2: Design pressure — push AWAY from structural_engineer
+                else if (structureGoodEnough && physicsClean) {
+                    // Structure is solid. Time to decorate!
+                    if (designStarved && decision.delegate_to === 'structural_engineer') {
+                        // Orchestrator wants more structure but design is at 0/30 — redirect
+                        const designAgents: Array<'interior_architect' | 'facade_artist' | 'detail_specialist'> = ['interior_architect', 'facade_artist', 'detail_specialist'];
+                        const nextDesignAgent = designAgents[turn % designAgents.length];
+                        decision = {
+                            ...decision,
+                            delegate_to: nextDesignAgent,
+                            instruction: `Structure is solid (${completionStatus.structuralScore}/30). Design score is only ${completionStatus.detailScore}/30. Focus on adding visual detail: ${completionStatus.missingElements.filter(e => !e.includes('floor') && !e.includes('wall') && !e.includes('roof')).join(', ') || 'columns, balconies, decorative elements, custom shapes'}. Read the user request for specific aesthetic demands (colors, style, accents).`,
+                            reasoning: `${decision.reasoning} | DESIGN PRESSURE: S=${completionStatus.structuralScore}/30 is good enough. D=${completionStatus.detailScore}/30 is starved. Pivoting to design.`
+                        };
+                        log(`   🎨 DESIGN PRESSURE: Redirecting from structural_engineer → ${nextDesignAgent}`);
+                    } else if (materialsStarved && decision.delegate_to === 'structural_engineer') {
+                        decision = {
+                            ...decision,
+                            delegate_to: 'materials_specialist',
+                            instruction: `Apply materials to all surfaces. Material score is ${completionStatus.materialScore}/20. ${buildBrief ? 'Use the BUILD BRIEF materials and color palette.' : 'Match the requested style.'}`,
+                            reasoning: `${decision.reasoning} | DESIGN PRESSURE: Materials starved (${completionStatus.materialScore}/20). Pivoting to materials.`
+                        };
+                        log(`   🎨 DESIGN PRESSURE: Redirecting from structural_engineer → materials_specialist`);
+                    }
+                }
+                // OVERRIDE LAYER 3: Surface sculpt (user-requested custom shapes)
+                else if (surfaceSculptPending && structureGoodEnough) {
                     decision = {
                         ...decision,
-                        delegate_to: 'interior_architect',
+                        delegate_to: 'facade_artist',
                         instruction: buildSurfaceMatrixInstruction(currentProject, structuralTargets),
-                        reasoning: `${decision.reasoning} | Overridden: custom matrix sculpting requested and not yet applied.`
+                        reasoning: `${decision.reasoning} | Custom surface sculpting requested and not yet applied.`
                     };
-                } else if (decision.delegate_to === 'DESIGN_COMPLETE' && !completionStatus.autoStopAllowed) {
+                }
+                // OVERRIDE LAYER 4: Prevent premature completion
+                else if (decision.delegate_to === 'DESIGN_COMPLETE' && !completionStatus.autoStopAllowed) {
+                    // Don't stop early — find the weakest score and push that agent
+                    const weakest = getWeakestScoreAgent(completionStatus);
                     decision = {
                         ...decision,
-                        delegate_to: 'structural_engineer',
-                        instruction: `Design not complete (score: ${completionStatus.totalScore}/100). Missing: ${completionStatus.missingElements.join('; ')}. Continue building.`,
-                        reasoning: `${decision.reasoning} | Overridden: completion score ${completionStatus.totalScore}/100, need 95+.`
+                        delegate_to: weakest.agent,
+                        instruction: weakest.instruction,
+                        reasoning: `${decision.reasoning} | Overridden: score ${completionStatus.totalScore}/100, weakest area: ${weakest.area}.`
                     };
                 }
 
@@ -1559,7 +1619,7 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
  * Calls the LLM WITHOUT tools (for Orchestrator, Physicist, Aesthetic agents).
  * Automatically detects rate limits, timeouts, marks the key for cooldown, rotates, and retries.
  */
-async function callProviderNoTools(
+export async function callProviderNoTools(
     initialConfig: AIProviderConfig,
     messages: Array<{ role: string; content: string }>,
     attachments?: { name: string; type: string; data: string }[],

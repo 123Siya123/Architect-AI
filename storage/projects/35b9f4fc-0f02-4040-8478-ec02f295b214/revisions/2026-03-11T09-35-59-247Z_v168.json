@@ -1,0 +1,6074 @@
+{
+  "id": "35b9f4fc-0f02-4040-8478-ec02f295b214",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T08:50:57.935Z",
+  "modified_at": "2026-03-11T09:35:57.215Z",
+  "version": 168,
+  "root_node_id": "house_29ec4be8",
+  "nodes": {
+    "house_29ec4be8": {
+      "id": "house_29ec4be8",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ops_001",
+        "floor_res_001",
+        "floor_p1be12tt",
+        "floor_comm_tower",
+        "floor_west_watchtower",
+        "custom_sdtk2yj6",
+        "custom_424sa514",
+        "custom_gevm6jw2",
+        "custom_muj4uoak",
+        "custom_narrvf3i",
+        "custom_ff72ss6j",
+        "custom_det2xlob",
+        "custom_1vghmkjy",
+        "custom_6nes8enx",
+        "custom_yotst313",
+        "custom_s26blos5",
+        "custom_fi5908no",
+        "custom_yau3y287",
+        "custom_q7a8e6tr",
+        "custom_sa6i3x9q",
+        "custom_jlwbxfro",
+        "custom_dnc3iugc",
+        "custom_glzl4dcs",
+        "custom_220pukug",
+        "custom_01glqj92",
+        "custom_klxggp9z",
+        "custom_sdotbsun",
+        "custom_647a9tzm",
+        "custom_j400wddu",
+        "custom_kqonk9yj",
+        "custom_hcqrgtaw",
+        "custom_e1jmo013",
+        "custom_xxp40qed",
+        "custom_hm3x2nzb",
+        "custom_s892zrkd",
+        "custom_gb91r9jk",
+        "custom_e1suu9dp",
+        "custom_sw7l9ycm",
+        "custom_hjyrkadr",
+        "custom_p689ni00",
+        "floor_ops_001",
+        "floor_res_001",
+        "floor_czj4mnrk",
+        "floor_comm_tower",
+        "floor_west_watchtower",
+        "custom_sxjl0ecq",
+        "custom_9ctot1nc",
+        "custom_p0jhtx0e",
+        "custom_8a0joimo",
+        "custom_kuvrgmak",
+        "custom_u4vnne2q",
+        "custom_7778sdwp",
+        "custom_p2e47bal",
+        "custom_h6nue6j3",
+        "custom_155jembx",
+        "custom_mktnii10",
+        "custom_otbv80wv",
+        "custom_joddcvrp",
+        "custom_u8vvotzk",
+        "custom_kzc1y9yj",
+        "custom_y6dp9e0p",
+        "custom_tjpnn5gb",
+        "custom_y8uhp2mb",
+        "custom_k37em2m6",
+        "custom_e9j4idno",
+        "custom_8w0y2y68",
+        "custom_4llo6lht",
+        "custom_gghf32l5",
+        "custom_iwqjmdtd",
+        "custom_g1ifowpb",
+        "custom_3aohb8o3",
+        "custom_d8idrsuj",
+        "custom_k2ktr9e4",
+        "custom_73viow4n",
+        "custom_2bro653c",
+        "custom_7cxi0jfh",
+        "custom_uojcrecl",
+        "custom_lpxiwm4s",
+        "custom_k7y8bvv5",
+        "custom_d7bgazji"
+      ],
+      "created_at": "2026-03-11T08:50:57.935Z",
+      "modified_at": "2026-03-11T09:35:57.215Z",
+      "version": 1
+    },
+    "floor_ops_001": {
+      "id": "floor_ops_001",
+      "type": "Floor",
+      "name": "Operations Control Center Floor",
+      "position": {
+        "x": -25,
+        "y": 0.25,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 0.5,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_tile",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [
+        "room_ops_001"
+      ],
+      "created_at": "2026-03-11T09:35:57.183Z",
+      "modified_at": "2026-03-11T09:35:57.197Z",
+      "version": 2
+    },
+    "room_ops_001": {
+      "id": "room_ops_001",
+      "type": "Room",
+      "name": "Operations Control Center Room",
+      "position": {
+        "x": -25,
+        "y": 2.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 4,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ops_001",
+      "children_ids": [
+        "wall_ggrjuqnp",
+        "wall_swrsjjc8",
+        "wall_2q75me8v",
+        "wall_athix2gz",
+        "roof_8ortii6i",
+        "custom_j8hab3wh",
+        "custom_x9uqoajl",
+        "custom_p5qiap9w",
+        "custom_qzn8uln2",
+        "custom_4ho9dwh7"
+      ],
+      "created_at": "2026-03-11T09:35:57.183Z",
+      "modified_at": "2026-03-11T09:35:57.215Z",
+      "version": 3
+    },
+    "wall_cq5dlfmz": {
+      "id": "wall_cq5dlfmz",
+      "type": "Wall",
+      "name": "Ops North Wall",
+      "position": {
+        "x": -25,
+        "y": 12.5,
+        "z": -39.7
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 20,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.813Z",
+      "modified_at": "2026-03-11T09:02:46.060Z",
+      "version": 2
+    },
+    "wall_iq6uwsce": {
+      "id": "wall_iq6uwsce",
+      "type": "Wall",
+      "name": "Ops South Wall",
+      "position": {
+        "x": -25,
+        "y": 12.5,
+        "z": -0.2
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 20,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.813Z",
+      "modified_at": "2026-03-11T09:02:46.060Z",
+      "version": 2
+    },
+    "wall_r2x2j7g5": {
+      "id": "wall_r2x2j7g5",
+      "type": "Wall",
+      "name": "Ops East Wall",
+      "position": {
+        "x": -0.2,
+        "y": 12.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 20,
+        "z": 39
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.814Z",
+      "modified_at": "2026-03-11T09:02:46.060Z",
+      "version": 2
+    },
+    "wall_9eift1v0": {
+      "id": "wall_9eift1v0",
+      "type": "Wall",
+      "name": "Ops West Wall",
+      "position": {
+        "x": -49.7,
+        "y": 12.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 20,
+        "z": 39
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.814Z",
+      "modified_at": "2026-03-11T09:02:46.060Z",
+      "version": 2
+    },
+    "floor_res_001": {
+      "id": "floor_res_001",
+      "type": "Floor",
+      "name": "Main Residence Floor",
+      "position": {
+        "x": 0,
+        "y": 0.25,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 0.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_flooring_wood",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [
+        "room_res_001"
+      ],
+      "created_at": "2026-03-11T09:35:57.185Z",
+      "modified_at": "2026-03-11T09:35:57.197Z",
+      "version": 2
+    },
+    "room_res_001": {
+      "id": "room_res_001",
+      "type": "Room",
+      "name": "Main Residence Room",
+      "position": {
+        "x": 0,
+        "y": 2.5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_res_001",
+      "children_ids": [
+        "wall_dqb3kwyi",
+        "wall_7tyfg2oe",
+        "wall_h7100sx6",
+        "wall_3ch3ilmx",
+        "roof_pn95j8t4",
+        "custom_yrh7enet",
+        "custom_64ue482x",
+        "custom_1pd5k4ji",
+        "custom_j2x71wc3",
+        "custom_p79lgv1i",
+        "custom_6i54mlts"
+      ],
+      "created_at": "2026-03-11T09:35:57.185Z",
+      "modified_at": "2026-03-11T09:35:57.215Z",
+      "version": 3
+    },
+    "wall_1pbyfve6": {
+      "id": "wall_1pbyfve6",
+      "type": "Wall",
+      "name": "Res North Wall",
+      "position": {
+        "x": 0,
+        "y": 8.5,
+        "z": 0.30000000000000004
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 12,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.816Z",
+      "modified_at": "2026-03-11T09:02:46.062Z",
+      "version": 2
+    },
+    "wall_l0h0q3yk": {
+      "id": "wall_l0h0q3yk",
+      "type": "Wall",
+      "name": "Res South Wall",
+      "position": {
+        "x": 0,
+        "y": 8.5,
+        "z": 29.8
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 12,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.816Z",
+      "modified_at": "2026-03-11T09:02:46.062Z",
+      "version": 2
+    },
+    "wall_kn4f2ed3": {
+      "id": "wall_kn4f2ed3",
+      "type": "Wall",
+      "name": "Res East Wall",
+      "position": {
+        "x": 29.8,
+        "y": 8.5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 12,
+        "z": 29
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.817Z",
+      "modified_at": "2026-03-11T09:02:46.063Z",
+      "version": 2
+    },
+    "wall_ts4u1ap1": {
+      "id": "wall_ts4u1ap1",
+      "type": "Wall",
+      "name": "Res West Wall",
+      "position": {
+        "x": -29.700000000000003,
+        "y": 8.5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 12,
+        "z": 29
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:00:43.819Z",
+      "modified_at": "2026-03-11T09:02:46.063Z",
+      "version": 2
+    },
+    "roof_yqxlwihl": {
+      "id": "roof_yqxlwihl",
+      "type": "Roof",
+      "name": "Ops Roof",
+      "position": {
+        "x": -25,
+        "y": 4.75,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 0.5,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:02:46.064Z",
+      "modified_at": "2026-03-11T09:02:46.064Z",
+      "version": 1
+    },
+    "roof_wokfoxua": {
+      "id": "roof_wokfoxua",
+      "type": "Roof",
+      "name": "Res Roof",
+      "position": {
+        "x": 0,
+        "y": 4.75,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 0.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:02:46.064Z",
+      "modified_at": "2026-03-11T09:02:46.064Z",
+      "version": 1
+    },
+    "floor_p1be12tt": {
+      "id": "floor_p1be12tt",
+      "type": "Floor",
+      "name": "Helipad Platform Floor",
+      "position": {
+        "x": 45,
+        "y": 0.25,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 0.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:02:46.065Z",
+      "modified_at": "2026-03-11T09:02:46.065Z",
+      "version": 1
+    },
+    "floor_comm_tower": {
+      "id": "floor_comm_tower",
+      "type": "Floor",
+      "name": "Communications Tower Floor",
+      "position": {
+        "x": 50,
+        "y": 0.25,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [
+        "room_comm_tower"
+      ],
+      "created_at": "2026-03-11T09:35:57.190Z",
+      "modified_at": "2026-03-11T09:35:57.197Z",
+      "version": 2
+    },
+    "room_comm_tower": {
+      "id": "room_comm_tower",
+      "type": "Room",
+      "name": "Communications Tower Room",
+      "position": {
+        "x": 50,
+        "y": 2.5,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_comm_tower",
+      "children_ids": [
+        "wall_mst6z07l",
+        "wall_c0aj0k8x",
+        "wall_shdbf39z",
+        "wall_pp0jrout",
+        "roof_h6ikej1r"
+      ],
+      "created_at": "2026-03-11T09:35:57.190Z",
+      "modified_at": "2026-03-11T09:35:57.191Z",
+      "version": 1
+    },
+    "wall_5ygovaew": {
+      "id": "wall_5ygovaew",
+      "type": "Wall",
+      "name": "Comm North Wall",
+      "position": {
+        "x": 50,
+        "y": 2.5,
+        "z": -35.75
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.780Z",
+      "modified_at": "2026-03-11T09:04:41.780Z",
+      "version": 1
+    },
+    "wall_hhqly5wc": {
+      "id": "wall_hhqly5wc",
+      "type": "Wall",
+      "name": "Comm South Wall",
+      "position": {
+        "x": 50,
+        "y": 2.5,
+        "z": -24.25
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.780Z",
+      "modified_at": "2026-03-11T09:04:41.780Z",
+      "version": 1
+    },
+    "wall_g7g8t6qa": {
+      "id": "wall_g7g8t6qa",
+      "type": "Wall",
+      "name": "Comm East Wall",
+      "position": {
+        "x": 55.75,
+        "y": 2.5,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 11
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.781Z",
+      "modified_at": "2026-03-11T09:04:41.781Z",
+      "version": 1
+    },
+    "wall_ldenxska": {
+      "id": "wall_ldenxska",
+      "type": "Wall",
+      "name": "Comm West Wall",
+      "position": {
+        "x": 44.25,
+        "y": 2.5,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 11
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.781Z",
+      "modified_at": "2026-03-11T09:04:41.781Z",
+      "version": 1
+    },
+    "roof_686xhn9y": {
+      "id": "roof_686xhn9y",
+      "type": "Roof",
+      "name": "Comm Roof",
+      "position": {
+        "x": 50,
+        "y": 4.75,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:04:41.781Z",
+      "modified_at": "2026-03-11T09:04:41.781Z",
+      "version": 1
+    },
+    "floor_west_watchtower": {
+      "id": "floor_west_watchtower",
+      "type": "Floor",
+      "name": "West Watchtower Floor",
+      "position": {
+        "x": -70,
+        "y": 0.25,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.5,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [
+        "room_west_watchtower"
+      ],
+      "created_at": "2026-03-11T09:35:57.191Z",
+      "modified_at": "2026-03-11T09:35:57.197Z",
+      "version": 2
+    },
+    "room_west_watchtower": {
+      "id": "room_west_watchtower",
+      "type": "Room",
+      "name": "West Watchtower Room",
+      "position": {
+        "x": -70,
+        "y": 2.5,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 4,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_west_watchtower",
+      "children_ids": [
+        "wall_jbre1ddt",
+        "wall_0ydqce1w",
+        "wall_hwx4pj3n",
+        "wall_qwocaau1",
+        "roof_pizz8h6h"
+      ],
+      "created_at": "2026-03-11T09:35:57.192Z",
+      "modified_at": "2026-03-11T09:35:57.193Z",
+      "version": 1
+    },
+    "wall_vipp5zx5": {
+      "id": "wall_vipp5zx5",
+      "type": "Wall",
+      "name": "West Watchtower North Wall",
+      "position": {
+        "x": -70,
+        "y": 2.5,
+        "z": 37.25
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.782Z",
+      "modified_at": "2026-03-11T09:04:41.782Z",
+      "version": 1
+    },
+    "wall_iq2xauvi": {
+      "id": "wall_iq2xauvi",
+      "type": "Wall",
+      "name": "West Watchtower South Wall",
+      "position": {
+        "x": -70,
+        "y": 2.5,
+        "z": 42.75
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.782Z",
+      "modified_at": "2026-03-11T09:04:41.782Z",
+      "version": 1
+    },
+    "wall_ryuvx8kw": {
+      "id": "wall_ryuvx8kw",
+      "type": "Wall",
+      "name": "West Watchtower East Wall",
+      "position": {
+        "x": -67.25,
+        "y": 2.5,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.782Z",
+      "modified_at": "2026-03-11T09:04:41.782Z",
+      "version": 1
+    },
+    "wall_llct0yob": {
+      "id": "wall_llct0yob",
+      "type": "Wall",
+      "name": "West Watchtower West Wall",
+      "position": {
+        "x": -72.75,
+        "y": 2.5,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:04:41.782Z",
+      "modified_at": "2026-03-11T09:04:41.782Z",
+      "version": 1
+    },
+    "roof_1tp83akm": {
+      "id": "roof_1tp83akm",
+      "type": "Roof",
+      "name": "West Watchtower Roof",
+      "position": {
+        "x": -70,
+        "y": 4.75,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.5,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:04:41.783Z",
+      "modified_at": "2026-03-11T09:04:41.783Z",
+      "version": 1
+    },
+    "custom_sdtk2yj6": {
+      "id": "custom_sdtk2yj6",
+      "type": "Custom",
+      "name": "North Security Perimeter Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -48
+      },
+      "dimensions": {
+        "x": 140,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: North Security Perimeter Wall\n# Description: Long freestanding brutalist concrete security perimeter wall\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:04:41.784Z",
+      "modified_at": "2026-03-11T09:04:41.784Z",
+      "version": 1
+    },
+    "custom_424sa514": {
+      "id": "custom_424sa514",
+      "type": "Custom",
+      "name": "South Security Perimeter Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": 48
+      },
+      "dimensions": {
+        "x": 140,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: South Security Perimeter Wall\n# Description: Long freestanding brutalist concrete security perimeter wall\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:04:41.785Z",
+      "modified_at": "2026-03-11T09:04:41.785Z",
+      "version": 1
+    },
+    "custom_6iaz837o": {
+      "id": "custom_6iaz837o",
+      "type": "Custom",
+      "name": "Global Map Display",
+      "position": {
+        "x": -25,
+        "y": 2.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Global Map Display\n# Description: A large global map display for the operations control center.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:10:23.271Z",
+      "modified_at": "2026-03-11T09:10:23.271Z",
+      "version": 1
+    },
+    "custom_gevm6jw2": {
+      "id": "custom_gevm6jw2",
+      "type": "Custom",
+      "name": "Infinity Pool",
+      "position": {
+        "x": 0,
+        "y": 0.30000000000000004,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 1,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity Pool\n# Description: A luxurious infinity pool with a water effect.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:10:23.274Z",
+      "modified_at": "2026-03-11T09:10:23.274Z",
+      "version": 1
+    },
+    "custom_muj4uoak": {
+      "id": "custom_muj4uoak",
+      "type": "Custom",
+      "name": "Dramatic Cliff Drop",
+      "position": {
+        "x": 0,
+        "y": -10,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 80,
+        "y": 20,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_granite",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Dramatic Cliff Drop\n# Description: A dramatic cliff drop creating a cantilevered effect for the residence.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:10:23.274Z",
+      "modified_at": "2026-03-11T09:10:23.274Z",
+      "version": 1
+    },
+    "custom_44h652uj": {
+      "id": "custom_44h652uj",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:15:51.048Z",
+      "modified_at": "2026-03-11T09:15:51.048Z",
+      "version": 1
+    },
+    "custom_nlgmgjg8": {
+      "id": "custom_nlgmgjg8",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 3,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:15:51.049Z",
+      "modified_at": "2026-03-11T09:15:51.049Z",
+      "version": 1
+    },
+    "custom_narrvf3i": {
+      "id": "custom_narrvf3i",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:15:51.050Z",
+      "modified_at": "2026-03-11T09:15:51.050Z",
+      "version": 1
+    },
+    "custom_5kswxef8": {
+      "id": "custom_5kswxef8",
+      "type": "Custom",
+      "name": "Floor-to-ceiling tinted glass windows for panoramic views",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 28
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Floor-to-ceiling tinted glass windows for panoramic views\n# Description: Floor-to-ceiling tinted glass windows for panoramic views\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:15:51.050Z",
+      "modified_at": "2026-03-11T09:15:51.050Z",
+      "version": 1
+    },
+    "custom_ff72ss6j": {
+      "id": "custom_ff72ss6j",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:15:51.050Z",
+      "modified_at": "2026-03-11T09:15:51.050Z",
+      "version": 1
+    },
+    "custom_det2xlob": {
+      "id": "custom_det2xlob",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:16:42.725Z",
+      "modified_at": "2026-03-11T09:16:42.725Z",
+      "version": 1
+    },
+    "custom_1vghmkjy": {
+      "id": "custom_1vghmkjy",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 2,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:16:42.725Z",
+      "modified_at": "2026-03-11T09:16:42.725Z",
+      "version": 1
+    },
+    "custom_6nes8enx": {
+      "id": "custom_6nes8enx",
+      "type": "Custom",
+      "name": "Reinforced helipad with hydraulic hangar elevator",
+      "position": {
+        "x": 45,
+        "y": 2,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad with hydraulic hangar elevator\n# Description: Reinforced helipad with hydraulic hangar elevator\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:16:42.726Z",
+      "modified_at": "2026-03-11T09:16:42.726Z",
+      "version": 1
+    },
+    "custom_yotst313": {
+      "id": "custom_yotst313",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:16:42.726Z",
+      "modified_at": "2026-03-11T09:16:42.726Z",
+      "version": 1
+    },
+    "custom_s26blos5": {
+      "id": "custom_s26blos5",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:16:42.726Z",
+      "modified_at": "2026-03-11T09:16:42.726Z",
+      "version": 1
+    },
+    "custom_dc8x42mf": {
+      "id": "custom_dc8x42mf",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:17:28.843Z",
+      "modified_at": "2026-03-11T09:17:28.843Z",
+      "version": 1
+    },
+    "custom_jvkvhnea": {
+      "id": "custom_jvkvhnea",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 2,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:17:28.843Z",
+      "modified_at": "2026-03-11T09:17:28.843Z",
+      "version": 1
+    },
+    "custom_fi5908no": {
+      "id": "custom_fi5908no",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:17:28.844Z",
+      "modified_at": "2026-03-11T09:17:28.844Z",
+      "version": 1
+    },
+    "custom_yau3y287": {
+      "id": "custom_yau3y287",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:17:28.844Z",
+      "modified_at": "2026-03-11T09:17:28.844Z",
+      "version": 1
+    },
+    "custom_q7a8e6tr": {
+      "id": "custom_q7a8e6tr",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: A dramatic cantilevered luxury residence extending over a cliff drop, featuring modernist geometric forms.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:18:15.397Z",
+      "modified_at": "2026-03-11T09:18:15.397Z",
+      "version": 1
+    },
+    "custom_sa6i3x9q": {
+      "id": "custom_sa6i3x9q",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 2,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: A high-tech subterranean control room featuring a massive global map display.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:18:15.398Z",
+      "modified_at": "2026-03-11T09:18:15.398Z",
+      "version": 1
+    },
+    "custom_jlwbxfro": {
+      "id": "custom_jlwbxfro",
+      "type": "Custom",
+      "name": "Reinforced helipad with hydraulic hangar elevator",
+      "position": {
+        "x": 45,
+        "y": 2,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad with hydraulic hangar elevator\n# Description: A reinforced helipad platform featuring a hydraulic hangar elevator.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:18:15.398Z",
+      "modified_at": "2026-03-11T09:18:15.398Z",
+      "version": 1
+    },
+    "custom_dnc3iugc": {
+      "id": "custom_dnc3iugc",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: An infinity pool seamlessly integrated into the modernist architecture.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:18:15.398Z",
+      "modified_at": "2026-03-11T09:18:15.398Z",
+      "version": 1
+    },
+    "custom_glzl4dcs": {
+      "id": "custom_glzl4dcs",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: A structure showcasing a minimalist, imposing geometric design language.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:18:15.399Z",
+      "modified_at": "2026-03-11T09:18:15.399Z",
+      "version": 1
+    },
+    "custom_220pukug": {
+      "id": "custom_220pukug",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence",
+      "position": {
+        "x": 0,
+        "y": 5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:21:31.980Z",
+      "modified_at": "2026-03-11T09:21:31.980Z",
+      "version": 1
+    },
+    "custom_01glqj92": {
+      "id": "custom_01glqj92",
+      "type": "Custom",
+      "name": "Minimalist geometric design",
+      "position": {
+        "x": 0,
+        "y": 5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist geometric design\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:21:31.981Z",
+      "modified_at": "2026-03-11T09:21:31.981Z",
+      "version": 1
+    },
+    "custom_9i0q2qzc": {
+      "id": "custom_9i0q2qzc",
+      "type": "Custom",
+      "name": "Floor-to-ceiling tinted glass",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 28
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Floor-to-ceiling tinted glass\n# Description: Floor-to-ceiling tinted glass windows for panoramic views\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:21:31.981Z",
+      "modified_at": "2026-03-11T09:21:31.981Z",
+      "version": 1
+    },
+    "custom_klxggp9z": {
+      "id": "custom_klxggp9z",
+      "type": "Custom",
+      "name": "High-tech subterranean control room",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:21:31.981Z",
+      "modified_at": "2026-03-11T09:21:31.981Z",
+      "version": 1
+    },
+    "custom_sdotbsun": {
+      "id": "custom_sdotbsun",
+      "type": "Custom",
+      "name": "Reinforced helipad",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad\n# Description: Reinforced helipad with hydraulic hangar elevator\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:21:31.981Z",
+      "modified_at": "2026-03-11T09:21:31.981Z",
+      "version": 1
+    },
+    "custom_647a9tzm": {
+      "id": "custom_647a9tzm",
+      "type": "Custom",
+      "name": "Infinity pool integrated",
+      "position": {
+        "x": 0,
+        "y": -5,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:21:31.982Z",
+      "modified_at": "2026-03-11T09:21:31.982Z",
+      "version": 1
+    },
+    "custom_j400wddu": {
+      "id": "custom_j400wddu",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:28:28.440Z",
+      "modified_at": "2026-03-11T09:28:28.440Z",
+      "version": 1
+    },
+    "custom_kqonk9yj": {
+      "id": "custom_kqonk9yj",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:28:28.441Z",
+      "modified_at": "2026-03-11T09:28:28.441Z",
+      "version": 1
+    },
+    "custom_hcqrgtaw": {
+      "id": "custom_hcqrgtaw",
+      "type": "Custom",
+      "name": "Reinforced helipad with hydraulic hangar elevator",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad with hydraulic hangar elevator\n# Description: Reinforced helipad with hydraulic hangar elevator\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:28:28.441Z",
+      "modified_at": "2026-03-11T09:28:28.441Z",
+      "version": 1
+    },
+    "custom_e1jmo013": {
+      "id": "custom_e1jmo013",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:28:28.441Z",
+      "modified_at": "2026-03-11T09:28:28.441Z",
+      "version": 1
+    },
+    "custom_xxp40qed": {
+      "id": "custom_xxp40qed",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:28:28.441Z",
+      "modified_at": "2026-03-11T09:28:28.441Z",
+      "version": 1
+    },
+    "custom_if5p0opv": {
+      "id": "custom_if5p0opv",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:30:51.116Z",
+      "modified_at": "2026-03-11T09:30:51.116Z",
+      "version": 1
+    },
+    "custom_5jmmd7qc": {
+      "id": "custom_5jmmd7qc",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:30:51.117Z",
+      "modified_at": "2026-03-11T09:30:51.117Z",
+      "version": 1
+    },
+    "custom_hm3x2nzb": {
+      "id": "custom_hm3x2nzb",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:30:51.117Z",
+      "modified_at": "2026-03-11T09:30:51.117Z",
+      "version": 1
+    },
+    "custom_s892zrkd": {
+      "id": "custom_s892zrkd",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:30:51.118Z",
+      "modified_at": "2026-03-11T09:30:51.118Z",
+      "version": 1
+    },
+    "custom_gb91r9jk": {
+      "id": "custom_gb91r9jk",
+      "type": "Custom",
+      "name": "Cantilevered Master Suite Overhang",
+      "position": {
+        "x": 0,
+        "y": 12,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered Master Suite Overhang\n# Description: Cantilevered Master Suite Overhang extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:33:28.114Z",
+      "modified_at": "2026-03-11T09:33:28.114Z",
+      "version": 1
+    },
+    "custom_e1suu9dp": {
+      "id": "custom_e1suu9dp",
+      "type": "Custom",
+      "name": "Underground Command Center with Holographic Globe",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Underground Command Center with Holographic Globe\n# Description: Underground Command Center with Holographic Globe\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:33:28.114Z",
+      "modified_at": "2026-03-11T09:33:28.114Z",
+      "version": 1
+    },
+    "custom_sw7l9ycm": {
+      "id": "custom_sw7l9ycm",
+      "type": "Custom",
+      "name": "Heavy-Duty Helipad with Subterranean Hangar Lift",
+      "position": {
+        "x": 45,
+        "y": 0,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 1,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Heavy-Duty Helipad with Subterranean Hangar Lift\n# Description: Heavy-Duty Helipad with Subterranean Hangar Lift\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:33:28.115Z",
+      "modified_at": "2026-03-11T09:33:28.115Z",
+      "version": 1
+    },
+    "custom_hjyrkadr": {
+      "id": "custom_hjyrkadr",
+      "type": "Custom",
+      "name": "Modernist Black-Tile Infinity Pool",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": 35
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 1,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Modernist Black-Tile Infinity Pool\n# Description: Modernist Black-Tile Infinity Pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:33:28.115Z",
+      "modified_at": "2026-03-11T09:33:28.115Z",
+      "version": 1
+    },
+    "custom_p689ni00": {
+      "id": "custom_p689ni00",
+      "type": "Custom",
+      "name": "Imposing Geometric Monolith Facade",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Imposing Geometric Monolith Facade\n# Description: Imposing Geometric Monolith Facade with minimalist design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:33:28.115Z",
+      "modified_at": "2026-03-11T09:33:28.115Z",
+      "version": 1
+    },
+    "custom_u7r3yq59": {
+      "id": "custom_u7r3yq59",
+      "type": "Custom",
+      "name": "Grand Spiral Staircase",
+      "position": {
+        "x": 0,
+        "y": 2.5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 4,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "radius": 2,
+        "code": "const group = new THREE.Group(); const steps = 24; for(let i=0; i<steps; i++) { const geom = new THREE.BoxGeometry(radius, 0.1, radius/2); geom.translate(radius/2, 0, 0); const mesh = new THREE.Mesh(geom); mesh.position.y = -height/2 + (i * height/steps); mesh.rotation.y = i * (Math.PI * 2 / steps); group.add(mesh); } const centerPole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, height)); group.add(centerPole); return group;"
+      },
+      "cad_script": "# Custom element: Grand Spiral Staircase\n# Description: A grand spiral staircase connecting the main residence floor to the upper levels, featuring elegant railings and steps.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:34:40.694Z",
+      "modified_at": "2026-03-11T09:34:40.694Z",
+      "version": 1
+    },
+    "custom_oium04fx": {
+      "id": "custom_oium04fx",
+      "type": "Custom",
+      "name": "Security Checkpoint",
+      "position": {
+        "x": -38,
+        "y": 2.5,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 3,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const desk = new THREE.Mesh(new THREE.BoxGeometry(width*0.8, 1.2, depth*0.4)); desk.position.set(0, -height/2 + 0.6, depth*0.2); group.add(desk); const scanner1 = new THREE.Mesh(new THREE.BoxGeometry(0.5, height*0.8, 0.5)); scanner1.position.set(-width*0.4, -height/2 + height*0.4, -depth*0.3); group.add(scanner1); const scanner2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, height*0.8, 0.5)); scanner2.position.set(width*0.4, -height/2 + height*0.4, -depth*0.3); group.add(scanner2); const arch = new THREE.Mesh(new THREE.BoxGeometry(width*0.8 + 0.5, 0.5, 0.5)); arch.position.set(0, -height/2 + height*0.8 + 0.25, -depth*0.3); group.add(arch); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Security Checkpoint\n# Description: A high-tech security checkpoint with scanners and a guard desk.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:34:40.695Z",
+      "modified_at": "2026-03-11T09:34:40.695Z",
+      "version": 1
+    },
+    "wall_ggrjuqnp": {
+      "id": "wall_ggrjuqnp",
+      "type": "Wall",
+      "name": "Ops North Wall",
+      "position": {
+        "x": -25,
+        "y": 12.5,
+        "z": -39.75
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 20,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.183Z",
+      "modified_at": "2026-03-11T09:35:57.186Z",
+      "version": 2
+    },
+    "wall_swrsjjc8": {
+      "id": "wall_swrsjjc8",
+      "type": "Wall",
+      "name": "Ops South Wall",
+      "position": {
+        "x": -25,
+        "y": 12.5,
+        "z": -0.25
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 20,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.184Z",
+      "modified_at": "2026-03-11T09:35:57.186Z",
+      "version": 2
+    },
+    "wall_2q75me8v": {
+      "id": "wall_2q75me8v",
+      "type": "Wall",
+      "name": "Ops East Wall",
+      "position": {
+        "x": -0.25,
+        "y": 12.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 20,
+        "z": 39
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.184Z",
+      "modified_at": "2026-03-11T09:35:57.186Z",
+      "version": 2
+    },
+    "wall_athix2gz": {
+      "id": "wall_athix2gz",
+      "type": "Wall",
+      "name": "Ops West Wall",
+      "position": {
+        "x": -49.75,
+        "y": 12.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 20,
+        "z": 39
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.184Z",
+      "modified_at": "2026-03-11T09:35:57.186Z",
+      "version": 2
+    },
+    "wall_dqb3kwyi": {
+      "id": "wall_dqb3kwyi",
+      "type": "Wall",
+      "name": "Res North Wall",
+      "position": {
+        "x": 0,
+        "y": 8.5,
+        "z": 0.25
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 12,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.185Z",
+      "modified_at": "2026-03-11T09:35:57.188Z",
+      "version": 2
+    },
+    "wall_7tyfg2oe": {
+      "id": "wall_7tyfg2oe",
+      "type": "Wall",
+      "name": "Res South Wall",
+      "position": {
+        "x": 0,
+        "y": 8.5,
+        "z": 29.75
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 12,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.185Z",
+      "modified_at": "2026-03-11T09:35:57.188Z",
+      "version": 2
+    },
+    "wall_h7100sx6": {
+      "id": "wall_h7100sx6",
+      "type": "Wall",
+      "name": "Res East Wall",
+      "position": {
+        "x": 29.75,
+        "y": 8.5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 12,
+        "z": 29
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.186Z",
+      "modified_at": "2026-03-11T09:35:57.188Z",
+      "version": 2
+    },
+    "wall_3ch3ilmx": {
+      "id": "wall_3ch3ilmx",
+      "type": "Wall",
+      "name": "Res West Wall",
+      "position": {
+        "x": -29.75,
+        "y": 8.5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 12,
+        "z": 29
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.186Z",
+      "modified_at": "2026-03-11T09:35:57.188Z",
+      "version": 2
+    },
+    "roof_8ortii6i": {
+      "id": "roof_8ortii6i",
+      "type": "Roof",
+      "name": "Ops Roof",
+      "position": {
+        "x": -25,
+        "y": 4.75,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 50,
+        "y": 0.5,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:35:57.189Z",
+      "modified_at": "2026-03-11T09:35:57.189Z",
+      "version": 1
+    },
+    "roof_pn95j8t4": {
+      "id": "roof_pn95j8t4",
+      "type": "Roof",
+      "name": "Res Roof",
+      "position": {
+        "x": 0,
+        "y": 4.75,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 60,
+        "y": 0.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:35:57.189Z",
+      "modified_at": "2026-03-11T09:35:57.189Z",
+      "version": 1
+    },
+    "floor_czj4mnrk": {
+      "id": "floor_czj4mnrk",
+      "type": "Floor",
+      "name": "Helipad Platform Floor",
+      "position": {
+        "x": 45,
+        "y": 0.25,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 0.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.189Z",
+      "modified_at": "2026-03-11T09:35:57.189Z",
+      "version": 1
+    },
+    "wall_mst6z07l": {
+      "id": "wall_mst6z07l",
+      "type": "Wall",
+      "name": "Comm North Wall",
+      "position": {
+        "x": 50,
+        "y": 2.5,
+        "z": -35.75
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.190Z",
+      "modified_at": "2026-03-11T09:35:57.190Z",
+      "version": 1
+    },
+    "wall_c0aj0k8x": {
+      "id": "wall_c0aj0k8x",
+      "type": "Wall",
+      "name": "Comm South Wall",
+      "position": {
+        "x": 50,
+        "y": 2.5,
+        "z": -24.25
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.190Z",
+      "modified_at": "2026-03-11T09:35:57.190Z",
+      "version": 1
+    },
+    "wall_shdbf39z": {
+      "id": "wall_shdbf39z",
+      "type": "Wall",
+      "name": "Comm East Wall",
+      "position": {
+        "x": 55.75,
+        "y": 2.5,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 11
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.190Z",
+      "modified_at": "2026-03-11T09:35:57.190Z",
+      "version": 1
+    },
+    "wall_pp0jrout": {
+      "id": "wall_pp0jrout",
+      "type": "Wall",
+      "name": "Comm West Wall",
+      "position": {
+        "x": 44.25,
+        "y": 2.5,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 11
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.191Z",
+      "modified_at": "2026-03-11T09:35:57.191Z",
+      "version": 1
+    },
+    "roof_h6ikej1r": {
+      "id": "roof_h6ikej1r",
+      "type": "Roof",
+      "name": "Comm Roof",
+      "position": {
+        "x": 50,
+        "y": 4.75,
+        "z": -30
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_comm_tower",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:35:57.191Z",
+      "modified_at": "2026-03-11T09:35:57.191Z",
+      "version": 1
+    },
+    "wall_jbre1ddt": {
+      "id": "wall_jbre1ddt",
+      "type": "Wall",
+      "name": "West Watchtower North Wall",
+      "position": {
+        "x": -70,
+        "y": 2.5,
+        "z": 37.25
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.192Z",
+      "modified_at": "2026-03-11T09:35:57.192Z",
+      "version": 1
+    },
+    "wall_0ydqce1w": {
+      "id": "wall_0ydqce1w",
+      "type": "Wall",
+      "name": "West Watchtower South Wall",
+      "position": {
+        "x": -70,
+        "y": 2.5,
+        "z": 42.75
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.192Z",
+      "modified_at": "2026-03-11T09:35:57.192Z",
+      "version": 1
+    },
+    "wall_hwx4pj3n": {
+      "id": "wall_hwx4pj3n",
+      "type": "Wall",
+      "name": "West Watchtower East Wall",
+      "position": {
+        "x": -67.25,
+        "y": 2.5,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.192Z",
+      "modified_at": "2026-03-11T09:35:57.192Z",
+      "version": 1
+    },
+    "wall_qwocaau1": {
+      "id": "wall_qwocaau1",
+      "type": "Wall",
+      "name": "West Watchtower West Wall",
+      "position": {
+        "x": -72.75,
+        "y": 2.5,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "created_at": "2026-03-11T09:35:57.193Z",
+      "modified_at": "2026-03-11T09:35:57.193Z",
+      "version": 1
+    },
+    "roof_pizz8h6h": {
+      "id": "roof_pizz8h6h",
+      "type": "Roof",
+      "name": "West Watchtower Roof",
+      "position": {
+        "x": -70,
+        "y": 4.75,
+        "z": 40
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.5,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_west_watchtower",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T09:35:57.193Z",
+      "modified_at": "2026-03-11T09:35:57.193Z",
+      "version": 1
+    },
+    "custom_sxjl0ecq": {
+      "id": "custom_sxjl0ecq",
+      "type": "Custom",
+      "name": "North Security Perimeter Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -48
+      },
+      "dimensions": {
+        "x": 140,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: North Security Perimeter Wall\n# Description: Long freestanding brutalist concrete security perimeter wall\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.193Z",
+      "modified_at": "2026-03-11T09:35:57.193Z",
+      "version": 1
+    },
+    "custom_9ctot1nc": {
+      "id": "custom_9ctot1nc",
+      "type": "Custom",
+      "name": "South Security Perimeter Wall",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": 48
+      },
+      "dimensions": {
+        "x": 140,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: South Security Perimeter Wall\n# Description: Long freestanding brutalist concrete security perimeter wall\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.193Z",
+      "modified_at": "2026-03-11T09:35:57.193Z",
+      "version": 1
+    },
+    "custom_j8hab3wh": {
+      "id": "custom_j8hab3wh",
+      "type": "Custom",
+      "name": "Global Map Display",
+      "position": {
+        "x": -25,
+        "y": 2.5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Global Map Display\n# Description: A large global map display for the operations control center.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.194Z",
+      "modified_at": "2026-03-11T09:35:57.194Z",
+      "version": 1
+    },
+    "custom_p0jhtx0e": {
+      "id": "custom_p0jhtx0e",
+      "type": "Custom",
+      "name": "Infinity Pool",
+      "position": {
+        "x": 0,
+        "y": 0.25,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 1,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_glass_double",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity Pool\n# Description: A luxurious infinity pool with a water effect.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.195Z",
+      "modified_at": "2026-03-11T09:35:57.195Z",
+      "version": 1
+    },
+    "custom_8a0joimo": {
+      "id": "custom_8a0joimo",
+      "type": "Custom",
+      "name": "Dramatic Cliff Drop",
+      "position": {
+        "x": 0,
+        "y": -10,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 80,
+        "y": 20,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_granite",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Dramatic Cliff Drop\n# Description: A dramatic cliff drop creating a cantilevered effect for the residence.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.195Z",
+      "modified_at": "2026-03-11T09:35:57.195Z",
+      "version": 1
+    },
+    "custom_yrh7enet": {
+      "id": "custom_yrh7enet",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.201Z",
+      "modified_at": "2026-03-11T09:35:57.201Z",
+      "version": 1
+    },
+    "custom_x9uqoajl": {
+      "id": "custom_x9uqoajl",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 3,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.201Z",
+      "modified_at": "2026-03-11T09:35:57.201Z",
+      "version": 1
+    },
+    "custom_kuvrgmak": {
+      "id": "custom_kuvrgmak",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.201Z",
+      "modified_at": "2026-03-11T09:35:57.201Z",
+      "version": 1
+    },
+    "custom_64ue482x": {
+      "id": "custom_64ue482x",
+      "type": "Custom",
+      "name": "Floor-to-ceiling tinted glass windows for panoramic views",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 28
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Floor-to-ceiling tinted glass windows for panoramic views\n# Description: Floor-to-ceiling tinted glass windows for panoramic views\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.202Z",
+      "modified_at": "2026-03-11T09:35:57.202Z",
+      "version": 1
+    },
+    "custom_u4vnne2q": {
+      "id": "custom_u4vnne2q",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.202Z",
+      "modified_at": "2026-03-11T09:35:57.202Z",
+      "version": 1
+    },
+    "custom_7778sdwp": {
+      "id": "custom_7778sdwp",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.203Z",
+      "modified_at": "2026-03-11T09:35:57.203Z",
+      "version": 1
+    },
+    "custom_p2e47bal": {
+      "id": "custom_p2e47bal",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 2,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.203Z",
+      "modified_at": "2026-03-11T09:35:57.203Z",
+      "version": 1
+    },
+    "custom_h6nue6j3": {
+      "id": "custom_h6nue6j3",
+      "type": "Custom",
+      "name": "Reinforced helipad with hydraulic hangar elevator",
+      "position": {
+        "x": 45,
+        "y": 2,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad with hydraulic hangar elevator\n# Description: Reinforced helipad with hydraulic hangar elevator\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.203Z",
+      "modified_at": "2026-03-11T09:35:57.203Z",
+      "version": 1
+    },
+    "custom_155jembx": {
+      "id": "custom_155jembx",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.203Z",
+      "modified_at": "2026-03-11T09:35:57.203Z",
+      "version": 1
+    },
+    "custom_mktnii10": {
+      "id": "custom_mktnii10",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.203Z",
+      "modified_at": "2026-03-11T09:35:57.203Z",
+      "version": 1
+    },
+    "custom_1pd5k4ji": {
+      "id": "custom_1pd5k4ji",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.204Z",
+      "modified_at": "2026-03-11T09:35:57.204Z",
+      "version": 1
+    },
+    "custom_p5qiap9w": {
+      "id": "custom_p5qiap9w",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 2,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.204Z",
+      "modified_at": "2026-03-11T09:35:57.204Z",
+      "version": 1
+    },
+    "custom_otbv80wv": {
+      "id": "custom_otbv80wv",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.205Z",
+      "modified_at": "2026-03-11T09:35:57.205Z",
+      "version": 1
+    },
+    "custom_joddcvrp": {
+      "id": "custom_joddcvrp",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.205Z",
+      "modified_at": "2026-03-11T09:35:57.205Z",
+      "version": 1
+    },
+    "custom_u8vvotzk": {
+      "id": "custom_u8vvotzk",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: A dramatic cantilevered luxury residence extending over a cliff drop, featuring modernist geometric forms.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.206Z",
+      "modified_at": "2026-03-11T09:35:57.206Z",
+      "version": 1
+    },
+    "custom_kzc1y9yj": {
+      "id": "custom_kzc1y9yj",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": 2,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: A high-tech subterranean control room featuring a massive global map display.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.206Z",
+      "modified_at": "2026-03-11T09:35:57.206Z",
+      "version": 1
+    },
+    "custom_y6dp9e0p": {
+      "id": "custom_y6dp9e0p",
+      "type": "Custom",
+      "name": "Reinforced helipad with hydraulic hangar elevator",
+      "position": {
+        "x": 45,
+        "y": 2,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad with hydraulic hangar elevator\n# Description: A reinforced helipad platform featuring a hydraulic hangar elevator.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.206Z",
+      "modified_at": "2026-03-11T09:35:57.206Z",
+      "version": 1
+    },
+    "custom_tjpnn5gb": {
+      "id": "custom_tjpnn5gb",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: An infinity pool seamlessly integrated into the modernist architecture.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.206Z",
+      "modified_at": "2026-03-11T09:35:57.206Z",
+      "version": 1
+    },
+    "custom_y8uhp2mb": {
+      "id": "custom_y8uhp2mb",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: A structure showcasing a minimalist, imposing geometric design language.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.207Z",
+      "modified_at": "2026-03-11T09:35:57.207Z",
+      "version": 1
+    },
+    "custom_k37em2m6": {
+      "id": "custom_k37em2m6",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence",
+      "position": {
+        "x": 0,
+        "y": 5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.208Z",
+      "modified_at": "2026-03-11T09:35:57.208Z",
+      "version": 1
+    },
+    "custom_e9j4idno": {
+      "id": "custom_e9j4idno",
+      "type": "Custom",
+      "name": "Minimalist geometric design",
+      "position": {
+        "x": 0,
+        "y": 5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist geometric design\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.208Z",
+      "modified_at": "2026-03-11T09:35:57.208Z",
+      "version": 1
+    },
+    "custom_j2x71wc3": {
+      "id": "custom_j2x71wc3",
+      "type": "Custom",
+      "name": "Floor-to-ceiling tinted glass",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 28
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Floor-to-ceiling tinted glass\n# Description: Floor-to-ceiling tinted glass windows for panoramic views\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.208Z",
+      "modified_at": "2026-03-11T09:35:57.208Z",
+      "version": 1
+    },
+    "custom_8w0y2y68": {
+      "id": "custom_8w0y2y68",
+      "type": "Custom",
+      "name": "High-tech subterranean control room",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.209Z",
+      "modified_at": "2026-03-11T09:35:57.209Z",
+      "version": 1
+    },
+    "custom_4llo6lht": {
+      "id": "custom_4llo6lht",
+      "type": "Custom",
+      "name": "Reinforced helipad",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad\n# Description: Reinforced helipad with hydraulic hangar elevator\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.209Z",
+      "modified_at": "2026-03-11T09:35:57.209Z",
+      "version": 1
+    },
+    "custom_gghf32l5": {
+      "id": "custom_gghf32l5",
+      "type": "Custom",
+      "name": "Infinity pool integrated",
+      "position": {
+        "x": 0,
+        "y": -5,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.209Z",
+      "modified_at": "2026-03-11T09:35:57.209Z",
+      "version": 1
+    },
+    "custom_iwqjmdtd": {
+      "id": "custom_iwqjmdtd",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.210Z",
+      "modified_at": "2026-03-11T09:35:57.210Z",
+      "version": 1
+    },
+    "custom_g1ifowpb": {
+      "id": "custom_g1ifowpb",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.211Z",
+      "modified_at": "2026-03-11T09:35:57.211Z",
+      "version": 1
+    },
+    "custom_3aohb8o3": {
+      "id": "custom_3aohb8o3",
+      "type": "Custom",
+      "name": "Reinforced helipad with hydraulic hangar elevator",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Reinforced helipad with hydraulic hangar elevator\n# Description: Reinforced helipad with hydraulic hangar elevator\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.211Z",
+      "modified_at": "2026-03-11T09:35:57.211Z",
+      "version": 1
+    },
+    "custom_d8idrsuj": {
+      "id": "custom_d8idrsuj",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.211Z",
+      "modified_at": "2026-03-11T09:35:57.211Z",
+      "version": 1
+    },
+    "custom_k2ktr9e4": {
+      "id": "custom_k2ktr9e4",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.211Z",
+      "modified_at": "2026-03-11T09:35:57.211Z",
+      "version": 1
+    },
+    "custom_p79lgv1i": {
+      "id": "custom_p79lgv1i",
+      "type": "Custom",
+      "name": "Cantilevered luxury residence extending over a dramatic drop",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered luxury residence extending over a dramatic drop\n# Description: Cantilevered luxury residence extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.213Z",
+      "modified_at": "2026-03-11T09:35:57.213Z",
+      "version": 1
+    },
+    "custom_qzn8uln2": {
+      "id": "custom_qzn8uln2",
+      "type": "Custom",
+      "name": "High-tech subterranean control room with global map display",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: High-tech subterranean control room with global map display\n# Description: High-tech subterranean control room with global map display\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.213Z",
+      "modified_at": "2026-03-11T09:35:57.213Z",
+      "version": 1
+    },
+    "custom_73viow4n": {
+      "id": "custom_73viow4n",
+      "type": "Custom",
+      "name": "Infinity pool integrated into the modernist architecture",
+      "position": {
+        "x": 45,
+        "y": -5,
+        "z": 38
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity pool integrated into the modernist architecture\n# Description: Infinity pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.213Z",
+      "modified_at": "2026-03-11T09:35:57.213Z",
+      "version": 1
+    },
+    "custom_2bro653c": {
+      "id": "custom_2bro653c",
+      "type": "Custom",
+      "name": "Minimalist, imposing geometric design language",
+      "position": {
+        "x": 0,
+        "y": 10,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 10,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Minimalist, imposing geometric design language\n# Description: Minimalist, imposing geometric design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.213Z",
+      "modified_at": "2026-03-11T09:35:57.213Z",
+      "version": 1
+    },
+    "custom_7cxi0jfh": {
+      "id": "custom_7cxi0jfh",
+      "type": "Custom",
+      "name": "Cantilevered Master Suite Overhang",
+      "position": {
+        "x": 0,
+        "y": 12,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Cantilevered Master Suite Overhang\n# Description: Cantilevered Master Suite Overhang extending over a dramatic drop\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.214Z",
+      "modified_at": "2026-03-11T09:35:57.214Z",
+      "version": 1
+    },
+    "custom_uojcrecl": {
+      "id": "custom_uojcrecl",
+      "type": "Custom",
+      "name": "Underground Command Center with Holographic Globe",
+      "position": {
+        "x": -25,
+        "y": -5,
+        "z": -20
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Underground Command Center with Holographic Globe\n# Description: Underground Command Center with Holographic Globe\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.214Z",
+      "modified_at": "2026-03-11T09:35:57.214Z",
+      "version": 1
+    },
+    "custom_lpxiwm4s": {
+      "id": "custom_lpxiwm4s",
+      "type": "Custom",
+      "name": "Heavy-Duty Helipad with Subterranean Hangar Lift",
+      "position": {
+        "x": 45,
+        "y": 0,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 1,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Heavy-Duty Helipad with Subterranean Hangar Lift\n# Description: Heavy-Duty Helipad with Subterranean Hangar Lift\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.214Z",
+      "modified_at": "2026-03-11T09:35:57.214Z",
+      "version": 1
+    },
+    "custom_k7y8bvv5": {
+      "id": "custom_k7y8bvv5",
+      "type": "Custom",
+      "name": "Modernist Black-Tile Infinity Pool",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": 35
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 1,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Modernist Black-Tile Infinity Pool\n# Description: Modernist Black-Tile Infinity Pool integrated into the modernist architecture\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.215Z",
+      "modified_at": "2026-03-11T09:35:57.215Z",
+      "version": 1
+    },
+    "custom_d7bgazji": {
+      "id": "custom_d7bgazji",
+      "type": "Custom",
+      "name": "Imposing Geometric Monolith Facade",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_29ec4be8",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Imposing Geometric Monolith Facade\n# Description: Imposing Geometric Monolith Facade with minimalist design language\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.215Z",
+      "modified_at": "2026-03-11T09:35:57.215Z",
+      "version": 1
+    },
+    "custom_6i54mlts": {
+      "id": "custom_6i54mlts",
+      "type": "Custom",
+      "name": "Grand Spiral Staircase",
+      "position": {
+        "x": 0,
+        "y": 2.5,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 4,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_res_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "radius": 2,
+        "code": "const group = new THREE.Group(); const steps = 24; for(let i=0; i<steps; i++) { const geom = new THREE.BoxGeometry(radius, 0.1, radius/2); geom.translate(radius/2, 0, 0); const mesh = new THREE.Mesh(geom); mesh.position.y = -height/2 + (i * height/steps); mesh.rotation.y = i * (Math.PI * 2 / steps); group.add(mesh); } const centerPole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, height)); group.add(centerPole); return group;"
+      },
+      "cad_script": "# Custom element: Grand Spiral Staircase\n# Description: A grand spiral staircase connecting the main residence floor to the upper levels, featuring elegant railings and steps.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.215Z",
+      "modified_at": "2026-03-11T09:35:57.215Z",
+      "version": 1
+    },
+    "custom_4ho9dwh7": {
+      "id": "custom_4ho9dwh7",
+      "type": "Custom",
+      "name": "Security Checkpoint",
+      "position": {
+        "x": -38,
+        "y": 2.5,
+        "z": -5
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 3,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_ops_001",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const desk = new THREE.Mesh(new THREE.BoxGeometry(width*0.8, 1.2, depth*0.4)); desk.position.set(0, -height/2 + 0.6, depth*0.2); group.add(desk); const scanner1 = new THREE.Mesh(new THREE.BoxGeometry(0.5, height*0.8, 0.5)); scanner1.position.set(-width*0.4, -height/2 + height*0.4, -depth*0.3); group.add(scanner1); const scanner2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, height*0.8, 0.5)); scanner2.position.set(width*0.4, -height/2 + height*0.4, -depth*0.3); group.add(scanner2); const arch = new THREE.Mesh(new THREE.BoxGeometry(width*0.8 + 0.5, 0.5, 0.5)); arch.position.set(0, -height/2 + height*0.8 + 0.25, -depth*0.3); group.add(arch); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Security Checkpoint\n# Description: A high-tech security checkpoint with scanners and a guard desk.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-11T09:35:57.215Z",
+      "modified_at": "2026-03-11T09:35:57.215Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 878019040,
+    "remaining": -877819040,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

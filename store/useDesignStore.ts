@@ -57,6 +57,7 @@ interface DesignState {
     chatMessages: ChatMessage[];
     isAIThinking: boolean;
     aiThinkingLogs: string[];
+    isScreenshotRequested: boolean;
     undoStack: PSGOperation[];
     redoStack: PSGOperation[];
 
@@ -87,6 +88,7 @@ interface DesignState {
     revertToMessage: (messageId: string) => void;
     setAIThinking: (thinking: boolean) => void;
     setAIThinkingLogs: (logs: string[]) => void;
+    setScreenshotRequested: (requested: boolean) => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
     getNode: (id: string) => PSGNode | undefined;
@@ -132,6 +134,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     chatMessages: [],
     isAIThinking: false,
     aiThinkingLogs: [],
+    isScreenshotRequested: false,
     undoStack: [],
     redoStack: [],
     isDirty: false,
@@ -254,6 +257,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         addChatMessage(userMsg);
         setAIThinking(true);
         setAIThinkingLogs([]);
+        let hasChanges = false;
 
         try {
             const response = await fetch('/api/ai/chat', {
@@ -283,7 +287,6 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             const streamedOperationKeys = new Set<string>();
             let streamedSuccessCount = 0;
             let streamedFailCount = 0;
-            let hasChanges = false;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -384,6 +387,9 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         } finally {
             get().setAIThinking(false);
             get().setAIThinkingLogs([]);
+            if (hasChanges) {
+                get().setScreenshotRequested(true);
+            }
         }
     },
     revertToMessage: (messageId) => {
@@ -410,6 +416,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     },
     setAIThinking: (thinking) => set({ isAIThinking: thinking }),
     setAIThinkingLogs: (logs) => set({ aiThinkingLogs: logs }),
+    setScreenshotRequested: (requested) => set({ isScreenshotRequested: requested }),
     setLoading: (loading) => set({ isLoading: loading }),
     setError: (error) => set({ error }),
     getNode: (id) => get().project.nodes[id],

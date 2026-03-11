@@ -1,0 +1,305 @@
+{
+  "id": "24e38a35-0cc5-480f-a030-c110a721351c",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T11:02:01.397Z",
+  "modified_at": "2026-03-11T11:04:55.549Z",
+  "version": 7,
+  "root_node_id": "house_c21161d5",
+  "nodes": {
+    "house_c21161d5": {
+      "id": "house_c21161d5",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_main_cmd"
+      ],
+      "created_at": "2026-03-11T11:02:01.397Z",
+      "modified_at": "2026-03-11T11:04:55.546Z",
+      "version": 1
+    },
+    "floor_main_cmd": {
+      "id": "floor_main_cmd",
+      "type": "Floor",
+      "name": "Main Command Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 0.3,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [
+        "room_main_cmd"
+      ],
+      "created_at": "2026-03-11T11:04:55.546Z",
+      "modified_at": "2026-03-11T11:04:55.547Z",
+      "version": 1
+    },
+    "room_main_cmd": {
+      "id": "room_main_cmd",
+      "type": "Room",
+      "name": "Main Command Room",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main_cmd",
+      "children_ids": [
+        "wall_2x43goxr",
+        "wall_yxy3rtlu",
+        "wall_tbcx9a3d",
+        "wall_npxi2s52"
+      ],
+      "created_at": "2026-03-11T11:04:55.547Z",
+      "modified_at": "2026-03-11T11:04:55.549Z",
+      "version": 1
+    },
+    "wall_2x43goxr": {
+      "id": "wall_2x43goxr",
+      "type": "Wall",
+      "name": "North Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": -14.75
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.548Z",
+      "modified_at": "2026-03-11T11:04:55.548Z",
+      "version": 1
+    },
+    "wall_yxy3rtlu": {
+      "id": "wall_yxy3rtlu",
+      "type": "Wall",
+      "name": "South Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": 14.75
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.548Z",
+      "modified_at": "2026-03-11T11:04:55.548Z",
+      "version": 1
+    },
+    "wall_tbcx9a3d": {
+      "id": "wall_tbcx9a3d",
+      "type": "Wall",
+      "name": "East Exterior Wall",
+      "position": {
+        "x": 19.75,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 29,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.548Z",
+      "modified_at": "2026-03-11T11:04:55.548Z",
+      "version": 1
+    },
+    "wall_npxi2s52": {
+      "id": "wall_npxi2s52",
+      "type": "Wall",
+      "name": "West Exterior Wall",
+      "position": {
+        "x": -19.75,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 29,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.549Z",
+      "modified_at": "2026-03-11T11:04:55.549Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 2000000000,
+    "spent": 120750,
+    "remaining": 1999879250,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

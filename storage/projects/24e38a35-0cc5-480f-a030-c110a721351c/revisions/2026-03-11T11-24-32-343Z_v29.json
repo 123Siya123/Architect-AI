@@ -1,0 +1,1133 @@
+{
+  "id": "24e38a35-0cc5-480f-a030-c110a721351c",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T11:02:01.397Z",
+  "modified_at": "2026-03-11T11:24:29.539Z",
+  "version": 29,
+  "root_node_id": "house_c21161d5",
+  "nodes": {
+    "house_c21161d5": {
+      "id": "house_c21161d5",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_main_cmd",
+        "floor_w11udmv7",
+        "floor_fkmqseev",
+        "floor_helipad_new",
+        "floor_garage_new",
+        "column_asn4gd98",
+        "column_6pzqgec0"
+      ],
+      "created_at": "2026-03-11T11:02:01.397Z",
+      "modified_at": "2026-03-11T11:23:19.650Z",
+      "version": 1
+    },
+    "floor_main_cmd": {
+      "id": "floor_main_cmd",
+      "type": "Floor",
+      "name": "Main Command Ground Floor",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 0.3,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [
+        "room_main_cmd",
+        "wall_gtlw7j1x"
+      ],
+      "created_at": "2026-03-11T11:04:55.546Z",
+      "modified_at": "2026-03-11T11:24:29.538Z",
+      "version": 1
+    },
+    "room_main_cmd": {
+      "id": "room_main_cmd",
+      "type": "Room",
+      "name": "Main Command Room",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main_cmd",
+      "children_ids": [
+        "wall_2x43goxr",
+        "wall_yxy3rtlu",
+        "wall_tbcx9a3d",
+        "wall_npxi2s52",
+        "roof_xq7ale03",
+        "roof_ov3f9ye0"
+      ],
+      "created_at": "2026-03-11T11:04:55.547Z",
+      "modified_at": "2026-03-11T11:24:29.539Z",
+      "version": 2
+    },
+    "wall_2x43goxr": {
+      "id": "wall_2x43goxr",
+      "type": "Wall",
+      "name": "North Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": -14.75
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.548Z",
+      "modified_at": "2026-03-11T11:04:55.548Z",
+      "version": 1
+    },
+    "wall_yxy3rtlu": {
+      "id": "wall_yxy3rtlu",
+      "type": "Wall",
+      "name": "South Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 2.8000000000000003,
+        "z": 14.75
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.548Z",
+      "modified_at": "2026-03-11T11:04:55.548Z",
+      "version": 1
+    },
+    "wall_tbcx9a3d": {
+      "id": "wall_tbcx9a3d",
+      "type": "Wall",
+      "name": "East Exterior Wall",
+      "position": {
+        "x": 19.75,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 29,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.548Z",
+      "modified_at": "2026-03-11T11:04:55.548Z",
+      "version": 1
+    },
+    "wall_npxi2s52": {
+      "id": "wall_npxi2s52",
+      "type": "Wall",
+      "name": "West Exterior Wall",
+      "position": {
+        "x": -19.75,
+        "y": 2.8000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 29,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:04:55.549Z",
+      "modified_at": "2026-03-11T11:04:55.549Z",
+      "version": 1
+    },
+    "roof_xq7ale03": {
+      "id": "roof_xq7ale03",
+      "type": "Roof",
+      "name": "Main Command Roof",
+      "position": {
+        "x": 0,
+        "y": 5.45,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 0.3,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T11:07:40.386Z",
+      "modified_at": "2026-03-11T11:07:40.386Z",
+      "version": 1
+    },
+    "floor_w11udmv7": {
+      "id": "floor_w11udmv7",
+      "type": "Floor",
+      "name": "Helipad Wing Floor",
+      "position": {
+        "x": -25,
+        "y": 0.15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:07:40.387Z",
+      "modified_at": "2026-03-11T11:07:40.387Z",
+      "version": 1
+    },
+    "floor_fkmqseev": {
+      "id": "floor_fkmqseev",
+      "type": "Floor",
+      "name": "Luxury Garage Floor",
+      "position": {
+        "x": 25,
+        "y": 0.15,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:07:40.387Z",
+      "modified_at": "2026-03-11T11:07:40.387Z",
+      "version": 1
+    },
+    "roof_ov3f9ye0": {
+      "id": "roof_ov3f9ye0",
+      "type": "Roof",
+      "name": "Main Command Roof",
+      "position": {
+        "x": 0,
+        "y": 5.45,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 40,
+        "y": 0.3,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_main_cmd",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T11:18:28.833Z",
+      "modified_at": "2026-03-11T11:18:28.833Z",
+      "version": 1
+    },
+    "floor_helipad_new": {
+      "id": "floor_helipad_new",
+      "type": "Floor",
+      "name": "Helipad Wing Floor",
+      "position": {
+        "x": -27.5,
+        "y": 0.15,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [
+        "room_helipad_new"
+      ],
+      "created_at": "2026-03-11T11:18:28.834Z",
+      "modified_at": "2026-03-11T11:18:28.834Z",
+      "version": 1
+    },
+    "room_helipad_new": {
+      "id": "room_helipad_new",
+      "type": "Room",
+      "name": "Helipad Wing Room",
+      "position": {
+        "x": -27.5,
+        "y": 5.3,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 10,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_helipad_new",
+      "children_ids": [
+        "wall_m738f416",
+        "wall_s3ouzx63",
+        "wall_s0u1ti2w",
+        "wall_yh2sxoup",
+        "roof_f2h5at5e"
+      ],
+      "created_at": "2026-03-11T11:18:28.834Z",
+      "modified_at": "2026-03-11T11:18:28.836Z",
+      "version": 1
+    },
+    "wall_m738f416": {
+      "id": "wall_m738f416",
+      "type": "Wall",
+      "name": "Helipad North Wall",
+      "position": {
+        "x": -27.5,
+        "y": 5.3,
+        "z": 7.75
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 10,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_helipad_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.835Z",
+      "modified_at": "2026-03-11T11:18:28.835Z",
+      "version": 1
+    },
+    "wall_s3ouzx63": {
+      "id": "wall_s3ouzx63",
+      "type": "Wall",
+      "name": "Helipad South Wall",
+      "position": {
+        "x": -27.5,
+        "y": 5.3,
+        "z": 22.25
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 10,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_helipad_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.835Z",
+      "modified_at": "2026-03-11T11:18:28.835Z",
+      "version": 1
+    },
+    "wall_s0u1ti2w": {
+      "id": "wall_s0u1ti2w",
+      "type": "Wall",
+      "name": "Helipad East Wall",
+      "position": {
+        "x": -20.25,
+        "y": 5.3,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 10,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_helipad_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.835Z",
+      "modified_at": "2026-03-11T11:18:28.835Z",
+      "version": 1
+    },
+    "wall_yh2sxoup": {
+      "id": "wall_yh2sxoup",
+      "type": "Wall",
+      "name": "Helipad West Wall",
+      "position": {
+        "x": -34.75,
+        "y": 5.3,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 10,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_helipad_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.835Z",
+      "modified_at": "2026-03-11T11:18:28.835Z",
+      "version": 1
+    },
+    "roof_f2h5at5e": {
+      "id": "roof_f2h5at5e",
+      "type": "Roof",
+      "name": "Helipad Roof",
+      "position": {
+        "x": -27.5,
+        "y": 10.450000000000001,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_helipad_new",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T11:18:28.836Z",
+      "modified_at": "2026-03-11T11:18:28.836Z",
+      "version": 1
+    },
+    "floor_garage_new": {
+      "id": "floor_garage_new",
+      "type": "Floor",
+      "name": "Luxury Garage Floor",
+      "position": {
+        "x": 30,
+        "y": 0.15,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [
+        "room_garage_new"
+      ],
+      "created_at": "2026-03-11T11:18:28.836Z",
+      "modified_at": "2026-03-11T11:18:28.836Z",
+      "version": 1
+    },
+    "room_garage_new": {
+      "id": "room_garage_new",
+      "type": "Room",
+      "name": "Luxury Garage Room",
+      "position": {
+        "x": 30,
+        "y": 2.8000000000000003,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_garage_new",
+      "children_ids": [
+        "wall_lkjaubdn",
+        "wall_xl10ylz2",
+        "wall_32d3o7fv",
+        "wall_8x5fey5d",
+        "roof_mqoadwes"
+      ],
+      "created_at": "2026-03-11T11:18:28.836Z",
+      "modified_at": "2026-03-11T11:18:28.838Z",
+      "version": 1
+    },
+    "wall_lkjaubdn": {
+      "id": "wall_lkjaubdn",
+      "type": "Wall",
+      "name": "Garage North Wall",
+      "position": {
+        "x": 30,
+        "y": 2.8000000000000003,
+        "z": -17.25
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.837Z",
+      "modified_at": "2026-03-11T11:18:28.837Z",
+      "version": 1
+    },
+    "wall_xl10ylz2": {
+      "id": "wall_xl10ylz2",
+      "type": "Wall",
+      "name": "Garage South Wall",
+      "position": {
+        "x": 30,
+        "y": 2.8000000000000003,
+        "z": -2.75
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.837Z",
+      "modified_at": "2026-03-11T11:18:28.837Z",
+      "version": 1
+    },
+    "wall_32d3o7fv": {
+      "id": "wall_32d3o7fv",
+      "type": "Wall",
+      "name": "Garage East Wall",
+      "position": {
+        "x": 39.75,
+        "y": 2.8000000000000003,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.837Z",
+      "modified_at": "2026-03-11T11:18:28.837Z",
+      "version": 1
+    },
+    "wall_8x5fey5d": {
+      "id": "wall_8x5fey5d",
+      "type": "Wall",
+      "name": "Garage West Wall",
+      "position": {
+        "x": 20.25,
+        "y": 2.8000000000000003,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage_new",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:18:28.838Z",
+      "modified_at": "2026-03-11T11:18:28.838Z",
+      "version": 1
+    },
+    "roof_mqoadwes": {
+      "id": "roof_mqoadwes",
+      "type": "Roof",
+      "name": "Garage Roof",
+      "position": {
+        "x": 30,
+        "y": 10.450000000000001,
+        "z": -10
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.3,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage_new",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-11T11:18:28.838Z",
+      "modified_at": "2026-03-11T11:18:28.838Z",
+      "version": 1
+    },
+    "column_asn4gd98": {
+      "id": "column_asn4gd98",
+      "type": "Column",
+      "name": "Communication Spire North",
+      "position": {
+        "x": 35,
+        "y": 10.15,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 20,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:23:19.650Z",
+      "modified_at": "2026-03-11T11:23:19.650Z",
+      "version": 1
+    },
+    "column_6pzqgec0": {
+      "id": "column_6pzqgec0",
+      "type": "Column",
+      "name": "Communication Spire South",
+      "position": {
+        "x": -35,
+        "y": 10.15,
+        "z": -25
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 20,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_metal_aluminum",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_c21161d5",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:23:19.650Z",
+      "modified_at": "2026-03-11T11:23:19.650Z",
+      "version": 1
+    },
+    "wall_gtlw7j1x": {
+      "id": "wall_gtlw7j1x",
+      "type": "Wall",
+      "name": "High-security polished black concrete perimeter walls",
+      "position": {
+        "x": 0,
+        "y": 1.5,
+        "z": 25
+      },
+      "dimensions": {
+        "x": 80,
+        "y": 3,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_black",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main_cmd",
+      "children_ids": [],
+      "created_at": "2026-03-11T11:24:29.538Z",
+      "modified_at": "2026-03-11T11:24:29.538Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 2000000000,
+    "spent": 2529150,
+    "remaining": 1997470850,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -114,6 +114,7 @@ function LoadingFallback() {
 
 import WalkthroughControls from './WalkthroughControls';
 import SystemsRenderer from './SystemsRenderer';
+import ScreenshotManager from './ScreenshotManager';
 
 export default function SceneCanvas() {
     const camera = useDesignStore((s) => s.camera);
@@ -213,6 +214,9 @@ export default function SceneCanvas() {
                         labelColor="white"
                     />
                 </GizmoHelper>
+
+                {/* Automation Screenshot Capture */}
+                <ScreenshotManager />
             </Canvas>
         </div>
     );

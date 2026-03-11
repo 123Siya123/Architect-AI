@@ -269,14 +269,19 @@ export function autoCorrectYPosition(
                 const wallTop = wall.position.y + wall.dimensions.y / 2;
                 if (wallTop > maxWallTop) maxWallTop = wallTop;
             }
-            const correctY = maxWallTop + height / 2;
+            
+            // BoxGeometry (flat/default) is center-origin -> needs + height/2
+            // Custom geometries (gable, hip, shed) have their base at Y=0 -> need EXACTLY wallTop
+            const roofStyle = args.roof_style as string | undefined;
+            const isBaseOrigin = roofStyle === 'gable' || roofStyle === 'hip' || roofStyle === 'shed' || roofStyle === 'cone' || roofStyle === 'dome';
+            const correctY = isBaseOrigin ? maxWallTop : (maxWallTop + (height || 0) / 2);
 
             if (Math.abs(posY - correctY) > 0.05) {
                 const correctedArgs = { ...args, position_y: correctY };
                 return {
                     args: correctedArgs,
                     corrected: true,
-                    message: `Y-FIX: Roof Y ${posY.toFixed(3)} → ${correctY.toFixed(3)} (wallTop=${maxWallTop.toFixed(3)} + h/2)`,
+                    message: `Y-FIX: Roof Y ${posY.toFixed(3)} → ${correctY.toFixed(3)} (wallTop=${maxWallTop.toFixed(3)}${!isBaseOrigin ? ' + h/2' : ''})`,
                 };
             }
         }

@@ -1,0 +1,664 @@
+{
+  "id": "ab3141c4-df2e-4aec-a00b-b41dbcbb2b01",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T08:51:05.810Z",
+  "modified_at": "2026-03-11T08:59:44.783Z",
+  "version": 16,
+  "root_node_id": "house_2f5c38f6",
+  "nodes": {
+    "house_2f5c38f6": {
+      "id": "house_2f5c38f6",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ground"
+      ],
+      "created_at": "2026-03-11T08:51:05.810Z",
+      "modified_at": "2026-03-11T08:59:44.747Z",
+      "version": 1
+    },
+    "floor_ground": {
+      "id": "floor_ground",
+      "type": "Floor",
+      "name": "Ground Floor Foundation",
+      "position": {
+        "x": 0,
+        "y": 0.25,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 120,
+        "y": 0.5,
+        "z": 120
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_2f5c38f6",
+      "children_ids": [
+        "room_courtyard",
+        "room_keep"
+      ],
+      "created_at": "2026-03-11T08:59:44.746Z",
+      "modified_at": "2026-03-11T08:59:44.750Z",
+      "version": 1
+    },
+    "room_courtyard": {
+      "id": "room_courtyard",
+      "type": "Room",
+      "name": "Main Courtyard",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [
+        "wall_hfkyv4n9",
+        "wall_27ktkg6a",
+        "wall_p690gsb9",
+        "wall_b0gogdzt",
+        "wall_zulykt2v",
+        "wall_6t17wt8s",
+        "wall_5n1irtc0",
+        "wall_y3c9ucs8"
+      ],
+      "created_at": "2026-03-11T08:59:44.749Z",
+      "modified_at": "2026-03-11T08:59:44.783Z",
+      "version": 1
+    },
+    "room_keep": {
+      "id": "room_keep",
+      "type": "Room",
+      "name": "Central Keep",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": -15
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_ground",
+      "children_ids": [
+        "wall_vygw54cv",
+        "wall_nfehublm",
+        "wall_w17ap01l",
+        "wall_3u5ubynx"
+      ],
+      "created_at": "2026-03-11T08:59:44.749Z",
+      "modified_at": "2026-03-11T08:59:44.779Z",
+      "version": 1
+    },
+    "wall_hfkyv4n9": {
+      "id": "wall_hfkyv4n9",
+      "type": "Wall",
+      "name": "Curtain Wall North",
+      "position": {
+        "x": 0,
+        "y": 6.5,
+        "z": -50
+      },
+      "dimensions": {
+        "x": 100,
+        "y": 12,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.751Z",
+      "modified_at": "2026-03-11T08:59:44.751Z",
+      "version": 1
+    },
+    "wall_27ktkg6a": {
+      "id": "wall_27ktkg6a",
+      "type": "Wall",
+      "name": "Curtain Wall South",
+      "position": {
+        "x": 0,
+        "y": 6.5,
+        "z": 50
+      },
+      "dimensions": {
+        "x": 100,
+        "y": 12,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.752Z",
+      "modified_at": "2026-03-11T08:59:44.752Z",
+      "version": 1
+    },
+    "wall_p690gsb9": {
+      "id": "wall_p690gsb9",
+      "type": "Wall",
+      "name": "Curtain Wall East",
+      "position": {
+        "x": 50,
+        "y": 6.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 12,
+        "z": 96
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.753Z",
+      "modified_at": "2026-03-11T08:59:44.753Z",
+      "version": 1
+    },
+    "wall_b0gogdzt": {
+      "id": "wall_b0gogdzt",
+      "type": "Wall",
+      "name": "Curtain Wall West",
+      "position": {
+        "x": -50,
+        "y": 6.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 12,
+        "z": 96
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.754Z",
+      "modified_at": "2026-03-11T08:59:44.754Z",
+      "version": 1
+    },
+    "wall_vygw54cv": {
+      "id": "wall_vygw54cv",
+      "type": "Wall",
+      "name": "Keep Wall North",
+      "position": {
+        "x": 0,
+        "y": 18,
+        "z": -25.5
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 35,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.756Z",
+      "modified_at": "2026-03-11T08:59:44.756Z",
+      "version": 1
+    },
+    "wall_nfehublm": {
+      "id": "wall_nfehublm",
+      "type": "Wall",
+      "name": "Keep Wall South",
+      "position": {
+        "x": 0,
+        "y": 18,
+        "z": -4.5
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 35,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.757Z",
+      "modified_at": "2026-03-11T08:59:44.757Z",
+      "version": 1
+    },
+    "wall_w17ap01l": {
+      "id": "wall_w17ap01l",
+      "type": "Wall",
+      "name": "Keep Wall East",
+      "position": {
+        "x": 10.5,
+        "y": 18,
+        "z": -15
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 35,
+        "z": 17
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.759Z",
+      "modified_at": "2026-03-11T08:59:44.759Z",
+      "version": 1
+    },
+    "wall_3u5ubynx": {
+      "id": "wall_3u5ubynx",
+      "type": "Wall",
+      "name": "Keep Wall West",
+      "position": {
+        "x": -10.5,
+        "y": 18,
+        "z": -15
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 35,
+        "z": 17
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_keep",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.779Z",
+      "modified_at": "2026-03-11T08:59:44.779Z",
+      "version": 1
+    },
+    "wall_zulykt2v": {
+      "id": "wall_zulykt2v",
+      "type": "Wall",
+      "name": "Tower NW",
+      "position": {
+        "x": -50,
+        "y": 9.5,
+        "z": -50
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 18,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.780Z",
+      "modified_at": "2026-03-11T08:59:44.780Z",
+      "version": 1
+    },
+    "wall_6t17wt8s": {
+      "id": "wall_6t17wt8s",
+      "type": "Wall",
+      "name": "Tower NE",
+      "position": {
+        "x": 50,
+        "y": 9.5,
+        "z": -50
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 18,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.781Z",
+      "modified_at": "2026-03-11T08:59:44.781Z",
+      "version": 1
+    },
+    "wall_5n1irtc0": {
+      "id": "wall_5n1irtc0",
+      "type": "Wall",
+      "name": "Tower SE",
+      "position": {
+        "x": 50,
+        "y": 9.5,
+        "z": 50
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 18,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.782Z",
+      "modified_at": "2026-03-11T08:59:44.782Z",
+      "version": 1
+    },
+    "wall_y3c9ucs8": {
+      "id": "wall_y3c9ucs8",
+      "type": "Wall",
+      "name": "Tower SW",
+      "position": {
+        "x": -50,
+        "y": 9.5,
+        "z": 50
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 18,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_stone_limestone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_courtyard",
+      "children_ids": [],
+      "created_at": "2026-03-11T08:59:44.782Z",
+      "modified_at": "2026-03-11T08:59:44.782Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 117443520,
+    "remaining": -117243520,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -1,0 +1,543 @@
+{
+  "id": "693fa1d6-6dac-4780-b360-99a32e8297bc",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-11T14:09:18.827Z",
+  "modified_at": "2026-03-11T14:19:15.355Z",
+  "version": 14,
+  "root_node_id": "house_89918bf7",
+  "nodes": {
+    "house_89918bf7": {
+      "id": "house_89918bf7",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_1u61c3jj",
+        "wall_mstb8guz",
+        "wall_ps7t4sak",
+        "wall_bhem12zg",
+        "wall_xkitz0wf",
+        "roof_ngun5npx",
+        "floor_izci7ypi",
+        "wall_tztp8etv",
+        "wall_llt78do3",
+        "wall_c9y0qpj2",
+        "wall_n5c3w5tm",
+        "roof_52zm9egg"
+      ],
+      "created_at": "2026-03-11T14:09:18.827Z",
+      "modified_at": "2026-03-11T14:19:15.355Z",
+      "version": 1
+    },
+    "floor_1u61c3jj": {
+      "id": "floor_1u61c3jj",
+      "type": "Floor",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:10:24.555Z",
+      "modified_at": "2026-03-11T14:10:24.555Z",
+      "version": 1
+    },
+    "wall_mstb8guz": {
+      "id": "wall_mstb8guz",
+      "type": "Wall",
+      "name": "North Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": -3.85
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:10:24.556Z",
+      "modified_at": "2026-03-11T14:10:24.556Z",
+      "version": 1
+    },
+    "wall_ps7t4sak": {
+      "id": "wall_ps7t4sak",
+      "type": "Wall",
+      "name": "South Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": 3.85
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:10:24.556Z",
+      "modified_at": "2026-03-11T14:10:24.556Z",
+      "version": 1
+    },
+    "wall_bhem12zg": {
+      "id": "wall_bhem12zg",
+      "type": "Wall",
+      "name": "East Exterior Wall",
+      "position": {
+        "x": 4.8500000000000005,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3,
+        "z": 7.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:10:24.556Z",
+      "modified_at": "2026-03-11T14:10:24.556Z",
+      "version": 1
+    },
+    "wall_xkitz0wf": {
+      "id": "wall_xkitz0wf",
+      "type": "Wall",
+      "name": "West Exterior Wall",
+      "position": {
+        "x": -4.8500000000000005,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3,
+        "z": 7.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:10:24.556Z",
+      "modified_at": "2026-03-11T14:10:24.556Z",
+      "version": 1
+    },
+    "roof_ngun5npx": {
+      "id": "roof_ngun5npx",
+      "type": "Roof",
+      "name": "Main Roof",
+      "position": {
+        "x": 0,
+        "y": 4.55,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.4,
+        "y": 2.5,
+        "z": 8.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_tile_slate",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "roof_style": "gable",
+      "roof_pitch_degrees": 30,
+      "created_at": "2026-03-11T14:10:24.556Z",
+      "modified_at": "2026-03-11T14:10:24.556Z",
+      "version": 1
+    },
+    "floor_izci7ypi": {
+      "id": "floor_izci7ypi",
+      "type": "Floor",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:19:15.351Z",
+      "modified_at": "2026-03-11T14:19:15.351Z",
+      "version": 1
+    },
+    "wall_tztp8etv": {
+      "id": "wall_tztp8etv",
+      "type": "Wall",
+      "name": "North Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": -3.85
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:19:15.351Z",
+      "modified_at": "2026-03-11T14:19:15.351Z",
+      "version": 1
+    },
+    "wall_llt78do3": {
+      "id": "wall_llt78do3",
+      "type": "Wall",
+      "name": "South Exterior Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": 3.85
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:19:15.352Z",
+      "modified_at": "2026-03-11T14:19:15.352Z",
+      "version": 1
+    },
+    "wall_c9y0qpj2": {
+      "id": "wall_c9y0qpj2",
+      "type": "Wall",
+      "name": "East Exterior Wall",
+      "position": {
+        "x": 4.8500000000000005,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3,
+        "z": 7.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:19:15.353Z",
+      "modified_at": "2026-03-11T14:19:15.353Z",
+      "version": 1
+    },
+    "wall_n5c3w5tm": {
+      "id": "wall_n5c3w5tm",
+      "type": "Wall",
+      "name": "West Exterior Wall",
+      "position": {
+        "x": -4.8500000000000005,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3,
+        "z": 7.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_brick_red",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "created_at": "2026-03-11T14:19:15.354Z",
+      "modified_at": "2026-03-11T14:19:15.354Z",
+      "version": 1
+    },
+    "roof_52zm9egg": {
+      "id": "roof_52zm9egg",
+      "type": "Roof",
+      "name": "Main Roof",
+      "position": {
+        "x": 0,
+        "y": 4.55,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10.4,
+        "y": 2.5,
+        "z": 8.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_tile_slate",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_89918bf7",
+      "children_ids": [],
+      "roof_style": "gable",
+      "roof_pitch_degrees": 30,
+      "created_at": "2026-03-11T14:19:15.355Z",
+      "modified_at": "2026-03-11T14:19:15.355Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 1460458.08,
+    "remaining": -1260458.08,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

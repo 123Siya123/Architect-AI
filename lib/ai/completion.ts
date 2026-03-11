@@ -263,6 +263,36 @@ export function formatCompletionState(state: CompletionState): string {
     return lines.join('\n');
 }
 
+type AgentName = 'structural_engineer' | 'interior_architect' | 'facade_artist' | 'materials_specialist' | 'detail_specialist';
+
+/**
+ * Find the weakest scoring dimension and return the appropriate agent + instruction.
+ * Used when DESIGN_COMPLETE is rejected — instead of always defaulting to
+ * structural_engineer, route to the agent that can improve the weakest area.
+ */
+export function getWeakestScoreAgent(state: CompletionState): {
+    agent: AgentName;
+    instruction: string;
+    area: string;
+} {
+    // Calculate normalized weakness (how far below max each dimension is)
+    const weaknesses = [
+        { area: 'structure', score: state.structuralScore, max: 30, agent: 'structural_engineer' as AgentName,
+          instruction: `Structure score is ${state.structuralScore}/30. Missing: ${state.missingElements.filter(e => ['floor', 'wall', 'roof', 'stairs', 'room'].some(k => e.includes(k))).join(', ') || 'structural elements'}. Build the missing elements.` },
+        { area: 'detail', score: state.detailScore, max: 30, agent: 'detail_specialist' as AgentName,
+          instruction: `Detail score is ${state.detailScore}/30. Add: ${state.missingElements.filter(e => ['door', 'window', 'balcon', 'column'].some(k => e.includes(k))).join(', ') || 'doors, windows, columns, balconies, decorative elements'}. Make it visually impressive.` },
+        { area: 'materials', score: state.materialScore, max: 20, agent: 'materials_specialist' as AgentName,
+          instruction: `Material score is ${state.materialScore}/20. Apply non-default materials to all surfaces. No grey/default materials should remain.` },
+        { area: 'landmark', score: state.landmarkScore, max: 20, agent: 'facade_artist' as AgentName,
+          instruction: `Landmark score is ${state.landmarkScore}/20. Incomplete checklist items need attention. Add the missing landmark features.` },
+    ];
+
+    // Sort by normalized deficit (biggest gap first)
+    weaknesses.sort((a, b) => (a.score / a.max) - (b.score / b.max));
+
+    return weaknesses[0];
+}
+
 /**
  * Update checklist items by scanning the scene tree.
  * MONOTONIC: Once an item is marked complete, it stays complete.
