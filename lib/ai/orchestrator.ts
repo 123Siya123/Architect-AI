@@ -74,7 +74,6 @@ import {
     FACADE_ARTIST_PROMPT,
     MATERIALS_SPECIALIST_PROMPT,
     MASTER_PLANNER_PROMPT,
-    PLAN_DETAILER_PROMPT,
 } from './prompts';
 import { logAgentStep, clearLogs } from './logger';
 import { classifyComplexity, type ComplexityClassification } from './complexity';
@@ -84,7 +83,6 @@ import { checkBeforeAdd, autoCorrectOpeningDepth, autoCorrectYPosition, validate
 import { getKnownLandmarkChecklist, parseChecklistFromBrief, mergeChecklists, formatChecklist } from './landmark-checklists';
 import { RESEARCH_SPECIALIST_PROMPT, formatBuildBrief, validateBuildBrief, type BuildBrief } from './agents/research-specialist';
 import { QUALITY_INSPECTOR_PROMPT, validateQualityReport, formatQualityReport } from './agents/quality-inspector';
-import { prepareShellContext } from './agents/plan-detailer';
 
 
 /**
@@ -92,7 +90,7 @@ import { prepareShellContext } from './agents/plan-detailer';
  */
 interface TurnRecord {
     turn: number;
-    agent: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'orchestrator' | 'aesthetic_designer' | 'facade_artist' | 'materials_specialist' | 'detail_specialist' | 'master_planner' | 'research_specialist' | 'quality_inspector' | 'plan_detailer';
+    agent: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'orchestrator' | 'aesthetic_designer' | 'facade_artist' | 'materials_specialist' | 'detail_specialist' | 'master_planner' | 'research_specialist' | 'quality_inspector';
     instruction: string;
     operations: string[];
     result: 'SUCCESS' | 'FAILED';
@@ -105,7 +103,7 @@ interface TurnRecord {
 
 interface OrchestratorDecision {
     reasoning: string;
-    delegate_to: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'aesthetic_designer' | 'facade_artist' | 'materials_specialist' | 'detail_specialist' | 'master_planner' | 'quality_inspector' | 'plan_detailer' | 'DESIGN_COMPLETE';
+    delegate_to: 'structural_engineer' | 'interior_architect' | 'spatial_physicist' | 'aesthetic_designer' | 'facade_artist' | 'materials_specialist' | 'detail_specialist' | 'master_planner' | 'quality_inspector' | 'DESIGN_COMPLETE';
     instruction: string;
     priority?: 'critical' | 'high' | 'normal';
 }
@@ -1354,64 +1352,6 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         turn, agent: 'master_planner',
                         decision: `Site layout: ${decision.instruction.substring(0, 80)}`,
                         reasoning: plannerResult.text?.substring(0, 150) || '',
-                        result: 'success'
-                    });
-
-                } else if (decision.delegate_to === 'plan_detailer') {
-                    // --- PLAN DETAILER ---
-                    log(`   📐 PLAN DETAILER: Detailing layout...`);
-
-                    const detailerContext = `ORCHESTRATOR INSTRUCTION:\n${decision.instruction}\n\n`;
-                    const shellContext = prepareShellContext(currentProject);
-                    const detailerState = `LATEST STATE:\n${nodeTree}\n\n${asciiPlan}\n\n${shellContext}`;
-
-                    const detailerResult = await callProviderWithTools(config, [
-                        { role: 'system', content: PLAN_DETAILER_PROMPT },
-                        { role: 'user', content: detailerContext + detailerState }
-                    ], attachments, signal);
-
-                    log(`   --- PLAN DETAILER FULL RESPONSE ---`);
-                    log(detailerResult.text);
-                    log(`   ------------------------------------`);
-
-                    if (detailerResult.toolCalls && detailerResult.toolCalls.length > 0) {
-                        log(`   📐 Proposal: ${detailerResult.toolCalls.length} detail elements`);
-                        let successCount = 0;
-                        for (const tc of detailerResult.toolCalls) {
-                            try {
-                                if (tc.name === 'add_node' && tc.args.parent_id && tc.args.type) {
-                                    // Auto-correct Y/Depth as we do for engineer
-                                    const depthCorrection = autoCorrectOpeningDepth(tc.args, currentProject);
-                                    if (depthCorrection.corrected) tc.args = depthCorrection.args;
-                                    const yCorrection = autoCorrectYPosition(tc.args, currentProject);
-                                    if (yCorrection.corrected) tc.args = yCorrection.args;
-                                }
-
-                                const op = toolCallToOperation(tc.name, tc.args);
-                                const validation = validateOperation(op, currentProject);
-
-                                if (validation.valid) {
-                                    allValidatedOps.push(op);
-                                    emitOperation(op, turn, 'plan_detailer');
-                                    const applied = applyOperation(currentProject, op);
-                                    if (applied.project) {
-                                        currentProject = applied.project;
-                                        successCount++;
-                                    }
-                                } else {
-                                    log(`   ⚠️ Rejected ${tc.name}: ${validation.errors[0]}`);
-                                }
-                            } catch (e) {
-                                log(`   ❌ Error in ${tc.name}`);
-                            }
-                        }
-                        log(`   ✅ Detailer: ${successCount}/${detailerResult.toolCalls.length} operations applied`);
-                    }
-
-                    decisionHistory.add({
-                        turn, agent: 'plan_detailer',
-                        decision: `Detailing: ${decision.instruction.substring(0, 80)}`,
-                        reasoning: detailerResult.text?.substring(0, 150) || '',
                         result: 'success'
                     });
 

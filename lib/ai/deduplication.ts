@@ -248,12 +248,10 @@ export function autoCorrectYPosition(
         for (const floor of floors) {
             const floorTop = floor.position.y + floor.dimensions.y / 2;
             const correctY = floorTop + height / 2;
-            const naiveY = height / 2;
+            const naiveY = height / 2; // What agents incorrectly calculate
 
-            // 🔍 BUG FIX #7: Conservative Y-Fix
-            // Only fix if the agent used EXACTLY height/2 (naive calculation)
-            // AND they are at least 0.05m away from the correct Y.
-            if (Math.abs(posY - naiveY) < 0.001 && Math.abs(posY - correctY) > 0.01) {
+            // Check if the agent used the naive formula (within tolerance)
+            if (Math.abs(posY - naiveY) < 0.02 && Math.abs(posY - correctY) > 0.02) {
                 const correctedArgs = { ...args, position_y: correctY };
                 return {
                     args: correctedArgs,
@@ -263,6 +261,7 @@ export function autoCorrectYPosition(
             }
         }
     } else if (type === 'Roof') {
+        // Roof Y should be on top of the highest wall
         const walls = Object.values(project.nodes).filter(n => n.type === 'Wall' || n.type === 'Partition');
         if (walls.length > 0) {
             let maxWallTop = -Infinity;
@@ -271,10 +270,8 @@ export function autoCorrectYPosition(
                 if (wallTop > maxWallTop) maxWallTop = wallTop;
             }
             const correctY = maxWallTop + height / 2;
-            const naiveY = height / 2;
 
-            // Only fix if it's the naive height/2 OR more than 0.5m off
-            if (Math.abs(posY - naiveY) < 0.01 || Math.abs(posY - correctY) > 0.5) {
+            if (Math.abs(posY - correctY) > 0.05) {
                 const correctedArgs = { ...args, position_y: correctY };
                 return {
                     args: correctedArgs,
@@ -284,14 +281,13 @@ export function autoCorrectYPosition(
             }
         }
     } else if (type === 'Door') {
+        // Door bottom should sit on the floor / wall bottom
         const parent = project.nodes[parentId];
         if (parent && (parent.type === 'Wall' || parent.type === 'Partition')) {
             const wallBottom = parent.position.y - parent.dimensions.y / 2;
             const correctY = wallBottom + height / 2;
-            const naiveY = height / 2;
 
-            // Only fix if naive
-            if (Math.abs(posY - naiveY) < 0.01 && Math.abs(posY - correctY) > 0.01) {
+            if (Math.abs(posY - correctY) > 0.05) {
                 const correctedArgs = { ...args, position_y: correctY };
                 return {
                     args: correctedArgs,

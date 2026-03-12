@@ -1,0 +1,241 @@
+{
+  "id": "7272b668-90b7-4d4b-bf22-3ea79ba747a3",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-12T09:25:05.822Z",
+  "modified_at": "2026-03-12T09:29:54.062Z",
+  "version": 5,
+  "root_node_id": "house_93a80c50",
+  "nodes": {
+    "house_93a80c50": {
+      "id": "house_93a80c50",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "wall_cmy39ras",
+        "wall_d581gj8f",
+        "wall_0l7vtxzf",
+        "wall_duyiju25"
+      ],
+      "created_at": "2026-03-12T09:25:05.822Z",
+      "modified_at": "2026-03-12T09:29:54.062Z",
+      "version": 1
+    },
+    "wall_cmy39ras": {
+      "id": "wall_cmy39ras",
+      "type": "Wall",
+      "name": "North Privacy Boundary",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -29.5
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_93a80c50",
+      "children_ids": [],
+      "assembly": [
+        {
+          "order": 0,
+          "material_id": "limestone",
+          "thickness": 0.9,
+          "role": "structural"
+        },
+        {
+          "role": "finish",
+          "thickness": 0.1,
+          "order": 1,
+          "material_id": "stucco"
+        }
+      ],
+      "created_at": "2026-03-12T09:28:06.372Z",
+      "modified_at": "2026-03-12T09:28:06.372Z",
+      "version": 1
+    },
+    "wall_d581gj8f": {
+      "id": "wall_d581gj8f",
+      "type": "Wall",
+      "name": "South Privacy Boundary",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": 29.5
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_93a80c50",
+      "children_ids": [],
+      "created_at": "2026-03-12T09:28:43.953Z",
+      "modified_at": "2026-03-12T09:28:43.953Z",
+      "version": 1
+    },
+    "wall_0l7vtxzf": {
+      "id": "wall_0l7vtxzf",
+      "type": "Wall",
+      "name": "East Privacy Boundary",
+      "position": {
+        "x": 22,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 58
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_93a80c50",
+      "children_ids": [],
+      "created_at": "2026-03-12T09:29:20.924Z",
+      "modified_at": "2026-03-12T09:29:20.924Z",
+      "version": 1
+    },
+    "wall_duyiju25": {
+      "id": "wall_duyiju25",
+      "type": "Wall",
+      "name": "West Privacy Boundary",
+      "position": {
+        "x": -22,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 58
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_93a80c50",
+      "children_ids": [],
+      "created_at": "2026-03-12T09:29:54.062Z",
+      "modified_at": "2026-03-12T09:29:54.062Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

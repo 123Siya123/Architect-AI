@@ -545,11 +545,7 @@ export function compileBalconyGeometry(node: PSGNode): THREE.Group {
 }
 
 /** Custom geometry — parses parametric instructions from AI for perfect custom objects */
-export function compileCustomGeometry(node: PSGNode): { geometry: THREE.BufferGeometry | THREE.Group; error?: string } {
-    const W = node.dimensions.x;
-    const H = node.dimensions.y;
-    const T = node.dimensions.z;
-
+export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry | THREE.Group {
     if (node.custom_geometry) {
         const cg = node.custom_geometry;
         const segs = cg.segments || 32;
@@ -557,51 +553,48 @@ export function compileCustomGeometry(node: PSGNode): { geometry: THREE.BufferGe
             switch (cg.type) {
                 case 'code': {
                     if (cg.code) {
-                        // 1. Validate that code contains mandatory return STATEMENT
-                        if (!cg.code.includes('return ')) {
-                            return { 
-                                geometry: new THREE.BoxGeometry(W, H, T), 
-                                error: "CRITICAL: Custom code MUST return a THREE.BufferGeometry or THREE.Group. Ensure you include 'return result;' at the end." 
-                            };
-                        }
-
                         try {
                             // The true UNIVERSE SOLUTION: dynamically evaluate AI-generated Three.js script.
                             // The script receives the THREE module, plus basic spatial bounds (width, height, depth, radius, segments).
                             // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
                             const customFunc = new Function('THREE', 'width', 'height', 'depth', 'radius', 'segments', cg.code);
 
-                            const radius = cg.radius || Math.max(W, T) / 2;
+                            const radius = cg.radius || Math.max(node.dimensions.x, node.dimensions.z) / 2;
                             // Execute the code script the AI provided.
-                            const result = customFunc(THREE, W, H, T, radius, segs);
+                            const result = customFunc(THREE, node.dimensions.x, node.dimensions.y, node.dimensions.z, radius, segs);
 
                             if (result instanceof THREE.BufferGeometry || result instanceof THREE.Group) {
-                                return { geometry: result };
+                                return result;
                             }
-                            
-                            return { 
-                                geometry: new THREE.BoxGeometry(W, H, T), 
-                                error: `CRITICAL: Custom code returned ${typeof result} instead of THREE.BufferGeometry/Group.` 
-                            };
+                            console.warn('AI generated custom code did not return a valid THREE.BufferGeometry or THREE.Group.', result);
                         } catch (err) {
-                            return { 
-                                geometry: new THREE.BoxGeometry(W, H, T), 
-                                error: `RUNTIME ERROR in custom geometry: ${err instanceof Error ? err.message : String(err)}` 
-                            };
+                            console.error('Failed to execute AI custom Three.js code:', err);
                         }
                     }
                     break;
                 }
                 case 'sphere':
-                    return { geometry: new THREE.SphereGeometry(cg.radius || Math.max(W, T) / 2, segs, Math.ceil(segs / 2)) };
+                    return new THREE.SphereGeometry(
+                        cg.radius || Math.max(node.dimensions.x, node.dimensions.z) / 2,
+                        segs, Math.ceil(segs / 2)
+                    );
                 case 'cylinder':
-                    return { geometry: new THREE.CylinderGeometry(cg.radius || W / 2, cg.radius || W / 2, cg.height || H, segs) };
+                    return new THREE.CylinderGeometry(
+                        cg.radius || node.dimensions.x / 2,
+                        cg.radius || node.dimensions.x / 2,
+                        cg.height || node.dimensions.y,
+                        segs
+                    );
                 case 'cone':
-                    return { geometry: new THREE.ConeGeometry(cg.radius || W / 2, cg.height || H, segs) };
+                    return new THREE.ConeGeometry(
+                        cg.radius || node.dimensions.x / 2,
+                        cg.height || node.dimensions.y,
+                        segs
+                    );
                 case 'lathe':
                     if (cg.profile_points && cg.profile_points.length > 0) {
                         const points = cg.profile_points.map(p => new THREE.Vector2(p[0], p[1]));
-                        return { geometry: new THREE.LatheGeometry(points, segs) };
+                        return new THREE.LatheGeometry(points, segs);
                     }
                     break;
                 case 'arch': {
@@ -637,7 +630,7 @@ export function compileCustomGeometry(node: PSGNode): { geometry: THREE.BufferGe
                     const geom = new THREE.ExtrudeGeometry(archShape, extrudeSettings);
                     // Center the extrusion along Z
                     geom.translate(0, 0, -(cg.depth || node.dimensions.z) / 2);
-                    return { geometry: geom };
+                    return geom;
                 }
                 case 'extrusion':
                 case 'sweep':
@@ -668,27 +661,23 @@ export function compileCustomGeometry(node: PSGNode): { geometry: THREE.BufferGe
                             };
                         }
                         
-                        const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                        return { geometry: geom };
+                        return new THREE.ExtrudeGeometry(shape, extrudeSettings);
                     }
                     break;
                 case 'plane':
-                    return { geometry: new THREE.PlaneGeometry(node.dimensions.x, node.dimensions.z) };
+                    return new THREE.PlaneGeometry(node.dimensions.x, node.dimensions.z);
                 case 'box':
                 default:
                     // Fallthrough to generic box
                     break;
             }
         } catch (e) {
-            return { 
-                geometry: new THREE.BoxGeometry(W, H, T), 
-                error: `COMPILATION ERROR: ${e instanceof Error ? e.message : String(e)}` 
-            };
+            console.error("Failed to compile custom parametric geometry", e);
         }
     }
 
     // Fallback if no valid custom instructions exist
-    return { geometry: new THREE.BoxGeometry(W, H, T) };
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
 }
 
 // =============================================================================
@@ -873,19 +862,19 @@ export function createThermalShaderMaterial(): THREE.ShaderMaterial {
  */
 export const GEOMETRY_COMPILERS: Record<
     string,
-    (node: PSGNode) => { geometry: THREE.BufferGeometry | THREE.Group; error?: string }
+    (node: PSGNode) => THREE.BufferGeometry | THREE.Group
 > = {
-    Wall: (n) => ({ geometry: compileWallGeometry(n) }),
-    Partition: (n) => ({ geometry: compilePartitionGeometry(n) }),
-    Slab: (n) => ({ geometry: compileSlabGeometry(n) }),
-    Foundation: (n) => ({ geometry: compileFoundationGeometry(n) }),
-    Window: (n) => ({ geometry: compileWindowGeometry(n) }),
-    Door: (n) => ({ geometry: compileDoorGeometry(n) }),
-    Roof: (n) => ({ geometry: compileRoofGeometry(n) }),
-    Stairs: (n) => ({ geometry: compileStairsGeometry(n) }),
-    Column: (n) => ({ geometry: compileColumnGeometry(n) }),
-    Beam: (n) => ({ geometry: compileBeamGeometry(n) }),
-    Balcony: (n) => ({ geometry: compileBalconyGeometry(n) }),
+    Wall: compileWallGeometry,
+    Partition: compilePartitionGeometry,
+    Slab: compileSlabGeometry,
+    Foundation: compileFoundationGeometry,
+    Window: compileWindowGeometry,
+    Door: compileDoorGeometry,
+    Roof: compileRoofGeometry,
+    Stairs: compileStairsGeometry,
+    Column: compileColumnGeometry,
+    Beam: compileBeamGeometry,
+    Balcony: compileBalconyGeometry,
     Custom: compileCustomGeometry,
 };
 
@@ -898,7 +887,7 @@ export function getGeometryForNode(
 ): THREE.BufferGeometry | THREE.Group {
     const compiler = GEOMETRY_COMPILERS[node.type];
     if (compiler) {
-        return compiler(node).geometry;
+        return compiler(node);
     }
     // Fallback: 1m cube placeholder
     return new THREE.BoxGeometry(1, 1, 1);
