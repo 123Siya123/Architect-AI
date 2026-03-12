@@ -260,6 +260,7 @@ export async function sendChatToAI(
                 buildBrief = parsed;
                 narrativeContext.buildBrief = buildBrief as unknown as Record<string, unknown>;
                 log(`   ✅ Build Brief generated:`);
+                log(JSON.stringify(buildBrief, null, 2));
                 log(`      Footprint: ${buildBrief.totalFootprintMeters.width}m × ${buildBrief.totalFootprintMeters.depth}m`);
                 log(`      Height: ${buildBrief.overallHeightMeters}m`);
                 log(`      Structures: ${buildBrief.primaryStructures.length} primary, ${buildBrief.towers.length} towers`);
@@ -490,6 +491,10 @@ export async function sendChatToAI(
                             { role: 'user', content: `SYSTEM INTERVENTION APPLIED:\n${systemActions.join('\n')}\n\n${physicistState}` }
                         ], undefined, signal);
 
+                        log('   --- SPATIAL PHYSICIST FULL RESPONSE (INTERVENTION) ---');
+                        log(physicistResult.text);
+                        log('   ------------------------------------------------------');
+
                         const physicsResult = extractJSON<PhysicsValidation>(physicistResult.text);
                         if (physicsResult) {
                             if (physicsResult.status === 'PHYSICS_VALID') {
@@ -639,6 +644,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     { role: 'user', content: orchestratorContext }
                 ], attachments, signal); // Pass attachments here
 
+                log('   --- ORCHESTRATOR FULL RESPONSE ---');
+                log(orchestratorResult.text);
+                log('   ----------------------------------');
+
                 let decision = extractJSON<OrchestratorDecision>(orchestratorResult.text);
 
                 if (!decision) {
@@ -741,6 +750,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                     ];
 
                     const engineerResult = await callProviderWithTools(config, normalizeMessages(engineerMessages), attachments, signal);
+
+                    log(`   --- STRUCTURAL ENGINEER FULL RESPONSE ---`);
+                    log(engineerResult.text);
+                    log(`   ------------------------------------------`);
 
                     logAgentStep({
                         phase: 'STRUCTURAL_ENGINEER',
@@ -847,6 +860,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                 { role: 'user', content: physicistContext + physicistState }
                             ], undefined, signal);
 
+                            log(`   --- SPATIAL PHYSICIST FULL RESPONSE ---`);
+                            log(physicistResult.text);
+                            log(`   ----------------------------------------`);
+
                             logAgentStep({
                                 phase: 'SPATIAL_PHYSICIST',
                                 iteration: turn,
@@ -928,6 +945,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
 
                     const architectResult = await callProviderWithTools(config, architectMessages, attachments, signal);
 
+                    log(`   --- INTERIOR ARCHITECT FULL RESPONSE ---`);
+                    log(architectResult.text);
+                    log(`   -----------------------------------------`);
+
                     logAgentStep({
                         phase: 'INTERIOR_ARCHITECT',
                         iteration: turn,
@@ -1000,6 +1021,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                             { role: 'user', content: `LATEST CHANGES:\n${lastArchitectActions.join('\n')}\n\n${architectPhysicistState}` }
                         ], undefined, signal);
 
+                        log(`   --- SPATIAL PHYSICIST FULL RESPONSE (INTERIOR ARCHITECT VALIDATION) ---`);
+                        log(architectPhysicistResult.text);
+                        log(`   ----------------------------------------------------------------------`);
+
                         const archPhysicsParsed = extractJSON<PhysicsValidation>(architectPhysicistResult.text);
 
                         if (archPhysicsParsed) {
@@ -1052,6 +1077,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         { role: 'system', content: AESTHETIC_DESIGNER_PROMPT },
                         { role: 'user', content: aestheticContext + aestheticState }
                     ], attachments, signal);
+
+                    log(`   --- AESTHETIC DESIGNER FULL RESPONSE ---`);
+                    log(aestheticResult.text);
+                    log(`   -----------------------------------------`);
 
                     logAgentStep({
                         phase: 'AESTHETIC_DESIGNER',
@@ -1130,6 +1159,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         { role: 'user', content: facadeContext }
                     ]), attachments, signal);
 
+                    log(`   --- FACADE ARTIST FULL RESPONSE ---`);
+                    log(facadeResult.text);
+                    log(`   ------------------------------------`);
+
                     if (facadeResult.toolCalls && facadeResult.toolCalls.length > 0) {
                         let successCount = 0;
                         for (const tc of facadeResult.toolCalls) {
@@ -1172,6 +1205,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         { role: 'user', content: materialsContext }
                     ]), attachments, signal);
 
+                    log(`   --- MATERIALS SPECIALIST FULL RESPONSE ---`);
+                    log(materialsResult.text);
+                    log(`   ------------------------------------------`);
+
                     if (materialsResult.toolCalls && materialsResult.toolCalls.length > 0) {
                         let successCount = 0;
                         for (const tc of materialsResult.toolCalls) {
@@ -1213,6 +1250,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         { role: 'system', content: DETAIL_SPECIALIST_PROMPT },
                         { role: 'user', content: detailContext }
                     ]), attachments, signal);
+
+                    log(`   --- DETAIL SPECIALIST FULL RESPONSE ---`);
+                    log(detailResult.text);
+                    log(`   ----------------------------------------`);
 
                     if (detailResult.toolCalls && detailResult.toolCalls.length > 0) {
                         let successCount = 0;
@@ -1269,6 +1310,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         { role: 'user', content: plannerContext }
                     ]), attachments, signal);
 
+                    log(`   --- MASTER PLANNER FULL RESPONSE ---`);
+                    log(plannerResult.text);
+                    log(`   -------------------------------------`);
+
                     if (plannerResult.toolCalls && plannerResult.toolCalls.length > 0) {
                         let successCount = 0;
                         for (const tc of plannerResult.toolCalls) {
@@ -1321,6 +1366,10 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         { role: 'system', content: QUALITY_INSPECTOR_PROMPT },
                         { role: 'user', content: inspectorContext }
                     ]), undefined, signal);
+
+                    log(`   --- QUALITY INSPECTOR FULL RESPONSE ---`);
+                    log(inspectorResult.text);
+                    log(`   ----------------------------------------`);
 
                     log(`   📋 Quality Report:\n${inspectorResult.text || 'No report generated'}`);
                     if (inspectorResult.text) finalMessage = inspectorResult.text;

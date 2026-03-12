@@ -122,9 +122,18 @@ export async function sendChatToAI_V3(
         const briefObj = extractJSON(researchResult.text);
         if (briefObj) {
             buildBriefText = JSON.stringify(briefObj, null, 2);
-            log('✅ Build Brief generated.');
+            log('✅ Build Brief generated:');
+            log(buildBriefText);
+            
+            logAgentStep({
+                phase: 'Research',
+                model: config.model,
+                response: researchResult.text,
+                status: 'success'
+            });
         } else {
             log('⚠️ Failed to generate structured Build Brief.');
+            log(`Raw Result: ${researchResult.text}`);
         }
     }
 
@@ -140,10 +149,19 @@ export async function sendChatToAI_V3(
     
     if (!masterBuildDoc) {
         log('❌ Architect failed to produce Master Build Document. Aborting.');
+        log(`Raw Result: ${architect1Result.text}`);
         return { message: 'Failed to create Master Build Plan.', operations: [], warnings: [] };
     }
     
-    log(`✅ Master Build Document drafted with ${masterBuildDoc.buildOrder.length} steps.`);
+    log(`✅ Master Build Document drafted with ${masterBuildDoc.buildOrder.length} steps:`);
+    log(JSON.stringify(masterBuildDoc, null, 2));
+
+    logAgentStep({
+        phase: 'Planning',
+        model: config.model,
+        response: architect1Result.text,
+        status: 'success'
+    });
     let checklistItems = masterBuildDoc.completionChecklist || [];
     let lastInspectorReportText = 'No previous actions. Begin first component.';
 
@@ -183,6 +201,11 @@ ${JSON.stringify(checklistItems)}
 
         log('🏛️ Architect analyzing scene and Inspector report...');
         const architect2Result = await callProviderNoTools(config, [{ role: 'user', content: prompt2 }], undefined, signal);
+        
+        log('--- ARCHITECT FULL RESPONSE ---');
+        log(architect2Result.text);
+        log('-------------------------------');
+
         const architectDecision = extractJSON<ArchitectDecision>(architect2Result.text);
 
         if (!architectDecision) {
@@ -191,7 +214,15 @@ ${JSON.stringify(checklistItems)}
         }
 
         log(`📋 Decision: ${architectDecision.inspector_decision} -> Delegate to ${architectDecision.next_contractor}`);
-        log(`💭 Reasoning: ${architectDecision.reasoning_step_2_plan}`);
+        log(`💭 Reasoning Step 1 (Inspector): ${architectDecision.reasoning_step_1_inspector}`);
+        log(`💭 Reasoning Step 2 (Plan): ${architectDecision.reasoning_step_2_plan}`);
+
+        logAgentStep({
+            phase: `Cycle ${cycle}: Architect Decision`,
+            model: config.model,
+            response: architect2Result.text,
+            status: 'success'
+        });
 
         if (architectDecision.next_contractor === 'DESIGN_COMPLETE' || !architectDecision.dispatch_instruction) {
             // Evaluated Completion Gates before exit
@@ -218,8 +249,20 @@ ${JSON.stringify(checklistItems)}
 
         const contractorResult = await callProviderWithTools(config, [{ role: 'user', content: contractorPrompt }], attachments, signal);
         
+        log(`--- ${contractorName.toUpperCase()} FULL RESPONSE ---`);
+        log(contractorResult.text);
+        log('--------------------------------------------------');
+
         // Process Contractor Tools
         let contractorActivity = 'Contractor reasoning: ' + contractorResult.text;
+
+        logAgentStep({
+            phase: `Cycle ${cycle}: Contractor - ${contractorName}`,
+            model: config.model,
+            response: contractorResult.text,
+            toolCalls: contractorResult.toolCalls,
+            status: 'success'
+        });
         
         if (contractorResult.toolCalls && contractorResult.toolCalls.length > 0) {
             log(`   🛠️ ${contractorName} issued ${contractorResult.toolCalls.length} tools.`);
@@ -255,14 +298,27 @@ ${JSON.stringify(checklistItems)}
             .replace('{CODE_HINTS}', 'No active code hints.');
 
         const inspectorResult = await callProviderNoTools(config, [{ role: 'user', content: inspectorPrompt }], undefined, signal);
+        
+        log('--- INSPECTOR FULL RESPONSE ---');
+        log(inspectorResult.text);
+        log('-------------------------------');
+
         const inspectorReport = extractJSON<InspectorReport>(inspectorResult.text);
 
         if (inspectorReport) {
             lastInspectorReportText = JSON.stringify(inspectorReport, null, 2);
             const severityCounts = inspectorReport.issues.reduce((acc, issue) => { acc[issue.severity] = (acc[issue.severity] || 0) + 1; return acc; }, {} as Record<string, number>);
             log(`   📝 Inspector Score: ${inspectorReport.overallScore}. Issues: ${severityCounts.CRITICAL || 0} CRITICAL, ${severityCounts.WARNING || 0} WARNING.`);
+            
+            logAgentStep({
+                phase: `Cycle ${cycle}: Inspector Report`,
+                model: config.model,
+                response: inspectorResult.text,
+                status: 'success'
+            });
         } else {
             lastInspectorReportText = 'Inspector failed to generate report format. Proceeding with caution.';
+            log('⚠️ Inspector failed to produce structured report.');
         }
     }
 

@@ -3,8 +3,8 @@
   "name": "Untitled Project",
   "description": "",
   "created_at": "2026-03-12T06:08:27.294Z",
-  "modified_at": "2026-03-12T06:47:39.163Z",
-  "version": 10,
+  "modified_at": "2026-03-12T06:44:35.240Z",
+  "version": 9,
   "root_node_id": "house_1e309f1b",
   "nodes": {
     "house_1e309f1b": {
@@ -47,11 +47,10 @@
         "floor_tydihf4r",
         "custom_e8ue1cm8",
         "custom_nbmjg4py",
-        "custom_eufvtbhg",
-        "floor_0cx940hq"
+        "custom_eufvtbhg"
       ],
       "created_at": "2026-03-12T06:08:27.294Z",
-      "modified_at": "2026-03-12T06:47:39.163Z",
+      "modified_at": "2026-03-12T06:44:35.240Z",
       "version": 1
     },
     "floor_ll1jsq12": {
@@ -426,43 +425,6 @@
       "cad_script": "# Custom element: Custom Marble Fountain\n# Description: A custom marble fountain centered within the open-air void of the courtyard colonnade. The Y=1.5 position intentionally sinks the fountain 0.5m into the foundation for drainage and plumbing.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-12T06:44:35.240Z",
       "modified_at": "2026-03-12T06:44:35.240Z",
-      "version": 1
-    },
-    "floor_0cx940hq": {
-      "id": "floor_0cx940hq",
-      "type": "Floor",
-      "name": "Courtyard Mosaic Floor",
-      "position": {
-        "x": 2.5,
-        "y": 0.5,
-        "z": 5
-      },
-      "dimensions": {
-        "x": 20,
-        "y": 1,
-        "z": 20
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "lapis_lazuli_mosaic",
-      "opacity": 1,
-      "tags": [],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_1e309f1b",
-      "children_ids": [],
-      "created_at": "2026-03-12T06:47:39.163Z",
-      "modified_at": "2026-03-12T06:47:39.163Z",
       "version": 1
     }
   },

@@ -3,8 +3,8 @@
   "name": "Untitled Project",
   "description": "",
   "created_at": "2026-03-12T06:08:27.294Z",
-  "modified_at": "2026-03-12T06:47:39.163Z",
-  "version": 10,
+  "modified_at": "2026-03-12T06:24:46.865Z",
+  "version": 7,
   "root_node_id": "house_1e309f1b",
   "nodes": {
     "house_1e309f1b": {
@@ -45,13 +45,10 @@
         "floor_m1by3xeo",
         "floor_hd1hn75i",
         "floor_tydihf4r",
-        "custom_e8ue1cm8",
-        "custom_nbmjg4py",
-        "custom_eufvtbhg",
-        "floor_0cx940hq"
+        "custom_e8ue1cm8"
       ],
       "created_at": "2026-03-12T06:08:27.294Z",
-      "modified_at": "2026-03-12T06:47:39.163Z",
+      "modified_at": "2026-03-12T06:24:46.865Z",
       "version": 1
     },
     "floor_ll1jsq12": {
@@ -281,188 +278,6 @@
       "cad_script": "# Custom element: Central Peristyle Courtyard Colonnade\n# Description: A classic Greek peristyle colonnade with an open-air center, featuring a stylobate base, 28 columns, architrave, and cornice.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-12T06:24:46.865Z",
       "modified_at": "2026-03-12T06:24:46.865Z",
-      "version": 1
-    },
-    "custom_nbmjg4py": {
-      "id": "custom_nbmjg4py",
-      "type": "Custom",
-      "name": "Grand Propylaea",
-      "position": {
-        "x": 2.5,
-        "y": 6,
-        "z": 17
-      },
-      "dimensions": {
-        "x": 15,
-        "y": 10,
-        "z": 6
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "stone_marble_white",
-      "opacity": 1,
-      "tags": [
-        "custom"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_1e309f1b",
-      "children_ids": [],
-      "custom_geometry": {
-        "code": "const group = new THREE.Group(); const baseGeo = new THREE.BoxGeometry(width, 0.5, depth); const base = new THREE.Mesh(baseGeo); base.position.y = -height/2 + 0.25; group.add(base); const colHeight = height - 3.5; const colGeo = new THREE.CylinderGeometry(0.35, 0.45, colHeight, 16); const colSpacing = (width - 2) / 5; for(let i=0; i<6; i++) { const colFront = new THREE.Mesh(colGeo); colFront.position.set(-width/2 + 1 + i * colSpacing, -height/2 + 0.5 + colHeight/2, depth/2 - 1); group.add(colFront); const colBack = new THREE.Mesh(colGeo); colBack.position.set(-width/2 + 1 + i * colSpacing, -height/2 + 0.5 + colHeight/2, -depth/2 + 1); group.add(colBack); } const entGeo = new THREE.BoxGeometry(width, 1, depth); const ent = new THREE.Mesh(entGeo); ent.position.y = -height/2 + 0.5 + colHeight + 0.5; group.add(ent); const pedShape = new THREE.Shape(); pedShape.moveTo(-width/2, 0); pedShape.lineTo(width/2, 0); pedShape.lineTo(0, 2); pedShape.lineTo(-width/2, 0); const pedGeo = new THREE.ExtrudeGeometry(pedShape, { depth: depth, bevelEnabled: false }); const ped = new THREE.Mesh(pedGeo); ped.position.set(0, -height/2 + 0.5 + colHeight + 1, -depth/2); group.add(ped); return group;",
-        "type": "code"
-      },
-      "cad_script": "# Custom element: Grand Propylaea\n# Description: A grand entrance portico (Propylaea) featuring a 6-column Ionic portico and a custom sculpted pediment, constructed from pentelic white marble. It serves as a continuous entrance threshold overlapping the courtyard.\n# TODO: Replace with CadQuery script when backend is ready",
-      "created_at": "2026-03-12T06:26:14.838Z",
-      "modified_at": "2026-03-12T06:26:14.838Z",
-      "version": 1
-    },
-    "custom_eufvtbhg": {
-      "id": "custom_eufvtbhg",
-      "type": "Custom",
-      "name": "Custom Marble Fountain",
-      "position": {
-        "x": 2.5,
-        "y": 1.5,
-        "z": 5
-      },
-      "dimensions": {
-        "x": 4,
-        "y": 2,
-        "z": 4
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "stone_marble_white",
-      "opacity": 1,
-      "tags": [
-        "custom"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_1e309f1b",
-      "children_ids": [],
-      "custom_geometry": {
-        "profile_points": [
-          [
-            0,
-            -1
-          ],
-          [
-            2,
-            -1
-          ],
-          [
-            2,
-            -0.5
-          ],
-          [
-            1.8,
-            -0.5
-          ],
-          [
-            1.8,
-            -0.8
-          ],
-          [
-            0.5,
-            -0.8
-          ],
-          [
-            0.5,
-            0.5
-          ],
-          [
-            1.5,
-            0.5
-          ],
-          [
-            1.5,
-            0.8
-          ],
-          [
-            1.3,
-            0.8
-          ],
-          [
-            1.3,
-            0.6
-          ],
-          [
-            0.2,
-            0.6
-          ],
-          [
-            0.2,
-            1
-          ],
-          [
-            0,
-            1
-          ]
-        ],
-        "type": "lathe"
-      },
-      "cad_script": "# Custom element: Custom Marble Fountain\n# Description: A custom marble fountain centered within the open-air void of the courtyard colonnade. The Y=1.5 position intentionally sinks the fountain 0.5m into the foundation for drainage and plumbing.\n# TODO: Replace with CadQuery script when backend is ready",
-      "created_at": "2026-03-12T06:44:35.240Z",
-      "modified_at": "2026-03-12T06:44:35.240Z",
-      "version": 1
-    },
-    "floor_0cx940hq": {
-      "id": "floor_0cx940hq",
-      "type": "Floor",
-      "name": "Courtyard Mosaic Floor",
-      "position": {
-        "x": 2.5,
-        "y": 0.5,
-        "z": 5
-      },
-      "dimensions": {
-        "x": 20,
-        "y": 1,
-        "z": 20
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "lapis_lazuli_mosaic",
-      "opacity": 1,
-      "tags": [],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "house_1e309f1b",
-      "children_ids": [],
-      "created_at": "2026-03-12T06:47:39.163Z",
-      "modified_at": "2026-03-12T06:47:39.163Z",
       "version": 1
     }
   },
