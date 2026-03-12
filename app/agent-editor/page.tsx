@@ -234,6 +234,30 @@ export default function AgentFlowEditor() {
     }));
   }, [selectedNodeId, setNodes]);
 
+  const savePromptToCode = useCallback(async () => {
+    if (!selectedNodeId || !selectedNode) return;
+    
+    try {
+      const response = await fetch('/api/ai/save-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentId: selectedNodeId,
+          newPrompt: selectedNode.data.prompt
+        })
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        alert('Prompt saved successfully to source code!');
+      } else {
+        alert('Error: ' + result.error);
+      }
+    } catch (e) {
+      alert('Failed to connect to API');
+    }
+  }, [selectedNodeId, selectedNode]);
+
   const deleteSelectedNode = useCallback(() => {
     if (selectedNodeId) {
       setNodes((nds) => nds.filter((n) => n.id !== selectedNodeId));
@@ -327,10 +351,18 @@ export default function AgentFlowEditor() {
 
             {/* SYSTEM PROMPT */}
             <div className="space-y-2 flex-1 min-h-[400px]">
-              <label className="text-xs uppercase tracking-wider text-zinc-500 font-semibold flex items-center justify-between">
-                <span>System Prompt</span>
-                <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20 px">Context Injection</span>
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs uppercase tracking-wider text-zinc-500 font-semibold flex items-center gap-2">
+                  <span>System Prompt</span>
+                  <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20">Source Code Sync Enabled</span>
+                </label>
+                <button 
+                  onClick={savePromptToCode}
+                  className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold rounded uppercase transition-colors shadow-lg shadow-indigo-500/20"
+                >
+                  Save to Source Code
+                </button>
+              </div>
               <textarea
                 value={nodeData.prompt || ''}
                 onChange={(e) => updateSelectedNodeData('prompt', e.target.value)}

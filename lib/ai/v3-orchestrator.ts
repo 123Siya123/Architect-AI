@@ -329,7 +329,7 @@ ${JSON.stringify(checklistItems)}
     await reloadProjectState(currentProject.id, currentProject);
 
     return {
-        message: finalMessage,
+        message: finalMessage + '\n\n' + progressLog.join('\n'),
         operations: allValidatedOps,
         warnings: [],
     };
