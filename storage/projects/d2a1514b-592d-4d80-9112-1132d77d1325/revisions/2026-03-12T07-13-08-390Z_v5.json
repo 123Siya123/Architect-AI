@@ -1,0 +1,232 @@
+{
+  "id": "d2a1514b-592d-4d80-9112-1132d77d1325",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-12T07:08:45.364Z",
+  "modified_at": "2026-03-12T07:13:05.496Z",
+  "version": 5,
+  "root_node_id": "house_fb9b93bd",
+  "nodes": {
+    "house_fb9b93bd": {
+      "id": "house_fb9b93bd",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "perimeter_wall_north",
+        "perimeter_wall_south_left",
+        "perimeter_wall_south_right"
+      ],
+      "created_at": "2026-03-12T07:08:45.364Z",
+      "modified_at": "2026-03-12T07:13:05.496Z",
+      "version": 1
+    },
+    "perimeter_wall_north": {
+      "id": "perimeter_wall_north",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (North)",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -27
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [
+        "custom_tqpfa2xo"
+      ],
+      "created_at": "2026-03-12T07:11:42.328Z",
+      "modified_at": "2026-03-12T07:11:42.329Z",
+      "version": 1
+    },
+    "custom_tqpfa2xo": {
+      "id": "custom_tqpfa2xo",
+      "type": "Custom",
+      "name": "Bougainvillea Planters",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": -27
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "perimeter_wall_north",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Bougainvillea Planters\n# Description: Integrated bougainvillea planters along the top edge of the white stucco masonry wall.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:11:42.329Z",
+      "modified_at": "2026-03-12T07:11:42.329Z",
+      "version": 1
+    },
+    "perimeter_wall_south_left": {
+      "id": "perimeter_wall_south_left",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (South) - Left",
+      "position": {
+        "x": -12.5,
+        "y": 2,
+        "z": 27
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:13:05.494Z",
+      "modified_at": "2026-03-12T07:13:05.494Z",
+      "version": 1
+    },
+    "perimeter_wall_south_right": {
+      "id": "perimeter_wall_south_right",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (South) - Right",
+      "position": {
+        "x": 12.5,
+        "y": 2,
+        "z": 27
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:13:05.496Z",
+      "modified_at": "2026-03-12T07:13:05.496Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 2000000,
+    "spent": 0,
+    "remaining": 2000000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

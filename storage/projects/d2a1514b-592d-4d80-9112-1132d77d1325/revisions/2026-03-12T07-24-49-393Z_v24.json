@@ -1,0 +1,990 @@
+{
+  "id": "d2a1514b-592d-4d80-9112-1132d77d1325",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-12T07:08:45.364Z",
+  "modified_at": "2026-03-12T07:24:47.095Z",
+  "version": 24,
+  "root_node_id": "house_fb9b93bd",
+  "nodes": {
+    "house_fb9b93bd": {
+      "id": "house_fb9b93bd",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "perimeter_wall_north",
+        "perimeter_wall_south_left",
+        "perimeter_wall_south_right",
+        "perimeter_wall_east",
+        "perimeter_wall_west",
+        "custom_g55hz64k",
+        "villa_ground_floor",
+        "slab_vsap774y",
+        "slab_pvkomy4s",
+        "slab_s643k2b8",
+        "slab_d1ius4sp",
+        "custom_x4q3q2o5",
+        "custom_qnkpm2ha",
+        "custom_4qna6d9d",
+        "custom_mp6ecige",
+        "custom_140vlk8y",
+        "custom_053uxk10",
+        "custom_ldw9aqen",
+        "custom_8mgmz82d",
+        "custom_r2vnz8s2"
+      ],
+      "created_at": "2026-03-12T07:08:45.364Z",
+      "modified_at": "2026-03-12T07:24:47.095Z",
+      "version": 1
+    },
+    "perimeter_wall_north": {
+      "id": "perimeter_wall_north",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (North)",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -27
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [
+        "custom_tqpfa2xo"
+      ],
+      "created_at": "2026-03-12T07:11:42.328Z",
+      "modified_at": "2026-03-12T07:11:42.329Z",
+      "version": 1
+    },
+    "custom_tqpfa2xo": {
+      "id": "custom_tqpfa2xo",
+      "type": "Custom",
+      "name": "Bougainvillea Planters",
+      "position": {
+        "x": 0,
+        "y": 4.5,
+        "z": -27
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "perimeter_wall_north",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Bougainvillea Planters\n# Description: Integrated bougainvillea planters along the top edge of the white stucco masonry wall.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:11:42.329Z",
+      "modified_at": "2026-03-12T07:11:42.329Z",
+      "version": 1
+    },
+    "perimeter_wall_south_left": {
+      "id": "perimeter_wall_south_left",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (South) - Left",
+      "position": {
+        "x": -12.5,
+        "y": 2,
+        "z": 27
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:13:05.494Z",
+      "modified_at": "2026-03-12T07:13:05.494Z",
+      "version": 1
+    },
+    "perimeter_wall_south_right": {
+      "id": "perimeter_wall_south_right",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (South) - Right",
+      "position": {
+        "x": 12.5,
+        "y": 2,
+        "z": 27
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:13:05.496Z",
+      "modified_at": "2026-03-12T07:13:05.496Z",
+      "version": 1
+    },
+    "perimeter_wall_east": {
+      "id": "perimeter_wall_east",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (East)",
+      "position": {
+        "x": 22,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 53
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:13:46.272Z",
+      "modified_at": "2026-03-12T07:13:46.272Z",
+      "version": 1
+    },
+    "perimeter_wall_west": {
+      "id": "perimeter_wall_west",
+      "type": "Wall",
+      "name": "High Perimeter Stucco Wall (West)",
+      "position": {
+        "x": -22,
+        "y": 2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 53
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "stucco_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:14:31.402Z",
+      "modified_at": "2026-03-12T07:14:31.402Z",
+      "version": 1
+    },
+    "custom_g55hz64k": {
+      "id": "custom_g55hz64k",
+      "type": "Custom",
+      "name": "Custom Infinity Pool",
+      "position": {
+        "x": 0,
+        "y": -0.5,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 1.2000000000000002,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "cobalt_blue_glass_mosaics",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Custom Infinity Pool\n# Description: Custom Infinity Pool finished in Cobalt Blue Glass Mosaics. The top edge is designed to sit flush with the future courtyard floor at y=0.1.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:15:29.828Z",
+      "modified_at": "2026-03-12T07:15:29.828Z",
+      "version": 1
+    },
+    "villa_ground_floor": {
+      "id": "villa_ground_floor",
+      "type": "Slab",
+      "name": "Main Villa Ground Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 0.2,
+        "z": -16
+      },
+      "dimensions": {
+        "x": 43,
+        "y": 0.4,
+        "z": 21
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:16:06.890Z",
+      "modified_at": "2026-03-12T07:16:55.094Z",
+      "version": 3
+    },
+    "slab_vsap774y": {
+      "id": "slab_vsap774y",
+      "type": "Slab",
+      "name": "Courtyard Floor (North)",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": -3.25
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 0.2,
+        "z": 4.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:17:57.943Z",
+      "modified_at": "2026-03-12T07:17:57.943Z",
+      "version": 1
+    },
+    "slab_pvkomy4s": {
+      "id": "slab_pvkomy4s",
+      "type": "Slab",
+      "name": "Courtyard Floor (South)",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": 11.25
+      },
+      "dimensions": {
+        "x": 30,
+        "y": 0.2,
+        "z": 4.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:17:57.944Z",
+      "modified_at": "2026-03-12T07:17:57.944Z",
+      "version": 1
+    },
+    "slab_s643k2b8": {
+      "id": "slab_s643k2b8",
+      "type": "Slab",
+      "name": "Courtyard Floor (West)",
+      "position": {
+        "x": -10.5,
+        "y": 0.1,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 9,
+        "y": 0.2,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:17:57.944Z",
+      "modified_at": "2026-03-12T07:17:57.944Z",
+      "version": 1
+    },
+    "slab_d1ius4sp": {
+      "id": "slab_d1ius4sp",
+      "type": "Slab",
+      "name": "Courtyard Floor (East)",
+      "position": {
+        "x": 10.5,
+        "y": 0.1,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 9,
+        "y": 0.2,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "created_at": "2026-03-12T07:17:57.944Z",
+      "modified_at": "2026-03-12T07:17:57.944Z",
+      "version": 1
+    },
+    "custom_x4q3q2o5": {
+      "id": "custom_x4q3q2o5",
+      "type": "Custom",
+      "name": "Entrance Portico Pediment",
+      "position": {
+        "x": 0,
+        "y": 4.4,
+        "z": 24.5
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 1.2000000000000002,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "profile_points": [
+          [
+            -6,
+            -0.6
+          ],
+          [
+            6,
+            -0.6
+          ],
+          [
+            6,
+            -0.2
+          ],
+          [
+            0,
+            0.6
+          ],
+          [
+            -6,
+            -0.2
+          ]
+        ],
+        "type": "extrusion"
+      },
+      "cad_script": "# Custom element: Entrance Portico Pediment\n# Description: Triangular Greek pediment with entablature\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.023Z",
+      "modified_at": "2026-03-12T07:24:47.023Z",
+      "version": 1
+    },
+    "custom_qnkpm2ha": {
+      "id": "custom_qnkpm2ha",
+      "type": "Custom",
+      "name": "Portico Column Front Left Outer",
+      "position": {
+        "x": -4.5,
+        "y": 1.9000000000000001,
+        "z": 23
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "radius": 0.3,
+        "type": "cylinder",
+        "height": 3.8
+      },
+      "cad_script": "# Custom element: Portico Column Front Left Outer\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.023Z",
+      "modified_at": "2026-03-12T07:24:47.023Z",
+      "version": 1
+    },
+    "custom_4qna6d9d": {
+      "id": "custom_4qna6d9d",
+      "type": "Custom",
+      "name": "Portico Column Front Left Inner",
+      "position": {
+        "x": -1.5,
+        "y": 1.9000000000000001,
+        "z": 23
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "radius": 0.3,
+        "type": "cylinder",
+        "height": 3.8
+      },
+      "cad_script": "# Custom element: Portico Column Front Left Inner\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.024Z",
+      "modified_at": "2026-03-12T07:24:47.024Z",
+      "version": 1
+    },
+    "custom_mp6ecige": {
+      "id": "custom_mp6ecige",
+      "type": "Custom",
+      "name": "Portico Column Front Right Inner",
+      "position": {
+        "x": 1.5,
+        "y": 1.9000000000000001,
+        "z": 23
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "cylinder",
+        "height": 3.8,
+        "radius": 0.3
+      },
+      "cad_script": "# Custom element: Portico Column Front Right Inner\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.024Z",
+      "modified_at": "2026-03-12T07:24:47.024Z",
+      "version": 1
+    },
+    "custom_140vlk8y": {
+      "id": "custom_140vlk8y",
+      "type": "Custom",
+      "name": "Portico Column Front Right Outer",
+      "position": {
+        "x": 4.5,
+        "y": 1.9000000000000001,
+        "z": 23
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "radius": 0.3,
+        "type": "cylinder",
+        "height": 3.8
+      },
+      "cad_script": "# Custom element: Portico Column Front Right Outer\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.024Z",
+      "modified_at": "2026-03-12T07:24:47.024Z",
+      "version": 1
+    },
+    "custom_053uxk10": {
+      "id": "custom_053uxk10",
+      "type": "Custom",
+      "name": "Portico Column Back Left Outer",
+      "position": {
+        "x": -4.5,
+        "y": 1.9000000000000001,
+        "z": 26
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "height": 3.8,
+        "type": "cylinder",
+        "radius": 0.3
+      },
+      "cad_script": "# Custom element: Portico Column Back Left Outer\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.024Z",
+      "modified_at": "2026-03-12T07:24:47.024Z",
+      "version": 1
+    },
+    "custom_ldw9aqen": {
+      "id": "custom_ldw9aqen",
+      "type": "Custom",
+      "name": "Portico Column Back Left Inner",
+      "position": {
+        "x": -1.5,
+        "y": 1.9000000000000001,
+        "z": 26
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "height": 3.8,
+        "type": "cylinder",
+        "radius": 0.3
+      },
+      "cad_script": "# Custom element: Portico Column Back Left Inner\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.024Z",
+      "modified_at": "2026-03-12T07:24:47.024Z",
+      "version": 1
+    },
+    "custom_8mgmz82d": {
+      "id": "custom_8mgmz82d",
+      "type": "Custom",
+      "name": "Portico Column Back Right Inner",
+      "position": {
+        "x": 1.5,
+        "y": 1.9000000000000001,
+        "z": 26
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "height": 3.8,
+        "type": "cylinder",
+        "radius": 0.3
+      },
+      "cad_script": "# Custom element: Portico Column Back Right Inner\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.024Z",
+      "modified_at": "2026-03-12T07:24:47.024Z",
+      "version": 1
+    },
+    "custom_r2vnz8s2": {
+      "id": "custom_r2vnz8s2",
+      "type": "Custom",
+      "name": "Portico Column Back Right Outer",
+      "position": {
+        "x": 4.5,
+        "y": 1.9000000000000001,
+        "z": 26
+      },
+      "dimensions": {
+        "x": 0.6000000000000001,
+        "y": 3.8000000000000003,
+        "z": 0.6000000000000001
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "marble_white",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_fb9b93bd",
+      "children_ids": [],
+      "custom_geometry": {
+        "radius": 0.3,
+        "type": "cylinder",
+        "height": 3.8
+      },
+      "cad_script": "# Custom element: Portico Column Back Right Outer\n# Description: Cylindrical marble column\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-12T07:24:47.095Z",
+      "modified_at": "2026-03-12T07:24:47.095Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 2000000,
+    "spent": 0,
+    "remaining": 2000000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

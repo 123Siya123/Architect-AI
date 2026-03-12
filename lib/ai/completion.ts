@@ -203,7 +203,7 @@ export function evaluateCompletionState(
     const meetsMinTurns = currentTurn >= complexity.minTurns;
 
     const autoStopAllowed =
-        totalScore >= 95 &&
+        totalScore >= 98 && // REQUIRED: Near perfection for auto-stop
         physicsValid &&
         meetsMinTurns &&
         allChecklistComplete;
@@ -302,31 +302,36 @@ export function updateChecklist(
  * and requires fewer matches for short descriptions.
  */
 function findMatchingNodes(item: ChecklistItem, nodes: PSGNode[]): PSGNode[] {
-    const desc = item.description?.toLowerCase() || '';
-    const type = item.requiredNodeType?.toLowerCase();
+    const desc = (item.description || '').toLowerCase();
+    const type = (item.requiredNodeType || '').toLowerCase();
 
     if (!desc) return [];
 
-    const STOPWORDS = new Set(['with', 'from', 'that', 'this', 'must', 'have', 'been', 'should', 'called', 'total', 'style', 'along', 'entire']);
+    // Strip punctuation for cleaner matching
+    const cleanDesc = desc.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, " ");
+    const STOPWORDS = new Set(['with', 'from', 'that', 'this', 'must', 'have', 'been', 'should', 'called', 'total', 'style', 'along', 'entire', 'side', 'area', 'part']);
 
     return nodes.filter(node => {
-        // Type match — check node type or node name contains the type keyword
-        if (type && !node.type.toLowerCase().includes(type) &&
-            !node.name.toLowerCase().includes(type)) {
+        // 1. Type match
+        const nodeType = node.type.toLowerCase();
+        const nodeName = node.name.toLowerCase();
+        
+        if (type && !nodeType.includes(type) && !nodeName.includes(type)) {
             return false;
         }
 
-        // Name match (fuzzy but more stable)
-        const nodeName = node.name.toLowerCase();
-        const keywords = desc.split(/[\s,()]+/)
-            .filter(w => w.length >= 4 && !STOPWORDS.has(w));
+        // 2. Keyword match
+        const keywords = cleanDesc.split(/\s+/)
+            .filter(w => w.length >= 3 && !STOPWORDS.has(w)); // Allow shorter (3-char) keywords
 
         if (keywords.length === 0) return false;
 
-        const matchCount = keywords.filter(kw => nodeName.includes(kw)).length;
+        const matches = keywords.filter(kw => nodeName.includes(kw));
+        const matchCount = matches.length;
 
-        // Require at least 1 keyword match for short descriptions, 2 for longer
-        const threshold = keywords.length <= 3 ? 1 : 2;
+        // 3. Dynamic Threshold
+        // If 1-2 keywords: need 100% match. If 3+: need at least 2.
+        const threshold = keywords.length <= 2 ? keywords.length : 2;
         return matchCount >= threshold;
     });
 }
