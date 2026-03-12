@@ -1,0 +1,257 @@
+{
+  "id": "37b352e3-c0ba-4926-9cde-a659ed59ffd8",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-12T06:08:27.294Z",
+  "modified_at": "2026-03-12T06:12:29.830Z",
+  "version": 6,
+  "root_node_id": "house_1e309f1b",
+  "nodes": {
+    "house_1e309f1b": {
+      "id": "house_1e309f1b",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_ll1jsq12",
+        "floor_gstkz92b",
+        "floor_m1by3xeo",
+        "floor_hd1hn75i",
+        "floor_tydihf4r"
+      ],
+      "created_at": "2026-03-12T06:08:27.294Z",
+      "modified_at": "2026-03-12T06:12:29.830Z",
+      "version": 1
+    },
+    "floor_ll1jsq12": {
+      "id": "floor_ll1jsq12",
+      "type": "Floor",
+      "name": "Main Platform Foundation",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 1,
+        "z": 40
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1e309f1b",
+      "children_ids": [],
+      "created_at": "2026-03-12T06:11:29.345Z",
+      "modified_at": "2026-03-12T06:11:29.345Z",
+      "version": 1
+    },
+    "floor_gstkz92b": {
+      "id": "floor_gstkz92b",
+      "type": "Floor",
+      "name": "Foundation North",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": -12.5
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 1,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1e309f1b",
+      "children_ids": [],
+      "created_at": "2026-03-12T06:12:29.829Z",
+      "modified_at": "2026-03-12T06:12:29.829Z",
+      "version": 1
+    },
+    "floor_m1by3xeo": {
+      "id": "floor_m1by3xeo",
+      "type": "Floor",
+      "name": "Foundation South",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": 17.5
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 1,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1e309f1b",
+      "children_ids": [],
+      "created_at": "2026-03-12T06:12:29.829Z",
+      "modified_at": "2026-03-12T06:12:29.829Z",
+      "version": 1
+    },
+    "floor_hd1hn75i": {
+      "id": "floor_hd1hn75i",
+      "type": "Floor",
+      "name": "Foundation West",
+      "position": {
+        "x": -15,
+        "y": 0.5,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 1,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1e309f1b",
+      "children_ids": [],
+      "created_at": "2026-03-12T06:12:29.829Z",
+      "modified_at": "2026-03-12T06:12:29.829Z",
+      "version": 1
+    },
+    "floor_tydihf4r": {
+      "id": "floor_tydihf4r",
+      "type": "Floor",
+      "name": "Foundation East",
+      "position": {
+        "x": 17.5,
+        "y": 0.5,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 1,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1e309f1b",
+      "children_ids": [],
+      "created_at": "2026-03-12T06:12:29.830Z",
+      "modified_at": "2026-03-12T06:12:29.830Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

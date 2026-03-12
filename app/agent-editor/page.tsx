@@ -17,24 +17,19 @@ import {
   Node,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+
 import {
   Settings, Brain, Plus, Trash2, X, Users, Wrench, Code, Network, Target, LayoutDashboard, Database, Scale,
   BookOpen, Building2, Layers, Pen
 } from 'lucide-react';
 
 import {
-  ORCHESTRATOR_PROMPT,
-  STRUCTURAL_ENGINEER_PROMPT,
-  SPATIAL_PHYSICIST_PROMPT,
-  AESTHETIC_DESIGNER_PROMPT,
-  INTERIOR_ARCHITECT_PROMPT,
-  DETAIL_SPECIALIST_PROMPT,
-  RESEARCH_SPECIALIST_PROMPT,
-  MASTER_PLANNER_PROMPT,
-  FACADE_ARTIST_PROMPT,
-  MATERIALS_SPECIALIST_PROMPT,
-  QUALITY_INSPECTOR_PROMPT
-} from '@/lib/ai/prompts';
+  ARCHITECT_PHASE1_PROMPT,
+  ARCHITECT_PHASE2_PROMPT,
+  CONTRACTOR_PROMPT,
+  INSPECTOR_PROMPT,
+  RESEARCH_SPECIALIST_V3_PROMPT
+} from '@/lib/ai/prompts-v3';
 
 // ============================================================================
 // CUSTOM NODE COMPONENTS
@@ -42,7 +37,7 @@ import {
 
 const AgentNode = ({ data, selected }: any) => {
   const Icon = data.icon || Brain;
-  const isOrchestrator = data.role === 'Lead Architect';
+  const isOrchestrator = data.role.includes('Chief Architect');
   
   return (
     <div
@@ -83,140 +78,92 @@ const AgentNode = ({ data, selected }: any) => {
 };
 
 // ============================================================================
-// INITIAL DATA
+// INITIAL DATA (V3 Architecture)
 // ============================================================================
 
 const initialNodes: Node[] = [
   {
-    id: 'orchestrator',
-    type: 'agentNode',
-    position: { x: 400, y: 150 },
-    data: {
-      title: 'Orchestrator',
-      role: 'Lead Architect',
-      prompt: ORCHESTRATOR_PROMPT,
-      icon: Network,
-      tools: []
-    }
-  },
-  {
     id: 'research_specialist',
     type: 'agentNode',
-    position: { x: 100, y: 0 },
+    position: { x: 400, y: 0 },
     data: {
       title: 'Research Specialist',
-      role: 'Pre-loop Analysis & Briefing',
-      prompt: RESEARCH_SPECIALIST_PROMPT,
+      role: 'Phase 0: Knowledge Base',
+      prompt: RESEARCH_SPECIALIST_V3_PROMPT,
       icon: BookOpen,
       tools: ['search_documents', 'generate_brief']
     }
   },
   {
-    id: 'master_planner',
+    id: 'architect_planning',
     type: 'agentNode',
-    position: { x: 700, y: 0 },
+    position: { x: 400, y: 200 },
     data: {
-      title: 'Master Planner',
-      role: 'Site Layout',
-      prompt: MASTER_PLANNER_PROMPT,
-      icon: Target,
-      tools: ['add_node', 'set_node_position', 'delete_node']
-    }
-  },
-  {
-    id: 'structural_engineer',
-    type: 'agentNode',
-    position: { x: 100, y: 350 },
-    data: {
-      title: 'Structural Engineer',
-      role: 'Heavy Construction',
-      prompt: STRUCTURAL_ENGINEER_PROMPT,
-      icon: Building2,
-      tools: ['add_node', 'move_node', 'set_node_position', 'delete_node']
-    }
-  },
-  {
-    id: 'spatial_physicist',
-    type: 'agentNode',
-    position: { x: 100, y: 550 },
-    data: {
-      title: 'Spatial Physicist',
-      role: 'Post-Build Validation (Veto Power)',
-      prompt: SPATIAL_PHYSICIST_PROMPT,
-      icon: Scale,
-      tools: [] // Validates passively
-    }
-  },
-  {
-    id: 'interior_architect',
-    type: 'agentNode',
-    position: { x: 400, y: 350 },
-    data: {
-      title: 'Interior Architect',
-      role: 'Openings, Stairs & Details',
-      prompt: INTERIOR_ARCHITECT_PROMPT,
-      icon: LayoutDashboard,
-      tools: ['add_node', 'move_node', 'set_node_position', 'resize_node', 'get_wall_surface', 'edit_wall_surface']
-    }
-  },
-  {
-    id: 'aesthetic_designer',
-    type: 'agentNode',
-    position: { x: 700, y: 350 },
-    data: {
-      title: 'Aesthetic Designer',
-      role: 'Style & Proportion Review',
-      prompt: AESTHETIC_DESIGNER_PROMPT,
-      icon: Layers,
+      title: 'Chief Architect (Phase 1)',
+      role: 'Master Builder / Planner',
+      prompt: ARCHITECT_PHASE1_PROMPT,
+      icon: Network,
       tools: []
     }
   },
   {
-    id: 'facade_artist',
+    id: 'architect_dispatch',
     type: 'agentNode',
-    position: { x: 100, y: 750 },
+    position: { x: 400, y: 400 },
+    data: {
+      title: 'Chief Architect (Phase 2)',
+      role: 'Contractor Dispatch Loop',
+      prompt: ARCHITECT_PHASE2_PROMPT,
+      icon: Network,
+      tools: []
+    }
+  },
+  {
+    id: 'inspector',
+    type: 'agentNode',
+    position: { x: 700, y: 400 },
+    data: {
+      title: 'Inspector',
+      role: 'Independent Quality QA',
+      prompt: INSPECTOR_PROMPT,
+      icon: Scale,
+      tools: ['generate_report']
+    }
+  },
+  {
+    id: 'contractor_structural',
+    type: 'agentNode',
+    position: { x: 100, y: 650 },
+    data: {
+      title: 'Structural Engineer',
+      role: 'Contractor',
+      prompt: CONTRACTOR_PROMPT,
+      icon: Building2,
+      tools: ['add_node', 'set_node_position', 'delete_node']
+    }
+  },
+  {
+    id: 'contractor_interior',
+    type: 'agentNode',
+    position: { x: 400, y: 650 },
+    data: {
+      title: 'Interior Architect',
+      role: 'Contractor',
+      prompt: CONTRACTOR_PROMPT,
+      icon: LayoutDashboard,
+      tools: ['add_node', 'move_node', 'set_node_position', 'resize_node']
+    }
+  },
+  {
+    id: 'contractor_facade',
+    type: 'agentNode',
+    position: { x: 700, y: 650 },
     data: {
       title: 'Facade Artist',
-      role: 'Detailed Surface Sculpting',
-      prompt: FACADE_ARTIST_PROMPT,
+      role: 'Contractor',
+      prompt: CONTRACTOR_PROMPT,
       icon: Pen,
-      tools: ['get_wall_surface', 'edit_wall_surface', 'create_custom_element']
-    }
-  },
-  {
-    id: 'materials_specialist',
-    type: 'agentNode',
-    position: { x: 400, y: 750 },
-    data: {
-      title: 'Materials Specialist',
-      role: 'Accurate Materials Logging',
-      prompt: MATERIALS_SPECIALIST_PROMPT,
-      icon: Database,
-      tools: ['apply_material', 'list_materials']
-    }
-  },
-  {
-    id: 'detail_specialist',
-    type: 'agentNode',
-    position: { x: 700, y: 750 },
-    data: {
-      title: 'Detail Specialist',
-      role: 'Fine Architectural Details',
-      prompt: DETAIL_SPECIALIST_PROMPT,
-      icon: Wrench,
-      tools: ['create_custom_element', 'edit_wall_surface']
-    }
-  },
-  {
-    id: 'quality_inspector',
-    type: 'agentNode',
-    position: { x: 700, y: 550 },
-    data: {
-      title: 'Quality Inspector',
-      role: 'Final Audit',
-      prompt: QUALITY_INSPECTOR_PROMPT,
-      icon: Brain, // using generic if no inspector icon
-      tools: ['generate_report']
+      tools: ['edit_wall_surface', 'create_custom_element']
     }
   }
 ];
@@ -229,17 +176,15 @@ const edgeProps = {
 };
 
 const initialEdges: Edge[] = [
-  { id: 'e-r-o', source: 'research_specialist', target: 'orchestrator', ...edgeProps, style: { stroke: '#f59e0b', strokeWidth: 2 } },
-  { id: 'e-m-o', source: 'master_planner', target: 'orchestrator', ...edgeProps, style: { stroke: '#f59e0b', strokeWidth: 2 } },
-  { id: 'e-o-se', source: 'orchestrator', target: 'structural_engineer', ...edgeProps },
-  { id: 'e-o-ia', source: 'orchestrator', target: 'interior_architect', ...edgeProps },
-  { id: 'e-o-ad', source: 'orchestrator', target: 'aesthetic_designer', ...edgeProps },
-  { id: 'e-se-sp', source: 'structural_engineer', target: 'spatial_physicist', ...edgeProps, style: { stroke: '#ef4444', strokeWidth: 2 } },
-  { id: 'e-sp-o', source: 'spatial_physicist', target: 'orchestrator', ...edgeProps, animated: false, style: { stroke: '#ef4444', opacity: 0.3 } },
-  { id: 'e-o-f', source: 'orchestrator', target: 'facade_artist', ...edgeProps },
-  { id: 'e-o-m', source: 'orchestrator', target: 'materials_specialist', ...edgeProps },
-  { id: 'e-o-d', source: 'orchestrator', target: 'detail_specialist', ...edgeProps },
-  { id: 'e-o-qi', source: 'orchestrator', target: 'quality_inspector', ...edgeProps, style: { stroke: '#22c55e', strokeWidth: 2 } },
+  { id: 'e-r-a1', source: 'research_specialist', target: 'architect_planning', ...edgeProps, style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-a1-a2', source: 'architect_planning', target: 'architect_dispatch', ...edgeProps, style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-a2-cs', source: 'architect_dispatch', target: 'contractor_structural', ...edgeProps },
+  { id: 'e-a2-ci', source: 'architect_dispatch', target: 'contractor_interior', ...edgeProps },
+  { id: 'e-a2-cf', source: 'architect_dispatch', target: 'contractor_facade', ...edgeProps },
+  { id: 'e-cs-i', source: 'contractor_structural', target: 'inspector', ...edgeProps, style: { stroke: '#ef4444', strokeWidth: 2 } },
+  { id: 'e-ci-i', source: 'contractor_interior', target: 'inspector', ...edgeProps, style: { stroke: '#ef4444', strokeWidth: 2 } },
+  { id: 'e-cf-i', source: 'contractor_facade', target: 'inspector', ...edgeProps, style: { stroke: '#ef4444', strokeWidth: 2 } },
+  { id: 'e-i-a2', source: 'inspector', target: 'architect_dispatch', ...edgeProps, animated: false, style: { stroke: '#10b981', opacity: 0.6 } },
 ];
 
 export default function AgentFlowEditor() {
@@ -306,7 +251,7 @@ export default function AgentFlowEditor() {
             <Network className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-sm font-bold tracking-wide">AI Agentic Architecture</h1>
+            <h1 className="text-sm font-bold tracking-wide">AI Agentic Architecture v3.0</h1>
             <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Dynamic Flow Editor</p>
           </div>
           <div className="w-[1px] h-8 bg-zinc-800 mx-2" />
