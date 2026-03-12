@@ -274,8 +274,9 @@ ${JSON.stringify(checklistItems)}
                         const applied = applyOperation(currentProject, op);
                         if (applied.project) {
                             currentProject = applied.project;
-                            allValidatedOps.push(op);
-                            emitOperation(op, cycle, contractorName);
+                            const finalOp = { ...op, target_id: applied.nodeId || op.target_id };
+                            allValidatedOps.push(finalOp);
+                            emitOperation(finalOp, cycle, contractorName);
                         }
                     } else {
                         log(`   ❌ Invalid Tool Call (${tc.name}): ${validation.errors?.join(', ')}`);
