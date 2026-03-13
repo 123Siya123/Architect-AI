@@ -406,7 +406,7 @@ export async function sendChatToAI(
                                         systemActions.push(`✅ Aligned wall "${wall.name}" to floor (Y=${correctY.toFixed(3)})`);
                                     }
                                 }
-                            } catch (e) { /* skip */ }
+                            } catch (e) { log(`   ❌ System fix failed: ${e instanceof Error ? e.message : String(e)}`); }
                         }
                     }
 
@@ -436,7 +436,7 @@ export async function sendChatToAI(
                                                 systemActions.push(`✅ Aligned door "${child.name}" to wall bottom`);
                                             }
                                         }
-                                    } catch (e) { /* skip */ }
+                                    } catch (e) { log(`   ❌ Door align failed: ${e instanceof Error ? e.message : String(e)}`); }
                                 }
                             }
                         }
@@ -473,7 +473,7 @@ export async function sendChatToAI(
                                         fixCount++;
                                         systemActions.push(`✅ Placed roof "${roof.name}" on walls (Y=${correctY.toFixed(3)})`);
                                     }
-                                } catch (e) { /* skip */ }
+                                } catch (e) { log(`   ❌ Roof fix failed: ${e instanceof Error ? e.message : String(e)}`); }
                             }
                         }
                     }
@@ -1180,7 +1180,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                 } else {
                                     log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
                                 }
-                            } catch (e) { /* skip */ }
+                            } catch (e) { log(`   ❌ Facade op failed: ${tc.name} — ${e instanceof Error ? e.message : String(e)}`); }
                         }
                         log(`   ✅ Facade: ${successCount}/${facadeResult.toolCalls.length} operations applied`);
                     }
@@ -1226,7 +1226,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                 } else {
                                     log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
                                 }
-                            } catch (e) { /* skip */ }
+                            } catch (e) { log(`   ❌ Material op failed: ${tc.name} — ${e instanceof Error ? e.message : String(e)}`); }
                         }
                         log(`   ✅ Materials: ${successCount}/${materialsResult.toolCalls.length} operations applied`);
                     }
@@ -1285,7 +1285,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                 } else {
                                     log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
                                 }
-                            } catch (e) { /* skip */ }
+                            } catch (e) { log(`   ❌ Detail op failed: ${tc.name} — ${e instanceof Error ? e.message : String(e)}`); }
                         }
                         log(`   ✅ Details: ${successCount}/${detailResult.toolCalls.length} operations applied`);
                     }
@@ -1342,7 +1342,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                 } else {
                                     log(`   ⚠️ Rejected: ${tc.name} — ${validation.errors[0]}`);
                                 }
-                            } catch (e) { /* skip */ }
+                            } catch (e) { log(`   ❌ Planner op failed: ${tc.name} — ${e instanceof Error ? e.message : String(e)}`); }
                         }
                         log(`   ✅ Planner: ${successCount}/${plannerResult.toolCalls.length} operations applied`);
                     }
@@ -1825,13 +1825,17 @@ async function callGemini(
 
     const systemMsg = messages.find((m) => m.role === 'system');
 
-    // Helper to recursively uppercase property types for Gemini
+    // Helper to recursively uppercase JSON Schema property types for Gemini.
+    // IMPORTANT: Only uppercase known JSON Schema type keywords, NOT enum values
+    // or domain-specific type fields like custom_geometry.type which has values
+    // like "code", "sphere", "arch" that must stay lowercase for the 3D compiler.
+    const JSON_SCHEMA_TYPES = new Set(['string', 'number', 'object', 'array', 'boolean', 'integer']);
     const formatForGemini = (obj: any): any => {
         if (Array.isArray(obj)) return obj.map(formatForGemini);
         if (obj !== null && typeof obj === 'object') {
             const result: any = {};
             for (const key in obj) {
-                if (key === 'type' && typeof obj[key] === 'string') {
+                if (key === 'type' && typeof obj[key] === 'string' && JSON_SCHEMA_TYPES.has(obj[key])) {
                     result[key] = obj[key].toUpperCase();
                 } else {
                     result[key] = formatForGemini(obj[key]);

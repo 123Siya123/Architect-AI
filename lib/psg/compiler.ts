@@ -550,7 +550,8 @@ export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry | THR
         const cg = node.custom_geometry;
         const segs = cg.segments || 32;
         try {
-            switch (cg.type) {
+            // Normalize to lowercase — Gemini API may return uppercased enum values
+            switch (cg.type?.toLowerCase()) {
                 case 'code': {
                     if (cg.code) {
                         try {

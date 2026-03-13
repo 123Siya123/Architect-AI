@@ -137,8 +137,8 @@ function validateSchema(
     const errors: string[] = [];
     const warnings: OperationWarning[] = [];
 
-    // Check target node exists (except for add_node and project-level operations)
-    if (operation.type !== 'add_node' && !(operation.type === 'solve_precision' || operation.type === 'set_precision_level' || operation.type === 'use_template')) {
+    // Check target node exists (except for add_node, create_custom_element, and project-level operations)
+    if (operation.type !== 'add_node' && operation.type !== 'create_custom_element' && !(operation.type === 'solve_precision' || operation.type === 'set_precision_level' || operation.type === 'use_template')) {
         if (!project.nodes[operation.target_id]) {
             errors.push(
                 `Node "${operation.target_id}" not found in project. ` +
@@ -222,6 +222,18 @@ function validateSchema(
                 if (typeof row !== 'number' || !Number.isFinite(row)) errors.push('edit_wall_surface set_cell requires numeric row');
                 if (typeof col !== 'number' || !Number.isFinite(col)) errors.push('edit_wall_surface set_cell requires numeric col');
                 if (typeof value !== 'number' || !Number.isFinite(value)) errors.push('edit_wall_surface set_cell requires numeric value');
+            }
+            break;
+        }
+        case 'create_custom_element': {
+            const { parent_id, name } = operation.params as Record<string, unknown>;
+            if (!parent_id) {
+                errors.push('create_custom_element requires parent_id parameter');
+            } else if (!project.nodes[parent_id as string]) {
+                errors.push(`create_custom_element: parent "${parent_id}" not found in project.`);
+            }
+            if (!name) {
+                errors.push('create_custom_element requires name parameter');
             }
             break;
         }

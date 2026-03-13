@@ -547,7 +547,7 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         }, gridSize),
         rotation: { yaw: Number(yaw) || 0, pitch: Number(pitch) || 0, roll: Number(roll) || 0 },
         material_id: (material_id as string) || '',
-        opacity: nodeType === 'Window' ? 0.3 : 1,
+        opacity: nodeType === 'Window' || (material_id as string)?.toLowerCase().includes('glass') ? 0.3 : 1,
         tags: nodeType === 'Wall' || nodeType === 'Slab' || nodeType === 'Column' || nodeType === 'Beam' || nodeType === 'Foundation'
             ? ['load_bearing']
             : [],
@@ -796,7 +796,7 @@ function createCustomElement(project: PSGProject, operation: PSGOperation): PSGP
     const shortId = Math.random().toString(36).slice(2, 10);
     const id = `custom_${shortId}`;
 
-    const gridSize = project.settings.grid_size;
+    const gridSize = 0.0005; // Force high precision for AI custom elements (same as createNodeFromAIArgs)
     const newNode: PSGNode = {
         id,
         type: 'Custom', // Properly set to Custom type

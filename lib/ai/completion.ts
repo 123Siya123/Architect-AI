@@ -152,7 +152,7 @@ export function evaluateCompletionState(
     // Additional details (0-12) — balconies, columns, custom elements
     const detailItems = balconies + columns + beams + customs;
     if (complexity.tier === 'TRIVIAL' || complexity.tier === 'STANDARD') {
-        detailScore += 12; // No extra details required for simple builds
+        detailScore += 8; // Partial free points — some details still expected for simple builds
     } else {
         const requiredDetails = complexity.tier === 'LANDMARK' ? 5 : complexity.tier === 'MEGA' ? 8 : 3;
         detailScore += Math.min(12, Math.floor((detailItems / requiredDetails) * 12));
