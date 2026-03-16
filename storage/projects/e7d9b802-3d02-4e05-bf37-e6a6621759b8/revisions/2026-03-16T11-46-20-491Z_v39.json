@@ -1,0 +1,2114 @@
+{
+  "id": "e7d9b802-3d02-4e05-bf37-e6a6621759b8",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-16T11:12:47.142Z",
+  "modified_at": "2026-03-16T11:46:18.461Z",
+  "version": 39,
+  "root_node_id": "house_8d63962a",
+  "nodes": {
+    "house_8d63962a": {
+      "id": "house_8d63962a",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "perim_north",
+        "perim_south_l",
+        "perim_south_r",
+        "door_b4514r93",
+        "perim_east",
+        "perim_west",
+        "mv_east",
+        "mv_west",
+        "mv_north",
+        "mv_south_l",
+        "mv_south_r",
+        "custom_b2k0t52q",
+        "ew_east",
+        "ew_west_trompe",
+        "ew_north",
+        "ew_south",
+        "ww_west",
+        "ww_east_colonnade",
+        "ww_north",
+        "ww_south",
+        "custom_vt0n0c32",
+        "custom_gtduano2",
+        "roof_bvqdpofv",
+        "roof_2iw5bae2",
+        "roof_v7evwed3",
+        "custom_febiaw32",
+        "slab_5iphsnfz",
+        "slab_9clrmkfq",
+        "slab_xqpjaxbq",
+        "slab_uwz7lxwf",
+        "custom_q82c3m30",
+        "partition_q5j55o8u",
+        "partition_4vd7fpmb",
+        "partition_wuqvk1c8"
+      ],
+      "created_at": "2026-03-16T11:12:47.142Z",
+      "modified_at": "2026-03-16T11:46:18.461Z",
+      "version": 1
+    },
+    "perim_north": {
+      "id": "perim_north",
+      "type": "Wall",
+      "name": "Perimeter North Wall",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": -24.75
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:19:18.108Z",
+      "modified_at": "2026-03-16T11:19:18.108Z",
+      "version": 1
+    },
+    "perim_south_l": {
+      "id": "perim_south_l",
+      "type": "Wall",
+      "name": "Perimeter South Wall Left",
+      "position": {
+        "x": -12.25,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 20.5,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:19:53.334Z",
+      "modified_at": "2026-03-16T11:19:53.334Z",
+      "version": 1
+    },
+    "perim_south_r": {
+      "id": "perim_south_r",
+      "type": "Wall",
+      "name": "Perimeter South Wall Right",
+      "position": {
+        "x": 12.25,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 20.5,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:20:34.725Z",
+      "modified_at": "2026-03-16T11:20:34.725Z",
+      "version": 1
+    },
+    "door_b4514r93": {
+      "id": "door_b4514r93",
+      "type": "Door",
+      "name": "Secure Bronze Entry Gate",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bronze",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:21:23.227Z",
+      "modified_at": "2026-03-16T11:21:23.227Z",
+      "version": 1
+    },
+    "perim_east": {
+      "id": "perim_east",
+      "type": "Wall",
+      "name": "Perimeter East Wall",
+      "position": {
+        "x": 22.25,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 3.5,
+        "z": 49
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:22:00.864Z",
+      "modified_at": "2026-03-16T11:22:00.864Z",
+      "version": 1
+    },
+    "perim_west": {
+      "id": "perim_west",
+      "type": "Wall",
+      "name": "Perimeter West Wall",
+      "position": {
+        "x": -22.25,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 3.5,
+        "z": 49
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:22:40.560Z",
+      "modified_at": "2026-03-16T11:22:40.560Z",
+      "version": 1
+    },
+    "mv_east": {
+      "id": "mv_east",
+      "type": "Wall",
+      "name": "Main Villa East Wall",
+      "position": {
+        "x": 9.75,
+        "y": 3,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 6,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:23:55.001Z",
+      "modified_at": "2026-03-16T11:23:55.001Z",
+      "version": 1
+    },
+    "mv_west": {
+      "id": "mv_west",
+      "type": "Wall",
+      "name": "Main Villa West Wall",
+      "position": {
+        "x": -9.75,
+        "y": 3,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 6,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:24:28.495Z",
+      "modified_at": "2026-03-16T11:24:28.495Z",
+      "version": 1
+    },
+    "mv_north": {
+      "id": "mv_north",
+      "type": "Wall",
+      "name": "Main Villa North Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -21.75
+      },
+      "dimensions": {
+        "x": 19,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:25:09.635Z",
+      "modified_at": "2026-03-16T11:25:09.635Z",
+      "version": 1
+    },
+    "mv_south_l": {
+      "id": "mv_south_l",
+      "type": "Wall",
+      "name": "Main Villa South Wall Left",
+      "position": {
+        "x": -6.25,
+        "y": 3,
+        "z": -7.25
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:25:59.962Z",
+      "modified_at": "2026-03-16T11:25:59.962Z",
+      "version": 1
+    },
+    "mv_south_r": {
+      "id": "mv_south_r",
+      "type": "Wall",
+      "name": "Main Villa South Wall Right",
+      "position": {
+        "x": 6.25,
+        "y": 3,
+        "z": -7.25
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:26:48.593Z",
+      "modified_at": "2026-03-16T11:26:48.593Z",
+      "version": 1
+    },
+    "custom_b2k0t52q": {
+      "id": "custom_b2k0t52q",
+      "type": "Custom",
+      "name": "Curved Apse Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -8.5
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 6,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const shape = new THREE.Shape();\nconst R = 3.05;\nconst outerCenterY = -1.55;\nconst innerCenterY = -2.05;\nconst startAngleOuter = Math.atan2(0.55, 3);\nconst endAngleOuter = Math.atan2(0.55, -3);\nshape.absarc(0, outerCenterY, R, startAngleOuter, endAngleOuter, false);\nshape.lineTo(-3, -1.5);\nconst startAngleInner = Math.atan2(0.55, -3);\nconst endAngleInner = Math.atan2(0.55, 3);\nshape.absarc(0, innerCenterY, R, startAngleInner, endAngleInner, true);\nshape.lineTo(3, -1.0);\nconst extrudeSettings = { depth: height, bevelEnabled: false, curveSegments: 64 };\nconst geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);\ngeom.rotateX(-Math.PI / 2);\ngeom.translate(0, -height/2, 0);\nreturn geom;"
+      },
+      "cad_script": "# Custom element: Curved Apse Wall\n# Description: A custom semi-circular apse wall that bows inward, perfectly connecting the south walls.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:29:07.500Z",
+      "modified_at": "2026-03-16T11:29:07.500Z",
+      "version": 1
+    },
+    "ew_east": {
+      "id": "ew_east",
+      "type": "Wall",
+      "name": "East Wing East Wall",
+      "position": {
+        "x": 21.75,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:30:24.739Z",
+      "modified_at": "2026-03-16T11:30:24.739Z",
+      "version": 1
+    },
+    "ew_west_trompe": {
+      "id": "ew_west_trompe",
+      "type": "Wall",
+      "name": "East Wing Trompe l'Oeil Wall",
+      "position": {
+        "x": 12.75,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [
+        "custom_he57keak"
+      ],
+      "created_at": "2026-03-16T11:31:07.639Z",
+      "modified_at": "2026-03-16T11:40:57.565Z",
+      "version": 1
+    },
+    "ew_north": {
+      "id": "ew_north",
+      "type": "Wall",
+      "name": "East Wing North Wall",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": -6.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:32:02.131Z",
+      "modified_at": "2026-03-16T11:32:02.131Z",
+      "version": 1
+    },
+    "ew_south": {
+      "id": "ew_south",
+      "type": "Wall",
+      "name": "East Wing South Wall",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 22.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:32:53.043Z",
+      "modified_at": "2026-03-16T11:32:53.043Z",
+      "version": 1
+    },
+    "ww_west": {
+      "id": "ww_west",
+      "type": "Wall",
+      "name": "West Wing West Wall",
+      "position": {
+        "x": -21.75,
+        "y": 2,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:33:51.767Z",
+      "modified_at": "2026-03-16T11:33:51.767Z",
+      "version": 1
+    },
+    "ww_east_colonnade": {
+      "id": "ww_east_colonnade",
+      "type": "Wall",
+      "name": "West Wing Colonnade Screen",
+      "position": {
+        "x": -12.75,
+        "y": 2,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble_veneer",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:34:25.884Z",
+      "modified_at": "2026-03-16T11:40:57.564Z",
+      "version": 2,
+      "surface_matrix": {
+        "code": "const num_cols = 10; const u_scaled = u * num_cols; const fract = u_scaled - Math.floor(u_scaled); return (fract > 0.25 && v > 0.1 && v < 0.85) ? 0 : 1;",
+        "resolution": 48,
+        "min_value": 0,
+        "max_value": 10,
+        "hole_threshold": 0.01,
+        "interpolation": "bilinear",
+        "rows": 24,
+        "cols": 24,
+        "data": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "description": "Custom Wall shape"
+      }
+    },
+    "ww_north": {
+      "id": "ww_north",
+      "type": "Wall",
+      "name": "West Wing North Wall",
+      "position": {
+        "x": -17.25,
+        "y": 2,
+        "z": -6.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:35:10.963Z",
+      "modified_at": "2026-03-16T11:35:10.963Z",
+      "version": 1
+    },
+    "ww_south": {
+      "id": "ww_south",
+      "type": "Wall",
+      "name": "West Wing South Wall",
+      "position": {
+        "x": -17.25,
+        "y": 2,
+        "z": 17.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:35:45.065Z",
+      "modified_at": "2026-03-16T11:35:45.065Z",
+      "version": 1
+    },
+    "custom_vt0n0c32": {
+      "id": "custom_vt0n0c32",
+      "type": "Custom",
+      "name": "Infinity Pool",
+      "position": {
+        "x": 0,
+        "y": -0.25,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "ceramic_glazed_tiles",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity Pool\n# Description: Infinity Pool excavated into the courtyard floor. Aligns perfectly with the bottom of the courtyard slab.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:38:00.748Z",
+      "modified_at": "2026-03-16T11:38:00.748Z",
+      "version": 1
+    },
+    "custom_gtduano2": {
+      "id": "custom_gtduano2",
+      "type": "Custom",
+      "name": "Belvedere Observation Tower",
+      "position": {
+        "x": 15,
+        "y": 8.25,
+        "z": -4.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 8.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Belvedere Observation Tower\n# Description: A 5x5m observation tower, 8.5m tall, sitting on the NW corner of the East Wing.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:39:34.691Z",
+      "modified_at": "2026-03-16T11:39:34.691Z",
+      "version": 1
+    },
+    "roof_bvqdpofv": {
+      "id": "roof_bvqdpofv",
+      "type": "Roof",
+      "name": "Main Villa Terracotta Roof",
+      "position": {
+        "x": 0,
+        "y": 6,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 2.5,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta_roof_tiles",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "roof_style": "hip",
+      "created_at": "2026-03-16T11:40:57.564Z",
+      "modified_at": "2026-03-16T11:40:57.564Z",
+      "version": 1
+    },
+    "roof_2iw5bae2": {
+      "id": "roof_2iw5bae2",
+      "type": "Roof",
+      "name": "East Wing Terracotta Roof",
+      "position": {
+        "x": 17.25,
+        "y": 4,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 1.5,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta_roof_tiles",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "roof_style": "hip",
+      "created_at": "2026-03-16T11:40:57.564Z",
+      "modified_at": "2026-03-16T11:40:57.564Z",
+      "version": 1
+    },
+    "roof_v7evwed3": {
+      "id": "roof_v7evwed3",
+      "type": "Roof",
+      "name": "West Wing Terracotta Roof",
+      "position": {
+        "x": -17.25,
+        "y": 4,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 1.5,
+        "z": 25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta_roof_tiles",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "roof_style": "hip",
+      "created_at": "2026-03-16T11:40:57.564Z",
+      "modified_at": "2026-03-16T11:40:57.564Z",
+      "version": 1
+    },
+    "custom_he57keak": {
+      "id": "custom_he57keak",
+      "type": "Custom",
+      "name": "Trompe l'Oeil Fresco",
+      "position": {
+        "x": 12.450000000000001,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.1,
+        "y": 3.5,
+        "z": 28
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "painted_fresco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "ew_west_trompe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Trompe l'Oeil Fresco\n# Description: A vibrant Greek-style fresco depicting a lush garden and faux columns, painted on the plaster.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:40:57.565Z",
+      "modified_at": "2026-03-16T11:40:57.565Z",
+      "version": 1
+    },
+    "custom_febiaw32": {
+      "id": "custom_febiaw32",
+      "type": "Custom",
+      "name": "Main Villa Greek Frieze",
+      "position": {
+        "x": 0,
+        "y": 5.75,
+        "z": -7.1000000000000005
+      },
+      "dimensions": {
+        "x": 19,
+        "y": 0.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "cad_script": "# Custom element: Main Villa Greek Frieze\n# Description: A decorative Pentelic marble frieze with meander patterns running along the top of the Main Villa's south-facing walls, acting as a lintel over the apse.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:40:57.565Z",
+      "modified_at": "2026-03-16T11:40:57.565Z",
+      "version": 1
+    },
+    "slab_5iphsnfz": {
+      "id": "slab_5iphsnfz",
+      "type": "Slab",
+      "name": "West Courtyard Floor",
+      "position": {
+        "x": -10,
+        "y": 0.1,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 0.2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.144Z",
+      "modified_at": "2026-03-16T11:42:54.144Z",
+      "version": 1
+    },
+    "slab_9clrmkfq": {
+      "id": "slab_9clrmkfq",
+      "type": "Slab",
+      "name": "East Courtyard Floor",
+      "position": {
+        "x": 10,
+        "y": 0.1,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 0.2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.145Z",
+      "modified_at": "2026-03-16T11:42:54.145Z",
+      "version": 1
+    },
+    "slab_xqpjaxbq": {
+      "id": "slab_xqpjaxbq",
+      "type": "Slab",
+      "name": "North Courtyard Floor",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": -4.5
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.2,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.146Z",
+      "modified_at": "2026-03-16T11:42:54.146Z",
+      "version": 1
+    },
+    "slab_uwz7lxwf": {
+      "id": "slab_uwz7lxwf",
+      "type": "Slab",
+      "name": "South Courtyard Floor",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": 10.5
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.2,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.146Z",
+      "modified_at": "2026-03-16T11:42:54.146Z",
+      "version": 1
+    },
+    "custom_q82c3m30": {
+      "id": "custom_q82c3m30",
+      "type": "Custom",
+      "name": "Marble Statue of Poseidon",
+      "position": {
+        "x": 0,
+        "y": 1.7,
+        "z": -2.75
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 3,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const pedGeo = new THREE.BoxGeometry(width, height * 0.2, depth); const pedestal = new THREE.Mesh(pedGeo); pedestal.position.y = -height * 0.4; group.add(pedestal); const bodyGeo = new THREE.CylinderGeometry(width * 0.3, width * 0.4, height * 0.6, 16); const body = new THREE.Mesh(bodyGeo); body.position.y = 0; group.add(body); const headGeo = new THREE.SphereGeometry(Math.min(width, depth) * 0.25, 16, 16); const head = new THREE.Mesh(headGeo); head.position.y = height * 0.4; group.add(head); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Marble Statue of Poseidon\n# Description: A custom Marble Statue of Poseidon positioned at the north edge of the Infinity Pool, facing south towards the water.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:44:35.876Z",
+      "modified_at": "2026-03-16T11:44:35.876Z",
+      "version": 1
+    },
+    "partition_q5j55o8u": {
+      "id": "partition_q5j55o8u",
+      "type": "Partition",
+      "name": "East Wing Partition 1",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 0.5
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:46:18.460Z",
+      "modified_at": "2026-03-16T11:46:18.460Z",
+      "version": 1
+    },
+    "partition_4vd7fpmb": {
+      "id": "partition_4vd7fpmb",
+      "type": "Partition",
+      "name": "East Wing Partition 2",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:46:18.460Z",
+      "modified_at": "2026-03-16T11:46:18.460Z",
+      "version": 1
+    },
+    "partition_wuqvk1c8": {
+      "id": "partition_wuqvk1c8",
+      "type": "Partition",
+      "name": "East Wing Partition 3",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 15.5
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:46:18.461Z",
+      "modified_at": "2026-03-16T11:46:18.461Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

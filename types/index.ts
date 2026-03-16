@@ -366,6 +366,9 @@ export interface PSGProject {
 
   // Professional Client Specs (Optional)
   professional_specs?: any;
+
+  // Chat History
+  chat_history?: ChatMessage[];
 }
 
 export interface ProjectSettings {

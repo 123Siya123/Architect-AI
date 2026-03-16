@@ -219,6 +219,7 @@ export default function ChatPanel() {
     const project = useDesignStore((s) => s.project);
     const revertToMessage = useDesignStore((s) => s.revertToMessage);
     const sendMessageToAI = useDesignStore((s) => s.sendMessageToAI);
+    const stopAIThinking = useDesignStore((s) => s.stopAIThinking);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom on new messages
@@ -428,13 +429,24 @@ export default function ChatPanel() {
                         disabled={isAIThinking}
                         style={{ flex: 1 }}
                     />
-                    <button
-                        type="submit"
-                        className="chat-send-btn"
-                        disabled={(!input.trim() && attachments.length === 0) || isAIThinking}
-                    >
-                        Send →
-                    </button>
+                    {isAIThinking ? (
+                        <button
+                            type="button"
+                            onClick={() => stopAIThinking()}
+                            className="chat-send-btn"
+                            style={{ background: '#ff4d4d', color: 'white' }}
+                        >
+                            Stop ⏹
+                        </button>
+                    ) : (
+                        <button
+                            type="submit"
+                            className="chat-send-btn"
+                            disabled={!input.trim() && attachments.length === 0}
+                        >
+                            Send →
+                        </button>
+                    )}
                 </div>
             </form>
         </div>

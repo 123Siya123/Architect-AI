@@ -21,6 +21,15 @@ import {
 // TYPES
 // =============================================================================
 
+export interface PunchListItem {
+    id: string;
+    description: string;
+    affectedNodes: string[];
+    severity: 'CRITICAL' | 'WARNING' | 'INFO';
+    status: 'open' | 'in-progress' | 'resolved';
+    history?: string[];
+}
+
 export interface MasterBuildDocument {
     target: string;
     tier: string;
@@ -50,7 +59,9 @@ interface ArchitectDecision {
         component_id: string;
         component_spec: string;
         watch_items: string;
+        target_punch_list_id?: string;
     };
+    punch_list_updates?: Array<{ id: string; status: 'in-progress' | 'open'; note: string }>;
 }
 
 interface ContractorLog {
@@ -67,6 +78,8 @@ interface InspectorReport {
         affectedNodes: string[];
         recommendation: string;
     }>;
+    punchListAdditions?: PunchListItem[];
+    punchListUpdates?: Array<{ id: string; status: 'resolved' | 'open'; note: string }>;
     checklistUpdates: Array<{ id: string; status: 'complete' }>;
     overallScore: number;
     summary: string;
@@ -163,6 +176,7 @@ export async function sendChatToAI_V3(
         status: 'success'
     });
     let checklistItems = masterBuildDoc.completionChecklist || [];
+    let punchList: PunchListItem[] = [];
     let lastInspectorReportText = 'No previous actions. Begin first component.';
 
     // Phase 2: Contractor Dispatch Loop
@@ -197,7 +211,8 @@ ${JSON.stringify(checklistItems)}
 
         const prompt2 = ARCHITECT_PHASE2_PROMPT
             .replace('{USER_REQUEST}', request.message)
-            .replace('{CONTEXT}', phase2Context);
+            .replace('{CONTEXT}', phase2Context)
+            .replace('{PUNCH_LIST}', `\nPUNCH LIST:\n${JSON.stringify(punchList, null, 2)}`);
 
         log('🏛️ Architect analyzing scene and Inspector report...');
         const architect2Result = await callProviderNoTools(config, [{ role: 'user', content: prompt2 }], undefined, signal);
@@ -211,6 +226,18 @@ ${JSON.stringify(checklistItems)}
         if (!architectDecision) {
             log('⚠️ Architect failed to return structured JSON. Skipping cycle.');
             continue;
+        }
+
+        // Process Architect punch list updates
+        if (architectDecision.punch_list_updates && architectDecision.punch_list_updates.length > 0) {
+            for (const update of architectDecision.punch_list_updates) {
+                const item = punchList.find(p => p.id === update.id);
+                if (item) {
+                    item.status = update.status as any;
+                    item.history = item.history || [];
+                    item.history.push(`[Architect] -> ${update.status}: ${update.note}`);
+                }
+            }
         }
 
         log(`📋 Decision: ${architectDecision.inspector_decision} -> Delegate to ${architectDecision.next_contractor}`);
@@ -279,10 +306,26 @@ ${JSON.stringify(checklistItems)}
                             emitOperation(finalOp, cycle, contractorName);
                         }
                     } else {
-                        log(`   ❌ Invalid Tool Call (${tc.name}): ${validation.errors?.join(', ')}`);
+                        const errorMsg = `Invalid Tool Call (${tc.name}): ${validation.errors?.join(', ')}`;
+                        log(`   ❌ ${errorMsg}`);
+                        if (architectDecision.dispatch_instruction?.target_punch_list_id) {
+                            const item = punchList.find(p => p.id === architectDecision.dispatch_instruction.target_punch_list_id);
+                            if (item) {
+                                item.history = item.history || [];
+                                item.history.push(`[SYSTEM ERROR] ${contractorName} attempted ${tc.name} but failed: ${validation.errors?.join(', ')}`);
+                            }
+                        }
                     }
                 } catch (e) {
-                    log(`   ❌ Tool Call Failed: ${(e as Error).message}`);
+                    const errorMsg = `Tool Call Failed: ${(e as Error).message}`;
+                    log(`   ❌ ${errorMsg}`);
+                    if (architectDecision.dispatch_instruction?.target_punch_list_id) {
+                        const item = punchList.find(p => p.id === architectDecision.dispatch_instruction.target_punch_list_id);
+                        if (item) {
+                            item.history = item.history || [];
+                            item.history.push(`[SYSTEM ERROR] ${contractorName} attempted ${tc.name} but threw error: ${(e as Error).message}`);
+                        }
+                    }
                 }
             }
         } else {
@@ -295,6 +338,7 @@ ${JSON.stringify(checklistItems)}
         const inspectorPrompt = INSPECTOR_PROMPT
             .replace('{SCENE_STATE}', newSceneState)
             .replace('{COMPONENT_SPEC}', JSON.stringify(architectDecision.dispatch_instruction))
+            .replace('{PUNCH_LIST}', JSON.stringify(punchList, null, 2))
             .replace('{CHECKLIST_STATE}', JSON.stringify(checklistItems))
             .replace('{CODE_HINTS}', 'No active code hints.');
 
@@ -308,6 +352,35 @@ ${JSON.stringify(checklistItems)}
 
         if (inspectorReport) {
             lastInspectorReportText = JSON.stringify(inspectorReport, null, 2);
+            
+            // Auto-populate punch list from inspector
+            if (inspectorReport.punchListAdditions && inspectorReport.punchListAdditions.length > 0) {
+                punchList.push(...inspectorReport.punchListAdditions);
+                log(`   ⚠️ Inspector added ${inspectorReport.punchListAdditions.length} items to the punch list.`);
+            }
+
+            // Process Inspector punch list updates
+            if (inspectorReport.punchListUpdates && inspectorReport.punchListUpdates.length > 0) {
+                for (const update of inspectorReport.punchListUpdates) {
+                    const item = punchList.find(p => p.id === update.id);
+                    if (item) {
+                        if (update.status === 'resolved') {
+                            // Optionally we can keep it in the history or filter it out. We will keep it but marked resolved.
+                            item.status = 'resolved';
+                        } else {
+                            item.status = update.status as any;
+                        }
+                        item.history = item.history || [];
+                        item.history.push(`[Inspector] -> ${update.status}: ${update.note}`);
+                        log(`   📝 Inspector updated punch list item ${update.id} to ${update.status}`);
+                    }
+                }
+                // Filter out resolved items so they don't continuously clutter the ongoing prompt, if desired
+                // Or leave them for context. Given we added status 'resolved', we can keep it or clear it.
+                // It's cleaner to remove 'resolved' ones from the active punchList.
+                punchList = punchList.filter(item => item.status !== 'resolved');
+            }
+
             const severityCounts = inspectorReport.issues.reduce((acc, issue) => { acc[issue.severity] = (acc[issue.severity] || 0) + 1; return acc; }, {} as Record<string, number>);
             log(`   📝 Inspector Score: ${inspectorReport.overallScore}. Issues: ${severityCounts.CRITICAL || 0} CRITICAL, ${severityCounts.WARNING || 0} WARNING.`);
             

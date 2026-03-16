@@ -1,0 +1,3331 @@
+{
+  "id": "e7d9b802-3d02-4e05-bf37-e6a6621759b8",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-16T11:12:47.142Z",
+  "modified_at": "2026-03-16T12:59:25.777Z",
+  "version": 148,
+  "root_node_id": "house_8d63962a",
+  "nodes": {
+    "house_8d63962a": {
+      "id": "house_8d63962a",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "perim_north",
+        "perim_south_l",
+        "perim_south_r",
+        "door_b4514r93",
+        "perim_east",
+        "perim_west",
+        "mv_east",
+        "mv_west",
+        "mv_north",
+        "mv_south_l",
+        "mv_south_r",
+        "custom_b2k0t52q",
+        "ew_east",
+        "ew_west_trompe",
+        "ew_north",
+        "ew_south",
+        "ww_west",
+        "ww_east_colonnade",
+        "ww_north",
+        "ww_south",
+        "custom_vt0n0c32",
+        "custom_gtduano2",
+        "roof_bvqdpofv",
+        "roof_2iw5bae2",
+        "roof_v7evwed3",
+        "custom_febiaw32",
+        "slab_5iphsnfz",
+        "slab_9clrmkfq",
+        "slab_xqpjaxbq",
+        "slab_uwz7lxwf",
+        "custom_q82c3m30",
+        "partition_q5j55o8u",
+        "partition_4vd7fpmb",
+        "partition_wuqvk1c8",
+        "custom_mf2eng4y",
+        "custom_3x2s7zff",
+        "custom_1rdmzg4g",
+        "custom_olnp72wv",
+        "custom_3bov7c9n",
+        "custom_90wk1bp9",
+        "custom_xqn2knfs",
+        "custom_f9gibu1j",
+        "custom_dibypoyj",
+        "custom_l712gqbt",
+        "custom_8re1qa1g",
+        "custom_cq17k0vq",
+        "custom_e1vvq20d",
+        "custom_33mdzt64",
+        "custom_xwp3sl3j",
+        "custom_e4r49n8q",
+        "slab_f814twgy",
+        "slab_e5k3t4on",
+        "slab_rnu4otky",
+        "custom_mc0gafd6",
+        "custom_ohc2eaus",
+        "custom_dhn0ebg8",
+        "custom_rcmzyc0o"
+      ],
+      "created_at": "2026-03-16T11:12:47.142Z",
+      "modified_at": "2026-03-16T12:58:02.145Z",
+      "version": 3
+    },
+    "perim_north": {
+      "id": "perim_north",
+      "type": "Wall",
+      "name": "Perimeter North Wall",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": -24.75
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:19:18.108Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "perim_south_l": {
+      "id": "perim_south_l",
+      "type": "Wall",
+      "name": "Perimeter South Wall Left",
+      "position": {
+        "x": -14,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 16,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:19:53.334Z",
+      "modified_at": "2026-03-16T12:58:02.124Z",
+      "version": 5
+    },
+    "perim_south_r": {
+      "id": "perim_south_r",
+      "type": "Wall",
+      "name": "Perimeter South Wall Right",
+      "position": {
+        "x": 14,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 16,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:20:34.725Z",
+      "modified_at": "2026-03-16T12:58:02.145Z",
+      "version": 5
+    },
+    "door_b4514r93": {
+      "id": "door_b4514r93",
+      "type": "Door",
+      "name": "Secure Bronze Entry Gate",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bronze",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:21:23.227Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "perim_east": {
+      "id": "perim_east",
+      "type": "Wall",
+      "name": "Perimeter East Wall",
+      "position": {
+        "x": 22.25,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 3.5,
+        "z": 49
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:22:00.864Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "perim_west": {
+      "id": "perim_west",
+      "type": "Wall",
+      "name": "Perimeter West Wall",
+      "position": {
+        "x": -22.25,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 3.5,
+        "z": 49
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:22:40.560Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "mv_east": {
+      "id": "mv_east",
+      "type": "Wall",
+      "name": "Main Villa East Wall",
+      "position": {
+        "x": 9.75,
+        "y": 3,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 6,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:23:55.001Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "mv_west": {
+      "id": "mv_west",
+      "type": "Wall",
+      "name": "Main Villa West Wall",
+      "position": {
+        "x": -9.75,
+        "y": 3,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 6,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:24:28.495Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "mv_north": {
+      "id": "mv_north",
+      "type": "Wall",
+      "name": "Main Villa North Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -21.75
+      },
+      "dimensions": {
+        "x": 19,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [
+        "custom_1zxqk8bm"
+      ],
+      "created_at": "2026-03-16T11:25:09.635Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "mv_south_l": {
+      "id": "mv_south_l",
+      "type": "Wall",
+      "name": "Main Villa South Wall Left",
+      "position": {
+        "x": -6.25,
+        "y": 3,
+        "z": -7.25
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [
+        "door_0kqsitie"
+      ],
+      "created_at": "2026-03-16T11:25:59.962Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "mv_south_r": {
+      "id": "mv_south_r",
+      "type": "Wall",
+      "name": "Main Villa South Wall Right",
+      "position": {
+        "x": 6.25,
+        "y": 3,
+        "z": -7.25
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:26:48.593Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "custom_b2k0t52q": {
+      "id": "custom_b2k0t52q",
+      "type": "Custom",
+      "name": "Curved Apse Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -8.5
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 6,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const shape = new THREE.Shape();\nconst R = 3.05;\nconst outerCenterY = -1.55;\nconst innerCenterY = -2.05;\nconst startAngleOuter = Math.atan2(0.55, 3);\nconst endAngleOuter = Math.atan2(0.55, -3);\nshape.absarc(0, outerCenterY, R, startAngleOuter, endAngleOuter, false);\nshape.lineTo(-3, -1.5);\nconst startAngleInner = Math.atan2(0.55, -3);\nconst endAngleInner = Math.atan2(0.55, 3);\nshape.absarc(0, innerCenterY, R, startAngleInner, endAngleInner, true);\nshape.lineTo(3, -1.0);\nconst extrudeSettings = { depth: height, bevelEnabled: false, curveSegments: 64 };\nconst geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);\ngeom.rotateX(-Math.PI / 2);\ngeom.translate(0, -height/2, 0);\nreturn geom;"
+      },
+      "cad_script": "# Custom element: Curved Apse Wall\n# Description: A custom semi-circular apse wall that bows inward, perfectly connecting the south walls.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:29:07.500Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "ew_east": {
+      "id": "ew_east",
+      "type": "Wall",
+      "name": "East Wing East Wall",
+      "position": {
+        "x": 21.75,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:30:24.739Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "ew_west_trompe": {
+      "id": "ew_west_trompe",
+      "type": "Wall",
+      "name": "East Wing Trompe l'Oeil Wall",
+      "position": {
+        "x": 12.75,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [
+        "custom_he57keak",
+        "door_yj6tezik"
+      ],
+      "created_at": "2026-03-16T11:31:07.639Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "ew_north": {
+      "id": "ew_north",
+      "type": "Wall",
+      "name": "East Wing North Wall",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": -6.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:32:02.131Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "ew_south": {
+      "id": "ew_south",
+      "type": "Wall",
+      "name": "East Wing South Wall",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 22.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:32:53.043Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "ww_west": {
+      "id": "ww_west",
+      "type": "Wall",
+      "name": "West Wing West Wall",
+      "position": {
+        "x": -21.75,
+        "y": 2,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [
+        "custom_sumh2252"
+      ],
+      "created_at": "2026-03-16T11:33:51.767Z",
+      "modified_at": "2026-03-16T12:14:57.911Z",
+      "version": 3
+    },
+    "ww_east_colonnade": {
+      "id": "ww_east_colonnade",
+      "type": "Wall",
+      "name": "West Wing Colonnade Screen",
+      "position": {
+        "x": -12.75,
+        "y": 2,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble_veneer",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [
+        "door_13mmhzyt"
+      ],
+      "created_at": "2026-03-16T11:34:25.884Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 4,
+      "surface_matrix": {
+        "code": "const num_cols = 10; const u_scaled = u * num_cols; const fract = u_scaled - Math.floor(u_scaled); return (fract > 0.25 && v > 0.1 && v < 0.85) ? 0 : 1;",
+        "resolution": 48,
+        "min_value": 0,
+        "max_value": 10,
+        "hole_threshold": 0.01,
+        "interpolation": "bilinear",
+        "rows": 24,
+        "cols": 24,
+        "data": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "description": "Custom Wall shape"
+      }
+    },
+    "ww_north": {
+      "id": "ww_north",
+      "type": "Wall",
+      "name": "West Wing North Wall",
+      "position": {
+        "x": -17.25,
+        "y": 2,
+        "z": -6.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:35:10.963Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "ww_south": {
+      "id": "ww_south",
+      "type": "Wall",
+      "name": "West Wing South Wall",
+      "position": {
+        "x": -17.25,
+        "y": 2,
+        "z": 17.75
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:35:45.065Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_vt0n0c32": {
+      "id": "custom_vt0n0c32",
+      "type": "Custom",
+      "name": "Infinity Pool",
+      "position": {
+        "x": 0,
+        "y": -0.25,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "ceramic_glazed_tiles",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Infinity Pool\n# Description: Infinity Pool excavated into the courtyard floor. Aligns perfectly with the bottom of the courtyard slab.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:38:00.748Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_gtduano2": {
+      "id": "custom_gtduano2",
+      "type": "Custom",
+      "name": "Belvedere Observation Tower",
+      "position": {
+        "x": 15,
+        "y": 8.25,
+        "z": -4.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 8.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Belvedere Observation Tower\n# Description: A 5x5m observation tower, 8.5m tall, sitting on the NW corner of the East Wing.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:39:34.691Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "roof_bvqdpofv": {
+      "id": "roof_bvqdpofv",
+      "type": "Roof",
+      "name": "Main Villa Terracotta Roof",
+      "position": {
+        "x": 0,
+        "y": 6.2,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.4,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta_roof_tiles",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "roof_style": "hip",
+      "created_at": "2026-03-16T11:40:57.564Z",
+      "modified_at": "2026-03-16T12:59:25.771Z",
+      "version": 5
+    },
+    "roof_2iw5bae2": {
+      "id": "roof_2iw5bae2",
+      "type": "Roof",
+      "name": "East Wing Terracotta Roof",
+      "position": {
+        "x": 17.25,
+        "y": 4.2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 0.4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta_roof_tiles",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "roof_style": "hip",
+      "created_at": "2026-03-16T11:40:57.564Z",
+      "modified_at": "2026-03-16T12:59:25.774Z",
+      "version": 5
+    },
+    "roof_v7evwed3": {
+      "id": "roof_v7evwed3",
+      "type": "Roof",
+      "name": "West Wing Terracotta Roof",
+      "position": {
+        "x": -17.25,
+        "y": 4.2,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 0.4,
+        "z": 25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta_roof_tiles",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "roof_style": "hip",
+      "created_at": "2026-03-16T11:40:57.564Z",
+      "modified_at": "2026-03-16T12:59:25.777Z",
+      "version": 5
+    },
+    "custom_he57keak": {
+      "id": "custom_he57keak",
+      "type": "Custom",
+      "name": "Trompe l'Oeil Fresco",
+      "position": {
+        "x": 12.450000000000001,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.1,
+        "y": 3.5,
+        "z": 28
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "painted_fresco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "ew_west_trompe",
+      "children_ids": [],
+      "cad_script": "# Custom element: Trompe l'Oeil Fresco\n# Description: A vibrant Greek-style fresco depicting a lush garden and faux columns, painted on the plaster.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:40:57.565Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_febiaw32": {
+      "id": "custom_febiaw32",
+      "type": "Custom",
+      "name": "Main Villa Greek Frieze",
+      "position": {
+        "x": 0,
+        "y": 5.75,
+        "z": -7.1000000000000005
+      },
+      "dimensions": {
+        "x": 19,
+        "y": 0.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "cad_script": "# Custom element: Main Villa Greek Frieze\n# Description: A decorative Pentelic marble frieze with meander patterns running along the top of the Main Villa's south-facing walls, acting as a lintel over the apse.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:40:57.565Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "slab_5iphsnfz": {
+      "id": "slab_5iphsnfz",
+      "type": "Slab",
+      "name": "West Courtyard Floor",
+      "position": {
+        "x": -10,
+        "y": 0.1,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 0.2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.144Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "slab_9clrmkfq": {
+      "id": "slab_9clrmkfq",
+      "type": "Slab",
+      "name": "East Courtyard Floor",
+      "position": {
+        "x": 10,
+        "y": 0.1,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 0.2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.145Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "slab_xqpjaxbq": {
+      "id": "slab_xqpjaxbq",
+      "type": "Slab",
+      "name": "North Courtyard Floor",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": -4.5
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.2,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.146Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "slab_uwz7lxwf": {
+      "id": "slab_uwz7lxwf",
+      "type": "Slab",
+      "name": "South Courtyard Floor",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": 10.5
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.2,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:42:54.146Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_q82c3m30": {
+      "id": "custom_q82c3m30",
+      "type": "Custom",
+      "name": "Marble Statue of Poseidon",
+      "position": {
+        "x": 0,
+        "y": 1.7,
+        "z": -2.75
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 3,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const pedGeo = new THREE.BoxGeometry(width, height * 0.2, depth); const pedestal = new THREE.Mesh(pedGeo); pedestal.position.y = -height * 0.4; group.add(pedestal); const bodyGeo = new THREE.CylinderGeometry(width * 0.3, width * 0.4, height * 0.6, 16); const body = new THREE.Mesh(bodyGeo); body.position.y = 0; group.add(body); const headGeo = new THREE.SphereGeometry(Math.min(width, depth) * 0.25, 16, 16); const head = new THREE.Mesh(headGeo); head.position.y = height * 0.4; group.add(head); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Marble Statue of Poseidon\n# Description: A custom Marble Statue of Poseidon positioned at the north edge of the Infinity Pool, facing south towards the water.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:44:35.876Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "partition_q5j55o8u": {
+      "id": "partition_q5j55o8u",
+      "type": "Partition",
+      "name": "East Wing Partition 1",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 0.5
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:46:18.460Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "partition_4vd7fpmb": {
+      "id": "partition_4vd7fpmb",
+      "type": "Partition",
+      "name": "East Wing Partition 2",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:46:18.460Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "partition_wuqvk1c8": {
+      "id": "partition_wuqvk1c8",
+      "type": "Partition",
+      "name": "East Wing Partition 3",
+      "position": {
+        "x": 17.25,
+        "y": 2,
+        "z": 15.5
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 4,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:46:18.461Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_mf2eng4y": {
+      "id": "custom_mf2eng4y",
+      "type": "Custom",
+      "name": "Mediterranean Dining Set",
+      "position": {
+        "x": -17.25,
+        "y": 0.6,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 0.8,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "cad_script": "# Custom element: Mediterranean Dining Set\n# Description: Custom Mediterranean wooden dining table accompanied by exactly 5 chairs. The set is arranged to leave ample circulation space and sits flush on the ground.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:47:27.356Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_3x2s7zff": {
+      "id": "custom_3x2s7zff",
+      "type": "Custom",
+      "name": "Master Bed and Frescoed Headboard",
+      "position": {
+        "x": 17.25,
+        "y": 0.8,
+        "z": -3.125
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 1.2,
+        "z": 2.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Master Bed and Frescoed Headboard\n# Description: A luxurious master bed with a painted fresco headboard, crafted from oak wood. Fits perfectly in the northernmost room of the East Wing.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:49:02.678Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_1rdmzg4g": {
+      "id": "custom_1rdmzg4g",
+      "type": "Custom",
+      "name": "Childrens Triple Bed Set",
+      "position": {
+        "x": 17.25,
+        "y": 0.7000000000000001,
+        "z": 4.25
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 1,
+        "z": 2.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Childrens Triple Bed Set\n# Description: A wooden triple bed set for the remaining 3 family members, located in the East Wing's second room.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:50:41.711Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_olnp72wv": {
+      "id": "custom_olnp72wv",
+      "type": "Custom",
+      "name": "Custom summer lounge seating",
+      "position": {
+        "x": -17.25,
+        "y": 0.5,
+        "z": 14
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 1,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group();\n\n// Back sofa\nconst backGeo = new THREE.BoxGeometry(width, height, depth * 0.2);\nconst backMesh = new THREE.Mesh(backGeo);\nbackMesh.position.set(0, 0, -depth * 0.4);\ngroup.add(backMesh);\n\n// Left sofa\nconst leftGeo = new THREE.BoxGeometry(width * 0.2, height * 0.6, depth * 0.8);\nconst leftMesh = new THREE.Mesh(leftGeo);\nleftMesh.position.set(-width * 0.4, -height * 0.2, depth * 0.1);\ngroup.add(leftMesh);\n\n// Right sofa\nconst rightGeo = new THREE.BoxGeometry(width * 0.2, height * 0.6, depth * 0.8);\nconst rightMesh = new THREE.Mesh(rightGeo);\nrightMesh.position.set(width * 0.4, -height * 0.2, depth * 0.1);\ngroup.add(rightMesh);\n\n// Coffee table\nconst tableGeo = new THREE.BoxGeometry(width * 0.5, height * 0.3, depth * 0.5);\nconst tableMesh = new THREE.Mesh(tableGeo);\ntableMesh.position.set(0, -height * 0.35, depth * 0.1);\ngroup.add(tableMesh);\n\nreturn group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Custom summer lounge seating\n# Description: Custom summer lounge seating arrangement featuring low wooden sofas and a central coffee table. Fits comfortably within the colonnade screen and enhances the open, breezy summer vibe.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:51:49.817Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_3bov7c9n": {
+      "id": "custom_3bov7c9n",
+      "type": "Custom",
+      "name": "Greek Terracotta Amphoras",
+      "position": {
+        "x": 6,
+        "y": 0.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 0.6,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const group = new THREE.Group(); const points = []; for ( let i = 0; i <= 20; i ++ ) { const v = i / 20; let r = 0; if(v < 0.1) r = 0.2 + v; else if(v < 0.7) r = 0.3 + 0.7 * Math.sin((v-0.1)/0.6 * Math.PI); else if(v < 0.9) r = 0.3 - 0.1 * Math.sin((v-0.7)/0.2 * Math.PI); else r = 0.2 + 1.5 * (v-0.9); points.push( new THREE.Vector2( r, v - 0.5 ) ); } const geo = new THREE.LatheGeometry( points, 32 ); const m1 = new THREE.Mesh(geo); m1.scale.set(width*0.25, height, depth*0.25); m1.position.set(-width*0.2, 0, -depth*0.2); group.add(m1); const m2 = new THREE.Mesh(geo); m2.scale.set(width*0.2, height*0.75, depth*0.2); m2.position.set(width*0.25, -height*0.125, 0); group.add(m2); const m3 = new THREE.Mesh(geo); m3.scale.set(width*0.15, height*0.5, depth*0.15); m3.position.set(-width*0.05, -height*0.25, depth*0.25); group.add(m3); return group;"
+      },
+      "cad_script": "# Custom element: Greek Terracotta Amphoras\n# Description: A cluster of three large decorative Greek terracotta amphoras of varying sizes, placed near the infinity pool.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:53:29.714Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_sumh2252": {
+      "id": "custom_sumh2252",
+      "type": "Custom",
+      "name": "Mediterranean Sunset Fresco",
+      "position": {
+        "x": -21.45,
+        "y": 2.5,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 0.1,
+        "y": 2,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "painted_fresco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "ww_west",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Mediterranean Sunset Fresco\n# Description: A custom painted fresco depicting a Mediterranean sunset to decorate the inner face of the West Wing West Wall. It sits perfectly flush against the wall to maximize the summer vibes.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:55:44.624Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_90wk1bp9": {
+      "id": "custom_90wk1bp9",
+      "type": "Custom",
+      "name": "Custom Wooden Pergola draped with vibrant pink Bougainvillea vines",
+      "position": {
+        "x": -17.25,
+        "y": 3,
+        "z": 14
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 0.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const group = new THREE.Group(); const beamGeo = new THREE.BoxGeometry(width * 0.05, height * 0.6, depth); const crossGeo = new THREE.BoxGeometry(width, height * 0.4, depth * 0.05); const vineGeo = new THREE.BoxGeometry(width * 0.2, height * 0.5, depth * 0.2); for(let i=0; i<5; i++) { const b = new THREE.Mesh(beamGeo); b.position.set(-width*0.45 + i*(width*0.225), -height*0.2, 0); group.add(b); const c = new THREE.Mesh(crossGeo); c.position.set(0, height*0.3, -depth*0.45 + i*(depth*0.225)); group.add(c); } const v1 = new THREE.Mesh(vineGeo); v1.position.set(-width*0.3, height*0.25, -depth*0.3); group.add(v1); const v2 = new THREE.Mesh(vineGeo); v2.position.set(width*0.3, height*0.25, depth*0.3); group.add(v2); const v3 = new THREE.Mesh(vineGeo); v3.position.set(-width*0.2, height*0.25, depth*0.4); group.add(v3); const v4 = new THREE.Mesh(vineGeo); v4.position.set(width*0.4, height*0.25, -depth*0.2); group.add(v4); return group;"
+      },
+      "cad_script": "# Custom element: Custom Wooden Pergola draped with vibrant pink Bougainvillea vines\n# Description: Custom Wooden Pergola draped with vibrant pink Bougainvillea vines, providing dappled shade.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:57:07.899Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_xqn2knfs": {
+      "id": "custom_xqn2knfs",
+      "type": "Custom",
+      "name": "NW Olive Tree Pot",
+      "position": {
+        "x": -9,
+        "y": 1.8,
+        "z": -3.5
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 3,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const group = new THREE.Group(); const potH = height * 0.3; const potGeo = new THREE.CylinderGeometry(width * 0.4, width * 0.25, potH, 16); potGeo.translate(0, -height/2 + potH/2, 0); const pot = new THREE.Mesh(potGeo, new THREE.MeshStandardMaterial({color: 0xcc6633})); group.add(pot); const trunkH = height * 0.4; const trunkGeo = new THREE.CylinderGeometry(width * 0.05, width * 0.08, trunkH, 8); trunkGeo.translate(0, -height/2 + potH + trunkH/2, 0); const trunk = new THREE.Mesh(trunkGeo, new THREE.MeshStandardMaterial({color: 0x553311})); group.add(trunk); const leavesH = height * 0.4; const leavesGeo = new THREE.SphereGeometry(width * 0.5, 16, 16); leavesGeo.scale(1, leavesH / (width * 0.5), 1); leavesGeo.translate(0, height/2 - leavesH/2, 0); const leaves = new THREE.Mesh(leavesGeo, new THREE.MeshStandardMaterial({color: 0x44aa44})); group.add(leaves); return group;"
+      },
+      "cad_script": "# Custom element: NW Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:58:55.798Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_f9gibu1j": {
+      "id": "custom_f9gibu1j",
+      "type": "Custom",
+      "name": "NE Olive Tree Pot",
+      "position": {
+        "x": 9,
+        "y": 1.8,
+        "z": -3.5
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 3,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const potH = height * 0.3; const potGeo = new THREE.CylinderGeometry(width * 0.4, width * 0.25, potH, 16); potGeo.translate(0, -height/2 + potH/2, 0); const pot = new THREE.Mesh(potGeo, new THREE.MeshStandardMaterial({color: 0xcc6633})); group.add(pot); const trunkH = height * 0.4; const trunkGeo = new THREE.CylinderGeometry(width * 0.05, width * 0.08, trunkH, 8); trunkGeo.translate(0, -height/2 + potH + trunkH/2, 0); const trunk = new THREE.Mesh(trunkGeo, new THREE.MeshStandardMaterial({color: 0x553311})); group.add(trunk); const leavesH = height * 0.4; const leavesGeo = new THREE.SphereGeometry(width * 0.5, 16, 16); leavesGeo.scale(1, leavesH / (width * 0.5), 1); leavesGeo.translate(0, height/2 - leavesH/2, 0); const leaves = new THREE.Mesh(leavesGeo, new THREE.MeshStandardMaterial({color: 0x44aa44})); group.add(leaves); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: NE Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:58:55.798Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_dibypoyj": {
+      "id": "custom_dibypoyj",
+      "type": "Custom",
+      "name": "SW Olive Tree Pot",
+      "position": {
+        "x": -9,
+        "y": 1.8,
+        "z": 9.5
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 3,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const potH = height * 0.3; const potGeo = new THREE.CylinderGeometry(width * 0.4, width * 0.25, potH, 16); potGeo.translate(0, -height/2 + potH/2, 0); const pot = new THREE.Mesh(potGeo, new THREE.MeshStandardMaterial({color: 0xcc6633})); group.add(pot); const trunkH = height * 0.4; const trunkGeo = new THREE.CylinderGeometry(width * 0.05, width * 0.08, trunkH, 8); trunkGeo.translate(0, -height/2 + potH + trunkH/2, 0); const trunk = new THREE.Mesh(trunkGeo, new THREE.MeshStandardMaterial({color: 0x553311})); group.add(trunk); const leavesH = height * 0.4; const leavesGeo = new THREE.SphereGeometry(width * 0.5, 16, 16); leavesGeo.scale(1, leavesH / (width * 0.5), 1); leavesGeo.translate(0, height/2 - leavesH/2, 0); const leaves = new THREE.Mesh(leavesGeo, new THREE.MeshStandardMaterial({color: 0x44aa44})); group.add(leaves); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: SW Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:58:55.798Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_l712gqbt": {
+      "id": "custom_l712gqbt",
+      "type": "Custom",
+      "name": "SE Olive Tree Pot",
+      "position": {
+        "x": 9,
+        "y": 1.8,
+        "z": 9.5
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 3,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const potH = height * 0.3; const potGeo = new THREE.CylinderGeometry(width * 0.4, width * 0.25, potH, 16); potGeo.translate(0, -height/2 + potH/2, 0); const pot = new THREE.Mesh(potGeo, new THREE.MeshStandardMaterial({color: 0xcc6633})); group.add(pot); const trunkH = height * 0.4; const trunkGeo = new THREE.CylinderGeometry(width * 0.05, width * 0.08, trunkH, 8); trunkGeo.translate(0, -height/2 + potH + trunkH/2, 0); const trunk = new THREE.Mesh(trunkGeo, new THREE.MeshStandardMaterial({color: 0x553311})); group.add(trunk); const leavesH = height * 0.4; const leavesGeo = new THREE.SphereGeometry(width * 0.5, 16, 16); leavesGeo.scale(1, leavesH / (width * 0.5), 1); leavesGeo.translate(0, height/2 - leavesH/2, 0); const leaves = new THREE.Mesh(leavesGeo, new THREE.MeshStandardMaterial({color: 0x44aa44})); group.add(leaves); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: SE Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:58:55.798Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_8re1qa1g": {
+      "id": "custom_8re1qa1g",
+      "type": "Custom",
+      "name": "NW Bronze Fire Bowl",
+      "position": {
+        "x": -8.5,
+        "y": 0.7000000000000001,
+        "z": -3
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bronze",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const pts = []; pts.push(new THREE.Vector2(0, -height/2)); pts.push(new THREE.Vector2(width*0.3, -height/2)); pts.push(new THREE.Vector2(width*0.5, -height*0.1)); pts.push(new THREE.Vector2(width*0.5, height/2)); pts.push(new THREE.Vector2(width*0.45, height/2)); pts.push(new THREE.Vector2(width*0.45, -height*0.05)); pts.push(new THREE.Vector2(width*0.25, -height*0.4)); pts.push(new THREE.Vector2(0, -height*0.4)); return new THREE.LatheGeometry(pts, 64);"
+      },
+      "cad_script": "# Custom element: NW Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:01:39.334Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_cq17k0vq": {
+      "id": "custom_cq17k0vq",
+      "type": "Custom",
+      "name": "NE Bronze Fire Bowl",
+      "position": {
+        "x": 8.5,
+        "y": 0.7000000000000001,
+        "z": -3
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bronze",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const pts = []; pts.push(new THREE.Vector2(0, -height/2)); pts.push(new THREE.Vector2(width*0.3, -height/2)); pts.push(new THREE.Vector2(width*0.5, -height*0.1)); pts.push(new THREE.Vector2(width*0.5, height/2)); pts.push(new THREE.Vector2(width*0.45, height/2)); pts.push(new THREE.Vector2(width*0.45, -height*0.05)); pts.push(new THREE.Vector2(width*0.25, -height*0.4)); pts.push(new THREE.Vector2(0, -height*0.4)); return new THREE.LatheGeometry(pts, 64);",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: NE Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:01:39.335Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_e1vvq20d": {
+      "id": "custom_e1vvq20d",
+      "type": "Custom",
+      "name": "SW Bronze Fire Bowl",
+      "position": {
+        "x": -8.5,
+        "y": 0.7000000000000001,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bronze",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const pts = []; pts.push(new THREE.Vector2(0, -height/2)); pts.push(new THREE.Vector2(width*0.3, -height/2)); pts.push(new THREE.Vector2(width*0.5, -height*0.1)); pts.push(new THREE.Vector2(width*0.5, height/2)); pts.push(new THREE.Vector2(width*0.45, height/2)); pts.push(new THREE.Vector2(width*0.45, -height*0.05)); pts.push(new THREE.Vector2(width*0.25, -height*0.4)); pts.push(new THREE.Vector2(0, -height*0.4)); return new THREE.LatheGeometry(pts, 64);"
+      },
+      "cad_script": "# Custom element: SW Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:01:39.335Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_33mdzt64": {
+      "id": "custom_33mdzt64",
+      "type": "Custom",
+      "name": "SE Bronze Fire Bowl",
+      "position": {
+        "x": 8.5,
+        "y": 0.7000000000000001,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bronze",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const pts = []; pts.push(new THREE.Vector2(0, -height/2)); pts.push(new THREE.Vector2(width*0.3, -height/2)); pts.push(new THREE.Vector2(width*0.5, -height*0.1)); pts.push(new THREE.Vector2(width*0.5, height/2)); pts.push(new THREE.Vector2(width*0.45, height/2)); pts.push(new THREE.Vector2(width*0.45, -height*0.05)); pts.push(new THREE.Vector2(width*0.25, -height*0.4)); pts.push(new THREE.Vector2(0, -height*0.4)); return new THREE.LatheGeometry(pts, 64);",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: SE Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:01:39.335Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_1zxqk8bm": {
+      "id": "custom_1zxqk8bm",
+      "type": "Custom",
+      "name": "Custom Greek Pediment and Meander Relief",
+      "position": {
+        "x": 0,
+        "y": 5.4,
+        "z": -22.2
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 1.2,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "mv_north",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group(); const pedShape = new THREE.Shape(); pedShape.moveTo(-width/2, -height*0.375); pedShape.lineTo(width/2, -height*0.375); pedShape.lineTo(0, height*0.375); pedShape.lineTo(-width/2, -height*0.375); const pedGeo = new THREE.ExtrudeGeometry(pedShape, { depth: depth, bevelEnabled: false }); pedGeo.center(); pedGeo.translate(0, height*0.125, 0); group.add(new THREE.Mesh(pedGeo)); const friezeGeo = new THREE.BoxGeometry(width, height*0.25, depth*0.8); friezeGeo.translate(0, -height*0.375, 0); group.add(new THREE.Mesh(friezeGeo)); return group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Custom Greek Pediment and Meander Relief\n# Description: A custom sculpted Greek pediment with meander wall reliefs in pentelic marble.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:07:04.857Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_xwp3sl3j": {
+      "id": "custom_xwp3sl3j",
+      "type": "Custom",
+      "name": "Custom Dolphin Mosaic",
+      "position": {
+        "x": 0,
+        "y": -0.45,
+        "z": 3
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 0.05,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pebble_mosaics_hokhlakia",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Custom Dolphin Mosaic\n# Description: A decorative custom dolphin mosaic made of pebble mosaics, situated at the bottom of the infinity pool.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:07:58.834Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "custom_e4r49n8q": {
+      "id": "custom_e4r49n8q",
+      "type": "Custom",
+      "name": "Set of 5 Custom Wooden Sun Loungers",
+      "position": {
+        "x": 0,
+        "y": 0.45,
+        "z": 9.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.5,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group();\nconst count = 5;\nconst spacing = width / count;\nconst lWidth = spacing * 0.8;\nconst lDepth = depth;\nconst bHeight = height * 0.4;\nconst cThickness = height * 0.2;\n\nconst woodMat = new THREE.MeshStandardMaterial({color: 0x8b5a2b, roughness: 0.8});\nconst clothMat = new THREE.MeshStandardMaterial({color: 0xf0f0f0, roughness: 0.9});\n\nfor(let i=0; i<count; i++) {\n    const x = -width/2 + spacing/2 + i*spacing;\n\n    const baseGeo = new THREE.BoxGeometry(lWidth, bHeight, lDepth);\n    const base = new THREE.Mesh(baseGeo, woodMat);\n    base.position.set(x, -height/2 + bHeight/2, 0);\n    group.add(base);\n\n    const seatDepth = lDepth * 0.6;\n    const seatGeo = new THREE.BoxGeometry(lWidth*0.9, cThickness, seatDepth);\n    const seat = new THREE.Mesh(seatGeo, clothMat);\n    seat.position.set(x, -height/2 + bHeight + cThickness/2, -lDepth/2 + seatDepth/2);\n    group.add(seat);\n\n    const backHeight = (height - bHeight) / Math.cos(Math.PI/6);\n    const backGeo = new THREE.BoxGeometry(lWidth*0.9, backHeight, cThickness);\n    const back = new THREE.Mesh(backGeo, clothMat);\n    back.position.set(x, -height/2 + bHeight + (height - bHeight)/2, seat.position.z + seatDepth/2 + (backHeight/2)*Math.sin(Math.PI/6));\n    back.rotation.x = Math.PI / 6;\n    group.add(back);\n}\nreturn group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Set of 5 Custom Wooden Sun Loungers\n# Description: A set of 5 custom wooden sun loungers with white linen cushions, arranged side-by-side facing the infinity pool.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:09:33.266Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "door_0kqsitie": {
+      "id": "door_0kqsitie",
+      "type": "Door",
+      "name": "Main Villa Entrance Door",
+      "position": {
+        "x": -4.5,
+        "y": 1.2,
+        "z": -7.25
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 2.4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "mv_south_l",
+      "children_ids": [],
+      "created_at": "2026-03-16T12:10:47.912Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "door_yj6tezik": {
+      "id": "door_yj6tezik",
+      "type": "Door",
+      "name": "East Wing Entrance Door",
+      "position": {
+        "x": 12.75,
+        "y": 1.2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 2.4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "ew_west_trompe",
+      "children_ids": [],
+      "created_at": "2026-03-16T12:10:47.912Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "door_13mmhzyt": {
+      "id": "door_13mmhzyt",
+      "type": "Door",
+      "name": "West Wing Entrance Door",
+      "position": {
+        "x": -12.75,
+        "y": 1.2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 2.4,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "ww_east_colonnade",
+      "children_ids": [],
+      "created_at": "2026-03-16T12:10:47.913Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 3
+    },
+    "slab_f814twgy": {
+      "id": "slab_f814twgy",
+      "type": "Slab",
+      "name": "Main Villa Floor",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 19,
+        "y": 0.2,
+        "z": 14
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T12:13:44.459Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 2
+    },
+    "slab_e5k3t4on": {
+      "id": "slab_e5k3t4on",
+      "type": "Slab",
+      "name": "East Wing Floor",
+      "position": {
+        "x": 17.25,
+        "y": 0.1,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 0.2,
+        "z": 29
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T12:13:44.460Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 2
+    },
+    "slab_rnu4otky": {
+      "id": "slab_rnu4otky",
+      "type": "Slab",
+      "name": "West Wing Floor",
+      "position": {
+        "x": -17.25,
+        "y": 0.1,
+        "z": 5.5
+      },
+      "dimensions": {
+        "x": 8.5,
+        "y": 0.2,
+        "z": 24
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T12:13:44.460Z",
+      "modified_at": "2026-03-16T12:14:57.912Z",
+      "version": 2
+    },
+    "custom_mc0gafd6": {
+      "id": "custom_mc0gafd6",
+      "type": "Custom",
+      "name": "Custom Marble Kitchen Island and Wood-Fired Oven",
+      "position": {
+        "x": 6,
+        "y": 0.8,
+        "z": -18
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 1.2,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Custom Marble Kitchen Island and Wood-Fired Oven\n# Description: A luxurious custom kitchen island made of Pentelic marble, featuring an integrated terracotta wood-fired oven. The island provides ample cooking and dining space for a family of 5, with a rustic yet elegant Mediterranean design.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:18:49.121Z",
+      "modified_at": "2026-03-16T12:18:49.121Z",
+      "version": 1
+    },
+    "custom_ohc2eaus": {
+      "id": "custom_ohc2eaus",
+      "type": "Custom",
+      "name": "Custom Marble Kitchen Island",
+      "position": {
+        "x": 6,
+        "y": 0.8,
+        "z": -17.25
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 1.2,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pentelic_marble",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Custom Marble Kitchen Island\n# Description: The Pentelic marble counter portion of the kitchen island.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:21:25.335Z",
+      "modified_at": "2026-03-16T12:21:25.335Z",
+      "version": 1
+    },
+    "custom_dhn0ebg8": {
+      "id": "custom_dhn0ebg8",
+      "type": "Custom",
+      "name": "Custom Terracotta Wood-Fired Oven",
+      "position": {
+        "x": 6,
+        "y": 0.8,
+        "z": -18.75
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 1.2,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "terracotta",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Custom Terracotta Wood-Fired Oven\n# Description: The Terracotta wood-fired oven portion of the kitchen setup.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:21:25.335Z",
+      "modified_at": "2026-03-16T12:21:25.335Z",
+      "version": 1
+    },
+    "custom_rcmzyc0o": {
+      "id": "custom_rcmzyc0o",
+      "type": "Custom",
+      "name": "Propylaea Monumental Gateway",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 6,
+        "z": 4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "thickness": 1,
+        "type": "arch"
+      },
+      "cad_script": "# Custom element: Propylaea Monumental Gateway\n# Description: Custom Shaped Stucco Archway serving as the Propylaea Monumental Gateway\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T12:58:02.145Z",
+      "modified_at": "2026-03-16T12:58:02.145Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

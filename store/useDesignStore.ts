@@ -57,6 +57,7 @@ interface DesignState {
     chatMessages: ChatMessage[];
     isAIThinking: boolean;
     aiThinkingLogs: string[];
+    abortController: AbortController | null;
     isScreenshotRequested: boolean;
     undoStack: PSGOperation[];
     redoStack: PSGOperation[];
@@ -88,6 +89,7 @@ interface DesignState {
     revertToMessage: (messageId: string) => void;
     setAIThinking: (thinking: boolean) => void;
     setAIThinkingLogs: (logs: string[]) => void;
+    stopAIThinking: () => void;
     setScreenshotRequested: (requested: boolean) => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
@@ -134,6 +136,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     chatMessages: [],
     isAIThinking: false,
     aiThinkingLogs: [],
+    abortController: null,
     isScreenshotRequested: false,
     undoStack: [],
     redoStack: [],
@@ -147,6 +150,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     loadProject: (project) => set({
         project: projectWithCalculatedCost(project),
         selection: defaultSelection,
+        chatMessages: project.chat_history || [],
         undoStack: [],
         redoStack: [],
         error: null,
@@ -236,7 +240,12 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     setViewMode: (mode) => set({ viewMode: mode, camera: { ...get().camera, mode } }),
     setActivePanel: (panel) => set({ activePanel: panel }),
     setActiveFloorId: (id) => set({ activeFloorId: id }),
-    addChatMessage: (message) => set({ chatMessages: [...get().chatMessages, message] }),
+    addChatMessage: (message) => {
+        const newMessages = [...get().chatMessages, message];
+        const newProject = { ...get().project, chat_history: newMessages };
+        set({ chatMessages: newMessages, project: newProject, isDirty: true });
+        get().triggerAutosave();
+    },
     sendMessageToAI: async (text: string, attachments?: { name: string; type: string; data: string }[]) => {
         const { isAIThinking, project, chatMessages, addChatMessage, setAIThinking, setAIThinkingLogs, triggerAutosave, getProfessionalContext } = get();
         if ((!text.trim() && (!attachments || attachments.length === 0)) || isAIThinking) return;
@@ -257,12 +266,15 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         addChatMessage(userMsg);
         setAIThinking(true);
         setAIThinkingLogs([]);
+        const controller = new AbortController();
+        set({ abortController: controller });
         let hasChanges = false;
 
         try {
             const response = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({
                     message: text.trim(),
                     project,
@@ -378,15 +390,25 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             get().addChatMessage(aiMsg);
         } catch (err) {
             const error = err as Error;
-            get().addChatMessage({
-                id: `msg_${Date.now()}_err`,
-                role: 'assistant',
-                content: `Sorry, I encountered an error: ${error.message || 'The AI backend may not be connected yet.'}`,
-                timestamp: new Date().toISOString(),
-            });
+            if (error.name === 'AbortError') {
+                get().addChatMessage({
+                    id: `msg_${Date.now()}_err`,
+                    role: 'assistant',
+                    content: `Generation was stopped.`,
+                    timestamp: new Date().toISOString(),
+                });
+            } else {
+                get().addChatMessage({
+                    id: `msg_${Date.now()}_err`,
+                    role: 'assistant',
+                    content: `Sorry, I encountered an error: ${error.message || 'The AI backend may not be connected yet.'}`,
+                    timestamp: new Date().toISOString(),
+                });
+            }
         } finally {
             get().setAIThinking(false);
             get().setAIThinkingLogs([]);
+            set({ abortController: null });
             if (hasChanges) {
                 get().setScreenshotRequested(true);
             }
@@ -401,6 +423,8 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         if (targetMessage.snapshot) {
             // Restore project state
             const restoredProject = JSON.parse(JSON.stringify(targetMessage.snapshot));
+            const newMessages = chatMessages.slice(0, msgIndex + 1);
+            restoredProject.chat_history = newMessages;
             set({
                 project: projectWithCalculatedCost(restoredProject),
                 selection: defaultSelection,
@@ -409,13 +433,16 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                 error: null,
                 isDirty: true, // Revert makes it dirty
                 // Remove all messages strictly AFTER the one we revert to
-                chatMessages: chatMessages.slice(0, msgIndex + 1)
+                chatMessages: newMessages
             });
             get().triggerAutosave();
         }
     },
     setAIThinking: (thinking) => set({ isAIThinking: thinking }),
     setAIThinkingLogs: (logs) => set({ aiThinkingLogs: logs }),
+    stopAIThinking: () => {
+        get().abortController?.abort();
+    },
     setScreenshotRequested: (requested) => set({ isScreenshotRequested: requested }),
     setLoading: (loading) => set({ isLoading: loading }),
     setError: (error) => set({ error }),

@@ -1,0 +1,630 @@
+{
+  "id": "e7d9b802-3d02-4e05-bf37-e6a6621759b8",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-16T11:12:47.142Z",
+  "modified_at": "2026-03-16T11:31:07.639Z",
+  "version": 15,
+  "root_node_id": "house_8d63962a",
+  "nodes": {
+    "house_8d63962a": {
+      "id": "house_8d63962a",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "perim_north",
+        "perim_south_l",
+        "perim_south_r",
+        "door_b4514r93",
+        "perim_east",
+        "perim_west",
+        "mv_east",
+        "mv_west",
+        "mv_north",
+        "mv_south_l",
+        "mv_south_r",
+        "custom_b2k0t52q",
+        "ew_east",
+        "ew_west_trompe"
+      ],
+      "created_at": "2026-03-16T11:12:47.142Z",
+      "modified_at": "2026-03-16T11:31:07.639Z",
+      "version": 1
+    },
+    "perim_north": {
+      "id": "perim_north",
+      "type": "Wall",
+      "name": "Perimeter North Wall",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": -24.75
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:19:18.108Z",
+      "modified_at": "2026-03-16T11:19:18.108Z",
+      "version": 1
+    },
+    "perim_south_l": {
+      "id": "perim_south_l",
+      "type": "Wall",
+      "name": "Perimeter South Wall Left",
+      "position": {
+        "x": -12.25,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 20.5,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:19:53.334Z",
+      "modified_at": "2026-03-16T11:19:53.334Z",
+      "version": 1
+    },
+    "perim_south_r": {
+      "id": "perim_south_r",
+      "type": "Wall",
+      "name": "Perimeter South Wall Right",
+      "position": {
+        "x": 12.25,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 20.5,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:20:34.725Z",
+      "modified_at": "2026-03-16T11:20:34.725Z",
+      "version": 1
+    },
+    "door_b4514r93": {
+      "id": "door_b4514r93",
+      "type": "Door",
+      "name": "Secure Bronze Entry Gate",
+      "position": {
+        "x": 0,
+        "y": 1.75,
+        "z": 24.75
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 3.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bronze",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:21:23.227Z",
+      "modified_at": "2026-03-16T11:21:23.227Z",
+      "version": 1
+    },
+    "perim_east": {
+      "id": "perim_east",
+      "type": "Wall",
+      "name": "Perimeter East Wall",
+      "position": {
+        "x": 22.25,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 3.5,
+        "z": 49
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:22:00.864Z",
+      "modified_at": "2026-03-16T11:22:00.864Z",
+      "version": 1
+    },
+    "perim_west": {
+      "id": "perim_west",
+      "type": "Wall",
+      "name": "Perimeter West Wall",
+      "position": {
+        "x": -22.25,
+        "y": 1.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 3.5,
+        "z": 49
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:22:40.560Z",
+      "modified_at": "2026-03-16T11:22:40.560Z",
+      "version": 1
+    },
+    "mv_east": {
+      "id": "mv_east",
+      "type": "Wall",
+      "name": "Main Villa East Wall",
+      "position": {
+        "x": 9.75,
+        "y": 3,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 6,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:23:55.001Z",
+      "modified_at": "2026-03-16T11:23:55.001Z",
+      "version": 1
+    },
+    "mv_west": {
+      "id": "mv_west",
+      "type": "Wall",
+      "name": "Main Villa West Wall",
+      "position": {
+        "x": -9.75,
+        "y": 3,
+        "z": -14.5
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 6,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:24:28.495Z",
+      "modified_at": "2026-03-16T11:24:28.495Z",
+      "version": 1
+    },
+    "mv_north": {
+      "id": "mv_north",
+      "type": "Wall",
+      "name": "Main Villa North Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -21.75
+      },
+      "dimensions": {
+        "x": 19,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:25:09.635Z",
+      "modified_at": "2026-03-16T11:25:09.635Z",
+      "version": 1
+    },
+    "mv_south_l": {
+      "id": "mv_south_l",
+      "type": "Wall",
+      "name": "Main Villa South Wall Left",
+      "position": {
+        "x": -6.25,
+        "y": 3,
+        "z": -7.25
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:25:59.962Z",
+      "modified_at": "2026-03-16T11:25:59.962Z",
+      "version": 1
+    },
+    "mv_south_r": {
+      "id": "mv_south_r",
+      "type": "Wall",
+      "name": "Main Villa South Wall Right",
+      "position": {
+        "x": 6.25,
+        "y": 3,
+        "z": -7.25
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 6,
+        "z": 0.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:26:48.593Z",
+      "modified_at": "2026-03-16T11:26:48.593Z",
+      "version": 1
+    },
+    "custom_b2k0t52q": {
+      "id": "custom_b2k0t52q",
+      "type": "Custom",
+      "name": "Curved Apse Wall",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -8.5
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 6,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const shape = new THREE.Shape();\nconst R = 3.05;\nconst outerCenterY = -1.55;\nconst innerCenterY = -2.05;\nconst startAngleOuter = Math.atan2(0.55, 3);\nconst endAngleOuter = Math.atan2(0.55, -3);\nshape.absarc(0, outerCenterY, R, startAngleOuter, endAngleOuter, false);\nshape.lineTo(-3, -1.5);\nconst startAngleInner = Math.atan2(0.55, -3);\nconst endAngleInner = Math.atan2(0.55, 3);\nshape.absarc(0, innerCenterY, R, startAngleInner, endAngleInner, true);\nshape.lineTo(3, -1.0);\nconst extrudeSettings = { depth: height, bevelEnabled: false, curveSegments: 64 };\nconst geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);\ngeom.rotateX(-Math.PI / 2);\ngeom.translate(0, -height/2, 0);\nreturn geom;"
+      },
+      "cad_script": "# Custom element: Curved Apse Wall\n# Description: A custom semi-circular apse wall that bows inward, perfectly connecting the south walls.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-16T11:29:07.500Z",
+      "modified_at": "2026-03-16T11:29:07.500Z",
+      "version": 1
+    },
+    "ew_east": {
+      "id": "ew_east",
+      "type": "Wall",
+      "name": "East Wing East Wall",
+      "position": {
+        "x": 21.75,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:30:24.739Z",
+      "modified_at": "2026-03-16T11:30:24.739Z",
+      "version": 1
+    },
+    "ew_west_trompe": {
+      "id": "ew_west_trompe",
+      "type": "Wall",
+      "name": "East Wing Trompe l'Oeil Wall",
+      "position": {
+        "x": 12.75,
+        "y": 2,
+        "z": 8
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 4,
+        "z": 30
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "whitewashed_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8d63962a",
+      "children_ids": [],
+      "created_at": "2026-03-16T11:31:07.639Z",
+      "modified_at": "2026-03-16T11:31:07.639Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}
