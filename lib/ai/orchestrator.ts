@@ -1716,13 +1716,29 @@ export async function callProviderWithTools(
         if (signal?.aborted) throw new Error('User cancelled');
         try {
             const callConfig = { ...config, _timeoutMultiplier: timeoutMultiplier } as any;
+            let result: LLMCallResult;
             switch (config.provider) {
-                case 'gemini': return await callGemini(callConfig, messages, attachments, signal);
-                case 'groq': return await callGroq(config, messages, signal);
-                case 'openai': return await callOpenAI(config, messages, signal);
-                case 'github': return await callGithub(config, messages, signal);
+                case 'gemini': result = await callGemini(callConfig, messages, attachments, signal); break;
+                case 'groq': result = await callGroq(config, messages, signal); break;
+                case 'openai': result = await callOpenAI(config, messages, signal); break;
+                case 'github': result = await callGithub(config, messages, signal); break;
                 default: throw new Error(`Unknown provider: ${config.provider}`);
             }
+
+            // Fallback: If native tool call detection found nothing, check for toolsCalled JSON in text
+            if ((!result.toolCalls || result.toolCalls.length === 0) && result.text) {
+                const parsed = extractJSON<{ toolsCalled?: Array<{ tool: string; args: Record<string, unknown> }> }>(result.text);
+                if (parsed?.toolsCalled?.length) {
+                    result.toolCalls = [];
+                    for (const tc of parsed.toolsCalled) {
+                        // Strip "default_api:" prefix if present
+                        const name = tc.tool.includes(':') ? tc.tool.split(':').pop()! : tc.tool;
+                        result.toolCalls.push({ name, args: tc.args || {} });
+                    }
+                }
+            }
+
+            return result;
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
 
