@@ -2422,3 +2422,45 @@ select:focus-visible {
   text-decoration: underline;
   color: var(--accent-primary);
 }
+
+/* ── Pulse Animation ────────────────────────────────────────── */
+@keyframes pulse-opacity {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+.pulse-text {
+  animation: pulse-opacity 1.5s ease-in-out infinite;
+  color: var(--accent-secondary) !important;
+  font-weight: bold;
+}
+
+/* ── Chat Message Layout ─────────────────────────────────────── */
+.chat-message-ai {
+    background: var(--bg-panel-solid) !important;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.chat-message-user {
+    background: var(--bg-active) !important;
+    border: 1px solid rgba(108, 99, 255, 0.2);
+}
+
+.chat-pipeline-log::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-pipeline-log::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.chat-pipeline-log::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.chat-pipeline-log::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}

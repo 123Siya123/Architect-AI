@@ -3,8 +3,8 @@
   "name": "Untitled Project",
   "description": "",
   "created_at": "2026-03-16T11:12:47.142Z",
-  "modified_at": "2026-03-16T17:06:41.036Z",
-  "version": 182,
+  "modified_at": "2026-03-16T17:03:36.965Z",
+  "version": 176,
   "root_node_id": "house_8d63962a",
   "nodes": {
     "house_8d63962a": {
@@ -97,8 +97,8 @@
         "custom_3vuqp01r"
       ],
       "created_at": "2026-03-16T11:12:47.142Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:03:36.965Z",
+      "version": 5
     },
     "perim_north": {
       "id": "perim_north",
@@ -136,8 +136,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:19:18.108Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "perim_south_l": {
       "id": "perim_south_l",
@@ -175,8 +175,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:19:53.334Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 8
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 7
     },
     "perim_south_r": {
       "id": "perim_south_r",
@@ -214,8 +214,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:20:34.725Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 8
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 7
     },
     "door_b4514r93": {
       "id": "door_b4514r93",
@@ -251,8 +251,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:21:23.227Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "perim_east": {
       "id": "perim_east",
@@ -290,8 +290,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:22:00.864Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "perim_west": {
       "id": "perim_west",
@@ -329,8 +329,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:22:40.560Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "mv_east": {
       "id": "mv_east",
@@ -368,8 +368,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:23:55.001Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "mv_west": {
       "id": "mv_west",
@@ -407,8 +407,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:24:28.495Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "mv_north": {
       "id": "mv_north",
@@ -448,8 +448,8 @@
         "custom_1zxqk8bm"
       ],
       "created_at": "2026-03-16T11:25:09.635Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "mv_south_l": {
       "id": "mv_south_l",
@@ -489,8 +489,8 @@
         "door_0kqsitie"
       ],
       "created_at": "2026-03-16T11:25:59.962Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "mv_south_r": {
       "id": "mv_south_r",
@@ -528,8 +528,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:26:48.593Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "custom_b2k0t52q": {
       "id": "custom_b2k0t52q",
@@ -572,8 +572,8 @@
       },
       "cad_script": "# Custom element: Curved Apse Wall\n# Description: A custom semi-circular apse wall that bows inward, perfectly connecting the south walls.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:29:07.500Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "ew_east": {
       "id": "ew_east",
@@ -611,8 +611,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:30:24.739Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 5
     },
     "ew_west_trompe": {
       "id": "ew_west_trompe",
@@ -655,8 +655,8 @@
         "custom_ew_portico"
       ],
       "created_at": "2026-03-16T11:31:07.639Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 8
+      "modified_at": "2026-03-16T17:01:47.084Z",
+      "version": 7
     },
     "ew_north": {
       "id": "ew_north",
@@ -694,8 +694,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:32:02.131Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "ew_south": {
       "id": "ew_south",
@@ -733,8 +733,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:32:53.043Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "ww_west": {
       "id": "ww_west",
@@ -774,8 +774,8 @@
         "custom_sumh2252"
       ],
       "created_at": "2026-03-16T11:33:51.767Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "ww_east_colonnade": {
       "id": "ww_east_colonnade",
@@ -817,8 +817,8 @@
         "custom_ww_portico"
       ],
       "created_at": "2026-03-16T11:34:25.884Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 9,
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 8,
       "surface_matrix": {
         "code": "const num_cols = 10; const u_scaled = u * num_cols; const fract = u_scaled - Math.floor(u_scaled); return (fract > 0.25 && v > 0.1 && v < 0.85) ? 0 : 1;",
         "resolution": 48,
@@ -1493,8 +1493,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:35:10.963Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "ww_south": {
       "id": "ww_south",
@@ -1532,8 +1532,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:35:45.065Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_vt0n0c32": {
       "id": "custom_vt0n0c32",
@@ -1575,8 +1575,8 @@
       },
       "cad_script": "# Custom element: Infinity Pool\n# Description: Infinity Pool excavated into the courtyard floor. Aligns perfectly with the bottom of the courtyard slab.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:38:00.748Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "roof_bvqdpofv": {
       "id": "roof_bvqdpofv",
@@ -1613,8 +1613,8 @@
       "children_ids": [],
       "roof_style": "hip",
       "created_at": "2026-03-16T11:40:57.564Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 8
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 7
     },
     "roof_2iw5bae2": {
       "id": "roof_2iw5bae2",
@@ -1651,8 +1651,8 @@
       "children_ids": [],
       "roof_style": "hip",
       "created_at": "2026-03-16T11:40:57.564Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 8
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 7
     },
     "roof_v7evwed3": {
       "id": "roof_v7evwed3",
@@ -1689,8 +1689,8 @@
       "children_ids": [],
       "roof_style": "hip",
       "created_at": "2026-03-16T11:40:57.564Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 8
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 7
     },
     "custom_he57keak": {
       "id": "custom_he57keak",
@@ -1729,8 +1729,8 @@
       "children_ids": [],
       "cad_script": "# Custom element: Trompe l'Oeil Fresco\n# Description: A vibrant Greek-style fresco depicting a lush garden and faux columns, painted on the plaster.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:40:57.565Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_febiaw32": {
       "id": "custom_febiaw32",
@@ -1769,8 +1769,8 @@
       "children_ids": [],
       "cad_script": "# Custom element: Main Villa Greek Frieze\n# Description: A decorative Pentelic marble frieze with meander patterns running along the top of the Main Villa's south-facing walls, acting as a lintel over the apse.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:40:57.565Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "slab_5iphsnfz": {
       "id": "slab_5iphsnfz",
@@ -1808,8 +1808,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:42:54.144Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "slab_9clrmkfq": {
       "id": "slab_9clrmkfq",
@@ -1847,8 +1847,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:42:54.145Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "slab_xqpjaxbq": {
       "id": "slab_xqpjaxbq",
@@ -1886,8 +1886,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:42:54.146Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "slab_uwz7lxwf": {
       "id": "slab_uwz7lxwf",
@@ -1925,8 +1925,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:42:54.146Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_q82c3m30": {
       "id": "custom_q82c3m30",
@@ -1969,8 +1969,8 @@
       },
       "cad_script": "# Custom element: Marble Statue of Poseidon\n# Description: A custom Marble Statue of Poseidon positioned at the north edge of the Infinity Pool, facing south towards the water.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:44:35.876Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "partition_q5j55o8u": {
       "id": "partition_q5j55o8u",
@@ -2006,8 +2006,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:46:18.460Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "partition_4vd7fpmb": {
       "id": "partition_4vd7fpmb",
@@ -2043,8 +2043,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:46:18.460Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "partition_wuqvk1c8": {
       "id": "partition_wuqvk1c8",
@@ -2080,8 +2080,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T11:46:18.461Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_mf2eng4y": {
       "id": "custom_mf2eng4y",
@@ -2120,8 +2120,8 @@
       "children_ids": [],
       "cad_script": "# Custom element: Mediterranean Dining Set\n# Description: Custom Mediterranean wooden dining table accompanied by exactly 5 chairs. The set is arranged to leave ample circulation space and sits flush on the ground.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:47:27.356Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_3x2s7zff": {
       "id": "custom_3x2s7zff",
@@ -2163,8 +2163,8 @@
       },
       "cad_script": "# Custom element: Master Bed and Frescoed Headboard\n# Description: A luxurious master bed with a painted fresco headboard, crafted from oak wood. Fits perfectly in the northernmost room of the East Wing.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:49:02.678Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_1rdmzg4g": {
       "id": "custom_1rdmzg4g",
@@ -2206,8 +2206,8 @@
       },
       "cad_script": "# Custom element: Childrens Triple Bed Set\n# Description: A wooden triple bed set for the remaining 3 family members, located in the East Wing's second room.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:50:41.711Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_olnp72wv": {
       "id": "custom_olnp72wv",
@@ -2250,15 +2250,15 @@
       },
       "cad_script": "# Custom element: Custom summer lounge seating\n# Description: Custom summer lounge seating arrangement featuring low wooden sofas and a central coffee table. Fits comfortably within the colonnade screen and enhances the open, breezy summer vibe.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:51:49.817Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_3bov7c9n": {
       "id": "custom_3bov7c9n",
       "type": "Custom",
       "name": "Greek Terracotta Amphoras",
       "position": {
-        "x": 10,
+        "x": 6,
         "y": 0.5,
         "z": 0
       },
@@ -2294,8 +2294,8 @@
       },
       "cad_script": "# Custom element: Greek Terracotta Amphoras\n# Description: A cluster of three large decorative Greek terracotta amphoras of varying sizes, placed near the infinity pool.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:53:29.714Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 7
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_sumh2252": {
       "id": "custom_sumh2252",
@@ -2337,8 +2337,8 @@
       },
       "cad_script": "# Custom element: Mediterranean Sunset Fresco\n# Description: A custom painted fresco depicting a Mediterranean sunset to decorate the inner face of the West Wing West Wall. It sits perfectly flush against the wall to maximize the summer vibes.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:55:44.624Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_90wk1bp9": {
       "id": "custom_90wk1bp9",
@@ -2381,8 +2381,8 @@
       },
       "cad_script": "# Custom element: Custom Wooden Pergola draped with vibrant pink Bougainvillea vines\n# Description: Custom Wooden Pergola draped with vibrant pink Bougainvillea vines, providing dappled shade.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:57:07.899Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_xqn2knfs": {
       "id": "custom_xqn2knfs",
@@ -2390,7 +2390,7 @@
       "name": "NW Olive Tree Pot",
       "position": {
         "x": -9,
-        "y": 1.7,
+        "y": 1.8,
         "z": -3.5
       },
       "dimensions": {
@@ -2425,8 +2425,8 @@
       },
       "cad_script": "# Custom element: NW Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:58:55.798Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 7
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_f9gibu1j": {
       "id": "custom_f9gibu1j",
@@ -2434,7 +2434,7 @@
       "name": "NE Olive Tree Pot",
       "position": {
         "x": 9,
-        "y": 1.7,
+        "y": 1.8,
         "z": -3.5
       },
       "dimensions": {
@@ -2469,8 +2469,8 @@
       },
       "cad_script": "# Custom element: NE Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:58:55.798Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 7
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_dibypoyj": {
       "id": "custom_dibypoyj",
@@ -2478,7 +2478,7 @@
       "name": "SW Olive Tree Pot",
       "position": {
         "x": -9,
-        "y": 1.7,
+        "y": 1.8,
         "z": 9.5
       },
       "dimensions": {
@@ -2513,8 +2513,8 @@
       },
       "cad_script": "# Custom element: SW Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:58:55.798Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 7
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_l712gqbt": {
       "id": "custom_l712gqbt",
@@ -2522,7 +2522,7 @@
       "name": "SE Olive Tree Pot",
       "position": {
         "x": 9,
-        "y": 1.7,
+        "y": 1.8,
         "z": 9.5
       },
       "dimensions": {
@@ -2557,8 +2557,8 @@
       },
       "cad_script": "# Custom element: SE Olive Tree Pot\n# Description: Large terracotta pot containing a mature Mediterranean Olive Tree\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T11:58:55.798Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 7
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_8re1qa1g": {
       "id": "custom_8re1qa1g",
@@ -2601,8 +2601,8 @@
       },
       "cad_script": "# Custom element: NW Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:01:39.334Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_cq17k0vq": {
       "id": "custom_cq17k0vq",
@@ -2645,8 +2645,8 @@
       },
       "cad_script": "# Custom element: NE Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:01:39.335Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_e1vvq20d": {
       "id": "custom_e1vvq20d",
@@ -2689,8 +2689,8 @@
       },
       "cad_script": "# Custom element: SW Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:01:39.335Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_33mdzt64": {
       "id": "custom_33mdzt64",
@@ -2733,8 +2733,8 @@
       },
       "cad_script": "# Custom element: SE Bronze Fire Bowl\n# Description: A custom bronze fire bowl with a pedestal base and wide rim.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:01:39.335Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_1zxqk8bm": {
       "id": "custom_1zxqk8bm",
@@ -2777,8 +2777,8 @@
       },
       "cad_script": "# Custom element: Custom Greek Pediment and Meander Relief\n# Description: A custom sculpted Greek pediment with meander wall reliefs in pentelic marble.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:07:04.857Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_xwp3sl3j": {
       "id": "custom_xwp3sl3j",
@@ -2820,8 +2820,8 @@
       },
       "cad_script": "# Custom element: Custom Dolphin Mosaic\n# Description: A decorative custom dolphin mosaic made of pebble mosaics, situated at the bottom of the infinity pool.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:07:58.834Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "custom_e4r49n8q": {
       "id": "custom_e4r49n8q",
@@ -2864,8 +2864,8 @@
       },
       "cad_script": "# Custom element: Set of 5 Custom Wooden Sun Loungers\n# Description: A set of 5 custom wooden sun loungers with white linen cushions, arranged side-by-side facing the infinity pool.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:09:33.266Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "door_0kqsitie": {
       "id": "door_0kqsitie",
@@ -2901,8 +2901,8 @@
       "parent_id": "mv_south_l",
       "children_ids": [],
       "created_at": "2026-03-16T12:10:47.912Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 6
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 5
     },
     "door_yj6tezik": {
       "id": "door_yj6tezik",
@@ -2938,8 +2938,8 @@
       "parent_id": "ew_west_trompe",
       "children_ids": [],
       "created_at": "2026-03-16T12:10:47.912Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 15
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 14
     },
     "door_13mmhzyt": {
       "id": "door_13mmhzyt",
@@ -2975,8 +2975,8 @@
       "parent_id": "ww_east_colonnade",
       "children_ids": [],
       "created_at": "2026-03-16T12:10:47.913Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 11
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 10
     },
     "slab_f814twgy": {
       "id": "slab_f814twgy",
@@ -3014,8 +3014,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T12:13:44.459Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 5
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 4
     },
     "slab_e5k3t4on": {
       "id": "slab_e5k3t4on",
@@ -3053,8 +3053,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T12:13:44.460Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 5
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 4
     },
     "slab_rnu4otky": {
       "id": "slab_rnu4otky",
@@ -3092,8 +3092,8 @@
       "parent_id": "house_8d63962a",
       "children_ids": [],
       "created_at": "2026-03-16T12:13:44.460Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 5
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 4
     },
     "custom_mc0gafd6": {
       "id": "custom_mc0gafd6",
@@ -3135,8 +3135,8 @@
       },
       "cad_script": "# Custom element: Custom Marble Kitchen Island and Wood-Fired Oven\n# Description: A luxurious custom kitchen island made of Pentelic marble, featuring an integrated terracotta wood-fired oven. The island provides ample cooking and dining space for a family of 5, with a rustic yet elegant Mediterranean design.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:18:49.121Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 4
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 3
     },
     "custom_rcmzyc0o": {
       "id": "custom_rcmzyc0o",
@@ -3179,8 +3179,8 @@
       },
       "cad_script": "# Custom element: Propylaea Monumental Gateway\n# Description: Custom Shaped Stucco Archway serving as the Propylaea Monumental Gateway\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T12:58:02.145Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 4
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 3
     },
     "custom_3vuqp01r": {
       "id": "custom_3vuqp01r",
@@ -3223,8 +3223,8 @@
       },
       "cad_script": "# Custom element: Hellenistic Tholos Tower\n# Description: A highly decorated Hellenistic Tholos Tower with a stepped crepidoma base, a cylindrical cella, a peristyle of 16 columns, an entablature, and a conical roof.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T13:02:22.119Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 4
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 3
     },
     "custom_kb6wpate": {
       "id": "custom_kb6wpate",
@@ -3267,8 +3267,8 @@
       },
       "cad_script": "# Custom element: Greek Portico with Doric Columns\n# Description: A classical Greek Portico with Doric columns, an entablature, and a pediment, perfectly framing the East Wing entrance door.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T16:47:38.961Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 4
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 3
     },
     "custom_xc6dlhoz": {
       "id": "custom_xc6dlhoz",
@@ -3311,8 +3311,8 @@
       },
       "cad_script": "# Custom element: West Wing Greek Portico with Doric Columns\n# Description: A Greek portico with Doric columns framing the West Wing entrance, featuring a flat entablature.\n# TODO: Replace with CadQuery script when backend is ready",
       "created_at": "2026-03-16T16:49:15.298Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 4
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 3
     },
     "custom_ew_portico": {
       "id": "custom_ew_portico",
@@ -3348,8 +3348,8 @@
       "parent_id": "ew_west_trompe",
       "children_ids": [],
       "created_at": "2026-03-16T16:51:25.595Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 4
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 3
     },
     "custom_ww_portico": {
       "id": "custom_ww_portico",
@@ -3385,8 +3385,8 @@
       "parent_id": "ww_east_colonnade",
       "children_ids": [],
       "created_at": "2026-03-16T16:51:25.596Z",
-      "modified_at": "2026-03-16T17:06:41.036Z",
-      "version": 4
+      "modified_at": "2026-03-16T17:01:47.085Z",
+      "version": 3
     }
   },
   "settings": {

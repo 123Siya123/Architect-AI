@@ -41,7 +41,13 @@ const SUGGESTIONS = [
 
 function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onRevert?: (id: string) => void, showRevert?: boolean }) {
     const isUser = msg.role === 'user';
-    const [showPipeline, setShowPipeline] = useState(false);
+    const isThinking = !isUser && msg.content === 'Thinking...';
+    const [showPipeline, setShowPipeline] = useState(isThinking);
+
+    // Auto-expand logs if it starts thinking
+    useEffect(() => {
+        if (isThinking) setShowPipeline(true);
+    }, [isThinking]);
 
     return (
         <div className={`chat-message ${isUser ? 'chat-message-user' : 'chat-message-ai'}`}>
@@ -94,22 +100,24 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                             background: '#0a0a0a',
                             color: '#00ff41', // Terminal green
                             borderRadius: '6px',
-                            fontSize: '0.8em',
+                            fontSize: '0.85em',
                             border: '1px solid #333',
-                            maxHeight: '300px',
+                            maxHeight: '400px',
                             overflowY: 'auto',
                             boxShadow: 'inset 0 0 10px #000',
-                            lineHeight: '1.4'
+                            lineHeight: '1.4',
+                            fontFamily: '"Fira Code", "Courier New", monospace',
                         }}>
-                            <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px' }}>
-                                [SYSTEM] Antigravity ReAct v3.1 Logic Stream
+                            <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                                <span>[SYSTEM] Antigravity ReAct v3.1 Logic Stream</span>
+                                {isThinking && <span className="pulse-text">ACTIVE ⚡</span>}
                             </div>
                             {msg.pipeline_log.map((line, i) => (
                                 <div key={i} style={{
                                     marginBottom: '4px',
-                                    fontFamily: '"Fira Code", "Courier New", monospace',
                                     opacity: line.startsWith('   ') ? 0.8 : 1,
-                                    color: line.includes('❌') ? '#ff4d4d' : line.includes('✅') ? '#4dff4d' : '#00ff41'
+                                    color: line.includes('❌') ? '#ff4d4d' : line.includes('✅') ? '#4dff4d' : '#00ff41',
+                                    whiteSpace: 'pre-wrap'
                                 }}>
                                     {line}
                                 </div>

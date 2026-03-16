@@ -85,6 +85,7 @@ interface DesignState {
     setActivePanel: (panel: ActivePanel) => void;
     setActiveFloorId: (floorId: string | null) => void;
     addChatMessage: (message: ChatMessage) => void;
+    updateChatMessage: (id: string, updates: Partial<ChatMessage>) => void;
     sendMessageToAI: (text: string, attachments?: { name: string; type: string; data: string }[]) => Promise<void>;
     revertToMessage: (messageId: string) => void;
     setAIThinking: (thinking: boolean) => void;
@@ -241,16 +242,32 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     setActivePanel: (panel) => set({ activePanel: panel }),
     setActiveFloorId: (id) => set({ activeFloorId: id }),
     addChatMessage: (message) => {
-        const newMessages = [...get().chatMessages, message];
-        const newProject = { ...get().project, chat_history: newMessages };
-        set({ chatMessages: newMessages, project: newProject, isDirty: true });
+        set((state) => {
+            const newMessages = [...state.chatMessages, message];
+            return {
+                chatMessages: newMessages,
+                project: { ...state.project, chat_history: newMessages },
+                isDirty: true
+            };
+        });
         get().triggerAutosave();
     },
+    updateChatMessage: (id, updates) => {
+        set((state) => {
+            const newMessages = state.chatMessages.map(m => m.id === id ? { ...m, ...updates } : m);
+            return {
+                chatMessages: newMessages,
+                project: { ...state.project, chat_history: newMessages },
+                isDirty: true
+            };
+        });
+    },
     sendMessageToAI: async (text: string, attachments?: { name: string; type: string; data: string }[]) => {
-        const { isAIThinking, project, chatMessages, addChatMessage, setAIThinking, setAIThinkingLogs, triggerAutosave, getProfessionalContext } = get();
+        const { isAIThinking, addChatMessage, updateChatMessage, setAIThinking, setAIThinkingLogs, triggerAutosave, getProfessionalContext } = get();
         if ((!text.trim() && (!attachments || attachments.length === 0)) || isAIThinking) return;
 
-        const projectSnapshot = JSON.parse(JSON.stringify(project));
+        const currentProject = get().project;
+        const projectSnapshot = JSON.parse(JSON.stringify(currentProject));
         const professionalContext = getProfessionalContext();
         const userSpecsContext = get().userSpecifications ? `User Global Specifications:\n${get().userSpecifications}\n\n` : '';
         const combinedContext = [userSpecsContext, professionalContext].filter(Boolean).join('\n') || undefined;
@@ -264,11 +281,24 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             attachments: attachments
         };
         addChatMessage(userMsg);
+
+        // Add a placeholder assistant message that we'll update in real-time
+        const aiMsgId = `msg_${Date.now()}_ai`;
+        const aiMsg: ChatMessage = {
+            id: aiMsgId,
+            role: 'assistant',
+            content: 'Thinking...',
+            timestamp: new Date().toISOString(),
+            pipeline_log: []
+        };
+        addChatMessage(aiMsg);
+
         setAIThinking(true);
         setAIThinkingLogs([]);
         const controller = new AbortController();
         set({ abortController: controller });
         let hasChanges = false;
+        const currentLogs: string[] = [];
 
         try {
             const response = await fetch('/api/ai/chat', {
@@ -277,8 +307,8 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                 signal: controller.signal,
                 body: JSON.stringify({
                     message: text.trim(),
-                    project,
-                    history: chatMessages,
+                    project: get().project, // Use LATEST project (including user message in chat_history)
+                    history: get().chatMessages.slice(0, -1), // Everything except the placeholder
                     attachments: attachments,
                     professionalContext: combinedContext
                 }),
@@ -315,6 +345,8 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                         if (event.type === 'log') {
                             currentLogs.push(event.content);
                             setAIThinkingLogs([...currentLogs]);
+                            // Update the AI message bubble in real-time
+                            updateChatMessage(aiMsgId, { pipeline_log: [...currentLogs] });
                         } else if (event.type === 'operation' && event.operation) {
                             const key = JSON.stringify(event.operation);
                             if (!streamedOperationKeys.has(key)) {
@@ -379,30 +411,24 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                 triggerAutosave();
             }
 
-            const aiMsg: ChatMessage = {
-                id: `msg_${Date.now()}_ai`,
-                role: 'assistant',
+            // Final update to the AI message
+            updateChatMessage(aiMsgId, {
                 content: finalData.message || 'I processed your request.',
-                timestamp: new Date().toISOString(),
                 operations: allOps,
                 pipeline_log: finalData.progress_log || currentLogs,
-            };
-            get().addChatMessage(aiMsg);
+            });
+            get().triggerAutosave();
         } catch (err) {
             const error = err as Error;
             if (error.name === 'AbortError') {
-                get().addChatMessage({
-                    id: `msg_${Date.now()}_err`,
-                    role: 'assistant',
-                    content: `Generation was stopped.`,
-                    timestamp: new Date().toISOString(),
+                updateChatMessage(aiMsgId, {
+                    content: 'Generation was stopped.',
+                    pipeline_log: currentLogs
                 });
             } else {
-                get().addChatMessage({
-                    id: `msg_${Date.now()}_err`,
-                    role: 'assistant',
+                updateChatMessage(aiMsgId, {
                     content: `Sorry, I encountered an error: ${error.message || 'The AI backend may not be connected yet.'}`,
-                    timestamp: new Date().toISOString(),
+                    pipeline_log: currentLogs
                 });
             }
         } finally {

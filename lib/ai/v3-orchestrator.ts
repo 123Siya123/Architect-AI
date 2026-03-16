@@ -1,6 +1,6 @@
 import type { AIChatRequest, AIChatResponse, PSGProject, PSGNode, PSGOperation, Material } from '@/types';
 import { getProviderConfig, type AIProviderConfig } from './key-manager';
-import { callProviderNoTools, callProviderWithTools, extractJSON, toolCallToOperation, reloadProjectState, normalizeMessages } from './orchestrator';
+import { callProviderNoTools, callProviderWithTools, extractJSON, toolCallToOperation, reloadProjectState, normalizeMessages } from './base-orchestrator';
 import { validateOperation } from '@/lib/psg/validator';
 import { applyOperation } from '@/lib/psg/operations';
 import { prepare3DNodeTree, generateASCIIFloorPlan, DecisionHistory, prepareProgressChecklist } from './context';
