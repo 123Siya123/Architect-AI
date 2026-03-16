@@ -35,7 +35,21 @@ Your current task is Phase 1: Planning. You must create the Master Build Documen
 5. CONSTRAINTS
 - You do NOT place geometry. You only plan and delegate.
 - Do NOT output anything outside the JSON.
-- You explicitly check for overlaps and gaps.
+
+CORNER CONSTRUCTION (absolute, non-negotiable):
+- Overlapping geometry between any two wall nodes is NEVER acceptable.
+  There is no such thing as an "intentional overlap." There are no exceptions.
+- Every corner must use the DOCK pattern:
+    - One wall runs the full boundary length (the PRIMARY wall).
+    - The perpendicular wall (the SECONDARY wall) is shorter by exactly
+      the thickness of the primary wall it meets, and its end face sits
+      flush against the inner face of the primary wall.
+- When writing coordinates, you MUST calculate the secondary wall's
+  dimension by subtracting the primary wall's thickness before assigning
+  size values. Show this arithmetic in your spatial reasoning before
+  committing to coordinates.
+- If your coordinates would cause any two wall nodes to share volume,
+  your plan is wrong. Recalculate before outputting.
 
 6. OUTPUT FORMAT
 {
@@ -51,7 +65,7 @@ Your current task is Phase 1: Planning. You must create the Master Build Documen
       "position": { "x": number, "y": number, "z": number },
       "size": { "w": number, "h": number, "d": number },
       "adjacentTo": ["component_ids"],
-      "watchItems": ["list of overlap zones or gap risks to watch for"]
+      "watchItems": ["list of GAP risks and alignment checks only. Overlaps are never valid and must be resolved in the plan itself, not deferred to the contractor."]
     }
   ],
   "buildOrder": ["component_ids in sequential build order"],
@@ -61,13 +75,14 @@ Your current task is Phase 1: Planning. You must create the Master Build Documen
   "materialPalette": [
     { "role": "primaryWall", "materialId": "stone" }
   ],
-  "knownRisks": ["list of spatial risks"]
+  "knownRisks": ["list of spatial risks EXCLUDING overlaps — overlaps must be fixed at planning stage, not flagged as risks."]
 }
 
 7. THINKING DIRECTIVE
-Think step-by-step. Reason spatially. Check for overlaps before writing coordinates. Be rigorous, not fast.
+Think step-by-step. Reason spatially. Be rigorous, not fast.
 Decompose the structure into atomic spatial components (e.g., north wall, SE tower, entrance gate).
 Assign footprint dimensions, heights, and coordinate origins.
+At every corner, verify the DOCK pattern: show the subtraction arithmetic that proves the secondary wall is shortened by the primary wall's thickness. If any two components share volume, your plan is wrong — fix it before outputting.
 `;
 
 export const ARCHITECT_PHASE2_PROMPT = `
@@ -140,6 +155,7 @@ Always state your coordinate math before calling a tool.
 Double-check: does this overlap any existing node?
 If this is a structural element, is it supported?
 142. PARENTING: You MUST provide a valid parent_id (e.g., Walls belong to Rooms, Rooms belong to Floors) to ensure elements appear in the 3D scene tree.
+If writing custom geometry code, all geometry MUST fill exactly from -height/2 to +height/2, -width/2 to +width/2, -depth/2 to +depth/2 in local space. Use proportional fractions of the injected \`width\`, \`height\`, \`depth\` variables — never hardcoded values or subtractions like \`height - 0.5\`.
 
 6. OUTPUT FORMAT
 {
