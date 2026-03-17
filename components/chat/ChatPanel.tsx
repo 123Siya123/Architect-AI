@@ -63,7 +63,16 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                 </span>
             </div>
             <div className="chat-message-content-scroll">
-                <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
+                <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>
+                    {isThinking ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)' }}>
+                            <span className="pipeline-emoji" style={{ animation: 'spin 2s linear infinite' }}>🌀</span>
+                            Antigravity ReAct Loop Engaged...
+                        </span>
+                    ) : (
+                        msg.content
+                    )}
+                </p>
             </div>
 
             {/* Operation badges — show when AI made edits */}
@@ -109,7 +118,7 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                             fontFamily: '"Fira Code", "Courier New", monospace',
                         }}>
                             <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-                                <span>[SYSTEM] Antigravity ReAct v3.1 Logic Stream</span>
+                                <span>[LIVE STREAM] AI Reasoning & Execution Log</span>
                                 {isThinking && <span className="pulse-text">ACTIVE ⚡</span>}
                             </div>
                             {msg.pipeline_log.map((line, i) => (
@@ -148,71 +157,7 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 // REACT LOOP STATUS INDICATOR
 // =============================================================================
 
-function ReactLoopStatus() {
-    const logs = useDesignStore((s) => s.aiThinkingLogs);
-    const logsEndRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll logs
-    useEffect(() => {
-        if (logsEndRef.current) {
-            logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [logs.length]);
-
-    return (
-        <div className="chat-message chat-message-ai">
-            <div className="chat-pipeline-status" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--accent)', borderRadius: '12px', padding: '16px' }}>
-                <div className="pipeline-phase pipeline-phase-active">
-                    <span className="pipeline-emoji">🌀</span>
-                    <span className="pipeline-label">Antigravity ReAct Loop Engaged</span>
-                    <span className="pipeline-dots">
-                        <span className="chat-thinking-dot" />
-                        <span className="chat-thinking-dot" />
-                        <span className="chat-thinking-dot" />
-                    </span>
-                </div>
-                
-                <div className="chat-pipeline-log" style={{
-                    marginTop: '12px',
-                    padding: '12px',
-                    background: '#0a0a0a',
-                    color: '#00ff41', // Terminal green
-                    borderRadius: '6px',
-                    fontSize: '0.8em',
-                    border: '1px solid #333',
-                    maxHeight: '200px',
-                    overflowY: 'auto',
-                    boxShadow: 'inset 0 0 10px #000',
-                    lineHeight: '1.4'
-                }}>
-                    <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px' }}>
-                        [LIVE STREAM] AI Reasoning & Execution Log
-                    </div>
-                    
-                    {logs.length === 0 && (
-                        <div style={{ fontSize: '0.8em', opacity: 0.7, paddingLeft: '8px', fontStyle: 'italic' }}>
-                            Initializing agent connection...
-                        </div>
-                    )}
-
-                    {logs.map((line, i) => (
-                        <div key={i} style={{
-                            marginBottom: '4px',
-                            fontFamily: '"Fira Code", "Courier New", monospace',
-                            opacity: line.startsWith('   ') ? 0.8 : 1,
-                            color: line.includes('❌') ? '#ff4d4d' : line.includes('✅') ? '#4dff4d' : '#00ff41',
-                            whiteSpace: 'pre-wrap',
-                            paddingLeft: line.startsWith('   ') ? '12px' : '0px'
-                        }}>
-                            {line}
-                        </div>
-                    ))}
-                    <div ref={logsEndRef} />
-                </div>
-            </div>
-        </div>
-    );
-}
 
 // =============================================================================
 // MAIN CHAT PANEL
@@ -377,8 +322,6 @@ export default function ChatPanel() {
                         showRevert={!!msg.snapshot && index < chatMessages.length - 1}
                     />
                 ))}
-
-                {isAIThinking && <ReactLoopStatus />}
 
                 <div ref={messagesEndRef} />
             </div>

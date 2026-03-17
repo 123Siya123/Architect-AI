@@ -2448,6 +2448,12 @@ select:focus-visible {
     border: 1px solid rgba(108, 99, 255, 0.2);
 }
 
+/* ── Spin Animation ────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .chat-pipeline-log::-webkit-scrollbar {
   width: 6px;
 }

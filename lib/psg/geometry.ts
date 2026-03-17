@@ -299,22 +299,42 @@ function sampleMatrix(data: number[][], u: number, v: number, interpolation: 'ne
  */
 function buildProceduralEvaluator(code: string, minValue: number, maxValue: number): (u: number, v: number) => number {
     try {
-        const fn = new Function('u', 'v', `
-            "use strict";
+        // Robust compilation: handle both single expressions and multi-statement scripts.
+        // We wrap the code in an internal function to handle 'const', 'let', and 'return' safely.
+        const trimmed = code.trim();
+        const hasReturn = /\breturn\b/.test(trimmed);
+        const cleaned = trimmed.replace(/;$/, '');
+        
+        // Treat as simple expression if it has no semicolons (excluding trailing) and no statements/keywords
+        const isSimpleExpression = !hasReturn && !cleaned.includes(';') && !/\b(const|let|var|if|for|while|switch)\b/.test(cleaned);
+        
+        const finalCode = isSimpleExpression 
+            ? `return (${cleaned});` 
+            : trimmed;
+
+        // Compile the AI code once into a reusable function
+        const execute = new Function('u', 'v', '"use strict";\n' + finalCode) as (u: number, v: number) => any;
+        
+        // Return a wrapper that handles validation, errors, and range clamping
+        const evaluator = (u: number, v: number): number => {
             try {
-                const result = ${code};
+                const result = execute(u, v);
                 if (typeof result !== 'number' || !isFinite(result)) return 1.0;
-                return Math.max(${minValue}, Math.min(result, ${maxValue}));
-            } catch(e) {
+                return Math.max(minValue, Math.min(result, maxValue));
+            } catch (e) {
+                // Return fallback thickness on runtime error
                 return 1.0;
             }
-        `) as (u: number, v: number) => number;
-        const test = fn(0.5, 0.5);
+        };
+
+        // Verification call: ensure the compiled function doesn't crash on first run
+        const test = evaluator(0.5, 0.5);
         if (typeof test !== 'number') {
-            console.warn('[buildProceduralEvaluator] Code returned non-number, falling back');
+            console.warn('[buildProceduralEvaluator] Compiled function returned invalid value during test, falling back');
             return () => 1.0;
         }
-        return fn;
+
+        return evaluator;
     } catch (e) {
         console.error('[buildProceduralEvaluator] Failed to compile code:', code, e);
         return () => 1.0;
