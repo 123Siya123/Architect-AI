@@ -65,9 +65,8 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
             <div className="chat-message-content-scroll">
                 <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>
                     {isThinking ? (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)' }}>
-                            <span className="pipeline-emoji" style={{ animation: 'spin 2s linear infinite' }}>🌀</span>
-                            Antigravity ReAct Loop Engaged...
+                        <span style={{ color: 'var(--accent)' }}>
+                            Thinking...
                         </span>
                     ) : (
                         msg.content
@@ -119,7 +118,7 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                         }}>
                             <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
                                 <span>[LIVE STREAM] AI Reasoning & Execution Log</span>
-                                {isThinking && <span className="pulse-text">ACTIVE ⚡</span>}
+                                {isThinking && <span className="pulse-text">ACTIVE</span>}
                             </div>
                             {msg.pipeline_log.map((line, i) => (
                                 <div key={i} style={{
