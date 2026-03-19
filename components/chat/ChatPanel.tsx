@@ -43,6 +43,27 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
     const isUser = msg.role === 'user';
     const isThinking = !isUser && msg.content === 'Thinking...';
     const [showPipeline, setShowPipeline] = useState(isThinking);
+    
+    // For planning mode
+    const sendMessageToAI = useDesignStore((s) => s.sendMessageToAI);
+    const setPlanningMode = useDesignStore((s) => s.setPlanningMode);
+    const [selectedImageIdx, setSelectedImageIdx] = useState<number | null>(null);
+    const [planningInstruction, setPlanningInstruction] = useState('');
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
+    const handleSendPlanning = () => {
+        if (selectedImageIdx === null) return;
+        const b64 = msg.planning_images![selectedImageIdx];
+        
+        setIsSubmitted(true);
+        setPlanningMode(false); // Turn off planning mode after selection
+        
+        sendMessageToAI(planningInstruction, [{
+            name: `planning_selection_${selectedImageIdx}.png`,
+            type: 'image/png',
+            data: b64
+        }]);
+    };
 
     // Auto-expand logs if it starts thinking
     useEffect(() => {
@@ -135,6 +156,52 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                 </div>
             )}
 
+            {/* Planning Mode Image Selection */}
+            {msg.planning_images && msg.planning_images.length > 0 && !isSubmitted && (
+                <div className="planning-options" style={{ marginTop: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                        {msg.planning_images.map((b64, idx) => (
+                            <img 
+                                key={idx}
+                                src={`data:image/png;base64,${b64}`}
+                                onClick={() => setSelectedImageIdx(idx)}
+                                style={{
+                                    width: '100%',
+                                    aspectRatio: '1',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    border: selectedImageIdx === idx ? '3px solid var(--accent)' : '3px solid transparent',
+                                    objectFit: 'cover'
+                                }}
+                                alt={`Option ${idx + 1}`}
+                            />
+                        ))}
+                    </div>
+                    {selectedImageIdx !== null && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <input 
+                                type="text" 
+                                placeholder="Add instruction (optional)..."
+                                value={planningInstruction}
+                                onChange={(e) => setPlanningInstruction(e.target.value)}
+                                style={{ padding: '8px', borderRadius: '4px', background: '#222', color: 'white', border: '1px solid var(--border)', fontSize: '0.85em' }}
+                            />
+                            <button 
+                                onClick={handleSendPlanning}
+                                style={{ background: 'var(--accent)', color: 'white', padding: '8px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85em', border: 'none' }}
+                            >
+                                Send & Build
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+            {msg.planning_images && isSubmitted && (
+                <div style={{ marginTop: '8px', color: 'var(--accent)', fontSize: '0.85em', fontStyle: 'italic', opacity: 0.8 }}>
+                    ✓ Selection submitted to the Architect.
+                </div>
+            )}
+
             {isUser && showRevert && onRevert && (
                 <button
                     onClick={() => onRevert(msg.id)}
@@ -168,6 +235,9 @@ export default function ChatPanel() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const chatMessages = useDesignStore((s) => s.chatMessages);
     const isAIThinking = useDesignStore((s) => s.isAIThinking);
+    const isPlanningMode = useDesignStore((s) => s.isPlanningMode);
+    const setPlanningMode = useDesignStore((s) => s.setPlanningMode);
+    const generatePlanningImages = useDesignStore((s) => s.generatePlanningImages);
     const project = useDesignStore((s) => s.project);
     const revertToMessage = useDesignStore((s) => s.revertToMessage);
     const sendMessageToAI = useDesignStore((s) => s.sendMessageToAI);
@@ -226,8 +296,13 @@ export default function ChatPanel() {
         if ((!text.trim() && attachments.length === 0) || isAIThinking) return;
         setInput('');
         setAttachments([]);
-        sendMessageToAI(text, attachments);
-    }, [isAIThinking, sendMessageToAI, attachments]);
+        
+        if (isPlanningMode && attachments.length === 0) {
+            generatePlanningImages(text);
+        } else {
+            sendMessageToAI(text, attachments);
+        }
+    }, [isAIThinking, isPlanningMode, generatePlanningImages, sendMessageToAI, attachments]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -277,6 +352,15 @@ export default function ChatPanel() {
                         >
                             📥 EXPORT LOGS
                         </button>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7em', color: 'var(--text-secondary)', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border)' }} title="Generates 4 visual variants before building">
+                            <input 
+                                type="checkbox" 
+                                checked={isPlanningMode}
+                                onChange={(e) => setPlanningMode(e.target.checked)}
+                                style={{ margin: 0, cursor: 'pointer' }}
+                            />
+                            <span style={{ color: isPlanningMode ? 'var(--accent)' : 'inherit', fontWeight: isPlanningMode ? 'bold' : 'normal' }}>PLANNING MODE</span>
+                        </label>
                     </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>

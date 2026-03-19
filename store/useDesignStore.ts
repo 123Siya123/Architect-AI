@@ -72,6 +72,9 @@ interface DesignState {
     isProfessionalProject: boolean;
     userSpecifications: string;
 
+    // Planning Mode
+    isPlanningMode: boolean;
+
     // Actions
     loadProject: (project: PSGProject) => void;
     applyOp: (operation: PSGOperation) => OperationResult;
@@ -103,6 +106,8 @@ interface DesignState {
     getProfessionalContext: () => string;
     setTotalBudget: (amount: number) => void;
     setUserSpecifications: (specs: string) => void;
+    setPlanningMode: (mode: boolean) => void;
+    generatePlanningImages: (input: string) => Promise<void>;
 }
 
 // Defaults
@@ -147,6 +152,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     professionalSpecs: null,
     isProfessionalProject: false,
     userSpecifications: '',
+    isPlanningMode: false,
 
     loadProject: (project) => set({
         project: projectWithCalculatedCost(project),
@@ -595,4 +601,57 @@ Professional Client Context:
         set({ userSpecifications: specs });
         get().triggerAutosave();
     },
+
+    setPlanningMode: (mode: boolean) => {
+        set({ isPlanningMode: mode });
+    },
+
+    generatePlanningImages: async (input: string) => {
+        const { addChatMessage, updateChatMessage, project } = get();
+        
+        // Add user message
+        const userMsgId = `msg_${Date.now()}`;
+        addChatMessage({
+            id: userMsgId,
+            role: 'user',
+            content: input,
+            timestamp: new Date().toISOString()
+        });
+
+        // Add loading state message
+        const aiMsgId = `msg_${Date.now()}_ai_plan`;
+        addChatMessage({
+            id: aiMsgId,
+            role: 'assistant',
+            content: 'Generating 4 design options based on your prompt...',
+            timestamp: new Date().toISOString()
+        });
+
+        get().setAIThinking(true);
+
+        try {
+            const res = await fetch('/api/ai/plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ input, project })
+            });
+
+            if (!res.ok) throw new Error('Failed to generate options');
+            
+            const data = await res.json();
+            
+            // Update message with options
+            updateChatMessage(aiMsgId, {
+                content: 'Here are 4 pre-visualizations. Please select one to proceed, and optionally add further instructions. (Select an image and click "Use this Design")',
+                planning_images: data.images
+            });
+            
+        } catch (error) {
+            updateChatMessage(aiMsgId, {
+                content: 'Failed to generate planning options. Please try again.'
+            });
+        } finally {
+            get().setAIThinking(false);
+        }
+    }
 }));
