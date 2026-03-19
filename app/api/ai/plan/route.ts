@@ -20,7 +20,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getNextKey } from '@/lib/ai/key-manager';
 
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 // The correct model for Gemini native image generation (Nano Banana 2)
 const IMAGE_MODEL = 'gemini-3.1-flash-image-preview';
@@ -62,7 +62,7 @@ async function generateDesignImage(
 
     try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 90000);
+        const timeout = setTimeout(() => controller.abort(), 150000);
 
         if (signal) {
             signal.addEventListener('abort', () => controller.abort(), { once: true });
