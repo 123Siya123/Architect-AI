@@ -47,6 +47,7 @@ export const AI_TOOLS = [
                         type: 'string',
                         enum: ['Wall', 'Window', 'Door', 'Room', 'Floor', 'Slab', 'Stairs', 'Roof',
                             'Column', 'Beam', 'Foundation', 'Partition', 'Balcony', 'Custom',
+                            'Garage', 'Chimney',
                             'Toilet', 'Sink', 'Shower', 'Bathtub', 'LightSwitch', 'ElectricalOutlet', 'ElectricalPanel'],
                         description: 'Type of element to add',
                     },

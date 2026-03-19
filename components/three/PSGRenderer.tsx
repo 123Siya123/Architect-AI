@@ -84,6 +84,8 @@ const RENDERABLE_TYPES = new Set([
     'Wall', 'Window', 'Door', 'Roof', 'Stairs', 'Slab',
     'Foundation', 'Column', 'Beam', 'Partition',
     'Balcony', 'Garage', 'Chimney', 'Custom', 'Floor',
+    'Toilet', 'Sink', 'Shower', 'Bathtub',
+    'LightSwitch', 'ElectricalOutlet', 'ElectricalPanel',
 ]);
 
 // Openings are rendered AS PART OF their parent wall group — skip standalone rendering

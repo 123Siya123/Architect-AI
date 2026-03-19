@@ -544,6 +544,130 @@ export function compileBalconyGeometry(node: PSGNode): THREE.Group {
     return group;
 }
 
+// =============================================================================
+// PLUMBING FIXTURE GEOMETRY
+// =============================================================================
+
+/** Toilet geometry — seated bowl + cistern block */
+export function compileToiletGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+    // Bowl (front, rounded box)
+    const bowlW = w * 0.9;
+    const bowlH = h * 0.5;
+    const bowlD = d * 0.65;
+    const bowl = new THREE.Mesh(new THREE.BoxGeometry(bowlW, bowlH, bowlD));
+    bowl.position.set(0, bowlH / 2, d * 0.1);
+    group.add(bowl);
+    // Cistern (back, taller box)
+    const cisternW = w * 0.8;
+    const cisternH = h;
+    const cisternD = d * 0.3;
+    const cistern = new THREE.Mesh(new THREE.BoxGeometry(cisternW, cisternH, cisternD));
+    cistern.position.set(0, cisternH / 2, -d / 2 + cisternD / 2);
+    group.add(cistern);
+    // Seat (thin slab on top of bowl)
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(bowlW, 0.03, bowlD));
+    seat.position.set(0, bowlH + 0.015, d * 0.1);
+    group.add(seat);
+    return group;
+}
+
+/** Sink geometry — basin + pedestal */
+export function compileSinkGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+    // Basin (top)
+    const basin = new THREE.Mesh(new THREE.BoxGeometry(w, h * 0.2, d));
+    basin.position.set(0, h - h * 0.1, 0);
+    group.add(basin);
+    // Pedestal (narrow column underneath)
+    const pedW = w * 0.3;
+    const pedH = h * 0.8;
+    const pedestal = new THREE.Mesh(new THREE.BoxGeometry(pedW, pedH, pedW));
+    pedestal.position.set(0, pedH / 2, 0);
+    group.add(pedestal);
+    return group;
+}
+
+/** Shower geometry — enclosure walls + tray */
+export function compileShowerGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+    const wallThick = 0.03;
+    // Tray (base)
+    const tray = new THREE.Mesh(new THREE.BoxGeometry(w, 0.08, d));
+    tray.position.set(0, 0.04, 0);
+    group.add(tray);
+    // Glass panels (two sides — back and one side, leaving front open)
+    const backPanel = new THREE.Mesh(new THREE.BoxGeometry(w, h, wallThick));
+    backPanel.position.set(0, h / 2, -d / 2 + wallThick / 2);
+    group.add(backPanel);
+    const sidePanel = new THREE.Mesh(new THREE.BoxGeometry(wallThick, h, d));
+    sidePanel.position.set(-w / 2 + wallThick / 2, h / 2, 0);
+    group.add(sidePanel);
+    return group;
+}
+
+/** Bathtub geometry — elongated tub shape */
+export function compileBathtubGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+    const wallThick = 0.05;
+    // Outer shell
+    const outer = new THREE.Mesh(new THREE.BoxGeometry(w, h, d));
+    outer.position.set(0, h / 2, 0);
+    group.add(outer);
+    // Inner cavity (slightly smaller, raised to create walls)
+    const inner = new THREE.Mesh(new THREE.BoxGeometry(w - wallThick * 2, h * 0.6, d - wallThick * 2));
+    inner.position.set(0, h * 0.5 + h * 0.2, 0);
+    group.add(inner);
+    return group;
+}
+
+// =============================================================================
+// ELECTRICAL FIXTURE GEOMETRY
+// =============================================================================
+
+/** LightSwitch geometry — small wall-mounted plate */
+export function compileLightSwitchGeometry(node: PSGNode): THREE.BufferGeometry {
+    const { x: w, y: h, z: d } = node.dimensions;
+    return new THREE.BoxGeometry(
+        Math.max(w, 0.08),
+        Math.max(h, 0.12),
+        Math.max(d, 0.02)
+    );
+}
+
+/** ElectricalOutlet geometry — small wall-mounted plate */
+export function compileElectricalOutletGeometry(node: PSGNode): THREE.BufferGeometry {
+    const { x: w, y: h, z: d } = node.dimensions;
+    return new THREE.BoxGeometry(
+        Math.max(w, 0.08),
+        Math.max(h, 0.08),
+        Math.max(d, 0.02)
+    );
+}
+
+/** ElectricalPanel geometry — wall-mounted cabinet */
+export function compileElectricalPanelGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
+// =============================================================================
+// BUILDING ELEMENT GEOMETRY
+// =============================================================================
+
+/** Garage geometry — large box enclosure */
+export function compileGarageGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
+/** Chimney geometry — tall vertical shaft */
+export function compileChimneyGeometry(node: PSGNode): THREE.BufferGeometry {
+    return new THREE.BoxGeometry(node.dimensions.x, node.dimensions.y, node.dimensions.z);
+}
+
 /** Custom geometry — parses parametric instructions from AI for perfect custom objects */
 export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry | THREE.Group {
     if (node.custom_geometry) {
@@ -878,6 +1002,18 @@ export const GEOMETRY_COMPILERS: Record<
     Beam: compileBeamGeometry,
     Balcony: compileBalconyGeometry,
     Custom: compileCustomGeometry,
+    // Plumbing fixtures
+    Toilet: compileToiletGeometry,
+    Sink: compileSinkGeometry,
+    Shower: compileShowerGeometry,
+    Bathtub: compileBathtubGeometry,
+    // Electrical fixtures
+    LightSwitch: compileLightSwitchGeometry,
+    ElectricalOutlet: compileElectricalOutletGeometry,
+    ElectricalPanel: compileElectricalPanelGeometry,
+    // Building elements
+    Garage: compileGarageGeometry,
+    Chimney: compileChimneyGeometry,
 };
 
 /**
