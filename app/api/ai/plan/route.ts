@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateASCIIFloorPlan, prepareProjectContext } from '@/lib/ai/context';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MODEL_CONFIG } from '@/lib/ai/models';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { getNextKey } from '@/lib/ai/key-manager';
 
 interface ImagenPrediction {
     bytesBase64Encoded: string;
@@ -18,6 +17,13 @@ export async function POST(req: NextRequest) {
         if (!input) {
             return NextResponse.json({ error: 'Input is required' }, { status: 400 });
         }
+
+        const apiKey = getNextKey('gemini');
+        if (!apiKey) {
+            throw new Error("API_KEY is missing or invalid");
+        }
+        
+        const genAI = new GoogleGenerativeAI(apiKey);
 
         // 1. Generate 4 strong prompts using Gemini Text Model
         const orchestratorModel = genAI.getGenerativeModel({ model: MODEL_CONFIG.orchestrator });
@@ -75,11 +81,6 @@ Output ONLY a JSON array of 4 strings. Example:
         }
 
         // 2. Generate the 4 images using Google Imagen API
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            throw new Error("GEMINI_API_KEY is missing");
-        }
-
         const images: string[] = [];
 
         for (const prompt of prompts) {
