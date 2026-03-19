@@ -83,7 +83,7 @@ const HOVER_EMISSIVE = new THREE.Color(0x115599);
 const RENDERABLE_TYPES = new Set([
     'Wall', 'Window', 'Door', 'Roof', 'Stairs', 'Slab',
     'Foundation', 'Column', 'Beam', 'Partition',
-    'Balcony', 'Garage', 'Chimney', 'Custom',
+    'Balcony', 'Garage', 'Chimney', 'Custom', 'Floor',
 ]);
 
 // Openings are rendered AS PART OF their parent wall group — skip standalone rendering

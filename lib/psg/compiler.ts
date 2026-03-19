@@ -868,6 +868,7 @@ export const GEOMETRY_COMPILERS: Record<
     Wall: compileWallGeometry,
     Partition: compilePartitionGeometry,
     Slab: compileSlabGeometry,
+    Floor: compileSlabGeometry,
     Foundation: compileFoundationGeometry,
     Window: compileWindowGeometry,
     Door: compileDoorGeometry,
