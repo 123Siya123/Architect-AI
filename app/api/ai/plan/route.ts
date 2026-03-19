@@ -1,9 +1,11 @@
 /**
  * =============================================================================
- * API/AI/PLAN/ROUTE.TS — Planning Mode Image Generation
+ * API/AI/PLAN/ROUTE.TS — Planning Mode Image Generation (Nano Banana)
  * =============================================================================
  *
- * Generates 4 house design preview images using Gemini's image generation.
+ * Generates 4 house design preview images using Gemini's native image
+ * generation model (gemini-3.1-flash-image-preview / Nano Banana 2).
+ *
  * Takes the user's instruction and optionally a screenshot of the current
  * 3D state, then generates 4 variant images showing possible design directions.
  *
@@ -20,6 +22,9 @@ import { getNextKey } from '@/lib/ai/key-manager';
 
 export const maxDuration = 120;
 
+// The correct model for Gemini native image generation (Nano Banana 2)
+const IMAGE_MODEL = 'gemini-3.1-flash-image-preview';
+
 // Helper to call Gemini image generation
 async function generateDesignImage(
     prompt: string,
@@ -28,8 +33,7 @@ async function generateDesignImage(
     existingSceneBase64?: string,
     signal?: AbortSignal
 ): Promise<string | null> {
-    const model = 'gemini-2.0-flash-preview-image-generation';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${IMAGE_MODEL}:generateContent?key=${apiKey}`;
 
     const parts: any[] = [];
 
@@ -50,11 +54,9 @@ async function generateDesignImage(
             role: 'user',
             parts
         }],
-        generation_config: {
+        generationConfig: {
+            responseModalities: ['Image', 'Text'],
             temperature: 0.8 + (variantIndex * 0.15), // Increase temperature per variant for diversity
-            max_output_tokens: 8192,
-            response_modalities: ['image', 'text'],
-            response_mime_type: 'text/plain'
         }
     };
 
@@ -92,6 +94,8 @@ async function generateDesignImage(
             }
         }
 
+        console.warn(`[Plan API] No image found in response for variant ${variantIndex}. Parts:`, 
+            candidate.content.parts.map((p: any) => Object.keys(p)));
         return null;
     } catch (err) {
         console.error(`[Plan API] Error generating variant ${variantIndex}:`, err);
@@ -130,6 +134,7 @@ export async function POST(request: NextRequest) {
 
         const detailLevel = classifyDetailLevel(instruction);
         console.log(`[Plan API] Detail level: ${detailLevel}, instruction: "${instruction.substring(0, 80)}..."`);
+        console.log(`[Plan API] Using model: ${IMAGE_MODEL}`);
 
         // Build variant prompts based on detail level
         const variantPrompts = buildVariantPrompts(instruction, detailLevel, !!existingSceneBase64);
@@ -160,6 +165,8 @@ export async function POST(request: NextRequest) {
                 { status: 500 }
             );
         }
+
+        console.log(`[Plan API] Successfully generated ${images.length}/4 preview images`);
 
         return NextResponse.json({
             images,
