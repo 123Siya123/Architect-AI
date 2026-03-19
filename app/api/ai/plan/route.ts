@@ -19,120 +19,71 @@ export async function POST(req: NextRequest) {
 
         const providerConfig = getProviderConfig('gemini');
         const apiKey = providerConfig.apiKey;
-        const modelName = providerConfig.model;
+        const modelName = providerConfig.model; // This is gemini-3-flash-preview or whatever is configured
 
         if (!apiKey) {
             throw new Error("API_KEY is missing or invalid");
         }
-        
-        const genAI = new GoogleGenerativeAI(apiKey);
 
-        // 1. Generate 4 strong prompts using Gemini Text Model
-        const orchestratorModel = genAI.getGenerativeModel({ model: modelName });
-
-        let systemInstruction = `You are an expert architectural prompt engineer.
-Your task is to generate exactly 4 HIGHLY DETAILED, distinct, and high-quality image generation prompts for an architectural visualization model.
-Each prompt must be optimized for generating a photorealistic architectural render.
-The 4 prompts must be variations of the user's core request.
-- If the user provides a vague request, provide 4 highly varied architectural styles/interpretations (e.g., one modern, one rustic, one brutalist, one classical).
-- If the user provides a strict, detailed request, provide 4 subtle variations within those tight constraints (e.g., varying lighting, composition, or slight material shifts).`;
+        let systemInstruction = `You are a world-class architectural visualizer and Master Planner.
+Your task is to generate EXACTLY 4 highly detailed pre-visualization images for an architectural project.
+- Provide 4 distinct variations (e.g., modern, rustic, classical, minimalist) or 4 slightly varied angles/lighting setups if the user is very specific.
+- You MUST ACTUALLY GENERATE the images. Output the 4 images natively in your response parts.`;
 
         if (project && Object.keys(project.nodes).length > 1) {
             const asciiPlan = generateASCIIFloorPlan(project);
-            systemInstruction += `
-
-CRITICAL INSTRUCTION: The user ALREADY HAS a 3D structure built. You MUST incorporate the existing structure into your prompts so the generated images look like modifications or refinements of their current house, rather than entirely new buildings.
-Here is the ASCII top-down plan of the existing structure:
-${asciiPlan}`;
+            systemInstruction += `\n\nCRITICAL: The user already has a structure. You MUST generate images that visually incorporate or build upon this existing layout:
+\`\`\`
+${asciiPlan}
+\`\`\`
+Ensure the images look like modifications or refinements of their current house.`;
         }
 
-        systemInstruction += `
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        
+        const reqBody = {
+            contents: [
+                {
+                    role: 'user',
+                    parts: [{ text: `User request: "${input}"\n\nPlease output the 4 architectural render images now.` }]
+                }
+            ],
+            system_instruction: { parts: [{ text: systemInstruction }] },
+            generation_config: {
+                temperature: 0.7
+            }
+        };
 
-Output ONLY a JSON array of 4 strings. Example:
-[
-  "A high-quality architectural render of...",
-  "A photorealistic visualization of...",
-  "An exterior render of...",
-  "A cozy interior shot of..."
-]`;
-
-        const imagePromptsResult = await orchestratorModel.generateContent({
-            contents: [{ role: 'user', parts: [{ text: `User request: "${input}"\nGenerate the 4 prompts now.` }] }],
-            systemInstruction: { parts: [{ text: systemInstruction }], role: 'system' }
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reqBody)
         });
 
-        let textOutput = imagePromptsResult.response.text();
-        const jsonMatch = textOutput.match(/\[[\s\S]*\]/);
-        let prompts: string[] = [];
-        
-        if (jsonMatch) {
-            try {
-                prompts = JSON.parse(jsonMatch[0]);
-            } catch (e) {
-                console.error('Failed to parse prompts JSON', e);
-            }
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Gemini API Error ${response.status}: ${errorText}`);
         }
 
-        if (prompts.length !== 4) {
-            prompts = [
-                input + ", modern architectural render, photorealistic, cinematic lighting, 8k",
-                input + ", rustic architectural render, warm lighting, natural materials",
-                input + ", brutalist architectural render, concrete, dramatic shadows",
-                input + ", minimalist architectural render, clean lines, bright daylight"
-            ];
-        }
-
-        // 2. Generate the 4 images using Google Imagen API
+        const data = await response.json();
         const images: string[] = [];
 
-        for (const prompt of prompts) {
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        instances: [{
-                            prompt: prompt
-                        }],
-                        parameters: {
-                            sampleCount: 1,
-                            outputOptions: {
-                                mimeType: "image/png"
-                            }
-                        }
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.predictions && data.predictions.length > 0) {
-                        images.push(data.predictions[0].bytesBase64Encoded);
-                    } else {
-                        throw new Error("No predictions in imagen response");
-                    }
-                } else {
-                    const errText = await response.text();
-                    console.error('Imagen API Error:', response.status, errText);
-                    // Fallback to empty if a specific prompt fails
-                    images.push(""); 
+        if (data.candidates && data.candidates.length > 0) {
+            const parts = data.candidates[0].content?.parts || [];
+            for (const part of parts) {
+                if (part.inlineData && part.inlineData.mimeType?.startsWith('image/') && part.inlineData.data) {
+                    images.push(part.inlineData.data);
+                } else if (part.executableCode) {
+                    // skip
                 }
-            } catch (err) {
-                console.error("Error calling Imagen:", err);
-                images.push("");
             }
         }
 
-        // Filter out any failed generations
-        const validImages = images.filter(b64 => b64.length > 100);
-
-        if (validImages.length === 0) {
-            // Provide a mock base64 if it completely fails, or return error
-            return NextResponse.json({ error: "Image generation failed. Ensure your Gemini API key has Imagen access enabled.", images: [] }, { status: 500 });
+        if (images.length === 0) {
+            return NextResponse.json({ error: "No images were generated by the model. It might have output text instead.", images: [] }, { status: 500 });
         }
 
-        return NextResponse.json({ images: validImages });
+        return NextResponse.json({ images: images.slice(0, 4) });
 
     } catch (error: any) {
         console.error('Plan generation error:', error);
