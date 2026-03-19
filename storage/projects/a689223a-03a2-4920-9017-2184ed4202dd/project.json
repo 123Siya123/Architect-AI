@@ -1,0 +1,92 @@
+{
+  "id": "a689223a-03a2-4920-9017-2184ed4202dd",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-19T01:21:54.446Z",
+  "modified_at": "2026-03-19T01:21:54.446Z",
+  "version": 1,
+  "root_node_id": "house_56bd22f9",
+  "nodes": {
+    "house_56bd22f9": {
+      "id": "house_56bd22f9",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-19T01:21:54.446Z",
+      "modified_at": "2026-03-19T01:21:54.446Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  },
+  "chat_history": [
+    {
+      "id": "msg_1773883317159",
+      "role": "user",
+      "content": "A one story, big on the outside (very big!), modern with a infinity pool. \n\nInside the Kitchen has to be very big and very open with a hughe islend. Then the dining room has to be almost secluded. \n\nThe living room were the couches are has to almost lowerd, giving it a grounded comfy feel. \n\nThere has to be a spaar room and elevator, 3 bedrooms and 4 baths, 2 garages, and a bascetball court outside and a theater room.\nA little area that has a greenhouse for our plants, a planting area, and a hourse stabel next to the house.",
+      "timestamp": "2026-03-19T01:21:57.159Z"
+    },
+    {
+      "id": "msg_1773883317159_ai_plan",
+      "role": "assistant",
+      "content": "Failed to generate planning options. Please try again.",
+      "timestamp": "2026-03-19T01:21:57.159Z"
+    },
+    {
+      "id": "msg_1773883361413",
+      "role": "user",
+      "content": "===================================================\nStarting AI House Designer Development Server...\n===================================================\n\nServer will start on: http://localhost:3000/design\nStarting Node.js server...\n\n> house-design-ai@0.1.0 dev\n> next dev -p 3000\n\n▲ Next.js 16.1.6 (Turbopack)\n- Local:         http://localhost:3000\n- Network:       http://192.168.160.1:3000\n- Environments: .env.local\n\n✓ Starting...\n✓ Ready in 2.4s\n GET /design 200 in 1917ms (compile: 1570ms, render: 347ms)\n[Architect V3] 🏗️ CONSTRUCTION SITE: Agentic Architecture v3.0 Started\n[KeyManager] Initialized pool 'default' with 7 key(s)\n[KeyManager] Initialized pool 'gemini' with 7 key(s)\n[Architect V3] 🔬 Phase 0: Research Specialist gathering spatial knowledge...\n POST /api/ai/chat 200 in 1007ms (compile: 120ms, render: 887ms)\n[API /ai/chat] Error in stream: Error: User cancelled\n    at callProviderNoTools (lib\\ai\\base-orchestrator.ts:58:23)\n    at async sendChatToAI_V3 (lib\\ai\\v3-orchestrator.ts:134:32)\n    at async Object.start (app\\api\\ai\\chat\\route.ts:32:40)\n  56 |             // User cancellation — propagate immediately, no retry\n  57 |             if (errMsg.includes('User cancelled') || signal?.aborted) {\n> 58 |                 throw new Error('User cancelled');\n     |                       ^\n  59 |             }\n  60 |\n  61 |             console.warn(`[callProviderNoTools] Attempt ${attempt}/${MAX_TOTAL_ATTEMPTS} failed:`, errMsg);\n PUT /api/projects/ccd4e5bd-c226-441c-839c-de1891b14c0d?revision=true 200 in 967ms (compile: 949ms, render: 18ms)\n GET /design 200 in 100ms (compile: 8ms, render: 92ms)\n PUT /api/projects/a689223a-03a2-4920-9017-2184ed4202dd?revision=true 200 in 30ms (compile: 15ms, render: 14ms)\n POST /api/ai/plan 500 in 24.1s (compile: 277ms, render: 23.9s)\n",
+      "timestamp": "2026-03-19T01:22:41.413Z"
+    },
+    {
+      "id": "msg_1773883361413_ai_plan",
+      "role": "assistant",
+      "content": "Generating 4 design options based on your prompt...",
+      "timestamp": "2026-03-19T01:22:41.413Z"
+    }
+  ]
+}

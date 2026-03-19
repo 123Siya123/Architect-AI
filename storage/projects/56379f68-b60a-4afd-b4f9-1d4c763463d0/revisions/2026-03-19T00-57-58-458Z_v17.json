@@ -3,8 +3,8 @@
   "name": "Untitled Project",
   "description": "",
   "created_at": "2026-03-19T00:43:55.811Z",
-  "modified_at": "2026-03-19T01:01:29.674Z",
-  "version": 21,
+  "modified_at": "2026-03-19T00:57:56.142Z",
+  "version": 17,
   "root_node_id": "house_1349814f",
   "nodes": {
     "house_1349814f": {
@@ -476,13 +476,10 @@
       },
       "parent_id": "floor_main",
       "children_ids": [
-        "main_wall_north",
-        "main_wall_south",
-        "main_wall_east",
-        "main_wall_west"
+        "main_wall_north"
       ],
       "created_at": "2026-03-19T00:55:54.992Z",
-      "modified_at": "2026-03-19T01:01:29.674Z",
+      "modified_at": "2026-03-19T00:56:45.880Z",
       "version": 2
     },
     "main_wall_north": {
@@ -523,123 +520,6 @@
       "created_at": "2026-03-19T00:55:54.993Z",
       "modified_at": "2026-03-19T00:57:56.142Z",
       "version": 4
-    },
-    "main_wall_south": {
-      "id": "main_wall_south",
-      "type": "Wall",
-      "name": "Main Pavilion South Wall",
-      "position": {
-        "x": 0,
-        "y": 0,
-        "z": 17
-      },
-      "dimensions": {
-        "x": 45,
-        "y": 6.5,
-        "z": 1
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "",
-      "opacity": 1,
-      "tags": [
-        "load_bearing"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "room_main",
-      "children_ids": [],
-      "created_at": "2026-03-19T00:58:30.131Z",
-      "modified_at": "2026-03-19T00:58:30.131Z",
-      "version": 1
-    },
-    "main_wall_east": {
-      "id": "main_wall_east",
-      "type": "Wall",
-      "name": "Main Pavilion East Wall",
-      "position": {
-        "x": 22,
-        "y": 0,
-        "z": 0
-      },
-      "dimensions": {
-        "x": 1,
-        "y": 6.5,
-        "z": 33
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "",
-      "opacity": 1,
-      "tags": [
-        "load_bearing"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "room_main",
-      "children_ids": [],
-      "created_at": "2026-03-19T01:00:06.707Z",
-      "modified_at": "2026-03-19T01:00:42.638Z",
-      "version": 2
-    },
-    "main_wall_west": {
-      "id": "main_wall_west",
-      "type": "Wall",
-      "name": "Main Pavilion West Wall",
-      "position": {
-        "x": -22,
-        "y": 0,
-        "z": 0
-      },
-      "dimensions": {
-        "x": 1,
-        "y": 6.5,
-        "z": 33
-      },
-      "rotation": {
-        "yaw": 0,
-        "pitch": 0,
-        "roll": 0
-      },
-      "material_id": "",
-      "opacity": 1,
-      "tags": [
-        "load_bearing"
-      ],
-      "constraints": {
-        "connected_to": [],
-        "fixed_position": false
-      },
-      "systems": {
-        "electrical": [],
-        "plumbing": [],
-        "hvac": []
-      },
-      "parent_id": "room_main",
-      "children_ids": [],
-      "created_at": "2026-03-19T01:01:29.674Z",
-      "modified_at": "2026-03-19T01:01:29.674Z",
-      "version": 1
     }
   },
   "settings": {
@@ -1053,81 +933,6 @@
         "🔧 Dispatching Structural Engineer...",
         "--- STRUCTURAL ENGINEER FULL RESPONSE ---",
         "```json\n{\n  \"selfAssessment\": \"I need to update the position of the Main Pavilion North Wall to exactly x:0, y:0, z:-17 as requested by the Chief Architect, ensuring the Y position is exactly 0.\",\n  \"coordinatesUsed\": \"x: 0, y: 0, z: -17\",\n  \"decisionsExplained\": \"Using set_node_position to explicitly set the coordinates to the requested values without altering dimensions or parent.\",\n  \"toolsCalled\": [\n    {\n      \"tool\": \"set_node_position\",\n      \"args\": {\n        \"target_id\": \"main_wall_north\",\n        \"position_x\": 0,\n        \"position_y\": 0,\n        \"position_z\": -17\n      }\n    }\n  ]\n}\n```",
-        "--------------------------------------------------",
-        "   🛠️ Structural Engineer issued 1 tools.",
-        "🔍 Inspector analyzing new scene state...",
-        "--- INSPECTOR FULL RESPONSE ---",
-        "```json\n{\n  \"issues\": [],\n  \"punchListAdditions\": [],\n  \"punchListUpdates\": [\n    {\n      \"id\": \"punch_main_wall_north_floating\",\n      \"status\": \"resolved\",\n      \"note\": \"The contractor successfully updated the local Y position of the Main Pavilion North Wall to exactly 0. The wall now rests correctly on the floor slabs.\"\n    }\n  ],\n  \"checklistUpdates\": [],\n  \"overallScore\": 100,\n  \"summary\": \"The contractor successfully updated the local Y position of the Main Pavilion North Wall to 0. The wall now rests correctly on the floor slabs. No new issues detected.\"\n}\n```",
-        "-------------------------------",
-        "   📝 Inspector updated punch list item punch_main_wall_north_floating to resolved",
-        "   📝 Inspector Score: 100. Issues: 0 CRITICAL, 0 WARNING.",
-        "\n───── 🔁 CYCLE 18/50 ─────",
-        "🏛️ Architect analyzing scene and Inspector report...",
-        "--- ARCHITECT FULL RESPONSE ---",
-        "```json\n{\n  \"reasoning_step_1_inspector\": \"The Inspector confirmed that the Main Pavilion North Wall's local Y position was successfully updated to 0, resolving the floating issue. The overall score is 100 with no new issues. I will ACCEPT this result.\",\n  \"reasoning_step_2_plan\": \"Following the build order, the next component to construct is the 'main_wall_south' (Main Pavilion South Wall). It needs to be placed inside the 'Main Pavilion' room (room_main). Given the previous lesson with the North Wall, I must ensure the Structural Engineer sets the local Y position to exactly 0 relative to the room.\",\n  \"inspector_decision\": \"ACCEPT\",\n  \"next_contractor\": \"Structural Engineer\",\n  \"dispatch_instruction\": {\n    \"component_id\": \"main_wall_south\",\n    \"component_spec\": \"Create a wall named 'Main Pavilion South Wall' with dimensions W: 45, H: 6.5, D: 1. Place it as a child of the 'Main Pavilion' room [room_main]. Set its local position to X: 0, Y: 0, Z: 17.\",\n    \"watch_items\": \"Primary wall. Runs full 45m width. Ensure the local Y position is exactly 0 so it rests perfectly on the floor slabs without floating.\",\n    \"target_punch_list_id\": null\n  },\n  \"punch_list_updates\": []\n}\n```",
-        "-------------------------------",
-        "📋 Decision: ACCEPT -> Delegate to Structural Engineer",
-        "💭 Reasoning Step 1 (Inspector): The Inspector confirmed that the Main Pavilion North Wall's local Y position was successfully updated to 0, resolving the floating issue. The overall score is 100 with no new issues. I will ACCEPT this result.",
-        "💭 Reasoning Step 2 (Plan): Following the build order, the next component to construct is the 'main_wall_south' (Main Pavilion South Wall). It needs to be placed inside the 'Main Pavilion' room (room_main). Given the previous lesson with the North Wall, I must ensure the Structural Engineer sets the local Y position to exactly 0 relative to the room.",
-        "🔧 Dispatching Structural Engineer...",
-        "--- STRUCTURAL ENGINEER FULL RESPONSE ---",
-        "```json\n{\n  \"selfAssessment\": \"I need to add the Main Pavilion South Wall to the Main Pavilion room according to the exact specifications provided by the Architect.\",\n  \"coordinatesUsed\": \"X: 0, Y: 0, Z: 17. The Y position is set to 0 to ensure it rests perfectly on the floor slabs. The Z position of 17 places it exactly opposite the North wall (which is at Z: -17) within the 35m deep room.\",\n  \"decisionsExplained\": \"I am using the add_node tool to create the wall with the requested ID 'main_wall_south', parenting it to 'room_main', and applying the exact dimensions (W: 45, H: 6.5, D: 1) and local coordinates.\",\n  \"toolsCalled\": [\n    {\n      \"tool\": \"default_api:add_node\",\n      \"args\": {\n        \"type\": \"Wall\",\n        \"name\": \"Main Pavilion South Wall\",\n        \"id\": \"main_wall_south\",\n        \"parent_id\": \"room_main\",\n        \"width\": 45,\n        \"height\": 6.5,\n        \"depth\": 1,\n        \"position_x\": 0,\n        \"position_y\": 0,\n        \"position_z\": 17\n      }\n    }\n  ]\n}\n```",
-        "--------------------------------------------------",
-        "   🛠️ Structural Engineer issued 1 tools.",
-        "🔍 Inspector analyzing new scene state...",
-        "--- INSPECTOR FULL RESPONSE ---",
-        "```json\n{\n  \"issues\": [],\n  \"punchListAdditions\": [],\n  \"punchListUpdates\": [],\n  \"checklistUpdates\": [],\n  \"overallScore\": 100,\n  \"summary\": \"The Main Pavilion South Wall has been constructed exactly to specification. The dimensions, parent assignment, and local positioning are correct, ensuring it rests perfectly on the floor slabs without floating.\"\n}\n```",
-        "-------------------------------",
-        "   📝 Inspector Score: 100. Issues: 0 CRITICAL, 0 WARNING.",
-        "\n───── 🔁 CYCLE 19/50 ─────",
-        "🏛️ Architect analyzing scene and Inspector report...",
-        "--- ARCHITECT FULL RESPONSE ---",
-        "```json\n{\n  \"reasoning_step_1_inspector\": \"The Inspector reports a 100% score and perfect placement of the Main Pavilion South Wall. The dimensions and local positioning are correct. I accept this result.\",\n  \"reasoning_step_2_plan\": \"Following the Master Build Plan, the next component to construct is the Main Pavilion East Wall (`main_wall_east`). It needs to be placed inside the Main Pavilion room (`room_main`) and use the DOCK pattern to fit perfectly between the North and South walls without overlapping.\",\n  \"inspector_decision\": \"ACCEPT\",\n  \"next_contractor\": \"Structural Engineer\",\n  \"dispatch_instruction\": {\n    \"component_id\": \"main_wall_east\",\n    \"component_spec\": \"Create a wall named 'Main Pavilion East Wall'. Dimensions: width 1m, height 6.5m, depth 33m. Parent it to 'room_main' [room_main]. Set its local position to (22, 0, 0).\",\n    \"watch_items\": \"DOCK pattern: The depth is exactly 33m to fit between the inner faces of the North (Z=-16.5) and South (Z=16.5) walls. Ensure zero overlap.\",\n    \"target_punch_list_id\": null\n  },\n  \"punch_list_updates\": []\n}\n```",
-        "-------------------------------",
-        "📋 Decision: ACCEPT -> Delegate to Structural Engineer",
-        "💭 Reasoning Step 1 (Inspector): The Inspector reports a 100% score and perfect placement of the Main Pavilion South Wall. The dimensions and local positioning are correct. I accept this result.",
-        "💭 Reasoning Step 2 (Plan): Following the Master Build Plan, the next component to construct is the Main Pavilion East Wall (`main_wall_east`). It needs to be placed inside the Main Pavilion room (`room_main`) and use the DOCK pattern to fit perfectly between the North and South walls without overlapping.",
-        "🔧 Dispatching Structural Engineer...",
-        "--- STRUCTURAL ENGINEER FULL RESPONSE ---",
-        "```json\n{\n  \"selfAssessment\": \"The objective is to create the 'Main Pavilion East Wall' with dimensions 1x6.5x33, parented to 'room_main'. The wall must dock perfectly between the North and South walls.\",\n  \"coordinatesUsed\": \"The North wall is at Z=-17 with depth 1 (inner face Z=-16.5). The South wall is at Z=17 with depth 1 (inner face Z=16.5). The distance between inner faces is exactly 33m. By setting the East wall's depth to 33m and placing it at Z=0, it perfectly docks between them with zero overlap. The prompt specifies a local position of (22, 0, 0). Since the parent 'room_main' is at absolute Y=3.25, the absolute position for the new wall is X=22, Y=3.25, Z=0. This also complies with the POSITION RULE (floor at Y=0 + height 6.5 / 2 = 3.25).\",\n  \"decisionsExplained\": \"I chose the add_node tool to create the Wall. I set width=1 and depth=33 to orient the wall North-South without needing rotation. I calculated the absolute Y position as 3.25 to satisfy both the local position requirement and the strict POSITION RULE.\",\n  \"toolsCalled\": [\n    {\n      \"tool\": \"add_node\",\n      \"args\": {\n        \"type\": \"Wall\",\n        \"id\": \"main_wall_east\",\n        \"parent_id\": \"room_main\",\n        \"name\": \"Main Pavilion East Wall\",\n        \"width\": 1,\n        \"height\": 6.5,\n        \"depth\": 33,\n        \"position_x\": 22,\n        \"position_y\": 3.25,\n        \"position_z\": 0\n      }\n    }\n  ]\n}\n```",
-        "--------------------------------------------------",
-        "   🛠️ Structural Engineer issued 1 tools.",
-        "🔍 Inspector analyzing new scene state...",
-        "--- INSPECTOR FULL RESPONSE ---",
-        "```json\n{\n  \"issues\": [\n    {\n      \"severity\": \"CRITICAL\",\n      \"description\": \"The local Y position of the Main Pavilion East Wall is set to 3.25 instead of 0. This causes the wall to float above the floor and not align with the North and South walls.\",\n      \"affectedNodes\": [\n        \"main_wall_east\"\n      ],\n      \"recommendation\": \"Change the local position of 'main_wall_east' to (22, 0, 0).\"\n    }\n  ],\n  \"punchListAdditions\": [\n    {\n      \"id\": \"punch_main_wall_east_y_pos\",\n      \"description\": \"Main Pavilion East Wall has incorrect local Y position (3.25 instead of 0), causing it to float.\",\n      \"affectedNodes\": [\n        \"main_wall_east\"\n      ],\n      \"severity\": \"CRITICAL\",\n      \"status\": \"open\"\n    }\n  ],\n  \"punchListUpdates\": [],\n  \"checklistUpdates\": [],\n  \"overallScore\": 85,\n  \"summary\": \"The Main Pavilion East Wall was created with the correct dimensions to dock perfectly between the North and South walls. However, its local Y position is incorrect, causing it to float above the room's floor level.\"\n}\n```",
-        "-------------------------------",
-        "   ⚠️ Inspector added 1 items to the punch list.",
-        "   📝 Inspector Score: 85. Issues: 1 CRITICAL, 0 WARNING.",
-        "\n───── 🔁 CYCLE 20/50 ─────",
-        "🏛️ Architect analyzing scene and Inspector report...",
-        "--- ARCHITECT FULL RESPONSE ---",
-        "```json\n{\n  \"reasoning_step_1_inspector\": \"The Inspector flagged a CRITICAL issue: the Main Pavilion East Wall (main_wall_east) has a local Y position of 3.25 instead of 0. Since its parent room (room_main) is already elevated to Y=3.25, adding another 3.25 locally causes the wall to float. I accept this finding and will dispatch a fix.\",\n  \"reasoning_step_2_plan\": \"Before proceeding to the Main Pavilion West Wall, I must correct the East Wall's position to clear the critical punch list item.\",\n  \"inspector_decision\": \"FIX\",\n  \"next_contractor\": \"Structural Engineer\",\n  \"dispatch_instruction\": {\n    \"component_id\": \"main_wall_east\",\n    \"component_spec\": \"Update the existing 'main_wall_east' node. Change its local position to (x: 22, y: 0, z: 0). Keep its dimensions at (1x6.5x33).\",\n    \"watch_items\": \"Ensure the local Y is exactly 0 so it rests flush on the Main Pavilion floor, aligning perfectly with the North and South walls.\",\n    \"target_punch_list_id\": \"punch_main_wall_east_y_pos\"\n  },\n  \"punch_list_updates\": [\n    {\n      \"id\": \"punch_main_wall_east_y_pos\",\n      \"status\": \"in-progress\",\n      \"note\": \"Dispatching Structural Engineer to correct the local Y position to 0.\"\n    }\n  ]\n}\n```",
-        "-------------------------------",
-        "📋 Decision: FIX -> Delegate to Structural Engineer",
-        "💭 Reasoning Step 1 (Inspector): The Inspector flagged a CRITICAL issue: the Main Pavilion East Wall (main_wall_east) has a local Y position of 3.25 instead of 0. Since its parent room (room_main) is already elevated to Y=3.25, adding another 3.25 locally causes the wall to float. I accept this finding and will dispatch a fix.",
-        "💭 Reasoning Step 2 (Plan): Before proceeding to the Main Pavilion West Wall, I must correct the East Wall's position to clear the critical punch list item.",
-        "🔧 Dispatching Structural Engineer...",
-        "--- STRUCTURAL ENGINEER FULL RESPONSE ---",
-        "```json\n{\n  \"selfAssessment\": \"I need to update the position of 'main_wall_east' to align with the North and South walls, which are currently at y=0. The requested coordinates are (22, 0, 0).\",\n  \"coordinatesUsed\": \"x: 22, y: 0, z: 0 (Absolute coordinates to match the prompt's request and align with main_wall_north and main_wall_south).\",\n  \"decisionsExplained\": \"Using set_node_position to explicitly set the absolute coordinates of main_wall_east to (22, 0, 0) without altering its dimensions.\",\n  \"toolsCalled\": [\n    {\n      \"tool\": \"set_node_position\",\n      \"args\": {\n        \"target_id\": \"main_wall_east\",\n        \"position_x\": 22,\n        \"position_y\": 0,\n        \"position_z\": 0\n      }\n    }\n  ]\n}\n```",
-        "--------------------------------------------------",
-        "   🛠️ Structural Engineer issued 1 tools.",
-        "🔍 Inspector analyzing new scene state...",
-        "--- INSPECTOR FULL RESPONSE ---",
-        "```json\n{\n  \"issues\": [],\n  \"punchListAdditions\": [],\n  \"punchListUpdates\": [\n    {\n      \"id\": \"punch_main_wall_east_y_pos\",\n      \"status\": \"resolved\",\n      \"note\": \"Verified. The local Y position of the Main Pavilion East Wall has been updated to 0. It now rests flush on the floor and aligns perfectly between the North and South walls.\"\n    }\n  ],\n  \"checklistUpdates\": [],\n  \"overallScore\": 100,\n  \"summary\": \"The East Wall's position has been successfully corrected. It now sits flush on the Main Pavilion floor and fits perfectly between the North and South walls. No new structural issues detected.\"\n}\n```",
-        "-------------------------------",
-        "   📝 Inspector updated punch list item punch_main_wall_east_y_pos to resolved",
-        "   📝 Inspector Score: 100. Issues: 0 CRITICAL, 0 WARNING.",
-        "\n───── 🔁 CYCLE 21/50 ─────",
-        "🏛️ Architect analyzing scene and Inspector report...",
-        "--- ARCHITECT FULL RESPONSE ---",
-        "```json\n{\n  \"reasoning_step_1_inspector\": \"The Inspector confirmed the East Wall is perfectly placed with local Y=0. I will accept this and proceed to the final main exterior wall.\",\n  \"reasoning_step_2_plan\": \"The next component in the build order is the Main Pavilion West Wall (main_wall_west). I will dispatch the Structural Engineer to create this wall, ensuring it uses local Y=0 relative to the Main Pavilion room, matching the successful East Wall placement.\",\n  \"inspector_decision\": \"ACCEPT\",\n  \"next_contractor\": \"Structural Engineer\",\n  \"dispatch_instruction\": {\n    \"component_id\": \"main_wall_west\",\n    \"component_spec\": \"Create the Main Pavilion West Wall as a child of room_main. Size: 1m width, 6.5m height, 33m depth. Local Position: x: -22, y: 0, z: 0.\",\n    \"watch_items\": \"Ensure local Y is 0 so it sits flush on the floor. It must fit perfectly between the North and South walls without overlapping.\",\n    \"target_punch_list_id\": null\n  },\n  \"punch_list_updates\": []\n}\n```",
-        "-------------------------------",
-        "📋 Decision: ACCEPT -> Delegate to Structural Engineer",
-        "💭 Reasoning Step 1 (Inspector): The Inspector confirmed the East Wall is perfectly placed with local Y=0. I will accept this and proceed to the final main exterior wall.",
-        "💭 Reasoning Step 2 (Plan): The next component in the build order is the Main Pavilion West Wall (main_wall_west). I will dispatch the Structural Engineer to create this wall, ensuring it uses local Y=0 relative to the Main Pavilion room, matching the successful East Wall placement.",
-        "🔧 Dispatching Structural Engineer...",
-        "--- STRUCTURAL ENGINEER FULL RESPONSE ---",
-        "```json\n{\n  \"selfAssessment\": \"The task requires adding the West Wall to the Main Pavilion. The dimensions and positions are explicitly provided. I need to ensure it fits perfectly between the North and South walls. The North wall is at z=-17 with a depth of 1m (inner face at z=-16.5), and the South wall is at z=17 with a depth of 1m (inner face at z=16.5). The distance between them is exactly 33m, which matches the requested depth of the new wall.\",\n  \"coordinatesUsed\": \"Position: x=-22, y=0, z=0. Dimensions: width=1m, height=6.5m, depth=33m.\",\n  \"decisionsExplained\": \"I am using the add_node tool to create the wall with the exact ID 'main_wall_west'. The parent is set to 'room_main'. The position is set to x=-22, y=0, z=0 to satisfy the local coordinate requirements and ensure it sits flush. The depth of 33m ensures it fits perfectly between the North and South walls without overlapping.\",\n  \"toolsCalled\": [\n    {\n      \"tool\": \"add_node\",\n      \"args\": {\n        \"type\": \"Wall\",\n        \"id\": \"main_wall_west\",\n        \"name\": \"Main Pavilion West Wall\",\n        \"parent_id\": \"room_main\",\n        \"width\": 1,\n        \"height\": 6.5,\n        \"depth\": 33,\n        \"position_x\": -22,\n        \"position_y\": 0,\n        \"position_z\": 0\n      }\n    }\n  ]\n}\n```",
         "--------------------------------------------------",
         "   🛠️ Structural Engineer issued 1 tools.",
         "🔍 Inspector analyzing new scene state..."

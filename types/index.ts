@@ -539,8 +539,6 @@ export interface ChatMessage {
   pipeline_log?: string[];
   // Message type (optional)
   type?: string;
-  // Planning Mode images
-  planning_images?: string[];
 }
 
 /** Request to the AI chat endpoint */

@@ -1,0 +1,160 @@
+{
+  "id": "23e530e0-fc8f-4363-b1b9-d37cf0365e20",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-19T01:12:01.158Z",
+  "modified_at": "2026-03-19T01:12:01.158Z",
+  "version": 1,
+  "root_node_id": "house_cbafa397",
+  "nodes": {
+    "house_cbafa397": {
+      "id": "house_cbafa397",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-19T01:12:01.158Z",
+      "modified_at": "2026-03-19T01:12:01.158Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  },
+  "chat_history": [
+    {
+      "id": "msg_1773882725076",
+      "role": "user",
+      "content": "A one story, big on the outside (very big!), modern with a infinity pool. \n\nInside the Kitchen has to be very big and very open with a hughe islend. Then the dining room has to be almost secluded. \n\nThe living room were the couches are has to almost lowerd, giving it a grounded comfy feel. \n\nThere has to be a spaar room and elevator, 3 bedrooms and 4 baths, 2 garages, and a bascetball court outside and a theater room.\nA little area that has a greenhouse for our plants, a planting area, and a hourse stabel next to the house.",
+      "timestamp": "2026-03-19T01:12:05.076Z",
+      "snapshot": {
+        "id": "23e530e0-fc8f-4363-b1b9-d37cf0365e20",
+        "name": "Untitled Project",
+        "description": "",
+        "created_at": "2026-03-19T01:12:01.158Z",
+        "modified_at": "2026-03-19T01:12:01.158Z",
+        "version": 1,
+        "root_node_id": "house_cbafa397",
+        "nodes": {
+          "house_cbafa397": {
+            "id": "house_cbafa397",
+            "type": "House",
+            "name": "Untitled Project",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "dimensions": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            },
+            "material_id": "",
+            "opacity": 1,
+            "tags": [],
+            "constraints": {
+              "fixed_position": true,
+              "connected_to": []
+            },
+            "systems": {
+              "electrical": [],
+              "plumbing": [],
+              "hvac": []
+            },
+            "parent_id": null,
+            "children_ids": [],
+            "created_at": "2026-03-19T01:12:01.158Z",
+            "modified_at": "2026-03-19T01:12:01.158Z",
+            "version": 1
+          }
+        },
+        "settings": {
+          "unit": "metric",
+          "grid_size": 0.1,
+          "precision_level": 1,
+          "building_standard": "eurocode",
+          "default_wall_height": 2.7,
+          "default_wall_thickness": 0.25,
+          "locale": "en-US",
+          "currency": "EUR"
+        },
+        "budget": {
+          "total_budget": 200000,
+          "spent": 0,
+          "remaining": 200000,
+          "currency": "EUR",
+          "warnings_enabled": true,
+          "warning_threshold": 90
+        }
+      },
+      "attachments": []
+    },
+    {
+      "id": "msg_1773882725076_ai",
+      "role": "assistant",
+      "content": "Generation was stopped.",
+      "timestamp": "2026-03-19T01:12:05.076Z",
+      "pipeline_log": []
+    },
+    {
+      "id": "msg_1773882739581",
+      "role": "user",
+      "content": "A one story, big on the outside (very big!), modern with a infinity pool. \n\nInside the Kitchen has to be very big and very open with a hughe islend. Then the dining room has to be almost secluded. \n\nThe living room were the couches are has to almost lowerd, giving it a grounded comfy feel. \n\nThere has to be a spaar room and elevator, 3 bedrooms and 4 baths, 2 garages, and a bascetball court outside and a theater room.\nA little area that has a greenhouse for our plants, a planting area, and a hourse stabel next to the house.",
+      "timestamp": "2026-03-19T01:12:19.581Z"
+    },
+    {
+      "id": "msg_1773882739581_ai_plan",
+      "role": "assistant",
+      "content": "Failed to generate planning options. Please try again.",
+      "timestamp": "2026-03-19T01:12:19.581Z"
+    }
+  ]
+}
