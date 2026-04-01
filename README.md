@@ -99,18 +99,8 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the landing page, then click "Start Designing" to enter the 3D studio.
 
-## 🛣️ Build Roadmap
 
-| Phase | Feature | Status |
-|-------|---------|--------|
-| **1** | PSG schema + Three.js renderer + basic UI | ✅ Scaffolded |
-| **2** | AI chat → LLM function calls → PSG edits | 🔜 Next |
-| **3** | Walk-through camera + layer system | 📋 Planned |
-| **4** | Electrical & plumbing auto-placement | 📋 Planned |
-| **5** | Thermal simulation overlay | 📋 Planned |
-| **6** | PDF export + architect documents | 📋 Planned |
 
 ## 🔑 Key Technical Decisions
 
