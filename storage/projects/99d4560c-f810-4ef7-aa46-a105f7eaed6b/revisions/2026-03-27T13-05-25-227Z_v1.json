@@ -1,0 +1,152 @@
+{
+  "id": "99d4560c-f810-4ef7-aa46-a105f7eaed6b",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-27T13:03:46.907Z",
+  "modified_at": "2026-03-27T13:03:46.907Z",
+  "version": 1,
+  "root_node_id": "house_3833031b",
+  "nodes": {
+    "house_3833031b": {
+      "id": "house_3833031b",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-27T13:03:46.906Z",
+      "modified_at": "2026-03-27T13:03:46.907Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  },
+  "chat_history": [
+    {
+      "id": "msg_1774616718292",
+      "role": "user",
+      "content": "Create a normal 1 family home for a subburb",
+      "timestamp": "2026-03-27T13:05:18.292Z",
+      "snapshot": {
+        "id": "99d4560c-f810-4ef7-aa46-a105f7eaed6b",
+        "name": "Untitled Project",
+        "description": "",
+        "created_at": "2026-03-27T13:03:46.907Z",
+        "modified_at": "2026-03-27T13:03:46.907Z",
+        "version": 1,
+        "root_node_id": "house_3833031b",
+        "nodes": {
+          "house_3833031b": {
+            "id": "house_3833031b",
+            "type": "House",
+            "name": "Untitled Project",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "dimensions": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            },
+            "material_id": "",
+            "opacity": 1,
+            "tags": [],
+            "constraints": {
+              "fixed_position": true,
+              "connected_to": []
+            },
+            "systems": {
+              "electrical": [],
+              "plumbing": [],
+              "hvac": []
+            },
+            "parent_id": null,
+            "children_ids": [],
+            "created_at": "2026-03-27T13:03:46.906Z",
+            "modified_at": "2026-03-27T13:03:46.907Z",
+            "version": 1
+          }
+        },
+        "settings": {
+          "unit": "metric",
+          "grid_size": 0.1,
+          "precision_level": 1,
+          "building_standard": "eurocode",
+          "default_wall_height": 2.7,
+          "default_wall_thickness": 0.25,
+          "locale": "en-US",
+          "currency": "EUR"
+        },
+        "budget": {
+          "total_budget": 200000,
+          "spent": 0,
+          "remaining": 200000,
+          "currency": "EUR",
+          "warnings_enabled": true,
+          "warning_threshold": 90
+        }
+      },
+      "attachments": []
+    },
+    {
+      "id": "msg_1774616718295_ai",
+      "role": "assistant",
+      "content": "Thinking...",
+      "timestamp": "2026-03-27T13:05:18.295Z",
+      "pipeline_log": [
+        "🏗️ CONSTRUCTION SITE: Agentic Architecture v3.0 Started",
+        "🔧 Auto-escalating precision to Construction level (0.5mm) for maximum accuracy",
+        "🏛️ Phase 1: Architect drafting Master Build Document..."
+      ]
+    }
+  ]
+}

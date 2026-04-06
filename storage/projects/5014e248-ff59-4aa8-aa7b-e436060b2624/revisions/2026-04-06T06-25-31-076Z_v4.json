@@ -1,0 +1,187 @@
+{
+  "id": "5014e248-ff59-4aa8-aa7b-e436060b2624",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T06:19:10.966Z",
+  "modified_at": "2026-04-06T06:25:28.074Z",
+  "version": 4,
+  "root_node_id": "house_50b4762c",
+  "nodes": {
+    "house_50b4762c": {
+      "id": "house_50b4762c",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_1",
+        "wall_1_n",
+        "wall_1_s"
+      ],
+      "created_at": "2026-04-06T06:19:10.965Z",
+      "modified_at": "2026-04-06T06:25:28.074Z",
+      "version": 1
+    },
+    "floor_1": {
+      "id": "floor_1",
+      "type": "Slab",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 5,
+        "y": 0.5,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 1,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:23:40.869Z",
+      "modified_at": "2026-04-06T06:23:40.869Z",
+      "version": 1
+    },
+    "wall_1_n": {
+      "id": "wall_1_n",
+      "type": "Wall",
+      "name": "Story 1 North Wall",
+      "position": {
+        "x": 5,
+        "y": 3,
+        "z": 0.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:24:57.055Z",
+      "modified_at": "2026-04-06T06:24:57.055Z",
+      "version": 1
+    },
+    "wall_1_s": {
+      "id": "wall_1_s",
+      "type": "Wall",
+      "name": "Story 1 South Wall",
+      "position": {
+        "x": 5,
+        "y": 3,
+        "z": 9.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:25:28.074Z",
+      "modified_at": "2026-04-06T06:25:28.074Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

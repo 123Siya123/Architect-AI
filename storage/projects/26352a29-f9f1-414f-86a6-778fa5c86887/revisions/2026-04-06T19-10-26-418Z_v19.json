@@ -1,0 +1,785 @@
+{
+  "id": "26352a29-f9f1-414f-86a6-778fa5c86887",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T18:51:55.123Z",
+  "modified_at": "2026-04-06T19:10:23.888Z",
+  "version": 19,
+  "root_node_id": "house_7adb482f",
+  "nodes": {
+    "house_7adb482f": {
+      "id": "house_7adb482f",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "slab_iwicpqte",
+        "slab_44wcsih5",
+        "slab_nlw6ud2a",
+        "Wall_1F_North",
+        "Wall_1F_West",
+        "Wall_1F_East",
+        "Wall_1F_South_Glass",
+        "Exoskeleton_Col1",
+        "Exoskeleton_Col4",
+        "Exoskeleton_Col8",
+        "Floor_2F",
+        "Wall_2F_West",
+        "Wall_2F_East",
+        "Wall_2F_South",
+        "Wall_Workshop_North_Acoustic",
+        "Wall_Workshop_West",
+        "Wall_Workshop_South",
+        "Wall_Workshop_East_North"
+      ],
+      "created_at": "2026-04-06T18:51:55.122Z",
+      "modified_at": "2026-04-06T19:10:23.888Z",
+      "version": 1
+    },
+    "slab_iwicpqte": {
+      "id": "slab_iwicpqte",
+      "type": "Slab",
+      "name": "Foundation_Main",
+      "position": {
+        "x": 10,
+        "y": -0.15,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.3,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T18:59:45.073Z",
+      "modified_at": "2026-04-06T18:59:45.073Z",
+      "version": 1
+    },
+    "slab_44wcsih5": {
+      "id": "slab_44wcsih5",
+      "type": "Slab",
+      "name": "Foundation_Atrium",
+      "position": {
+        "x": 23,
+        "y": -0.15,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.3,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:00:09.814Z",
+      "modified_at": "2026-04-06T19:00:09.814Z",
+      "version": 1
+    },
+    "slab_nlw6ud2a": {
+      "id": "slab_nlw6ud2a",
+      "type": "Slab",
+      "name": "Foundation_Workshop",
+      "position": {
+        "x": 27,
+        "y": -0.15,
+        "z": 16
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:00:36.760Z",
+      "modified_at": "2026-04-06T19:00:36.760Z",
+      "version": 1
+    },
+    "Wall_1F_North": {
+      "id": "Wall_1F_North",
+      "type": "Wall",
+      "name": "Main Wing North Street Wall",
+      "position": {
+        "x": 10,
+        "y": 3.75,
+        "z": 0.15
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 7.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:01:04.301Z",
+      "modified_at": "2026-04-06T19:01:04.301Z",
+      "version": 1
+    },
+    "Wall_1F_West": {
+      "id": "Wall_1F_West",
+      "type": "Wall",
+      "name": "Main Wing West Wall",
+      "position": {
+        "x": 0.15,
+        "y": 1.75,
+        "z": 5.1499999999999995
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3.5,
+        "z": 9.7
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:01:39.072Z",
+      "modified_at": "2026-04-06T19:01:39.072Z",
+      "version": 1
+    },
+    "Wall_1F_East": {
+      "id": "Wall_1F_East",
+      "type": "Wall",
+      "name": "Main Wing East Wall",
+      "position": {
+        "x": 19.849999999999998,
+        "y": 1.75,
+        "z": 5.1499999999999995
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 3.5,
+        "z": 9.7
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:02:11.995Z",
+      "modified_at": "2026-04-06T19:02:11.995Z",
+      "version": 1
+    },
+    "Wall_1F_South_Glass": {
+      "id": "Wall_1F_South_Glass",
+      "type": "Window",
+      "name": "Main Wing South Glass Wall",
+      "position": {
+        "x": 10,
+        "y": 1.75,
+        "z": 9.85
+      },
+      "dimensions": {
+        "x": 19.4,
+        "y": 3.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:02:48.378Z",
+      "modified_at": "2026-04-06T19:02:48.378Z",
+      "version": 1
+    },
+    "Exoskeleton_Col1": {
+      "id": "Exoskeleton_Col1",
+      "type": "Column",
+      "name": "Exoskeleton_Col1",
+      "position": {
+        "x": 0.1,
+        "y": 1.75,
+        "z": 11.9
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 3.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:03:15.577Z",
+      "modified_at": "2026-04-06T19:03:15.577Z",
+      "version": 1
+    },
+    "Exoskeleton_Col4": {
+      "id": "Exoskeleton_Col4",
+      "type": "Column",
+      "name": "Steel Column 4",
+      "position": {
+        "x": 8.5,
+        "y": 1.75,
+        "z": 11.9
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 3.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:03:54.148Z",
+      "modified_at": "2026-04-06T19:03:54.148Z",
+      "version": 1
+    },
+    "Exoskeleton_Col8": {
+      "id": "Exoskeleton_Col8",
+      "type": "Column",
+      "name": "Steel Column 8",
+      "position": {
+        "x": 19.900000000000002,
+        "y": 1.75,
+        "z": 11.9
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 3.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:04:32.370Z",
+      "modified_at": "2026-04-06T19:04:32.370Z",
+      "version": 1
+    },
+    "Floor_2F": {
+      "id": "Floor_2F",
+      "type": "Slab",
+      "name": "Second Floor Slab",
+      "position": {
+        "x": 10,
+        "y": 3.65,
+        "z": 6.1499999999999995
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.3,
+        "z": 11.7
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:05:21.555Z",
+      "modified_at": "2026-04-06T19:05:21.555Z",
+      "version": 1
+    },
+    "Wall_2F_West": {
+      "id": "Wall_2F_West",
+      "type": "Wall",
+      "name": "Second Floor West Wall",
+      "position": {
+        "x": 0.15,
+        "y": 5.15,
+        "z": 6.1499999999999995
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 2.7,
+        "z": 11.7
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:05:54.793Z",
+      "modified_at": "2026-04-06T19:05:54.793Z",
+      "version": 1
+    },
+    "Wall_2F_East": {
+      "id": "Wall_2F_East",
+      "type": "Wall",
+      "name": "Second Floor East Wall",
+      "position": {
+        "x": 19.849999999999998,
+        "y": 5.15,
+        "z": 6.1499999999999995
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 2.7,
+        "z": 11.7
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:06:35.067Z",
+      "modified_at": "2026-04-06T19:06:35.067Z",
+      "version": 1
+    },
+    "Wall_2F_South": {
+      "id": "Wall_2F_South",
+      "type": "Wall",
+      "name": "Second Floor South Wall",
+      "position": {
+        "x": 10,
+        "y": 5.15,
+        "z": 11.85
+      },
+      "dimensions": {
+        "x": 19.4,
+        "y": 2.7,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:07:09.512Z",
+      "modified_at": "2026-04-06T19:07:09.512Z",
+      "version": 1
+    },
+    "Wall_Workshop_North_Acoustic": {
+      "id": "Wall_Workshop_North_Acoustic",
+      "type": "Wall",
+      "name": "Workshop Acoustic Wall",
+      "position": {
+        "x": 27,
+        "y": 3.25,
+        "z": 10.15
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 6.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:07:57.043Z",
+      "modified_at": "2026-04-06T19:07:57.043Z",
+      "version": 1
+    },
+    "Wall_Workshop_West": {
+      "id": "Wall_Workshop_West",
+      "type": "Wall",
+      "name": "Workshop West Wall",
+      "position": {
+        "x": 22.15,
+        "y": 3.25,
+        "z": 16.15
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 6.5,
+        "z": 11.7
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:08:50.426Z",
+      "modified_at": "2026-04-06T19:08:50.426Z",
+      "version": 1
+    },
+    "Wall_Workshop_South": {
+      "id": "Wall_Workshop_South",
+      "type": "Wall",
+      "name": "Workshop South Wall",
+      "position": {
+        "x": 27,
+        "y": 3.25,
+        "z": 21.849999999999998
+      },
+      "dimensions": {
+        "x": 9.4,
+        "y": 6.5,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:09:33.776Z",
+      "modified_at": "2026-04-06T19:09:33.776Z",
+      "version": 1
+    },
+    "Wall_Workshop_East_North": {
+      "id": "Wall_Workshop_East_North",
+      "type": "Wall",
+      "name": "Workshop East Wall (North of Door)",
+      "position": {
+        "x": 31.849999999999998,
+        "y": 3.25,
+        "z": 12.15
+      },
+      "dimensions": {
+        "x": 0.3,
+        "y": 6.5,
+        "z": 3.7
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:10:23.888Z",
+      "modified_at": "2026-04-06T19:10:23.888Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

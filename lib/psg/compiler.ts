@@ -544,6 +544,164 @@ export function compileBalconyGeometry(node: PSGNode): THREE.Group {
     return group;
 }
 
+/** Chimney geometry — tall, narrow box with a small cap */
+export function compileChimneyGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x, y, z } = node.dimensions;
+
+    // Main body
+    const bodyGeom = new THREE.BoxGeometry(x, y, z);
+    const body = new THREE.Mesh(bodyGeom);
+    group.add(body);
+
+    // Cap (slightly wider, flat)
+    const capGeom = new THREE.BoxGeometry(x * 1.1, 0.1, z * 1.1);
+    const cap = new THREE.Mesh(capGeom);
+    cap.position.y = y / 2 + 0.05;
+    group.add(cap);
+
+    // Flue (smaller protrusion on top)
+    const flueGeom = new THREE.CylinderGeometry(x * 0.2, x * 0.2, 0.3, 16);
+    const flue = new THREE.Mesh(flueGeom);
+    flue.position.y = y / 2 + 0.25;
+    group.add(flue);
+
+    return group;
+}
+
+/** Garage geometry — large box with a "door" inset on one side */
+export function compileGarageGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+
+    // The main enclosure
+    const shellGeom = new THREE.BoxGeometry(w, h, d);
+    const shell = new THREE.Mesh(shellGeom);
+    group.add(shell);
+
+    // The "door" indication (slightly inset or proud)
+    const doorW = w * 0.85;
+    const doorH = h * 0.8;
+    const doorGeom = new THREE.BoxGeometry(doorW, doorH, 0.05);
+    const door = new THREE.Mesh(doorGeom);
+    // Position it at the front (Z+ direction)
+    door.position.set(0, -h / 2 + doorH / 2, d / 2 + 0.01);
+    group.add(door);
+
+    return group;
+}
+
+/** Toilet geometry — bowl + tank */
+export function compileToiletGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+
+    // Bowl (oval extrusion or sphere)
+    const bowlGeom = new THREE.SphereGeometry(Math.min(w, d) * 0.35, 16, 12);
+    const bowl = new THREE.Mesh(bowlGeom);
+    bowl.scale.set(1, 0.8, 1.4);
+    bowl.position.set(0, -h / 2 + (Math.min(w, d) * 0.35 * 0.8), d * 0.1);
+    group.add(bowl);
+
+    // Tank (rectangular box on back)
+    const tankGeom = new THREE.BoxGeometry(w * 0.8, h * 0.6, d * 0.3);
+    const tank = new THREE.Mesh(tankGeom);
+    tank.position.set(0, -h / 2 + (h * 0.6 / 2) + 0.1, -d / 2 + (d * 0.3 / 2));
+    group.add(tank);
+
+    return group;
+}
+
+/** Sink geometry — basin */
+export function compileSinkGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+
+    // Basin block
+    const basinGeom = new THREE.BoxGeometry(w, h * 0.2, d);
+    const basin = new THREE.Mesh(basinGeom);
+    basin.position.set(0, h / 2 - h * 0.1, 0);
+    group.add(basin);
+
+    // Faucet (bent pipe)
+    const faucetGeom = new THREE.CylinderGeometry(0.02, 0.02, 0.2, 8);
+    const faucet = new THREE.Mesh(faucetGeom);
+    faucet.position.set(0, h / 2 + 0.1, -d / 2 + 0.05);
+    group.add(faucet);
+
+    // Pedestal or legs if tall
+    if (h > 0.5) {
+        const pedGeom = new THREE.CylinderGeometry(0.1, 0.12, h - 0.1, 12);
+        const ped = new THREE.Mesh(pedGeom);
+        ped.position.set(0, -0.05, 0);
+        group.add(ped);
+    }
+
+    return group;
+}
+
+/** Shower geometry — base + glass walls */
+export function compileShowerGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+
+    // Base tray
+    const baseGeom = new THREE.BoxGeometry(w, 0.1, d);
+    const base = new THREE.Mesh(baseGeom);
+    base.position.y = -h / 2 + 0.05;
+    group.add(base);
+
+    // Glass walls (2 sides usually, Corner shower)
+    const glassMat = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.2,
+        roughness: 0,
+        metalness: 0,
+        transmission: 0.95,
+        side: THREE.DoubleSide
+    });
+
+    const wall1Geom = new THREE.PlaneGeometry(w, h - 0.1);
+    const wall1 = new THREE.Mesh(wall1Geom, glassMat);
+    wall1.position.set(0, 0.05, d / 2);
+    group.add(wall1);
+
+    const wall2Geom = new THREE.PlaneGeometry(d, h - 0.1);
+    const wall2 = new THREE.Mesh(wall2Geom, glassMat);
+    wall2.rotation.y = Math.PI / 2;
+    wall2.position.set(w / 2, 0.05, 0);
+    group.add(wall2);
+
+    return group;
+}
+
+/** Bathtub geometry — oval/rectangular tub */
+export function compileBathtubGeometry(node: PSGNode): THREE.Group {
+    const group = new THREE.Group();
+    const { x: w, y: h, z: d } = node.dimensions;
+
+    // The shell
+    const shellGeom = new THREE.BoxGeometry(w, h, d);
+    const shell = new THREE.Mesh(shellGeom);
+    group.add(shell);
+
+    // The "hollow" indication (darker rectangle on top)
+    const hollowGeom = new THREE.PlaneGeometry(w * 0.9, d * 0.85);
+    const hollow = new THREE.Mesh(hollowGeom);
+    hollow.rotation.x = -Math.PI / 2;
+    hollow.position.y = h / 2 + 0.001;
+    group.add(hollow);
+
+    return group;
+}
+
+/** Electrical device geometry — tiny box */
+export function compileElectricalDeviceGeometry(node: PSGNode): THREE.BufferGeometry {
+    // 100mm x 100mm x 20mm standard box
+    return new THREE.BoxGeometry(0.1, 0.1, 0.02);
+}
+
 /** Custom geometry — parses parametric instructions from AI for perfect custom objects */
 export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry | THREE.Group {
     if (node.custom_geometry) {
@@ -697,10 +855,28 @@ export function compileCustomGeometry(node: PSGNode): THREE.BufferGeometry | THR
  * @returns Three.js MeshStandardMaterial
  */
 export function compileMaterial(material: Material): THREE.MeshStandardMaterial {
+    // Use material-level PBR properties if defined, otherwise fall back to
+    // category-specific defaults for realistic rendering
+    const categoryPBR: Record<string, { roughness: number; metalness: number }> = {
+        structure:     { roughness: 0.85, metalness: 0.0 },
+        cladding:      { roughness: 0.75, metalness: 0.0 },
+        insulation:    { roughness: 0.95, metalness: 0.0 },
+        interior:      { roughness: 0.55, metalness: 0.0 },
+        roofing:       { roughness: 0.7,  metalness: 0.0 },
+        flooring:      { roughness: 0.4,  metalness: 0.0 },
+        glazing:       { roughness: 0.0,  metalness: 0.1 },
+        waterproofing: { roughness: 0.8,  metalness: 0.0 },
+        other:         { roughness: 0.7,  metalness: 0.0 },
+    };
+
+    const defaults = categoryPBR[material.category] || categoryPBR.other;
+    const roughness = (material as any).roughness ?? defaults.roughness;
+    const metalness = (material as any).metalness ?? defaults.metalness;
+
     const mat = new THREE.MeshStandardMaterial({
         color: new THREE.Color(material.color_hex),
-        roughness: 0.7,
-        metalness: 0.1,
+        roughness,
+        metalness,
         transparent: false,
         opacity: 1,
         side: THREE.DoubleSide,
@@ -712,7 +888,6 @@ export function compileMaterial(material: Material): THREE.MeshStandardMaterial 
         const texture = textureLoader.load(material.texture_url);
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        // texture_scale is meters per repeat — so 1/scale gives repeats per meter
         const repeatsPerMeter = 1 / (material.texture_scale || 1);
         texture.repeat.set(repeatsPerMeter, repeatsPerMeter);
         mat.map = texture;
@@ -876,7 +1051,19 @@ export const GEOMETRY_COMPILERS: Record<
     Column: compileColumnGeometry,
     Beam: compileBeamGeometry,
     Balcony: compileBalconyGeometry,
+    Garage: compileGarageGeometry,
+    Chimney: compileChimneyGeometry,
+    Toilet: compileToiletGeometry,
+    Sink: compileSinkGeometry,
+    Shower: compileShowerGeometry,
+    Bathtub: compileBathtubGeometry,
+    LightSwitch: compileElectricalDeviceGeometry,
+    ElectricalOutlet: compileElectricalDeviceGeometry,
+    ElectricalPanel: compileElectricalDeviceGeometry,
     Custom: compileCustomGeometry,
+    Floor: compileSlabGeometry,
+    Tower: compileColumnGeometry,
+    Detail: compileColumnGeometry,
 };
 
 /**
@@ -890,6 +1077,9 @@ export function getGeometryForNode(
     if (compiler) {
         return compiler(node);
     }
-    // Fallback: 1m cube placeholder
-    return new THREE.BoxGeometry(1, 1, 1);
+    // Fallback: Use dimensions if unknown
+    const w = node.dimensions?.x || 1;
+    const h = node.dimensions?.y || 1;
+    const d = node.dimensions?.z || 1;
+    return new THREE.BoxGeometry(w, h, d);
 }

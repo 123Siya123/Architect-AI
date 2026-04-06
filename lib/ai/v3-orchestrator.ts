@@ -152,6 +152,20 @@ export async function sendChatToAI_V3(
         log(`Raw Result: ${architect1Result.text}`);
         return { message: 'Failed to create Master Build Plan.', operations: [], warnings: [] };
     }
+
+    // Pre-compute explicit edges from position + size so contractors see exact boundaries
+    masterBuildDoc.components = masterBuildDoc.components.map(comp => {
+        const origin = comp.position;
+        const s = comp.size;
+        return {
+            ...comp,
+            edges: {
+                xMin: origin.x, xMax: origin.x + s.w,
+                yMin: origin.y, yMax: origin.y + s.h,
+                zMin: origin.z, zMax: origin.z + s.d
+            }
+        };
+    });
     
     log(`✅ Master Build Document drafted with ${masterBuildDoc.buildOrder.length} steps:`);
     log(JSON.stringify(masterBuildDoc, null, 2));
@@ -241,11 +255,21 @@ ${JSON.stringify(checklistItems)}
         const contractorName = architectDecision.next_contractor;
         log(`🔧 Dispatching ${contractorName}...`);
 
+        const toolsReference = `Available tools: add_node, move_node, set_node_position, resize_node, delete_node, replace_material, rotate_node, create_custom_element.
+
+POSITIONING RULE: All tools use STARTING EDGES. If the plan says a wall goes from X=0 to X=5, Y=0 to Y=2.7:
+  x_min = 0
+  y_min = 0
+  width = 5, height = 2.7
+
+The scene state shows edges (X: min → max) for every element — use those to verify adjacency and avoid overlaps.
+For Windows/Doors: set parent_id to the Wall ID. For everything else: use any valid ID.`;
+
         const contractorPrompt = CONTRACTOR_PROMPT
             .replace('{ROLE}', contractorName)
             .replace('{COMPONENT_SPEC}', JSON.stringify(architectDecision.dispatch_instruction, null, 2))
             .replace('{SCENE_STATE}', sceneGraphJSON)
-            .replace('{TOOLS_REFERENCE}', 'Use add_node, move_node, set_node_position, resize_node, delete_node appropriately.');
+            .replace('{TOOLS_REFERENCE}', toolsReference);
 
         const contractorResult = await callProviderWithTools(config, [{ role: 'user', content: contractorPrompt }], attachments, signal);
         

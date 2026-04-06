@@ -1176,6 +1176,33 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                         let successCount = 0;
                         for (const tc of materialsResult.toolCalls) {
                             try {
+                                // Handle batch_replace_materials by expanding into individual ops
+                                if (tc.name === 'batch_replace_materials') {
+                                    const assignments = (tc.args.assignments as Array<{ target_id: string; material_id: string }>) || [];
+                                    log(`   📦 Batch material assignment: ${assignments.length} nodes`);
+                                    for (const assignment of assignments) {
+                                        try {
+                                            const op = toolCallToOperation('replace_material', {
+                                                target_id: assignment.target_id,
+                                                material_id: assignment.material_id,
+                                            });
+                                            const validation = validateOperation(op, currentProject);
+                                            if (validation.valid) {
+                                                allValidatedOps.push(op);
+                                                emitOperation(op, turn, 'materials_specialist');
+                                                const applied = applyOperation(currentProject, op);
+                                                if (applied.project) {
+                                                    currentProject = applied.project;
+                                                    successCount++;
+                                                }
+                                            } else {
+                                                log(`   ⚠️ Batch skip: ${assignment.target_id} — ${validation.errors[0]}`);
+                                            }
+                                        } catch (e) { /* skip individual */ }
+                                    }
+                                    continue;
+                                }
+
                                 const op = toolCallToOperation(tc.name, tc.args);
                                 const validation = validateOperation(op, currentProject);
                                 if (validation.valid) {
@@ -1191,7 +1218,7 @@ ${formatTurnHistory(turnHistory.slice(-5))}
                                 }
                             } catch (e) { /* skip */ }
                         }
-                        log(`   ✅ Materials: ${successCount}/${materialsResult.toolCalls.length} operations applied`);
+                        log(`   ✅ Materials: ${successCount} material(s) applied`);
                     }
                     if (materialsResult.text) finalMessage = materialsResult.text;
 
@@ -1479,6 +1506,25 @@ export function toolCallToOperation(name: string, args: Record<string, unknown>)
                 timestamp,
             };
 
+        case 'batch_replace_materials': {
+            // batch_replace_materials expands into the FIRST assignment as an operation.
+            // The remaining assignments are handled by the caller iterating over toolCalls.
+            // We store the full assignments array in params so the caller can unpack them.
+            const assignments = (args.assignments as Array<{ target_id: string; material_id: string }>) || [];
+            if (assignments.length === 0) {
+                throw new Error('batch_replace_materials: no assignments provided');
+            }
+            return {
+                type: 'replace_material',
+                target_id: assignments[0].target_id,
+                params: {
+                    material_id: assignments[0].material_id,
+                    _batch_remaining: assignments.slice(1),
+                },
+                timestamp,
+            };
+        }
+
         case 'replace_node':
             return {
                 type: 'replace_node',
@@ -1611,17 +1657,18 @@ export async function callProviderNoTools(
                     console.warn(`[Orchestrator] Switching to next key for same model ${config.model}...`);
                 } else {
                     keysTriedForCurrentModel = 1;
-                    if (config.model.includes('gemini-3.1-pro')) {
-                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3 Pro...');
-                        config = { ...config, model: 'gemini-3-pro-preview' };
+                    if (config.model.includes('3.1-pro')) {
+                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3.1 Flash Lite...');
+                        config = { ...config, model: 'gemini-3.1-flash-lite-preview' };
                         rotateKey(config.provider);
                         config.apiKey = getNextKey(config.provider);
-                    } else if (config.model === 'gemini-3-pro-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Pro unavailable on all keys. Switching to Groq...');
-                        config = getProviderConfig('groq');
-                        maxKeysForProvider = getPoolSize(config.provider);
-                    } else if (config.model === 'gemini-3-flash-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Flash unavailable on all keys. Switching to Groq...');
+                    } else if (config.model.includes('gemini-') && !config.model.includes('flash')) {
+                        console.warn('[Orchestrator] Gemini Pro unavailable. Falling back to Gemini 2.5 Flash...');
+                        config = { ...config, model: 'gemini-2.5-flash' };
+                        rotateKey(config.provider);
+                        config.apiKey = getNextKey(config.provider);
+                    } else if (config.model.includes('gemini-')) {
+                        console.warn('[Orchestrator] Gemini unavailable on all keys. Switching to Groq...');
                         config = getProviderConfig('groq');
                         maxKeysForProvider = getPoolSize(config.provider);
                     } else {
@@ -1701,17 +1748,18 @@ async function callProviderWithTools(
                     console.warn(`[Orchestrator] Switching to next key for same model ${config.model}...`);
                 } else {
                     keysTriedForCurrentModel = 1;
-                    if (config.model.includes('gemini-3.1-pro')) {
-                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3 Pro...');
-                        config = { ...config, model: 'gemini-3-pro-preview' };
+                    if (config.model.includes('3.1-pro')) {
+                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3.1 Flash Lite...');
+                        config = { ...config, model: 'gemini-3.1-flash-lite-preview' };
                         rotateKey(config.provider);
                         config.apiKey = getNextKey(config.provider);
-                    } else if (config.model === 'gemini-3-pro-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Pro unavailable on all keys. Switching to Groq...');
-                        config = getProviderConfig('groq');
-                        maxKeysForProvider = getPoolSize(config.provider);
-                    } else if (config.model === 'gemini-3-flash-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Flash unavailable on all keys. Switching to Groq...');
+                    } else if (config.model.includes('gemini-') && !config.model.includes('flash')) {
+                        console.warn('[Orchestrator] Gemini Pro unavailable. Falling back to Gemini 2.5 Flash...');
+                        config = { ...config, model: 'gemini-2.5-flash' };
+                        rotateKey(config.provider);
+                        config.apiKey = getNextKey(config.provider);
+                    } else if (config.model.includes('gemini-')) {
+                        console.warn('[Orchestrator] Gemini unavailable on all keys. Switching to Groq...');
                         config = getProviderConfig('groq');
                         maxKeysForProvider = getPoolSize(config.provider);
                     } else {

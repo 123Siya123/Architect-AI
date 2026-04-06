@@ -1,0 +1,187 @@
+{
+  "id": "15cb49f1-a858-4b06-8adf-aa358d0e09e0",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T12:50:03.449Z",
+  "modified_at": "2026-04-06T13:02:05.265Z",
+  "version": 4,
+  "root_node_id": "house_1794f95b",
+  "nodes": {
+    "house_1794f95b": {
+      "id": "house_1794f95b",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "slab_west_full",
+        "slab_center_full",
+        "slab_east_full"
+      ],
+      "created_at": "2026-04-06T12:50:03.448Z",
+      "modified_at": "2026-04-06T13:02:05.265Z",
+      "version": 1
+    },
+    "slab_west_full": {
+      "id": "slab_west_full",
+      "type": "Slab",
+      "name": "West Wing Foundation and Terrace",
+      "position": {
+        "x": 6,
+        "y": 0.25,
+        "z": 7
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 14
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:00:49.644Z",
+      "modified_at": "2026-04-06T13:00:49.644Z",
+      "version": 1
+    },
+    "slab_center_full": {
+      "id": "slab_center_full",
+      "type": "Slab",
+      "name": "Center Pavilion Foundation and Terrace",
+      "position": {
+        "x": 20,
+        "y": 0.25,
+        "z": 7
+      },
+      "dimensions": {
+        "x": 16,
+        "y": 0.5,
+        "z": 14
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:01:38.604Z",
+      "modified_at": "2026-04-06T13:01:38.604Z",
+      "version": 1
+    },
+    "slab_east_full": {
+      "id": "slab_east_full",
+      "type": "Slab",
+      "name": "East Wing Foundation and Terrace",
+      "position": {
+        "x": 34,
+        "y": 0.25,
+        "z": 7
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 14
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:02:05.265Z",
+      "modified_at": "2026-04-06T13:02:05.265Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "id": "696b4f83-7785-4c80-8722-f979617becee",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-04T16:39:39.089Z",
+  "modified_at": "2026-04-04T16:45:38.780Z",
+  "version": 4,
+  "root_node_id": "house_7922b510",
+  "nodes": {
+    "house_7922b510": {
+      "id": "house_7922b510",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "slab_7lhe65t7",
+        "slab_h6b06y2t",
+        "slab_f5y3cqzp"
+      ],
+      "created_at": "2026-04-04T16:39:39.088Z",
+      "modified_at": "2026-04-04T16:45:38.780Z",
+      "version": 1
+    },
+    "slab_7lhe65t7": {
+      "id": "slab_7lhe65t7",
+      "type": "Slab",
+      "name": "Main Core Floor Slab",
+      "position": {
+        "x": 6,
+        "y": 0.5,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7922b510",
+      "children_ids": [],
+      "created_at": "2026-04-04T16:43:27.973Z",
+      "modified_at": "2026-04-04T16:43:27.973Z",
+      "version": 1
+    },
+    "slab_h6b06y2t": {
+      "id": "slab_h6b06y2t",
+      "type": "Slab",
+      "name": "East Wing Glamour Suite Floor",
+      "position": {
+        "x": 12,
+        "y": 0.5,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7922b510",
+      "children_ids": [],
+      "created_at": "2026-04-04T16:44:00.230Z",
+      "modified_at": "2026-04-04T16:44:00.230Z",
+      "version": 1
+    },
+    "slab_f5y3cqzp": {
+      "id": "slab_f5y3cqzp",
+      "type": "Slab",
+      "name": "West Wing Entertainment Deck Floor",
+      "position": {
+        "x": -3,
+        "y": 0.5,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7922b510",
+      "children_ids": [],
+      "created_at": "2026-04-04T16:45:38.780Z",
+      "modified_at": "2026-04-04T16:45:38.780Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

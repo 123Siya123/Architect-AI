@@ -1,0 +1,107 @@
+{
+  "id": "188aceb8-ea98-4c4e-9921-82c130ba540e",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-04T22:47:45.373Z",
+  "modified_at": "2026-04-04T22:50:43.100Z",
+  "version": 2,
+  "root_node_id": "house_01767111",
+  "nodes": {
+    "house_01767111": {
+      "id": "house_01767111",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "wall_upnquzcw"
+      ],
+      "created_at": "2026-04-04T22:47:45.372Z",
+      "modified_at": "2026-04-04T22:50:43.100Z",
+      "version": 1
+    },
+    "wall_upnquzcw": {
+      "id": "wall_upnquzcw",
+      "type": "Wall",
+      "name": "Front Perimeter Privacy Wall",
+      "position": {
+        "x": 22.5,
+        "y": 2,
+        "z": 0.5
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pastel_pink_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:50:43.100Z",
+      "modified_at": "2026-04-04T22:50:43.100Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

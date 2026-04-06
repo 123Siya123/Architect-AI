@@ -1,0 +1,107 @@
+{
+  "id": "a5f23bce-8315-49f9-aca8-2086fd0e213d",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T11:27:46.074Z",
+  "modified_at": "2026-04-06T11:42:59.863Z",
+  "version": 2,
+  "root_node_id": "house_9e216d3a",
+  "nodes": {
+    "house_9e216d3a": {
+      "id": "house_9e216d3a",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_main"
+      ],
+      "created_at": "2026-04-06T11:27:46.073Z",
+      "modified_at": "2026-04-06T11:42:59.863Z",
+      "version": 1
+    },
+    "floor_main": {
+      "id": "floor_main",
+      "type": "Slab",
+      "name": "Main House Floor",
+      "position": {
+        "x": 6,
+        "y": 0.1,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.2,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "light_stone_tiles",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_9e216d3a",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:42:59.863Z",
+      "modified_at": "2026-04-06T11:42:59.863Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

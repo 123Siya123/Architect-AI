@@ -1,0 +1,1149 @@
+{
+  "id": "44d89afa-dc9b-423c-8457-e132e19b5e15",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-29T11:01:37.567Z",
+  "modified_at": "2026-03-29T11:05:59.203Z",
+  "version": 28,
+  "root_node_id": "house_8c71fa59",
+  "nodes": {
+    "house_8c71fa59": {
+      "id": "house_8c71fa59",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_0",
+        "floor_1",
+        "roof_1"
+      ],
+      "created_at": "2026-03-29T11:01:37.567Z",
+      "modified_at": "2026-03-29T11:05:49.626Z",
+      "version": 1
+    },
+    "floor_0": {
+      "id": "floor_0",
+      "type": "Floor",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": -2,
+        "y": 0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 16,
+        "y": 0.2,
+        "z": 16
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8c71fa59",
+      "children_ids": [
+        "room_living",
+        "room_garage"
+      ],
+      "created_at": "2026-03-29T11:05:49.600Z",
+      "modified_at": "2026-03-29T11:05:49.613Z",
+      "version": 1
+    },
+    "room_living": {
+      "id": "room_living",
+      "type": "Room",
+      "name": "Main Living Area",
+      "position": {
+        "x": 2,
+        "y": 1.7,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0",
+      "children_ids": [
+        "wall_liv_n",
+        "wall_liv_s",
+        "wall_liv_e",
+        "wall_liv_w",
+        "stairs_main",
+        "custom_9paaa9ey"
+      ],
+      "room_function": "living",
+      "created_at": "2026-03-29T11:05:49.613Z",
+      "modified_at": "2026-03-29T11:05:49.675Z",
+      "version": 1
+    },
+    "room_garage": {
+      "id": "room_garage",
+      "type": "Room",
+      "name": "Garage and Lair Entrance",
+      "position": {
+        "x": -6,
+        "y": 1.7,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_0",
+      "children_ids": [
+        "wall_gar_n",
+        "wall_gar_s",
+        "wall_gar_w",
+        "wall_ea006yky"
+      ],
+      "room_function": "garage",
+      "created_at": "2026-03-29T11:05:49.613Z",
+      "modified_at": "2026-03-29T11:05:59.203Z",
+      "version": 1
+    },
+    "wall_liv_n": {
+      "id": "wall_liv_n",
+      "type": "Wall",
+      "name": "Living North Wall",
+      "position": {
+        "x": 2,
+        "y": 1.7,
+        "z": -3.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [
+        "door_main"
+      ],
+      "created_at": "2026-03-29T11:05:49.614Z",
+      "modified_at": "2026-03-29T11:05:49.626Z",
+      "version": 1
+    },
+    "wall_liv_s": {
+      "id": "wall_liv_s",
+      "type": "Wall",
+      "name": "Living South Wall",
+      "position": {
+        "x": 2,
+        "y": 1.7,
+        "z": 3.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [
+        "window_liv_s"
+      ],
+      "created_at": "2026-03-29T11:05:49.615Z",
+      "modified_at": "2026-03-29T11:05:49.665Z",
+      "version": 1
+    },
+    "wall_liv_e": {
+      "id": "wall_liv_e",
+      "type": "Wall",
+      "name": "Living East Wall",
+      "position": {
+        "x": 6.875,
+        "y": 1.7,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.616Z",
+      "modified_at": "2026-03-29T11:05:49.616Z",
+      "version": 1
+    },
+    "wall_liv_w": {
+      "id": "wall_liv_w",
+      "type": "Wall",
+      "name": "Living West Divider Wall",
+      "position": {
+        "x": -2.875,
+        "y": 1.7,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.616Z",
+      "modified_at": "2026-03-29T11:05:49.616Z",
+      "version": 1
+    },
+    "wall_gar_n": {
+      "id": "wall_gar_n",
+      "type": "Wall",
+      "name": "Garage North Wall",
+      "position": {
+        "x": -6,
+        "y": 1.7,
+        "z": -3.875
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage",
+      "children_ids": [
+        "door_garage"
+      ],
+      "created_at": "2026-03-29T11:05:49.616Z",
+      "modified_at": "2026-03-29T11:05:49.664Z",
+      "version": 1
+    },
+    "wall_gar_s": {
+      "id": "wall_gar_s",
+      "type": "Wall",
+      "name": "Garage South Wall",
+      "position": {
+        "x": -6,
+        "y": 1.7,
+        "z": 3.875
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.617Z",
+      "modified_at": "2026-03-29T11:05:49.617Z",
+      "version": 1
+    },
+    "wall_gar_w": {
+      "id": "wall_gar_w",
+      "type": "Wall",
+      "name": "Garage West Wall",
+      "position": {
+        "x": -8.875,
+        "y": 1.7,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.618Z",
+      "modified_at": "2026-03-29T11:05:49.618Z",
+      "version": 1
+    },
+    "floor_1": {
+      "id": "floor_1",
+      "type": "Floor",
+      "name": "Upper Cantilevered Slab",
+      "position": {
+        "x": 0,
+        "y": 3.3000000000000003,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 14.5,
+        "y": 0.2,
+        "z": 10.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8c71fa59",
+      "children_ids": [
+        "room_master"
+      ],
+      "created_at": "2026-03-29T11:05:49.619Z",
+      "modified_at": "2026-03-29T11:05:49.619Z",
+      "version": 1
+    },
+    "room_master": {
+      "id": "room_master",
+      "type": "Room",
+      "name": "Master Suite Lair",
+      "position": {
+        "x": 0,
+        "y": 4.9,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 3,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [
+        "wall_mas_n",
+        "wall_mas_s",
+        "wall_mas_e",
+        "wall_mas_w",
+        "custom_19oqqwpq"
+      ],
+      "room_function": "bedroom",
+      "created_at": "2026-03-29T11:05:49.619Z",
+      "modified_at": "2026-03-29T11:05:49.676Z",
+      "version": 1
+    },
+    "wall_mas_n": {
+      "id": "wall_mas_n",
+      "type": "Wall",
+      "name": "Master North Wall",
+      "position": {
+        "x": 0,
+        "y": 4.9,
+        "z": -2.875
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_master",
+      "children_ids": [
+        "window_mas_n"
+      ],
+      "created_at": "2026-03-29T11:05:49.621Z",
+      "modified_at": "2026-03-29T11:05:49.667Z",
+      "version": 1
+    },
+    "wall_mas_s": {
+      "id": "wall_mas_s",
+      "type": "Wall",
+      "name": "Master South Wall",
+      "position": {
+        "x": 0,
+        "y": 4.9,
+        "z": 6.875
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_master",
+      "children_ids": [
+        "window_mas_s",
+        "balcony_master"
+      ],
+      "created_at": "2026-03-29T11:05:49.623Z",
+      "modified_at": "2026-03-29T11:05:49.674Z",
+      "version": 1
+    },
+    "wall_mas_e": {
+      "id": "wall_mas_e",
+      "type": "Wall",
+      "name": "Master East Wall",
+      "position": {
+        "x": 6.875,
+        "y": 4.9,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_master",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.624Z",
+      "modified_at": "2026-03-29T11:05:49.624Z",
+      "version": 1
+    },
+    "wall_mas_w": {
+      "id": "wall_mas_w",
+      "type": "Wall",
+      "name": "Master West Wall",
+      "position": {
+        "x": -6.875,
+        "y": 4.9,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 9.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_master",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.625Z",
+      "modified_at": "2026-03-29T11:05:49.625Z",
+      "version": 1
+    },
+    "roof_1": {
+      "id": "roof_1",
+      "type": "Roof",
+      "name": "Flat Minimalist Roof",
+      "position": {
+        "x": 0,
+        "y": 6.5,
+        "z": 2
+      },
+      "dimensions": {
+        "x": 14.5,
+        "y": 0.2,
+        "z": 10.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_8c71fa59",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-03-29T11:05:49.626Z",
+      "modified_at": "2026-03-29T11:05:49.626Z",
+      "version": 1
+    },
+    "door_main": {
+      "id": "door_main",
+      "type": "Door",
+      "name": "Grand Monolith Entrance",
+      "position": {
+        "x": 2,
+        "y": 1.4000000000000001,
+        "z": -3.875
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 2.4,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_liv_n",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.626Z",
+      "modified_at": "2026-03-29T11:05:49.626Z",
+      "version": 1
+    },
+    "door_garage": {
+      "id": "door_garage",
+      "type": "Door",
+      "name": "Hidden Garage Door",
+      "position": {
+        "x": -6,
+        "y": 1.4000000000000001,
+        "z": -3.875
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.4,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_gar_n",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.664Z",
+      "modified_at": "2026-03-29T11:05:49.664Z",
+      "version": 1
+    },
+    "window_liv_s": {
+      "id": "window_liv_s",
+      "type": "Window",
+      "name": "Living Panoramic Glass",
+      "position": {
+        "x": 2,
+        "y": 1.7,
+        "z": 3.875
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 2.6,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_liv_s",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.665Z",
+      "modified_at": "2026-03-29T11:05:49.665Z",
+      "version": 1
+    },
+    "window_mas_s": {
+      "id": "window_mas_s",
+      "type": "Window",
+      "name": "Master Panoramic Glass",
+      "position": {
+        "x": 0,
+        "y": 4.9,
+        "z": 6.875
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 2.6,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_mas_s",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.666Z",
+      "modified_at": "2026-03-29T11:05:49.666Z",
+      "version": 1
+    },
+    "window_mas_n": {
+      "id": "window_mas_n",
+      "type": "Window",
+      "name": "Master Privacy Slit Window",
+      "position": {
+        "x": 0,
+        "y": 5.5,
+        "z": -2.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.8,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_mas_n",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.667Z",
+      "modified_at": "2026-03-29T11:05:49.667Z",
+      "version": 1
+    },
+    "stairs_main": {
+      "id": "stairs_main",
+      "type": "Stairs",
+      "name": "Sleek Floating Stairs",
+      "position": {
+        "x": -1.5,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 3.2,
+        "z": 3.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [],
+      "stair_style": "straight",
+      "created_at": "2026-03-29T11:05:49.668Z",
+      "modified_at": "2026-03-29T11:05:49.668Z",
+      "version": 1
+    },
+    "balcony_master": {
+      "id": "balcony_master",
+      "type": "Balcony",
+      "name": "Villain Overlook Balcony",
+      "position": {
+        "x": 0,
+        "y": 3.95,
+        "z": 7.875
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 1.1,
+        "z": 2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "wall_mas_s",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:49.674Z",
+      "modified_at": "2026-03-29T11:05:49.674Z",
+      "version": 1
+    },
+    "custom_9paaa9ey": {
+      "id": "custom_9paaa9ey",
+      "type": "Custom",
+      "name": "Suspended Villain Fireplace",
+      "position": {
+        "x": 2,
+        "y": 1.7,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.6,
+        "y": 3,
+        "z": 0.6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_living",
+      "children_ids": [],
+      "custom_geometry": {
+        "depth": 0.6,
+        "height": 3,
+        "type": "cylinder",
+        "radius": 0.6
+      },
+      "cad_script": "# Custom element: Suspended Villain Fireplace\n# Description: A dramatic, matte black steel suspended fireplace hanging from the ceiling, acting as a striking centerpiece in the living room.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-29T11:05:49.675Z",
+      "modified_at": "2026-03-29T11:05:49.675Z",
+      "version": 1
+    },
+    "custom_19oqqwpq": {
+      "id": "custom_19oqqwpq",
+      "type": "Custom",
+      "name": "Master Control Console",
+      "position": {
+        "x": 0,
+        "y": 4,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 1.2,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_master",
+      "children_ids": [],
+      "custom_geometry": {
+        "depth": 1,
+        "type": "box",
+        "height": 1.2
+      },
+      "cad_script": "# Custom element: Master Control Console\n# Description: A sleek, monolithic black marble control console desk overlooking the panoramic window.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-29T11:05:49.676Z",
+      "modified_at": "2026-03-29T11:05:49.676Z",
+      "version": 1
+    },
+    "wall_ea006yky": {
+      "id": "wall_ea006yky",
+      "type": "Wall",
+      "name": "Garage East Wall",
+      "position": {
+        "x": -3.125,
+        "y": 1.7,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_garage",
+      "children_ids": [],
+      "created_at": "2026-03-29T11:05:59.203Z",
+      "modified_at": "2026-03-29T11:05:59.203Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -1,14 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendChatToAI_V3 as sendChatToAI } from '@/lib/ai/v3-orchestrator';
-import type { AIChatRequest, Material } from '@/types';
+import { sendChatToAI_V3 } from '@/lib/ai/v3-orchestrator';
+import { sendChatToAI_OneShot } from '@/lib/ai/oneshot-orchestrator';
+import type { AIChatRequest, Material, ArchitectureMode, ThinkingEffort } from '@/types';
 import materialsJson from '@/data/materials.json';
 
 export const maxDuration = 300; // Allow long running requests
 
+// Architecture mode type
+
+
+function getOrchestrator(mode: ArchitectureMode) {
+    switch (mode) {
+        case 'v3':
+            return sendChatToAI_V3;
+        case 'oneshot':
+            return sendChatToAI_OneShot;
+        default:
+            return sendChatToAI_V3;
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
-        const body: AIChatRequest = await request.json();
-        const { message, project, history, attachments, professionalContext } = body;
+        const body: AIChatRequest & { architecture?: ArchitectureMode, thinkingEffort?: ThinkingEffort } = await request.json();
+        const { message, project, history, attachments, professionalContext, architecture, thinkingEffort } = body;
 
         if (!message?.trim() && (!attachments || attachments.length === 0)) {
             return NextResponse.json(
@@ -23,6 +38,12 @@ export async function POST(request: NextRequest) {
             materials[id] = mat as unknown as Material;
         }
 
+        // Select orchestrator based on architecture mode
+        const mode: ArchitectureMode = architecture || 'v3';
+        const sendChatToAI = getOrchestrator(mode);
+
+        console.log(`[API /ai/chat] Using architecture: ${mode.toUpperCase()}`);
+
         const encoder = new TextEncoder();
 
         const stream = new ReadableStream({
@@ -30,7 +51,7 @@ export async function POST(request: NextRequest) {
                 try {
                     // Send to AI orchestrator with progress callback
                     const aiResponse = await sendChatToAI(
-                        { message, project, history: history || [], attachments, professionalContext },
+                        { message, project, history: history || [], attachments, professionalContext, thinkingEffort },
                         materials,
                         (event) => {
                             try {
@@ -40,7 +61,8 @@ export async function POST(request: NextRequest) {
                                 // Ignore enqueue errors (stream closed)
                             }
                         },
-                        request.signal
+                        request.signal,
+                        undefined
                     );
 
                     // Stream final result

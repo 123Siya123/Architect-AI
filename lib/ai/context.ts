@@ -66,8 +66,15 @@ export function prepare3DNodeTree(project: PSGProject): string {
         if (!node) return;
 
         const indent = '  '.repeat(depth);
-        const pos = `pos(${round(node.position.x, 4)}, ${round(node.position.y, 4)}, ${round(node.position.z, 4)})`;
-        const dim = `dim(${round(node.dimensions.x, 4)} × ${round(node.dimensions.y, 4)} × ${round(node.dimensions.z, 4)})`;
+        
+        // Compute explicit edges (min/max corners) so the AI never has to do spatial math
+        const cx = node.position.x, cy = node.position.y, cz = node.position.z;
+        const hw = node.dimensions.x / 2, hh = node.dimensions.y / 2, hd = node.dimensions.z / 2;
+        
+        const xMin = round(cx - hw, 4), xMax = round(cx + hw, 4);
+        const yMin = round(cy - hh, 4), yMax = round(cy + hh, 4);
+        const zMin = round(cz - hd, 4), zMax = round(cz + hd, 4);
+
         const rot = node.rotation.yaw !== 0 ? ` rot(yaw=${node.rotation.yaw}°)` : '';
         const mat = node.material_id ? ` [${node.material_id}]` : '';
         const fn = node.room_function ? ` (${node.room_function})` : '';
@@ -75,12 +82,15 @@ export function prepare3DNodeTree(project: PSGProject): string {
         const stairStyle = node.stair_style ? ` style=${node.stair_style}` : '';
         const surf = node.surface_matrix
             ? node.surface_matrix.code
-                ? ` surface(procedural,res=${node.surface_matrix.resolution || 48},range=${node.surface_matrix.min_value ?? 0}-${node.surface_matrix.max_value ?? 10},hole<=${node.surface_matrix.hole_threshold ?? 0.01})`
-                : ` surface(matrix=${node.surface_matrix.rows}x${node.surface_matrix.cols},range=${node.surface_matrix.min_value ?? 0}-${node.surface_matrix.max_value ?? 10},hole<=${node.surface_matrix.hole_threshold ?? 0.01})`
+                ? ` surface(procedural)`
+                : ` surface(matrix=${node.surface_matrix.rows}x${node.surface_matrix.cols})`
             : '';
 
         lines.push(`${indent}├─ ${node.type}: "${node.name}" [${id}]`);
-        lines.push(`${indent}│  ${pos} ${dim}${rot}${mat}${fn}${style}${stairStyle}${surf ? ` ${surf}` : ''}`);
+        lines.push(`${indent}│  X: ${xMin} → ${xMax} (w=${round(node.dimensions.x, 4)})`);
+        lines.push(`${indent}│  Y: ${yMin} → ${yMax} (h=${round(node.dimensions.y, 4)})`);
+        lines.push(`${indent}│  Z: ${zMin} → ${zMax} (d=${round(node.dimensions.z, 4)})`);
+        lines.push(`${indent}│  props: ${rot}${mat}${fn}${style}${stairStyle}${surf}`);
 
         // Print children
         if (node.children_ids && node.children_ids.length > 0) {
@@ -94,18 +104,18 @@ export function prepare3DNodeTree(project: PSGProject): string {
         return 'EMPTY — No nodes in the building.';
     }
 
-    lines.push('3D NODE TREE (use the IDs in [brackets] for all operations):');
+    lines.push('3D SCENE STATE — All coordinates are world-space (meters).');
+    lines.push('X=East/West, Y=Up/Down, Z=South/North. Edges show where each element starts and ends.');
+    lines.push('Use the starting edges (X min, Y min, Z min) and dimensions (w, h, d) for tool calls.');
+    lines.push('');
     for (const rootId of rootIds) {
         printNode(rootId, 0);
     }
 
-    // Add flat ID reference table — impossible for agents to miss
+    // Add flat ID reference table
     lines.push('');
     lines.push('═══════════════════════════════════════════════════════════════');
-    lines.push('🚨 AVAILABLE NODE IDS — YOU MUST USE THESE EXACT IDs 🚨');
-    lines.push('═══════════════════════════════════════════════════════════════');
-    lines.push('DO NOT INVENT IDs. If a node does not exist in this list, you');
-    lines.push('CANNOT use it as a parent_id or target_id. Create it first.');
+    lines.push('AVAILABLE NODE IDS (use these exact IDs in tool calls):');
     lines.push('───────────────────────────────────────────────────────────────');
     
     const allNodes = Object.values(nodes).sort((a, b) => a.type.localeCompare(b.type));

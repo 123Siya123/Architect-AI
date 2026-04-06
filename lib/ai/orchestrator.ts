@@ -1630,6 +1630,7 @@ export async function callProviderNoTools(
                 case 'groq': return await callGroqNoTools(config, messages, signal);
                 case 'openai': return await callOpenAINoTools(config, messages, signal);
                 case 'github': return await callGithubNoTools(config, messages, signal);
+                case 'anthropic': return await callAnthropicNoTools(config, messages, signal);
                 default: throw new Error(`Unknown provider: ${config.provider}`);
             }
         } catch (error) {
@@ -1660,17 +1661,18 @@ export async function callProviderNoTools(
                     console.warn(`[Orchestrator] Switching to next key for same model ${config.model}...`);
                 } else {
                     keysTriedForCurrentModel = 1;
-                    if (config.model.includes('gemini-3.1-pro')) {
-                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3 Pro...');
-                        config = { ...config, model: 'gemini-3-pro-preview' };
+                    if (config.model.includes('3.1-pro')) {
+                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3.1 Flash Lite...');
+                        config = { ...config, model: 'gemini-3.1-flash-lite-preview' };
                         rotateKey(config.provider);
                         config.apiKey = getNextKey(config.provider);
-                    } else if (config.model === 'gemini-3-pro-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Pro unavailable on all keys. Switching to Groq...');
-                        config = getProviderConfig('groq');
-                        maxKeysForProvider = getPoolSize(config.provider);
-                    } else if (config.model === 'gemini-3-flash-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Flash unavailable on all keys. Switching to Groq...');
+                    } else if (config.model.includes('gemini-') && !config.model.includes('flash')) {
+                        console.warn('[Orchestrator] Gemini Pro unavailable. Falling back to Gemini 2.5 Flash...');
+                        config = { ...config, model: 'gemini-2.5-flash' };
+                        rotateKey(config.provider);
+                        config.apiKey = getNextKey(config.provider);
+                    } else if (config.model.includes('gemini-')) {
+                        console.warn('[Orchestrator] Gemini unavailable on all keys. Switching to Groq...');
                         config = getProviderConfig('groq');
                         maxKeysForProvider = getPoolSize(config.provider);
                     } else {
@@ -1722,6 +1724,7 @@ export async function callProviderWithTools(
                 case 'groq': result = await callGroq(config, messages, signal); break;
                 case 'openai': result = await callOpenAI(config, messages, signal); break;
                 case 'github': result = await callGithub(config, messages, signal); break;
+                case 'anthropic': result = await callAnthropic(config, messages, signal); break;
                 default: throw new Error(`Unknown provider: ${config.provider}`);
             }
 
@@ -1766,17 +1769,18 @@ export async function callProviderWithTools(
                     console.warn(`[Orchestrator] Switching to next key for same model ${config.model}...`);
                 } else {
                     keysTriedForCurrentModel = 1;
-                    if (config.model.includes('gemini-3.1-pro')) {
-                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3 Pro...');
-                        config = { ...config, model: 'gemini-3-pro-preview' };
+                    if (config.model.includes('3.1-pro')) {
+                        console.warn('[Orchestrator] Gemini 3.1 Pro unavailable on all keys. Falling back to Gemini 3.1 Flash Lite...');
+                        config = { ...config, model: 'gemini-3.1-flash-lite-preview' };
                         rotateKey(config.provider);
                         config.apiKey = getNextKey(config.provider);
-                    } else if (config.model === 'gemini-3-pro-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Pro unavailable on all keys. Switching to Groq...');
-                        config = getProviderConfig('groq');
-                        maxKeysForProvider = getPoolSize(config.provider);
-                    } else if (config.model === 'gemini-3-flash-preview') {
-                        console.warn('[Orchestrator] Gemini 3 Flash unavailable on all keys. Switching to Groq...');
+                    } else if (config.model.includes('gemini-') && !config.model.includes('flash')) {
+                        console.warn('[Orchestrator] Gemini Pro unavailable. Falling back to Gemini 2.5 Flash...');
+                        config = { ...config, model: 'gemini-2.5-flash' };
+                        rotateKey(config.provider);
+                        config.apiKey = getNextKey(config.provider);
+                    } else if (config.model.includes('gemini-')) {
+                        console.warn('[Orchestrator] Gemini unavailable on all keys. Switching to Groq...');
                         config = getProviderConfig('groq');
                         maxKeysForProvider = getPoolSize(config.provider);
                     } else {
@@ -2115,6 +2119,135 @@ async function callGroqNoTools(
 
 // =============================================================================
 // OPENAI
+// =============================================================================
+// ANTHROPIC CLAUDE
+// =============================================================================
+
+async function callAnthropic(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
+): Promise<LLMCallResult> {
+    const url = 'https://api.anthropic.com/v1/messages';
+
+    const systemMessages = messages.filter(m => m.role === 'system').map(m => m.content).join('\n\n');
+    const userAssistantMessages = messages.filter(m => m.role !== 'system').map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content
+    }));
+
+    const anthropicTools = AI_TOOLS.map(t => ({
+        name: t.function.name,
+        description: t.function.description,
+        input_schema: t.function.parameters
+    }));
+
+    const body: any = {
+        model: config.model,
+        messages: userAssistantMessages,
+        max_tokens: 16000, // Increased to accommodate thinking/reasoning tokens
+        temperature: 1, // Must be 1 for Anthropic thinking mode
+        thinking: {
+            type: 'adaptive'
+        },
+        output_config: {
+            effort: config.thinkingEffort
+        },
+        tools: anthropicTools,
+    };
+    
+    if (systemMessages) {
+        body.system = systemMessages;
+    }
+
+    const timeoutBase = 180000; // 3 minutes for Claude 4.6 Adaptive Thinking
+    const timeout = timeoutBase * ((config as any)._timeoutMultiplier || 1);
+
+    const response = await fetchWithTimeout(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': config.apiKey,
+            'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify(body),
+    }, timeout, signal);
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Anthropic API error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    
+    const textBlocks: any[] = typeof data.content === 'object' && Array.isArray(data.content) ? data.content.filter((c: any) => c && c.type === 'text') : [];
+    const text = textBlocks.map(c => c.text || '').join('\n');
+    
+    const toolUseBlocks: any[] = typeof data.content === 'object' && Array.isArray(data.content) ? data.content.filter((c: any) => c && c.type === 'tool_use') : [];
+    const toolCalls: ToolCall[] = toolUseBlocks.map(block => ({
+        name: block.name,
+        args: typeof block.input === 'object' ? block.input : {},
+    }));
+
+    return { text, toolCalls };
+}
+
+async function callAnthropicNoTools(
+    config: AIProviderConfig,
+    messages: Array<{ role: string; content: string }>,
+    signal?: AbortSignal
+): Promise<LLMCallResult> {
+    const url = 'https://api.anthropic.com/v1/messages';
+
+    const systemMessages = messages.filter(m => m.role === 'system').map(m => m.content).join('\n\n');
+    const userAssistantMessages = messages.filter(m => m.role !== 'system').map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content
+    }));
+
+    const body: any = {
+        model: config.model,
+        messages: userAssistantMessages,
+        max_tokens: 16000,
+        temperature: 1,
+        thinking: {
+            type: 'adaptive'
+        },
+        output_config: {
+            effort: config.thinkingEffort
+        }
+    };
+    
+    if (systemMessages) {
+        body.system = systemMessages;
+    }
+
+    const timeoutBase = 180000; // 3 minutes for Claude 4.6 Adaptive Thinking
+    const timeout = timeoutBase * ((config as any)._timeoutMultiplier || 1);
+
+    const response = await fetchWithTimeout(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': config.apiKey,
+            'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify(body),
+    }, timeout, signal);
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Anthropic API error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    
+    const textBlocks: any[] = typeof data.content === 'object' && Array.isArray(data.content) ? data.content.filter((c: any) => c && c.type === 'text') : [];
+    const text = textBlocks.map(c => c.text || '').join('\n');
+    
+    return { text, toolCalls: [] };
+}
+
 // =============================================================================
 
 async function callOpenAI(

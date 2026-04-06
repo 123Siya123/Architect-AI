@@ -1,0 +1,149 @@
+{
+  "id": "ac87d8b6-6d92-4bf4-9d54-b089e83fc6dd",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-04T14:32:31.003Z",
+  "modified_at": "2026-04-04T14:39:13.599Z",
+  "version": 3,
+  "root_node_id": "house_f5f2aebb",
+  "nodes": {
+    "house_f5f2aebb": {
+      "id": "house_f5f2aebb",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_2w2fjxqj",
+        "custom_84xi4i3n"
+      ],
+      "created_at": "2026-04-04T14:32:31.003Z",
+      "modified_at": "2026-04-04T14:39:13.599Z",
+      "version": 1
+    },
+    "floor_2w2fjxqj": {
+      "id": "floor_2w2fjxqj",
+      "type": "Floor",
+      "name": "Main Level Marble Floor",
+      "position": {
+        "x": 17.5,
+        "y": 0,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 0.1,
+        "z": 13
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "White Calacatta marble",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_f5f2aebb",
+      "children_ids": [],
+      "created_at": "2026-04-04T14:36:47.048Z",
+      "modified_at": "2026-04-04T14:36:47.048Z",
+      "version": 1
+    },
+    "custom_84xi4i3n": {
+      "id": "custom_84xi4i3n",
+      "type": "Custom",
+      "name": "Right Dream Turret",
+      "position": {
+        "x": 29,
+        "y": 8.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 17,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "Premium pink-tinted Venetian plaster",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_f5f2aebb",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "cylinder"
+      },
+      "cad_script": "# Custom element: Right Dream Turret\n# Description: Right Dream Turret, matching the Left Dream Turret.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T14:39:13.599Z",
+      "modified_at": "2026-04-04T14:39:13.599Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

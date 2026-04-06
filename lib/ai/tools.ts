@@ -29,13 +29,9 @@ export const AI_TOOLS = [
         function: {
             name: 'add_node',
             description:
-                'Add a new architectural element to the house. IMPORTANT: Use the correct parent_id — ' +
-                'walls go inside rooms, windows/doors go inside walls, rooms go inside floors. ' +
-                'Position is the CENTER POINT of the element in meters. ' +
-                'Example: For a 2.7m wall at ground level, position_y=1.35. For stairs spanning 2.7m height at ground level, position_y=1.35. ' +
-                'DEDUPLICATION RULE: Before adding Roof, Floor, Foundation, or any singleton type, you MUST check the operationLog to see if this element already exists. If it exists, use set_node_position or resize_node instead — NEVER add a duplicate. ' +
-                'WINDOW/DOOR DEPTH RULE: Always set depth equal to the parent wall\'s depth so it cuts through completely. ' +
-                'POSITION RULE: For a wall of height H starting at Y=floorSurface, set position_y = floorSurface + (H/2). Never place elements at Y=0 unless the floor surface is at Y=0.',
+                'Add a new architectural element to the house. ' +
+                'All positions are WORLD-SPACE (absolute). You define the MINIMUM corner (x_min, y_min, z_min) where the element starts. ' +
+                'Always read the scene state to find explicit edges (like the top surface of a floor) so your elements align perfectly.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -45,22 +41,22 @@ export const AI_TOOLS = [
                     },
                     type: {
                         type: 'string',
-                        enum: ['Wall', 'Window', 'Door', 'Room', 'Floor', 'Slab', 'Stairs', 'Roof',
+                        enum: ['Wall', 'Window', 'Door', 'Slab', 'Stairs', 'Roof',
                             'Column', 'Beam', 'Foundation', 'Partition', 'Balcony', 'Custom',
                             'Toilet', 'Sink', 'Shower', 'Bathtub', 'LightSwitch', 'ElectricalOutlet', 'ElectricalPanel'],
                         description: 'Type of element to add',
                     },
                     parent_id: {
                         type: 'string',
-                        description: 'ID of the parent node. Walls → room ID, Windows → wall ID, Rooms → floor ID',
+                        description: 'For Windows/Doors: the Wall ID they cut through. For everything else: any valid node ID (system auto-resolves).',
                     },
                     name: {
                         type: 'string',
                         description: 'Human-readable name (e.g. "North Kitchen Wall", "Master Bedroom Window")',
                     },
-                    position_x: { type: 'number', description: 'X center position in meters (East/West)' },
-                    position_y: { type: 'number', description: 'Y center position in meters (Up/Down). For ground-floor walls or stairs: height/2' },
-                    position_z: { type: 'number', description: 'Z center position in meters (North/South)' },
+                    x_min: { type: 'number', description: 'Starting X edge in meters (East/West)' },
+                    y_min: { type: 'number', description: 'Starting Y edge in meters (Up/Down) - e.g. the base of the wall' },
+                    z_min: { type: 'number', description: 'Starting Z edge in meters (North/South)' },
                     width: { type: 'number', description: 'Width in meters (X dimension, or length for rotated walls)' },
                     height: { type: 'number', description: 'Height in meters (Y dimension)' },
                     depth: { type: 'number', description: 'Depth/thickness in meters (Z dimension). Walls: 0.25, Partitions: 0.12' },
@@ -142,9 +138,7 @@ export const AI_TOOLS = [
             description:
                 'Move an element by a DELTA offset (not absolute position). ' +
                 'delta_x=+2 means move 2 meters East. delta_z=+1 means move 1 meter South. ' +
-                'All child elements automatically move with the parent. ' +
-                'IMPORTANT: Use the MANDATORY REASONING PROTOCOL — list current position, ' +
-                'calculate delta, verify adjacency before calling.',
+                'Child elements (e.g. Windows/Doors on a Wall) automatically move with the parent.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -167,10 +161,9 @@ export const AI_TOOLS = [
         function: {
             name: 'set_node_position',
             description:
-                'Set the exact ABSOLUTE coordinates of an element in meters. ' +
-                'When moving fails multiple times, or you need to snap perfectly to a specific Y-elevation (e.g. wall base at Y=0), use this. ' +
-                'All child elements automatically move to maintain their relative positions. ' +
-                'Missing coordinate parameters will remain unchanged.',
+                'Set the exact ABSOLUTE starting edges (x_min, y_min, z_min) of an element in meters. ' +
+                'Use this for precise placement. Child elements (Windows/Doors) maintain their relative positions. ' +
+                'Only specify the coordinates you want to change — others stay the same.',
             parameters: {
                 type: 'object',
                 properties: {
@@ -178,9 +171,9 @@ export const AI_TOOLS = [
                         type: 'string',
                         description: 'ID of the node to position (e.g. "wall_north_wall_abc12345")',
                     },
-                    position_x: { type: 'number', description: 'Exact X center position in meters (East/West)' },
-                    position_y: { type: 'number', description: 'Exact Y center position in meters (Up/Down)' },
-                    position_z: { type: 'number', description: 'Exact Z center position in meters (South/North)' },
+                    position_x: { type: 'number', description: 'New X starting edge (x_min) in meters (East/West)' },
+                    position_y: { type: 'number', description: 'New Y starting edge (y_min) in meters (Up/Down)' },
+                    position_z: { type: 'number', description: 'New Z starting edge (z_min) in meters (North/South)' },
                 },
                 required: ['target_id'],
             },
@@ -236,6 +229,43 @@ export const AI_TOOLS = [
                     },
                 },
                 required: ['target_id', 'material_id'],
+            },
+        },
+    },
+
+    // ─── TOOL 4b: Batch replace materials ─────────────────────────────
+    {
+        type: 'function' as const,
+        function: {
+            name: 'batch_replace_materials',
+            description:
+                'Apply materials to MULTIPLE nodes at once in a single call. ' +
+                'Much more efficient than calling replace_material repeatedly. ' +
+                'Pass an array of {target_id, material_id} pairs. ' +
+                'Use this to set materials for ALL nodes in the building at once.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    assignments: {
+                        type: 'array',
+                        description: 'List of material assignments. Each entry maps a node ID to a material ID.',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                target_id: {
+                                    type: 'string',
+                                    description: 'ID of the node to apply material to',
+                                },
+                                material_id: {
+                                    type: 'string',
+                                    description: 'Material ID from the materials library',
+                                },
+                            },
+                            required: ['target_id', 'material_id'],
+                        },
+                    },
+                },
+                required: ['assignments'],
             },
         },
     },
@@ -344,9 +374,8 @@ export const AI_TOOLS = [
         function: {
             name: 'delete_node',
             description:
-                'Delete an element and ALL its children (cascade delete). ' +
-                'WARNING: Deleting a room deletes all its walls, windows, and doors. ' +
-                'Cannot delete load-bearing walls that have dependents. ' +
+                'Delete an element and all its children (cascade delete). ' +
+                'Deleting a Wall also deletes its Windows/Doors. ' +
                 'Cannot delete the root House node.',
             parameters: {
                 type: 'object',
@@ -404,7 +433,7 @@ export const AI_TOOLS = [
                 properties: {
                     parent_id: {
                         type: 'string',
-                        description: 'ID of the parent node (room, floor, or house)',
+                        description: 'ID of any existing node (system auto-parents to root). For Window/Door custom elements, pass the Wall ID.',
                     },
                     name: {
                         type: 'string',
@@ -417,9 +446,9 @@ export const AI_TOOLS = [
                             'style, and material preferences. Example: "An ornate marble water fountain with ' +
                             'a 1.2m radius basin, fluted pedestal, and central statue"',
                     },
-                    position_x: { type: 'number', description: 'X center position in meters' },
-                    position_y: { type: 'number', description: 'Y center position in meters' },
-                    position_z: { type: 'number', description: 'Z center position in meters' },
+                    x_min: { type: 'number', description: 'Starting X edge in meters (East/West)' },
+                    y_min: { type: 'number', description: 'Starting Y edge in meters (Up/Down) - e.g. the base of the wall' },
+                    z_min: { type: 'number', description: 'Starting Z edge in meters (North/South)' },
                     width: { type: 'number', description: 'Approximate bounding width in meters' },
                     height: { type: 'number', description: 'Approximate bounding height in meters' },
                     depth: { type: 'number', description: 'Approximate bounding depth in meters' },
@@ -509,9 +538,10 @@ export const AI_TOOLS = [
             name: 'set_precision_level',
             description:
                 'Set the architectural precision level of the project. ' +
-                'Level 0 (Conceptual): 5cm grid snapping. ' +
-                'Level 1 (Standard): 1cm grid snapping. ' +
-                'Level 2 (Construction): 0.5mm grid snapping + detailed junctions enabled.',
+                'Level 0 (Conceptual): Basic precision. ' +
+                'Level 1 (Standard): Standard precision. ' +
+                'Level 2 (Construction): Maximum precision + detailed junctions enabled. ' +
+                'Note: Coordinates are always stored exactly as specified (no grid snapping).',
             parameters: {
                 type: 'object',
                 properties: {

@@ -1,0 +1,148 @@
+{
+  "id": "5a0f3c65-9742-4eef-a1db-6fe6ecfdbd76",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-27T09:49:51.305Z",
+  "modified_at": "2026-03-27T09:49:51.305Z",
+  "version": 1,
+  "root_node_id": "house_241fce2e",
+  "nodes": {
+    "house_241fce2e": {
+      "id": "house_241fce2e",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-27T09:49:51.305Z",
+      "modified_at": "2026-03-27T09:49:51.305Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  },
+  "chat_history": [
+    {
+      "id": "msg_1774604998783",
+      "role": "user",
+      "content": "Create me a beautiful 3 Family home that looks like  bond villan house",
+      "timestamp": "2026-03-27T09:49:58.783Z",
+      "snapshot": {
+        "id": "5a0f3c65-9742-4eef-a1db-6fe6ecfdbd76",
+        "name": "Untitled Project",
+        "description": "",
+        "created_at": "2026-03-27T09:49:51.305Z",
+        "modified_at": "2026-03-27T09:49:51.305Z",
+        "version": 1,
+        "root_node_id": "house_241fce2e",
+        "nodes": {
+          "house_241fce2e": {
+            "id": "house_241fce2e",
+            "type": "House",
+            "name": "Untitled Project",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "dimensions": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            },
+            "material_id": "",
+            "opacity": 1,
+            "tags": [],
+            "constraints": {
+              "fixed_position": true,
+              "connected_to": []
+            },
+            "systems": {
+              "electrical": [],
+              "plumbing": [],
+              "hvac": []
+            },
+            "parent_id": null,
+            "children_ids": [],
+            "created_at": "2026-03-27T09:49:51.305Z",
+            "modified_at": "2026-03-27T09:49:51.305Z",
+            "version": 1
+          }
+        },
+        "settings": {
+          "unit": "metric",
+          "grid_size": 0.1,
+          "precision_level": 1,
+          "building_standard": "eurocode",
+          "default_wall_height": 2.7,
+          "default_wall_thickness": 0.25,
+          "locale": "en-US",
+          "currency": "EUR"
+        },
+        "budget": {
+          "total_budget": 200000,
+          "spent": 0,
+          "remaining": 200000,
+          "currency": "EUR",
+          "warnings_enabled": true,
+          "warning_threshold": 90
+        }
+      },
+      "attachments": []
+    },
+    {
+      "id": "msg_1774604998784_ai",
+      "role": "assistant",
+      "content": "Thinking...",
+      "timestamp": "2026-03-27T09:49:58.784Z",
+      "pipeline_log": []
+    }
+  ]
+}

@@ -1,0 +1,705 @@
+{
+  "id": "5014e248-ff59-4aa8-aa7b-e436060b2624",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T06:19:10.966Z",
+  "modified_at": "2026-04-06T06:37:19.693Z",
+  "version": 32,
+  "root_node_id": "house_50b4762c",
+  "nodes": {
+    "house_50b4762c": {
+      "id": "house_50b4762c",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_1",
+        "wall_1_n",
+        "wall_1_s",
+        "wall_1_w",
+        "wall_1_e",
+        "floor_2",
+        "wall_2_n",
+        "wall_2_s",
+        "wall_2_w",
+        "wall_2_e",
+        "floor_3",
+        "wall_3_n",
+        "wall_3_s",
+        "wall_3_w",
+        "wall_3_e",
+        "slab_dgaz67mt"
+      ],
+      "created_at": "2026-04-06T06:19:10.965Z",
+      "modified_at": "2026-04-06T06:36:25.978Z",
+      "version": 1
+    },
+    "floor_1": {
+      "id": "floor_1",
+      "type": "Slab",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 5,
+        "y": 0.5,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 1,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "reinforced_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:23:40.869Z",
+      "modified_at": "2026-04-06T06:37:19.692Z",
+      "version": 2
+    },
+    "wall_1_n": {
+      "id": "wall_1_n",
+      "type": "Wall",
+      "name": "Story 1 North Wall",
+      "position": {
+        "x": 5,
+        "y": 3,
+        "z": 0.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "dark_timber",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:24:57.055Z",
+      "modified_at": "2026-04-06T06:37:19.686Z",
+      "version": 2
+    },
+    "wall_1_s": {
+      "id": "wall_1_s",
+      "type": "Wall",
+      "name": "Story 1 South Wall",
+      "position": {
+        "x": 5,
+        "y": 3,
+        "z": 9.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "dark_timber",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:25:28.074Z",
+      "modified_at": "2026-04-06T06:37:19.687Z",
+      "version": 2
+    },
+    "wall_1_w": {
+      "id": "wall_1_w",
+      "type": "Wall",
+      "name": "Story 1 West Wall",
+      "position": {
+        "x": 0.5,
+        "y": 3,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "rough_stone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:26:48.642Z",
+      "modified_at": "2026-04-06T06:37:19.689Z",
+      "version": 2
+    },
+    "wall_1_e": {
+      "id": "wall_1_e",
+      "type": "Wall",
+      "name": "Story 1 East Wall",
+      "position": {
+        "x": 9.5,
+        "y": 3,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "rough_stone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:27:21.006Z",
+      "modified_at": "2026-04-06T06:37:19.690Z",
+      "version": 2
+    },
+    "floor_2": {
+      "id": "floor_2",
+      "type": "Slab",
+      "name": "Story 2 Offset Slab",
+      "position": {
+        "x": 7,
+        "y": 5.5,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 1,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "reinforced_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:28:06.959Z",
+      "modified_at": "2026-04-06T06:37:19.693Z",
+      "version": 2
+    },
+    "wall_2_n": {
+      "id": "wall_2_n",
+      "type": "Wall",
+      "name": "Story 2 North Wall",
+      "position": {
+        "x": 7,
+        "y": 8,
+        "z": 1.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "dark_timber",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:28:44.701Z",
+      "modified_at": "2026-04-06T06:37:19.688Z",
+      "version": 2
+    },
+    "wall_2_s": {
+      "id": "wall_2_s",
+      "type": "Wall",
+      "name": "Story 2 South Wall",
+      "position": {
+        "x": 7,
+        "y": 8,
+        "z": 10.5
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "dark_timber",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:29:18.936Z",
+      "modified_at": "2026-04-06T06:37:19.688Z",
+      "version": 2
+    },
+    "wall_2_w": {
+      "id": "wall_2_w",
+      "type": "Wall",
+      "name": "Story 2 West Wall",
+      "position": {
+        "x": 2.5,
+        "y": 8,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "rough_stone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:29:52.775Z",
+      "modified_at": "2026-04-06T06:37:19.690Z",
+      "version": 2
+    },
+    "wall_2_e": {
+      "id": "wall_2_e",
+      "type": "Wall",
+      "name": "Story 2 East Wall",
+      "position": {
+        "x": 11.5,
+        "y": 8,
+        "z": 6
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "rough_stone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:30:46.106Z",
+      "modified_at": "2026-04-06T06:37:19.690Z",
+      "version": 2
+    },
+    "floor_3": {
+      "id": "floor_3",
+      "type": "Floor",
+      "name": "Story 3 Dramatic Overhang Slab",
+      "position": {
+        "x": 5,
+        "y": 10.5,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 1,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "reinforced_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:32:55.901Z",
+      "modified_at": "2026-04-06T06:37:19.693Z",
+      "version": 2
+    },
+    "wall_3_n": {
+      "id": "wall_3_n",
+      "type": "Wall",
+      "name": "Story 3 North Wall",
+      "position": {
+        "x": 5,
+        "y": 13.5,
+        "z": 3.5
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 5,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "dark_timber",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:33:33.320Z",
+      "modified_at": "2026-04-06T06:37:19.689Z",
+      "version": 2
+    },
+    "wall_3_s": {
+      "id": "wall_3_s",
+      "type": "Wall",
+      "name": "Story 3 South Wall",
+      "position": {
+        "x": 5,
+        "y": 13.5,
+        "z": 14.5
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 5,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "dark_timber",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:34:35.053Z",
+      "modified_at": "2026-04-06T06:37:19.689Z",
+      "version": 2
+    },
+    "wall_3_w": {
+      "id": "wall_3_w",
+      "type": "Wall",
+      "name": "Story 3 West Wall",
+      "position": {
+        "x": -0.5,
+        "y": 13.5,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "rough_stone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:35:06.029Z",
+      "modified_at": "2026-04-06T06:37:19.691Z",
+      "version": 2
+    },
+    "wall_3_e": {
+      "id": "wall_3_e",
+      "type": "Wall",
+      "name": "Story 3 East Wall",
+      "position": {
+        "x": 10.5,
+        "y": 13.5,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "rough_stone",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:35:37.406Z",
+      "modified_at": "2026-04-06T06:37:19.691Z",
+      "version": 2
+    },
+    "slab_dgaz67mt": {
+      "id": "slab_dgaz67mt",
+      "type": "Slab",
+      "name": "Top Roof Slab",
+      "position": {
+        "x": 5,
+        "y": 16.5,
+        "z": 9
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 1,
+        "z": 12
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_50b4762c",
+      "children_ids": [],
+      "created_at": "2026-04-06T06:36:25.978Z",
+      "modified_at": "2026-04-06T06:36:25.978Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

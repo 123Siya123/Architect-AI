@@ -1,0 +1,386 @@
+{
+  "id": "a60a95bd-194f-45bf-b50e-456be991c293",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T10:37:26.544Z",
+  "modified_at": "2026-04-06T10:50:30.038Z",
+  "version": 10,
+  "root_node_id": "house_451347ce",
+  "nodes": {
+    "house_451347ce": {
+      "id": "house_451347ce",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "ribbon_base_south",
+        "ribbon_base_north",
+        "ribbon_base_west",
+        "ribbon_base_east",
+        "sunken_atrium_floor",
+        "ribbon_shell_west",
+        "ribbon_shell_east",
+        "ribbon_roof_south"
+      ],
+      "created_at": "2026-04-06T10:37:26.543Z",
+      "modified_at": "2026-04-06T10:50:30.038Z",
+      "version": 1
+    },
+    "ribbon_base_south": {
+      "id": "ribbon_base_south",
+      "type": "Foundation",
+      "name": "Ribbon Base South",
+      "position": {
+        "x": 27.5,
+        "y": 1,
+        "z": 10
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:46:21.403Z",
+      "modified_at": "2026-04-06T10:48:31.127Z",
+      "version": 2
+    },
+    "ribbon_base_north": {
+      "id": "ribbon_base_north",
+      "type": "Foundation",
+      "name": "Ribbon Base North",
+      "position": {
+        "x": 27.5,
+        "y": 1,
+        "z": 50
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:46:48.091Z",
+      "modified_at": "2026-04-06T10:46:48.091Z",
+      "version": 1
+    },
+    "ribbon_base_west": {
+      "id": "ribbon_base_west",
+      "type": "Foundation",
+      "name": "Ribbon Base West",
+      "position": {
+        "x": 19,
+        "y": 1,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:47:20.918Z",
+      "modified_at": "2026-04-06T10:47:20.918Z",
+      "version": 1
+    },
+    "ribbon_base_east": {
+      "id": "ribbon_base_east",
+      "type": "Foundation",
+      "name": "Ribbon Base East",
+      "position": {
+        "x": 36,
+        "y": 1,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:48:06.319Z",
+      "modified_at": "2026-04-06T10:48:06.319Z",
+      "version": 1
+    },
+    "sunken_atrium_floor": {
+      "id": "sunken_atrium_floor",
+      "type": "Slab",
+      "name": "Sunken Communal Atrium Floor",
+      "position": {
+        "x": 27.5,
+        "y": 0.25,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 13,
+        "y": 0.5,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:48:59.381Z",
+      "modified_at": "2026-04-06T10:48:59.381Z",
+      "version": 1
+    },
+    "ribbon_shell_west": {
+      "id": "ribbon_shell_west",
+      "type": "Wall",
+      "name": "Ribbon Shell West Wall",
+      "position": {
+        "x": 16,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 14,
+        "z": 60
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:49:26.967Z",
+      "modified_at": "2026-04-06T10:49:26.967Z",
+      "version": 1
+    },
+    "ribbon_shell_east": {
+      "id": "ribbon_shell_east",
+      "type": "Wall",
+      "name": "Ribbon Shell East Wall",
+      "position": {
+        "x": 39,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 14,
+        "z": 60
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:49:55.376Z",
+      "modified_at": "2026-04-06T10:49:55.376Z",
+      "version": 1
+    },
+    "ribbon_roof_south": {
+      "id": "ribbon_roof_south",
+      "type": "Roof",
+      "name": "Ribbon Roof South",
+      "position": {
+        "x": 27.5,
+        "y": 13,
+        "z": 13.75
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 2,
+        "z": 27.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-04-06T10:50:30.038Z",
+      "modified_at": "2026-04-06T10:50:30.038Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

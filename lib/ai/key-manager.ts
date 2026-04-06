@@ -27,6 +27,7 @@
 // KEY POOL STATE
 // =============================================================================
 
+import type { ThinkingEffort } from '@/types';
 interface KeyEntry {
     key: string;
     rateLimitedUntil: number; // Unix ms timestamp; 0 = available
@@ -92,6 +93,10 @@ function ensureInitialized() {
     if (explicitGemini.length > 0) {
         initPool('gemini', explicitGemini);
     }
+
+    // 4. Anthropic Pool
+    const anthropicKeys = parseKeys('ANTHROPIC_API_KEYS');
+    initPool('anthropic', anthropicKeys);
 
     if (Object.keys(keyPools).length === 0) {
         console.warn('[KeyManager] No API keys found in environment variables.');
@@ -198,20 +203,22 @@ export function rotateKey(provider: string = 'default'): void {
 // =============================================================================
 
 export interface AIProviderConfig {
-    provider: 'gemini' | 'groq' | 'openai' | 'github';
+    provider: 'gemini' | 'groq' | 'openai' | 'github' | 'anthropic';
     model: string;
     apiKey: string;
+    thinkingEffort: ThinkingEffort;
 }
 
-export function getProviderConfig(forceProvider?: string): AIProviderConfig {
+export function getProviderConfig(forceProvider?: string, effortOverride?: ThinkingEffort): AIProviderConfig {
     const defaultProvider = (process.env.AI_PROVIDER || process.env.NEXT_PUBLIC_AI_PROVIDER || 'gemini');
     const provider = (forceProvider || defaultProvider) as AIProviderConfig['provider'];
 
     const defaultModels: Record<string, string> = {
-        gemini: 'gemini-3-flash-preview',
+        gemini: 'gemini-3.1-pro-preview',
         groq: 'llama-3.3-70b-versatile', // Best Groq model
         openai: 'gpt-4o',
         github: 'gpt-4o',
+        anthropic: 'claude-opus-4-6', // Best Claude model currently
     };
 
     // If forcing provider, use default model for that provider unless env var matches
@@ -222,8 +229,9 @@ export function getProviderConfig(forceProvider?: string): AIProviderConfig {
     if (provider === 'gemini' && !model.includes('gemini')) model = defaultModels.gemini;
 
     const apiKey = getNextKey(provider);
+    const thinkingEffort = effortOverride || (process.env.AI_THINKING_EFFORT || 'high') as ThinkingEffort;
 
-    return { provider, model, apiKey };
+    return { provider, model, apiKey, thinkingEffort };
 }
 
 /**

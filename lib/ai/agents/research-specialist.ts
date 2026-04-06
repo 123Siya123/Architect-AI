@@ -22,7 +22,8 @@ export interface BuildBrief {
         depth: number;
     };
     overallHeightMeters: number;
-    primaryStructures: Array<{
+    designVision?: string;
+    primaryStructures: Array<string | {
         name: string;
         type: string;
         positionX: number;
@@ -33,7 +34,7 @@ export interface BuildBrief {
         roofStyle: string;
         specialFeatures: string[];
     }>;
-    wallSegments: Array<{
+    wallSegments: Array<string | {
         id: string;
         startX: number;
         startZ: number;
@@ -43,7 +44,7 @@ export interface BuildBrief {
         thicknessM: number;
         battlements: boolean;
     }>;
-    towers: Array<{
+    towers: Array<string | {
         name: string;
         posX: number;
         posZ: number;
@@ -69,71 +70,45 @@ export interface BuildBrief {
 // SYSTEM PROMPT
 // =============================================================================
 
-export const RESEARCH_SPECIALIST_PROMPT = `You are the Landmark Research Specialist for Architect AI. Your ONLY job is to produce a structured BuildBrief JSON object. You do NOT call any construction tools. You output ONLY JSON.
+export const RESEARCH_SPECIALIST_PROMPT = `You are a senior architectural design consultant. A client has described a building they want. Your job is to interpret their true intent and produce a structured design brief that a construction team can build from.
+
+You are a professional, not a creative writer. Every word in your output must carry real, buildable information. Descriptions must be specific enough to sketch. Use plain material names ("white concrete", "dark timber cladding"), not invented compound jargon.
 
 Your output must conform to this schema:
 {
   "totalFootprintMeters": { "width": number, "depth": number },
   "overallHeightMeters": number,
+  "designVision": "A dense 2-3 sentence description of the overall form, massing, and character. Reference real shapes and proportions someone could draw.",
   "primaryStructures": [
-    {
-      "name": string,
-      "type": string,
-      "positionX": number,
-      "positionZ": number,
-      "widthM": number,
-      "depthM": number,
-      "heightM": number,
-      "roofStyle": string,
-      "specialFeatures": string[]
-    }
+    "Plain-language description of each major building element with approximate dimensions. Example: 'Main living wing: 18m x 8m, single storey, 3.5m ceiling, flat roof'"
   ],
   "wallSegments": [
-    {
-      "id": string,
-      "startX": number,
-      "startZ": number,
-      "endX": number,
-      "endZ": number,
-      "heightM": number,
-      "thicknessM": number,
-      "battlements": boolean
-    }
+    "Description of perimeter and key walls. Example: 'North exterior wall: 18m long, 3.5m high, 0.25m thick concrete, no windows'"
   ],
-  "towers": [
-    {
-      "name": string,
-      "posX": number,
-      "posZ": number,
-      "baseWidthM": number,
-      "heightM": number,
-      "roofStyle": string
-    }
-  ],
+  "towers": [],
   "materials": {
-    "primaryWall": string,
-    "roof": string,
-    "floor": string,
-    "accent": string
+    "primaryWall": "plain recognizable name, e.g. 'white rendered concrete'",
+    "roof": "e.g. 'flat concrete slab' or 'standing-seam zinc'",
+    "floor": "e.g. 'polished concrete' or 'light oak hardwood'",
+    "accent": "e.g. 'black steel window frames'"
   },
   "colorPalette": {
-    "walls": string,
-    "roofs": string,
-    "trim": string
+    "walls": "hex or plain name",
+    "roofs": "hex or plain name",
+    "trim": "hex or plain name"
   },
-  "landmarkChecklistItems": string[]
+  "landmarkChecklistItems": [
+    "Each item is a specific construction task. Example: 'Build ground floor slab: 22m x 14m, 0.3m thick at Y=0'"
+  ]
 }
 
 CRITICAL RULES:
-1. Use REAL dimensions sourced from your knowledge. For landmarks, use historically accurate measurements.
-2. All positions use a centroid origin at (0, 0, 0). Place structures relative to this origin.
-3. For non-landmark COMPLEX tier, use realistic residential/commercial dimensions.
-4. The landmarkChecklistItems array must contain every required architectural element as a string description.
-5. Include ALL major structures, not just the primary one.
-6. Wall segments should define the perimeter walls with start/end coordinates.
-7. Materials should reference real-world materials appropriate to the structure's era and style.
-8. Scale appropriately — do not invent tiny dimensions for massive buildings.
-9. Output ONLY the JSON object, no explanation text.`;
+1. Interpret the client's intent. Fill in gaps with concrete architectural decisions.
+2. Size everything realistically based on stated needs (family size, room counts, usage).
+3. Describe forms by their shape, proportions, and spatial relationships — not with invented names.
+4. Materials must be real and recognizable. Good: "smooth white concrete". Bad: "graphene-reinforced bio-concrete".
+5. Every checklist item must be a specific, actionable construction task with dimensions.
+6. Output ONLY the JSON object, no explanation text.`;
 
 // =============================================================================
 // HELPER: Format build brief for agent context
@@ -144,24 +119,37 @@ export function formatBuildBrief(brief: BuildBrief): string {
         `BUILD BRIEF (from Research Phase):`,
         `  Footprint: ${brief.totalFootprintMeters.width}m × ${brief.totalFootprintMeters.depth}m`,
         `  Max Height: ${brief.overallHeightMeters}m`,
-        `  Structures: ${brief.primaryStructures.length} primary`,
-        `  Wall Segments: ${brief.wallSegments.length}`,
-        `  Towers: ${brief.towers.length}`,
-        `  Materials: walls=${brief.materials.primaryWall}, roof=${brief.materials.roof}`,
-        `  Colors: walls=${brief.colorPalette.walls}, roof=${brief.colorPalette.roofs}`,
     ];
+
+    if (brief.designVision) {
+        lines.push(`  Design Vision: ${brief.designVision}`);
+    }
+
+    lines.push(`  Structures: ${brief.primaryStructures.length} primary`);
+    lines.push(`  Wall Segments: ${brief.wallSegments.length}`);
+    lines.push(`  Towers: ${brief.towers.length}`);
+    lines.push(`  Materials: walls=${brief.materials.primaryWall}, roof=${brief.materials.roof}`);
+    lines.push(`  Colors: walls=${brief.colorPalette.walls}, roof=${brief.colorPalette.roofs}`);
 
     if (brief.primaryStructures.length > 0) {
         lines.push(`  PRIMARY STRUCTURES:`);
         for (const s of brief.primaryStructures) {
-            lines.push(`    - ${s.name}: ${s.widthM}×${s.depthM}m, H=${s.heightM}m at (${s.positionX}, ${s.positionZ})`);
+            if (typeof s === 'string') {
+                lines.push(`    - ${s}`);
+            } else {
+                lines.push(`    - ${s.name}: ${s.widthM}×${s.depthM}m, H=${s.heightM}m at (${s.positionX}, ${s.positionZ})`);
+            }
         }
     }
 
     if (brief.towers.length > 0) {
         lines.push(`  TOWERS:`);
         for (const t of brief.towers.slice(0, 10)) {
-            lines.push(`    - ${t.name}: H=${t.heightM}m, base=${t.baseWidthM}m at (${t.posX}, ${t.posZ})`);
+            if (typeof t === 'string') {
+                lines.push(`    - ${t}`);
+            } else {
+                lines.push(`    - ${t.name}: H=${t.heightM}m, base=${t.baseWidthM}m at (${t.posX}, ${t.posZ})`);
+            }
         }
         if (brief.towers.length > 10) {
             lines.push(`    ... and ${brief.towers.length - 10} more`);

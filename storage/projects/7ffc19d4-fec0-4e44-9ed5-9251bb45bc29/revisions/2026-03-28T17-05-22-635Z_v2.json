@@ -1,0 +1,107 @@
+{
+  "id": "7ffc19d4-fec0-4e44-9ed5-9251bb45bc29",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-28T16:56:23.030Z",
+  "modified_at": "2026-03-28T17:05:20.082Z",
+  "version": 2,
+  "root_node_id": "house_be7d08a8",
+  "nodes": {
+    "house_be7d08a8": {
+      "id": "house_be7d08a8",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "slab_u42566kf"
+      ],
+      "created_at": "2026-03-28T16:56:23.030Z",
+      "modified_at": "2026-03-28T17:05:20.082Z",
+      "version": 1
+    },
+    "slab_u42566kf": {
+      "id": "slab_u42566kf",
+      "type": "Slab",
+      "name": "foundation_slab",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "mat_concrete_reinforced",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_be7d08a8",
+      "children_ids": [],
+      "created_at": "2026-03-28T17:05:20.082Z",
+      "modified_at": "2026-03-28T17:05:20.082Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 8400,
+    "remaining": 191600,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -1,0 +1,910 @@
+{
+  "id": "8a5da9da-add6-4ee9-a6c7-10aef0b01977",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-29T14:21:50.925Z",
+  "modified_at": "2026-03-29T14:23:36.243Z",
+  "version": 23,
+  "root_node_id": "house_7a7c01f6",
+  "nodes": {
+    "house_7a7c01f6": {
+      "id": "house_7a7c01f6",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_1",
+        "floor_2",
+        "roof_1",
+        "custom_78pmj7hy"
+      ],
+      "created_at": "2026-03-29T14:21:50.925Z",
+      "modified_at": "2026-03-29T14:23:36.242Z",
+      "version": 2
+    },
+    "floor_1": {
+      "id": "floor_1",
+      "type": "Floor",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7a7c01f6",
+      "children_ids": [
+        "room_1"
+      ],
+      "created_at": "2026-03-29T14:23:35.765Z",
+      "modified_at": "2026-03-29T14:23:36.242Z",
+      "version": 2
+    },
+    "room_1": {
+      "id": "room_1",
+      "type": "Room",
+      "name": "Ground Floor Lair & Living",
+      "position": {
+        "x": 0,
+        "y": 2.2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [
+        "f1_wall_n",
+        "f1_wall_s",
+        "f1_wall_e",
+        "f1_wall_w",
+        "stairs_95o20iu1"
+      ],
+      "room_function": "living",
+      "created_at": "2026-03-29T14:23:35.768Z",
+      "modified_at": "2026-03-29T14:23:36.242Z",
+      "version": 2
+    },
+    "f1_wall_n": {
+      "id": "f1_wall_n",
+      "type": "Wall",
+      "name": "F1 North Front Wall",
+      "position": {
+        "x": 0,
+        "y": 2.2,
+        "z": -3.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [
+        "door_di03l992",
+        "door_5l8cr703"
+      ],
+      "created_at": "2026-03-29T14:23:35.769Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "f1_wall_s": {
+      "id": "f1_wall_s",
+      "type": "Wall",
+      "name": "F1 South Back Wall",
+      "position": {
+        "x": 0,
+        "y": 2.2,
+        "z": 3.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 4,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [
+        "window_rjuawmzs"
+      ],
+      "created_at": "2026-03-29T14:23:35.770Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "f1_wall_e": {
+      "id": "f1_wall_e",
+      "type": "Wall",
+      "name": "F1 East Wall",
+      "position": {
+        "x": 4.875,
+        "y": 2.2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 4,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.771Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "f1_wall_w": {
+      "id": "f1_wall_w",
+      "type": "Wall",
+      "name": "F1 West Wall",
+      "position": {
+        "x": -4.875,
+        "y": 2.2,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 4,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.772Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "door_di03l992": {
+      "id": "door_di03l992",
+      "type": "Door",
+      "name": "Sleek Garage Door",
+      "position": {
+        "x": 2.5,
+        "y": 1.45,
+        "z": -3.875
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 2.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "f1_wall_n",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.773Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "door_5l8cr703": {
+      "id": "door_5l8cr703",
+      "type": "Door",
+      "name": "Armored Main Entrance",
+      "position": {
+        "x": -1.5,
+        "y": 1.45,
+        "z": -3.875
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 2.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "f1_wall_n",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.773Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "window_rjuawmzs": {
+      "id": "window_rjuawmzs",
+      "type": "Window",
+      "name": "Rear Garden Panoramic Window",
+      "position": {
+        "x": -1,
+        "y": 1.95,
+        "z": 3.875
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 3.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "f1_wall_s",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.774Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "stairs_95o20iu1": {
+      "id": "stairs_95o20iu1",
+      "type": "Stairs",
+      "name": "Minimalist Floating Stairs",
+      "position": {
+        "x": 0,
+        "y": 2.3000000000000003,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 4.2,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_1",
+      "children_ids": [],
+      "stair_style": "straight",
+      "created_at": "2026-03-29T14:23:35.775Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "floor_2": {
+      "id": "floor_2",
+      "type": "Floor",
+      "name": "Cantilevered Second Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 4.3,
+        "z": -2
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 0.2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7a7c01f6",
+      "children_ids": [
+        "room_2"
+      ],
+      "created_at": "2026-03-29T14:23:35.775Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "room_2": {
+      "id": "room_2",
+      "type": "Room",
+      "name": "Master Command Suite",
+      "position": {
+        "x": 0,
+        "y": 5.9,
+        "z": -2
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_2",
+      "children_ids": [
+        "f2_wall_n",
+        "f2_wall_s",
+        "f2_wall_e",
+        "f2_wall_w"
+      ],
+      "room_function": "bedroom",
+      "created_at": "2026-03-29T14:23:35.776Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "f2_wall_n": {
+      "id": "f2_wall_n",
+      "type": "Wall",
+      "name": "F2 North Overhang Wall",
+      "position": {
+        "x": 0,
+        "y": 5.9,
+        "z": -5.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [
+        "window_z01w4kdj"
+      ],
+      "created_at": "2026-03-29T14:23:35.776Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "f2_wall_s": {
+      "id": "f2_wall_s",
+      "type": "Wall",
+      "name": "F2 South Terrace Wall",
+      "position": {
+        "x": 0,
+        "y": 5.9,
+        "z": 1.875
+      },
+      "dimensions": {
+        "x": 10,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [
+        "door_wlubuqzb"
+      ],
+      "created_at": "2026-03-29T14:23:35.777Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "f2_wall_e": {
+      "id": "f2_wall_e",
+      "type": "Wall",
+      "name": "F2 East Wall",
+      "position": {
+        "x": 4.875,
+        "y": 5.9,
+        "z": -2
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.778Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "f2_wall_w": {
+      "id": "f2_wall_w",
+      "type": "Wall",
+      "name": "F2 West Wall",
+      "position": {
+        "x": -4.875,
+        "y": 5.9,
+        "z": -2
+      },
+      "dimensions": {
+        "x": 7.5,
+        "y": 3,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "room_2",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.778Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "window_z01w4kdj": {
+      "id": "window_z01w4kdj",
+      "type": "Window",
+      "name": "Villain Observation Window",
+      "position": {
+        "x": 0,
+        "y": 5.65,
+        "z": -5.875
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 2.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "f2_wall_n",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.779Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "door_wlubuqzb": {
+      "id": "door_wlubuqzb",
+      "type": "Door",
+      "name": "Terrace Access Sliding Door",
+      "position": {
+        "x": 0,
+        "y": 5.65,
+        "z": 1.875
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 2.5,
+        "z": 0.25
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "f2_wall_s",
+      "children_ids": [],
+      "created_at": "2026-03-29T14:23:35.780Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "roof_1": {
+      "id": "roof_1",
+      "type": "Roof",
+      "name": "Flat Brutalist Roof",
+      "position": {
+        "x": 0,
+        "y": 7.5,
+        "z": -2
+      },
+      "dimensions": {
+        "x": 10.5,
+        "y": 0.2,
+        "z": 8.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7a7c01f6",
+      "children_ids": [
+        "custom_lyltxtom"
+      ],
+      "roof_style": "flat",
+      "created_at": "2026-03-29T14:23:36.240Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "custom_lyltxtom": {
+      "id": "custom_lyltxtom",
+      "type": "Custom",
+      "name": "Rooftop Helipad",
+      "position": {
+        "x": 0,
+        "y": 7.65,
+        "z": -2
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.1,
+        "z": 6
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "roof_1",
+      "children_ids": [],
+      "custom_geometry": {
+        "height": 0.1,
+        "type": "cylinder",
+        "radius": 3
+      },
+      "cad_script": "# Custom element: Rooftop Helipad\n# Description: A sleek circular helipad painted with a glowing red H, surrounded by subtle recessed lighting for night landings.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-29T14:23:36.241Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    },
+    "custom_78pmj7hy": {
+      "id": "custom_78pmj7hy",
+      "type": "Custom",
+      "name": "Security Obelisk",
+      "position": {
+        "x": -4,
+        "y": 1.5,
+        "z": -6
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 3,
+        "z": 1.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7a7c01f6",
+      "children_ids": [],
+      "custom_geometry": {
+        "height": 3,
+        "type": "box",
+        "depth": 1.5
+      },
+      "cad_script": "# Custom element: Security Obelisk\n# Description: A monolithic black concrete obelisk with sharp brutalist angles and a glowing red LED strip running down the center, acting as a security scanner and imposing entrance marker.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-29T14:23:36.242Z",
+      "modified_at": "2026-03-29T14:23:36.243Z",
+      "version": 2
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

@@ -1,0 +1,656 @@
+{
+  "id": "e6aa01ee-6273-4536-abab-0468a440484a",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-28T16:56:04.366Z",
+  "modified_at": "2026-03-28T16:57:55.649Z",
+  "version": 16,
+  "root_node_id": "house_1f2b104c",
+  "nodes": {
+    "house_1f2b104c": {
+      "id": "house_1f2b104c",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "foundation_slab",
+        "gf_wall_n",
+        "gf_wall_s",
+        "gf_wall_e",
+        "gf_wall_w",
+        "sf_slab",
+        "sf_wall_n",
+        "sf_wall_s",
+        "sf_wall_e",
+        "sf_wall_w",
+        "roof_main"
+      ],
+      "created_at": "2026-03-28T16:56:04.366Z",
+      "modified_at": "2026-03-28T16:57:55.644Z",
+      "version": 1
+    },
+    "foundation_slab": {
+      "id": "foundation_slab",
+      "type": "Floor",
+      "name": "Foundation",
+      "position": {
+        "x": 0,
+        "y": 0.15,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.3,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "concrete_grey",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.600Z",
+      "modified_at": "2026-03-28T16:57:55.600Z",
+      "version": 1
+    },
+    "gf_wall_n": {
+      "id": "gf_wall_n",
+      "type": "Wall",
+      "name": "GF North Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": -4.9
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 3,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.617Z",
+      "modified_at": "2026-03-28T16:57:55.617Z",
+      "version": 1
+    },
+    "gf_wall_s": {
+      "id": "gf_wall_s",
+      "type": "Wall",
+      "name": "GF South Wall",
+      "position": {
+        "x": 0,
+        "y": 1.8,
+        "z": 4.9
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 3,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [
+        "door_c0iinnoz",
+        "window_6xkawsvr",
+        "window_5b1pimbi"
+      ],
+      "created_at": "2026-03-28T16:57:55.618Z",
+      "modified_at": "2026-03-28T16:57:55.647Z",
+      "version": 1
+    },
+    "gf_wall_e": {
+      "id": "gf_wall_e",
+      "type": "Wall",
+      "name": "GF East Wall",
+      "position": {
+        "x": 5.9,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 3,
+        "z": 9.6
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.623Z",
+      "modified_at": "2026-03-28T16:57:55.623Z",
+      "version": 1
+    },
+    "gf_wall_w": {
+      "id": "gf_wall_w",
+      "type": "Wall",
+      "name": "GF West Wall",
+      "position": {
+        "x": -5.9,
+        "y": 1.8,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 3,
+        "z": 9.6
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.625Z",
+      "modified_at": "2026-03-28T16:57:55.625Z",
+      "version": 1
+    },
+    "sf_slab": {
+      "id": "sf_slab",
+      "type": "Floor",
+      "name": "Second Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 3.4,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.2,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_oak",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.626Z",
+      "modified_at": "2026-03-28T16:57:55.626Z",
+      "version": 1
+    },
+    "sf_wall_n": {
+      "id": "sf_wall_n",
+      "type": "Wall",
+      "name": "SF North Wall",
+      "position": {
+        "x": 0,
+        "y": 4.75,
+        "z": -4.9
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 2.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.627Z",
+      "modified_at": "2026-03-28T16:57:55.627Z",
+      "version": 1
+    },
+    "sf_wall_s": {
+      "id": "sf_wall_s",
+      "type": "Wall",
+      "name": "SF South Wall",
+      "position": {
+        "x": 0,
+        "y": 4.75,
+        "z": 4.9
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 2.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [
+        "window_bfuhokrc"
+      ],
+      "created_at": "2026-03-28T16:57:55.627Z",
+      "modified_at": "2026-03-28T16:57:55.649Z",
+      "version": 1
+    },
+    "sf_wall_e": {
+      "id": "sf_wall_e",
+      "type": "Wall",
+      "name": "SF East Wall",
+      "position": {
+        "x": 5.9,
+        "y": 4.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 2.5,
+        "z": 9.6
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.628Z",
+      "modified_at": "2026-03-28T16:57:55.628Z",
+      "version": 1
+    },
+    "sf_wall_w": {
+      "id": "sf_wall_w",
+      "type": "Wall",
+      "name": "SF West Wall",
+      "position": {
+        "x": -5.9,
+        "y": 4.75,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 2.5,
+        "z": 9.6
+      },
+      "rotation": {
+        "yaw": 90,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "plaster_white",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.637Z",
+      "modified_at": "2026-03-28T16:57:55.637Z",
+      "version": 1
+    },
+    "roof_main": {
+      "id": "roof_main",
+      "type": "Roof",
+      "name": "Gabled Roof",
+      "position": {
+        "x": 0,
+        "y": 7.5,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 12.5,
+        "y": 3,
+        "z": 10.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "shingles_dark",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1f2b104c",
+      "children_ids": [],
+      "roof_style": "gable",
+      "created_at": "2026-03-28T16:57:55.644Z",
+      "modified_at": "2026-03-28T16:57:55.644Z",
+      "version": 1
+    },
+    "door_c0iinnoz": {
+      "id": "door_c0iinnoz",
+      "type": "Door",
+      "name": "Front Door",
+      "position": {
+        "x": 0,
+        "y": 1.35,
+        "z": 4.9
+      },
+      "dimensions": {
+        "x": 1.2,
+        "y": 2.1,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_dark",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "gf_wall_s",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.644Z",
+      "modified_at": "2026-03-28T16:57:55.644Z",
+      "version": 1
+    },
+    "window_6xkawsvr": {
+      "id": "window_6xkawsvr",
+      "type": "Window",
+      "name": "GF Window Left",
+      "position": {
+        "x": -3.5,
+        "y": 1.8,
+        "z": 4.9
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 1.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_clear",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "gf_wall_s",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.646Z",
+      "modified_at": "2026-03-28T16:57:55.646Z",
+      "version": 1
+    },
+    "window_5b1pimbi": {
+      "id": "window_5b1pimbi",
+      "type": "Window",
+      "name": "GF Window Right",
+      "position": {
+        "x": 3.5,
+        "y": 1.8,
+        "z": 4.9
+      },
+      "dimensions": {
+        "x": 1.5,
+        "y": 1.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_clear",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "gf_wall_s",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.647Z",
+      "modified_at": "2026-03-28T16:57:55.647Z",
+      "version": 1
+    },
+    "window_bfuhokrc": {
+      "id": "window_bfuhokrc",
+      "type": "Window",
+      "name": "SF Window Center",
+      "position": {
+        "x": 0,
+        "y": 4.75,
+        "z": 4.9
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 1.5,
+        "z": 0.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_clear",
+      "opacity": 0.3,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "sf_wall_s",
+      "children_ids": [],
+      "created_at": "2026-03-28T16:57:55.649Z",
+      "modified_at": "2026-03-28T16:57:55.649Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

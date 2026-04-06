@@ -1,0 +1,1309 @@
+{
+  "id": "a60a95bd-194f-45bf-b50e-456be991c293",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T10:37:26.544Z",
+  "modified_at": "2026-04-06T11:10:45.957Z",
+  "version": 35,
+  "root_node_id": "house_451347ce",
+  "nodes": {
+    "house_451347ce": {
+      "id": "house_451347ce",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "ribbon_base_south",
+        "ribbon_base_north",
+        "ribbon_base_west",
+        "ribbon_base_east",
+        "sunken_atrium_floor",
+        "ribbon_shell_west",
+        "ribbon_shell_east",
+        "ribbon_roof_south",
+        "ribbon_roof_north",
+        "ribbon_roof_west",
+        "ribbon_roof_east",
+        "electrochromic_facade_south",
+        "electrochromic_facade_north",
+        "custom_isw1hy0n",
+        "custom_bq8w8k1d",
+        "custom_r9tb5zm4",
+        "custom_ew20l8d2",
+        "custom_z5jtgsyi",
+        "custom_ahkjexia",
+        "cantilever_wing_sw",
+        "cantilever_wing_mw",
+        "custom_0ykr8hh7",
+        "custom_dro5n0qu",
+        "cantilever_wing_me",
+        "cantilever_wing_ne",
+        "kinetic_screen_sw",
+        "kinetic_screen_mw",
+        "kinetic_screen_nw",
+        "kinetic_screen_se",
+        "kinetic_screen_me",
+        "kinetic_screen_ne"
+      ],
+      "created_at": "2026-04-06T10:37:26.543Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_base_south": {
+      "id": "ribbon_base_south",
+      "type": "Foundation",
+      "name": "Ribbon Base South",
+      "position": {
+        "x": 27.5,
+        "y": 1,
+        "z": 10
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:46:21.403Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 3
+    },
+    "ribbon_base_north": {
+      "id": "ribbon_base_north",
+      "type": "Foundation",
+      "name": "Ribbon Base North",
+      "position": {
+        "x": 27.5,
+        "y": 1,
+        "z": 50
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:46:48.091Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_base_west": {
+      "id": "ribbon_base_west",
+      "type": "Foundation",
+      "name": "Ribbon Base West",
+      "position": {
+        "x": 19,
+        "y": 1,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:47:20.918Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_base_east": {
+      "id": "ribbon_base_east",
+      "type": "Foundation",
+      "name": "Ribbon Base East",
+      "position": {
+        "x": 36,
+        "y": 1,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:48:06.319Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "sunken_atrium_floor": {
+      "id": "sunken_atrium_floor",
+      "type": "Slab",
+      "name": "Sunken Communal Atrium Floor",
+      "position": {
+        "x": 27.5,
+        "y": 0.25,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 13,
+        "y": 0.5,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:48:59.381Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_shell_west": {
+      "id": "ribbon_shell_west",
+      "type": "Wall",
+      "name": "Ribbon Shell West Wall",
+      "position": {
+        "x": 16,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 14,
+        "z": 60
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:49:26.967Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_shell_east": {
+      "id": "ribbon_shell_east",
+      "type": "Wall",
+      "name": "Ribbon Shell East Wall",
+      "position": {
+        "x": 39,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 14,
+        "z": 60
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:49:55.376Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_roof_south": {
+      "id": "ribbon_roof_south",
+      "type": "Roof",
+      "name": "Ribbon Roof South",
+      "position": {
+        "x": 27.5,
+        "y": 13,
+        "z": 13.75
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 2,
+        "z": 27.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-04-06T10:50:30.038Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_roof_north": {
+      "id": "ribbon_roof_north",
+      "type": "Roof",
+      "name": "Ribbon Roof North",
+      "position": {
+        "x": 27.5,
+        "y": 13,
+        "z": 46.25
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 2,
+        "z": 27.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-04-06T10:51:06.568Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_roof_west": {
+      "id": "ribbon_roof_west",
+      "type": "Roof",
+      "name": "Ribbon Roof West",
+      "position": {
+        "x": 21,
+        "y": 13,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 2,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-04-06T10:51:34.493Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "ribbon_roof_east": {
+      "id": "ribbon_roof_east",
+      "type": "Roof",
+      "name": "Ribbon Roof East",
+      "position": {
+        "x": 34,
+        "y": 13,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 2,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-04-06T10:52:17.304Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "electrochromic_facade_south": {
+      "id": "electrochromic_facade_south",
+      "type": "Wall",
+      "name": "South Electrochromic Glass Wall",
+      "position": {
+        "x": 27.5,
+        "y": 7,
+        "z": 0.5
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 10,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_smart",
+      "opacity": 0.3,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:52:58.322Z",
+      "modified_at": "2026-04-06T11:10:45.951Z",
+      "version": 2
+    },
+    "electrochromic_facade_north": {
+      "id": "electrochromic_facade_north",
+      "type": "Wall",
+      "name": "North Electrochromic Glass Wall",
+      "position": {
+        "x": 27.5,
+        "y": 7,
+        "z": 59.5
+      },
+      "dimensions": {
+        "x": 21,
+        "y": 10,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_smart",
+      "opacity": 0.3,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:53:54.512Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_isw1hy0n": {
+      "id": "custom_isw1hy0n",
+      "type": "Custom",
+      "name": "Aero-Magnetic Levitation Core",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 16,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Aero-Magnetic Levitation Core\n# Description: Aero-Magnetic Levitation Core, a frictionless, cable-free hovering vertical transport system.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-06T10:54:37.264Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_bq8w8k1d": {
+      "id": "custom_bq8w8k1d",
+      "type": "Custom",
+      "name": "Master Suite Spire South",
+      "position": {
+        "x": 27.5,
+        "y": 15.25,
+        "z": 23.75
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 2.5,
+        "z": 7.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:56:22.051Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_r9tb5zm4": {
+      "id": "custom_r9tb5zm4",
+      "type": "Custom",
+      "name": "Master Suite Spire North",
+      "position": {
+        "x": 27.5,
+        "y": 15.25,
+        "z": 36.25
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 2.5,
+        "z": 7.5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T10:57:10.286Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_ew20l8d2": {
+      "id": "custom_ew20l8d2",
+      "type": "Custom",
+      "name": "Master Suite Spire West",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Master Suite Spire West\n# Description: Western acoustic partition of the master suite around the core, forming a spire section.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-06T10:58:05.337Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_z5jtgsyi": {
+      "id": "custom_z5jtgsyi",
+      "type": "Custom",
+      "name": "Master Suite Spire East",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "bio_concrete",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Master Suite Spire East\n# Description: Master Suite Spire East forming the eastern acoustic partition of the master suite around the core. Made of graphene-reinforced self-healing bio-concrete.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-06T10:59:59.739Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_ahkjexia": {
+      "id": "custom_ahkjexia",
+      "type": "Custom",
+      "name": "Passive Cooling Wind-Catcher Fin",
+      "position": {
+        "x": 27.5,
+        "y": 15.25,
+        "z": 50
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 2.5,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:01:00.055Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "cantilever_wing_sw": {
+      "id": "cantilever_wing_sw",
+      "type": "Custom",
+      "name": "South-West Cantilevered Bedroom Wing",
+      "position": {
+        "x": 8,
+        "y": 7,
+        "z": 14
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:01:41.109Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "cantilever_wing_mw": {
+      "id": "cantilever_wing_mw",
+      "type": "Custom",
+      "name": "Mid-West Cantilevered Bedroom Wing",
+      "position": {
+        "x": 8,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:02:13.935Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_0ykr8hh7": {
+      "id": "custom_0ykr8hh7",
+      "type": "Custom",
+      "name": "North-West Cantilevered Bedroom Wing",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: North-West Cantilevered Bedroom Wing\n# Description: North-West Cantilevered Bedroom Wing matching the SW and MW wings.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-06T11:02:45.314Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "custom_dro5n0qu": {
+      "id": "custom_dro5n0qu",
+      "type": "Custom",
+      "name": "South-East Cantilevered Bedroom Wing",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: South-East Cantilevered Bedroom Wing\n# Description: South-East Cantilevered Bedroom Wing anchored against the eastern ribbon shell.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-06T11:03:50.084Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "cantilever_wing_me": {
+      "id": "cantilever_wing_me",
+      "type": "Custom",
+      "name": "Mid-East Cantilevered Bedroom Wing",
+      "position": {
+        "x": 47,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:05:15.691Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "cantilever_wing_ne": {
+      "id": "cantilever_wing_ne",
+      "type": "Custom",
+      "name": "North-East Cantilevered Bedroom Wing",
+      "position": {
+        "x": 47,
+        "y": 7,
+        "z": 46
+      },
+      "dimensions": {
+        "x": 14,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:05:56.367Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "kinetic_screen_sw": {
+      "id": "kinetic_screen_sw",
+      "type": "Wall",
+      "name": "SW Kinetic Privacy Screen",
+      "position": {
+        "x": 0.5,
+        "y": 7,
+        "z": 14
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_slats",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:06:22.829Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "kinetic_screen_mw": {
+      "id": "kinetic_screen_mw",
+      "type": "Wall",
+      "name": "MW Kinetic Privacy Screen",
+      "position": {
+        "x": 0.5,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_slats",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:06:52.267Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "kinetic_screen_nw": {
+      "id": "kinetic_screen_nw",
+      "type": "Wall",
+      "name": "NW Kinetic Privacy Screen",
+      "position": {
+        "x": 0.5,
+        "y": 7,
+        "z": 46
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_slats",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:07:35.572Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "kinetic_screen_se": {
+      "id": "kinetic_screen_se",
+      "type": "Wall",
+      "name": "SE Kinetic Privacy Screen",
+      "position": {
+        "x": 54.5,
+        "y": 7,
+        "z": 14
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_slats",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:08:31.198Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "kinetic_screen_me": {
+      "id": "kinetic_screen_me",
+      "type": "Wall",
+      "name": "ME Kinetic Privacy Screen",
+      "position": {
+        "x": 54.5,
+        "y": 7,
+        "z": 30
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_slats",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:09:19.536Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    },
+    "kinetic_screen_ne": {
+      "id": "kinetic_screen_ne",
+      "type": "Wall",
+      "name": "NE Kinetic Privacy Screen",
+      "position": {
+        "x": 54.5,
+        "y": 7,
+        "z": 46
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "wood_slats",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_451347ce",
+      "children_ids": [],
+      "created_at": "2026-04-06T11:10:06.150Z",
+      "modified_at": "2026-04-06T11:10:45.957Z",
+      "version": 2
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

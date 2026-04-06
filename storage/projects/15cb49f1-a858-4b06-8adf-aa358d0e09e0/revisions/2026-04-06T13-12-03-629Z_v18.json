@@ -1,0 +1,746 @@
+{
+  "id": "15cb49f1-a858-4b06-8adf-aa358d0e09e0",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T12:50:03.449Z",
+  "modified_at": "2026-04-06T13:12:01.561Z",
+  "version": 18,
+  "root_node_id": "house_1794f95b",
+  "nodes": {
+    "house_1794f95b": {
+      "id": "house_1794f95b",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "slab_west_full",
+        "slab_center_full",
+        "slab_east_full",
+        "terr_w3",
+        "pool_basin",
+        "terr_e3",
+        "north_wall_w",
+        "south_wall_w",
+        "west_wall_w",
+        "east_wall_w",
+        "spine_w1",
+        "north_wall_c_left",
+        "north_wall_c_above_door",
+        "north_wall_c_right",
+        "south_glass_c",
+        "west_wall_c"
+      ],
+      "created_at": "2026-04-06T12:50:03.448Z",
+      "modified_at": "2026-04-06T13:12:01.561Z",
+      "version": 1
+    },
+    "slab_west_full": {
+      "id": "slab_west_full",
+      "type": "Slab",
+      "name": "West Wing Foundation and Terrace",
+      "position": {
+        "x": 6,
+        "y": 0.25,
+        "z": 7
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 14
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:00:49.644Z",
+      "modified_at": "2026-04-06T13:00:49.644Z",
+      "version": 1
+    },
+    "slab_center_full": {
+      "id": "slab_center_full",
+      "type": "Slab",
+      "name": "Center Pavilion Foundation and Terrace",
+      "position": {
+        "x": 20,
+        "y": 0.25,
+        "z": 7
+      },
+      "dimensions": {
+        "x": 16,
+        "y": 0.5,
+        "z": 14
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:01:38.604Z",
+      "modified_at": "2026-04-06T13:01:38.604Z",
+      "version": 1
+    },
+    "slab_east_full": {
+      "id": "slab_east_full",
+      "type": "Slab",
+      "name": "East Wing Foundation and Terrace",
+      "position": {
+        "x": 34,
+        "y": 0.25,
+        "z": 7
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 0.5,
+        "z": 14
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:02:05.265Z",
+      "modified_at": "2026-04-06T13:02:05.265Z",
+      "version": 1
+    },
+    "terr_w3": {
+      "id": "terr_w3",
+      "type": "Slab",
+      "name": "West Extended Terrace",
+      "position": {
+        "x": 6.25,
+        "y": 0.25,
+        "z": 16.5
+      },
+      "dimensions": {
+        "x": 12.5,
+        "y": 0.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:02:33.139Z",
+      "modified_at": "2026-04-06T13:02:33.139Z",
+      "version": 1
+    },
+    "pool_basin": {
+      "id": "pool_basin",
+      "type": "Slab",
+      "name": "Infinity Pool Basin",
+      "position": {
+        "x": 20,
+        "y": 0.25,
+        "z": 16.5
+      },
+      "dimensions": {
+        "x": 15,
+        "y": 0.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:03:00.380Z",
+      "modified_at": "2026-04-06T13:03:00.380Z",
+      "version": 1
+    },
+    "terr_e3": {
+      "id": "terr_e3",
+      "type": "Slab",
+      "name": "East Extended Terrace",
+      "position": {
+        "x": 33.75,
+        "y": 0.25,
+        "z": 16.5
+      },
+      "dimensions": {
+        "x": 12.5,
+        "y": 0.5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:03:29.341Z",
+      "modified_at": "2026-04-06T13:03:29.341Z",
+      "version": 1
+    },
+    "north_wall_w": {
+      "id": "north_wall_w",
+      "type": "Wall",
+      "name": "West Wing North Wall",
+      "position": {
+        "x": 6,
+        "y": 2.5,
+        "z": 0.2
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:04:34.498Z",
+      "modified_at": "2026-04-06T13:04:34.498Z",
+      "version": 1
+    },
+    "south_wall_w": {
+      "id": "south_wall_w",
+      "type": "Wall",
+      "name": "West Wing South Wall",
+      "position": {
+        "x": 6,
+        "y": 2.5,
+        "z": 7.8
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 4,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:05:31.049Z",
+      "modified_at": "2026-04-06T13:05:31.049Z",
+      "version": 1
+    },
+    "west_wall_w": {
+      "id": "west_wall_w",
+      "type": "Wall",
+      "name": "West Wing West Wall",
+      "position": {
+        "x": 0.2,
+        "y": 2.5,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 4,
+        "z": 7.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:06:47.954Z",
+      "modified_at": "2026-04-06T13:06:47.954Z",
+      "version": 1
+    },
+    "east_wall_w": {
+      "id": "east_wall_w",
+      "type": "Wall",
+      "name": "West Wing East Wall",
+      "position": {
+        "x": 11.799999999999999,
+        "y": 2.5,
+        "z": 4
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 4,
+        "z": 7.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:07:19.824Z",
+      "modified_at": "2026-04-06T13:07:19.824Z",
+      "version": 1
+    },
+    "spine_w1": {
+      "id": "spine_w1",
+      "type": "Wall",
+      "name": "West Wing Spine Wall",
+      "position": {
+        "x": 10.8,
+        "y": 2.5,
+        "z": 2.15
+      },
+      "dimensions": {
+        "x": 1.6,
+        "y": 4,
+        "z": 0.3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:07:49.784Z",
+      "modified_at": "2026-04-06T13:07:49.784Z",
+      "version": 1
+    },
+    "north_wall_c_left": {
+      "id": "north_wall_c_left",
+      "type": "Wall",
+      "name": "Center Pavilion North Wall Left",
+      "position": {
+        "x": 15.25,
+        "y": 2.5,
+        "z": 0.2
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 4,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [
+        "door_main"
+      ],
+      "created_at": "2026-04-06T13:08:23.198Z",
+      "modified_at": "2026-04-06T13:09:00.158Z",
+      "version": 1
+    },
+    "door_main": {
+      "id": "door_main",
+      "type": "Door",
+      "name": "Main Entrance Door",
+      "position": {
+        "x": 20,
+        "y": 2,
+        "z": 0.2
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 3,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "north_wall_c_left",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:09:00.158Z",
+      "modified_at": "2026-04-06T13:09:00.158Z",
+      "version": 1
+    },
+    "north_wall_c_above_door": {
+      "id": "north_wall_c_above_door",
+      "type": "Wall",
+      "name": "Wall Above Main Door",
+      "position": {
+        "x": 20,
+        "y": 4,
+        "z": 0.2
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 1,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:09:35.689Z",
+      "modified_at": "2026-04-06T13:09:35.689Z",
+      "version": 1
+    },
+    "north_wall_c_right": {
+      "id": "north_wall_c_right",
+      "type": "Wall",
+      "name": "Center Pavilion North Wall Right",
+      "position": {
+        "x": 24.75,
+        "y": 2.5,
+        "z": 0.2
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 4,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:10:27.974Z",
+      "modified_at": "2026-04-06T13:10:27.974Z",
+      "version": 1
+    },
+    "south_glass_c": {
+      "id": "south_glass_c",
+      "type": "Wall",
+      "name": "Center Pavilion South Glass",
+      "position": {
+        "x": 20,
+        "y": 2.5,
+        "z": 9.799999999999999
+      },
+      "dimensions": {
+        "x": 16,
+        "y": 4,
+        "z": 0.4
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:11:04.809Z",
+      "modified_at": "2026-04-06T13:11:04.809Z",
+      "version": 1
+    },
+    "west_wall_c": {
+      "id": "west_wall_c",
+      "type": "Wall",
+      "name": "Center Pavilion West Wall",
+      "position": {
+        "x": 12.2,
+        "y": 2.5,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 0.4,
+        "y": 4,
+        "z": 9.2
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_1794f95b",
+      "children_ids": [],
+      "created_at": "2026-04-06T13:12:01.561Z",
+      "modified_at": "2026-04-06T13:12:01.561Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

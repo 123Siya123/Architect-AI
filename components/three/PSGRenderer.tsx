@@ -55,9 +55,15 @@ import type { PSGNode, PSGProject, Material } from '@/types';
 const materialCache = new Map<string, THREE.MeshStandardMaterial>();
 const glassMaterial = compileGlassMaterial();
 
-function getMaterial(materialId: string, opacity: number): THREE.Material {
+function getMaterial(materialId: string, opacity: number, type?: string): THREE.Material {
     if (opacity < 1 || materialId.includes('glass')) return glassMaterial;
-    if (materialCache.has(materialId)) return materialCache.get(materialId)!;
+    if (materialId && materialCache.has(materialId)) return materialCache.get(materialId)!;
+    
+    // Sanitary types default to white porcelain if no ID provided
+    if (!materialId && type && ['Toilet', 'Sink', 'Shower', 'Bathtub'].includes(type)) {
+        return new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.1, metalness: 0.2 });
+    }
+
     const matDef = (materialsDatabase as Record<string, Material>)[materialId];
     if (matDef) {
         const m = compileMaterial(matDef);
@@ -65,7 +71,7 @@ function getMaterial(materialId: string, opacity: number): THREE.Material {
         return m;
     }
     const fallback = new THREE.MeshStandardMaterial({ color: '#888888', roughness: 0.8, metalness: 0.1, side: THREE.DoubleSide });
-    materialCache.set(materialId, fallback);
+    if (materialId) materialCache.set(materialId, fallback);
     return fallback;
 }
 
@@ -84,6 +90,9 @@ const RENDERABLE_TYPES = new Set([
     'Wall', 'Window', 'Door', 'Roof', 'Stairs', 'Slab',
     'Foundation', 'Column', 'Beam', 'Partition',
     'Balcony', 'Garage', 'Chimney', 'Custom',
+    'Toilet', 'Sink', 'Shower', 'Bathtub',
+    'LightSwitch', 'ElectricalOutlet', 'ElectricalPanel',
+    'Floor', 'Tower', 'Detail'
 ]);
 
 // Openings are rendered AS PART OF their parent wall group — skip standalone rendering
@@ -138,8 +147,8 @@ function WallMeshNode({ node, isSelected, isHovered, allNodes, isSystemVision, f
     );
 
     const material = useMemo(
-        () => getMaterial(node.material_id, node.opacity),
-        [node.material_id, node.opacity]
+        () => getMaterial(node.material_id, node.opacity, node.type),
+        [node.material_id, node.opacity, node.type]
     );
 
     // Corner-corrected center position
@@ -321,7 +330,10 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision, forcedOp
         [node.type, node.dimensions.x, node.dimensions.y, node.dimensions.z, node.version, node.roof_style, node.stair_style]
     );
 
-    const material = useMemo(() => getMaterial(node.material_id, node.opacity), [node.material_id, node.opacity]);
+    const material = useMemo(
+        () => getMaterial(node.material_id, node.opacity, node.type),
+        [node.material_id, node.opacity, node.type]
+    );
 
     const rotation = useMemo<[number, number, number]>(() => [
         (node.rotation.pitch * Math.PI) / 180,
@@ -342,6 +354,19 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision, forcedOp
             >
                 {geometryOrGroup.children.map((child, i) => {
                     const mesh = child as THREE.Mesh;
+                    // Clone the compiled material so PBR properties are preserved
+                    const renderMat = (material as THREE.MeshStandardMaterial).clone();
+                    if (isSelected) {
+                        renderMat.emissive = SELECTION_EMISSIVE;
+                        renderMat.emissiveIntensity = 0.3;
+                    } else if (isHovered) {
+                        renderMat.emissive = HOVER_EMISSIVE;
+                        renderMat.emissiveIntensity = 0.15;
+                    }
+                    if (isSystemVision || node.opacity < 1 || forcedOpacity !== undefined) {
+                        renderMat.transparent = true;
+                        renderMat.opacity = forcedOpacity !== undefined ? forcedOpacity : (isSystemVision ? 0.2 : node.opacity);
+                    }
                     return (
                         <mesh
                             key={`${node.id}_step_${i}`}
@@ -358,22 +383,30 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision, forcedOp
                                 type: node.type
                             }}
                         >
-                            <meshStandardMaterial
-                                color={(material as THREE.MeshStandardMaterial).color}
-                                roughness={0.6}
-                                metalness={0.1}
-                                side={THREE.DoubleSide}
-                                emissive={isSelected ? SELECTION_EMISSIVE : isHovered ? HOVER_EMISSIVE : undefined}
-                                emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
-                                transparent={isSystemVision || node.opacity < 1 || forcedOpacity !== undefined}
-                                opacity={forcedOpacity !== undefined ? forcedOpacity : (isSystemVision ? 0.2 : node.opacity)}
-                            />
+                            <primitive object={renderMat} attach="material" />
                         </mesh>
                     );
                 })}
             </group>
         );
     }
+
+    // Clone the compiled material to preserve PBR props (roughness, metalness, color)
+    const renderMat = useMemo(() => {
+        const cloned = (material as THREE.MeshStandardMaterial).clone();
+        if (isSelected) {
+            cloned.emissive = SELECTION_EMISSIVE;
+            cloned.emissiveIntensity = 0.3;
+        } else if (isHovered) {
+            cloned.emissive = HOVER_EMISSIVE;
+            cloned.emissiveIntensity = 0.15;
+        }
+        if (isSystemVision || node.opacity < 1 || forcedOpacity !== undefined) {
+            cloned.transparent = true;
+            cloned.opacity = forcedOpacity !== undefined ? forcedOpacity : (isSystemVision ? 0.2 : node.opacity);
+        }
+        return cloned;
+    }, [material, isSelected, isHovered, isSystemVision, node.opacity, forcedOpacity]);
 
     return (
         <mesh
@@ -388,20 +421,11 @@ function GenericNodeMesh({ node, isSelected, isHovered, isSystemVision, forcedOp
             receiveShadow
             userData={{
                 psgNodeId: node.id,
-                isWalkable: ['Slab', 'Floor', 'Foundation', 'Balcony', 'Roof'].includes(node.type),
+                isWalkable: ['Slab', 'Floor', 'Foundation', 'Balcony', 'Roof', 'Garage', 'Tower'].includes(node.type),
                 type: node.type
             }}
         >
-            <meshStandardMaterial
-                color={(material as THREE.MeshStandardMaterial).color || '#888888'}
-                roughness={0.7}
-                metalness={0.1}
-                side={THREE.DoubleSide}
-                transparent={isSystemVision || node.opacity < 1 || forcedOpacity !== undefined}
-                opacity={forcedOpacity !== undefined ? forcedOpacity : (isSystemVision ? 0.2 : node.opacity)}
-                emissive={isSelected ? SELECTION_EMISSIVE : isHovered ? HOVER_EMISSIVE : undefined}
-                emissiveIntensity={isSelected ? 0.3 : isHovered ? 0.15 : 0}
-            />
+            <primitive object={renderMat} attach="material" />
         </mesh>
     );
 }
@@ -422,20 +446,43 @@ export default function PSGRenderer() {
 
     const allNodes = project.nodes;
 
-    // Helper to find which floor a node belongs to
+    // Helper to find which floor a node belongs to.
+    // Uses POSITION-BASED detection (not parent traversal) because flat parenting
+    // means all nodes are children of the House root. We assign a node to the
+    // floor whose vertical range contains its center Y position.
     const nodeFloorMap = useMemo(() => {
         const map = new Map<string, string>();
-        const findFloor = (node: PSGNode): string | null => {
-            if (node.type === 'Floor') return node.id;
-            if (!node.parent_id) return null;
-            const parent = allNodes[node.parent_id];
-            if (!parent) return null;
-            return findFloor(parent);
-        };
+        const floors = Object.values(allNodes)
+            .filter(n => n.type === 'Floor')
+            .sort((a, b) => a.position.y - b.position.y);
+
+        if (floors.length === 0) return map;
 
         Object.values(allNodes).forEach((node) => {
-            const floorId = findFloor(node);
-            if (floorId) map.set(node.id, floorId);
+            if (node.type === 'Floor' || node.type === 'House') return;
+
+            // Find the floor whose vertical range contains this node
+            let bestFloor: PSGNode | null = null;
+            for (const floor of floors) {
+                const floorTop = floor.position.y + floor.dimensions.y / 2;
+                // A node "belongs" to the highest floor whose top surface is at or below the node's bottom
+                const nodeBottom = node.position.y - node.dimensions.y / 2;
+                if (floorTop <= nodeBottom + 0.5) { // 0.5m tolerance
+                    bestFloor = floor;
+                }
+            }
+            // Fallback: assign to the nearest floor by Y position
+            if (!bestFloor) {
+                let minDist = Infinity;
+                for (const floor of floors) {
+                    const dist = Math.abs(node.position.y - floor.position.y);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        bestFloor = floor;
+                    }
+                }
+            }
+            if (bestFloor) map.set(node.id, bestFloor.id);
         });
         return map;
     }, [allNodes]);

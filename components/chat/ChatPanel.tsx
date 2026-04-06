@@ -1,16 +1,12 @@
 /**
  * =============================================================================
- * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Interface (Multi-Agent)
+ * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Interface
  * =============================================================================
  *
- * UPGRADE v3 — Shows multi-agent pipeline status
- *
  * The chat panel where users interact with the AI architect.
- * Now shows which phase of the multi-agent pipeline is running:
- * - 🧠 Coordinator analyzing...
- * - ⚡ Workers executing...
- * - 🔍 Checker reviewing...
- * - 🔧 Fixer correcting...
+ * Supports switching between AI architectures:
+ * - V3: Sequential Phased (Architect → Contractor → Inspector loop)
+ * - One-Shot: Single Gemini AI call with all tools (1 call)
  * =============================================================================
  */
 
@@ -19,8 +15,46 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { useDesignStore } from '@/store/useDesignStore';
-import type { ChatMessage } from '@/types';
 import { prepareProjectContext, generateASCIIFloorPlan } from '@/lib/ai/context';
+import type { ChatMessage, ArchitectureMode } from '@/types';
+
+// =============================================================================
+// ARCHITECTURE MODE CONFIG
+// =============================================================================
+
+
+
+
+interface ArchModeConfig {
+    id: ArchitectureMode;
+    label: string;
+    shortLabel: string;
+    emoji: string;
+    color: string;
+    bgColor: string;
+    description: string;
+}
+
+const ARCH_MODES: ArchModeConfig[] = [
+    {
+        id: 'v3',
+        label: 'V3 Sequential',
+        shortLabel: 'V3',
+        emoji: '🏗️',
+        color: '#00d4ff',
+        bgColor: 'rgba(0, 212, 255, 0.12)',
+        description: 'Architect → Contractor → Inspector loop (slow, precise)',
+    },
+    {
+        id: 'oneshot',
+        label: 'One-Shot (Gemini)',
+        shortLabel: '1×G',
+        emoji: '💥',
+        color: '#22c55e',
+        bgColor: 'rgba(34, 197, 94, 0.12)',
+        description: 'Single Gemini call, no repair (fastest, ~85% quality)',
+    },
+];
 
 // =============================================================================
 // SUGGESTION CHIPS
@@ -34,6 +68,95 @@ const SUGGESTIONS = [
     'Add a balcony to the master bedroom',
     'Replace all brick with stone',
 ];
+
+// =============================================================================
+// ARCHITECTURE MODE SWITCHER
+// =============================================================================
+
+function ArchitectureSwitcher() {
+    const architectureMode = useDesignStore((s) => s.architectureMode);
+    const setArchitectureMode = useDesignStore((s) => s.setArchitectureMode);
+    const isAIThinking = useDesignStore((s) => s.isAIThinking);
+    const [showTooltip, setShowTooltip] = useState<string | null>(null);
+
+    const activeConfig = ARCH_MODES.find(m => m.id === architectureMode) || ARCH_MODES[0];
+
+    return (
+        <div style={{
+            display: 'flex',
+            gap: '4px',
+            padding: '3px',
+            background: 'rgba(255,255,255,0.03)',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            position: 'relative',
+        }}>
+            {ARCH_MODES.map((mode) => {
+                const isActive = architectureMode === mode.id;
+                return (
+                    <div key={mode.id} style={{ position: 'relative' }}>
+                        <button
+                            onClick={() => !isAIThinking && setArchitectureMode(mode.id)}
+                            disabled={isAIThinking}
+                            onMouseEnter={() => setShowTooltip(mode.id)}
+                            onMouseLeave={() => setShowTooltip(null)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '4px 8px',
+                                fontSize: '0.65em',
+                                fontWeight: isActive ? '700' : '500',
+                                fontFamily: '"Inter", "Segoe UI", sans-serif',
+                                letterSpacing: '0.5px',
+                                color: isActive ? mode.color : 'var(--text-secondary)',
+                                background: isActive ? mode.bgColor : 'transparent',
+                                border: isActive ? `1px solid ${mode.color}40` : '1px solid transparent',
+                                borderRadius: '6px',
+                                cursor: isAIThinking ? 'not-allowed' : 'pointer',
+                                opacity: isAIThinking ? 0.5 : 1,
+                                transition: 'all 0.2s ease',
+                                whiteSpace: 'nowrap',
+                                textTransform: 'uppercase',
+                            }}
+                        >
+                            <span style={{ fontSize: '1.1em' }}>{mode.emoji}</span>
+                            <span>{mode.shortLabel}</span>
+                        </button>
+
+                        {/* Tooltip */}
+                        {showTooltip === mode.id && (
+                            <div style={{
+                                position: 'absolute',
+                                bottom: '100%',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                marginBottom: '6px',
+                                padding: '6px 10px',
+                                background: '#1a1a2e',
+                                border: `1px solid ${mode.color}40`,
+                                borderRadius: '6px',
+                                fontSize: '0.65em',
+                                color: '#e0e0e0',
+                                whiteSpace: 'nowrap',
+                                zIndex: 100,
+                                pointerEvents: 'none',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                            }}>
+                                <div style={{ fontWeight: '700', color: mode.color, marginBottom: '2px' }}>
+                                    {mode.label}
+                                </div>
+                                <div style={{ opacity: 0.8 }}>{mode.description}</div>
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+
 
 // =============================================================================
 // MESSAGE BUBBLE
@@ -142,7 +265,10 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 
 function ReactLoopStatus() {
     const logs = useDesignStore((s) => s.aiThinkingLogs);
+    const architectureMode = useDesignStore((s) => s.architectureMode);
     const logsEndRef = useRef<HTMLDivElement>(null);
+
+    const activeConfig = ARCH_MODES.find(m => m.id === architectureMode) || ARCH_MODES[0];
 
     // Auto-scroll logs
     useEffect(() => {
@@ -153,10 +279,12 @@ function ReactLoopStatus() {
 
     return (
         <div className="chat-message chat-message-ai">
-            <div className="chat-pipeline-status" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--accent)', borderRadius: '12px', padding: '16px' }}>
+            <div className="chat-pipeline-status" style={{ background: 'var(--bg-secondary)', border: `1px solid ${activeConfig.color}`, borderRadius: '12px', padding: '16px' }}>
                 <div className="pipeline-phase pipeline-phase-active">
                     <span className="pipeline-emoji">🌀</span>
-                    <span className="pipeline-label">Antigravity ReAct Loop Engaged</span>
+                    <span className="pipeline-label" style={{ color: activeConfig.color }}>
+                        {activeConfig.emoji} {activeConfig.label} Engine Active
+                    </span>
                     <span className="pipeline-dots">
                         <span className="chat-thinking-dot" />
                         <span className="chat-thinking-dot" />
@@ -171,19 +299,19 @@ function ReactLoopStatus() {
                     color: '#00ff41', // Terminal green
                     borderRadius: '6px',
                     fontSize: '0.8em',
-                    border: '1px solid #333',
+                    border: `1px solid ${activeConfig.color}33`,
                     maxHeight: '200px',
                     overflowY: 'auto',
                     boxShadow: 'inset 0 0 10px #000',
                     lineHeight: '1.4'
                 }}>
                     <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px' }}>
-                        [LIVE STREAM] AI Reasoning & Execution Log
+                        [LIVE STREAM] {activeConfig.label} — AI Reasoning & Execution Log
                     </div>
                     
                     {logs.length === 0 && (
                         <div style={{ fontSize: '0.8em', opacity: 0.7, paddingLeft: '8px', fontStyle: 'italic' }}>
-                            Initializing agent connection...
+                            Initializing {activeConfig.label.toLowerCase()} engine...
                         </div>
                     )}
 
@@ -219,7 +347,10 @@ export default function ChatPanel() {
     const project = useDesignStore((s) => s.project);
     const revertToMessage = useDesignStore((s) => s.revertToMessage);
     const sendMessageToAI = useDesignStore((s) => s.sendMessageToAI);
+    const architectureMode = useDesignStore((s) => s.architectureMode);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const activeConfig = ARCH_MODES.find(m => m.id === architectureMode) || ARCH_MODES[0];
 
     // Auto-scroll to bottom on new messages
     useEffect(() => {
@@ -311,27 +442,40 @@ export default function ChatPanel() {
                 <div style={{ flex: 1 }}>
                     <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         🏗️ AI Architect
-                        <span style={{ fontSize: '0.6em', background: 'var(--accent)', color: 'white', padding: '2px 6px', borderRadius: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            ReAct v3.1
+                        <span style={{
+                            fontSize: '0.6em',
+                            background: activeConfig.bgColor,
+                            color: activeConfig.color,
+                            padding: '2px 6px',
+                            borderRadius: '10px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            border: `1px solid ${activeConfig.color}40`,
+                            fontWeight: '700',
+                        }}>
+                            {activeConfig.emoji} {activeConfig.label}
                         </span>
                     </h3>
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                    {/* Architecture Mode Switcher */}
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <ArchitectureSwitcher />
+
                         <button
                             onClick={handleDownloadSpecs}
                             className="debug-btn"
                             title="Download raw geometry and ASCII logic maps"
                             style={{ fontSize: '0.65em', background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border)', cursor: 'pointer', transition: 'all 0.2s' }}
                         >
-                            📥 EXPORT LOGS
+                            📥 LOGS
                         </button>
                     </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                    <div className="chat-status" style={{ fontSize: '0.7em', fontWeight: 'bold', color: isAIThinking ? 'var(--accent)' : '#4dff4d' }}>
+                    <div className="chat-status" style={{ fontSize: '0.7em', fontWeight: 'bold', color: isAIThinking ? activeConfig.color : '#4dff4d' }}>
                         {isAIThinking ? '🌀 COMPUTING...' : '● AGENT READY'}
                     </div>
                     <div style={{ fontSize: '0.6em', opacity: 0.5, marginTop: '2px' }}>
-                        Gemini 3.1 Pro High-Thinking
+                        {activeConfig.description}
                     </div>
                 </div>
             </div>
@@ -342,9 +486,8 @@ export default function ChatPanel() {
                     <div className="chat-welcome">
                         <p className="chat-welcome-title">Hello! 👋</p>
                         <p className="chat-welcome-text">
-                            I&apos;m your AI architect. I use a continuous ReAct loop to reason through
-                            your requests, perform precise geometric operations, and audit the results
-                            against a 0.5mm construction tolerance.
+                            I&apos;m your AI architect. Switch between architectures above to benchmark different approaches.
+                            Currently using <strong style={{ color: activeConfig.color }}>{activeConfig.label}</strong>.
                         </p>
                         <div className="chat-suggestions">
                             {SUGGESTIONS.map((s) => (
@@ -423,7 +566,7 @@ export default function ChatPanel() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Describe what you'd like to change..."
+                        placeholder={`Message (${activeConfig.shortLabel} mode)...`}
                         rows={2}
                         disabled={isAIThinking}
                         style={{ flex: 1 }}
@@ -432,6 +575,10 @@ export default function ChatPanel() {
                         type="submit"
                         className="chat-send-btn"
                         disabled={(!input.trim() && attachments.length === 0) || isAIThinking}
+                        style={{
+                            background: isAIThinking ? undefined : `${activeConfig.color}22`,
+                            borderColor: isAIThinking ? undefined : `${activeConfig.color}40`,
+                        }}
                     >
                         Send →
                     </button>

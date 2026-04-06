@@ -1,0 +1,419 @@
+{
+  "id": "e517ab59-2335-4905-9928-c6a28b4b0b0a",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-31T09:16:19.419Z",
+  "modified_at": "2026-03-31T09:26:07.425Z",
+  "version": 44,
+  "root_node_id": "house_cf236271",
+  "nodes": {
+    "house_cf236271": {
+      "id": "house_cf236271",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_1",
+        "foundation_1"
+      ],
+      "created_at": "2026-03-31T09:16:19.419Z",
+      "modified_at": "2026-03-31T09:18:08.757Z",
+      "version": 1
+    },
+    "floor_1": {
+      "id": "floor_1",
+      "type": "Floor",
+      "name": "Ground Floor Slab",
+      "position": {
+        "x": 8,
+        "y": 0,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 16,
+        "y": 0.3,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "concrete_slab",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_cf236271",
+      "children_ids": [
+        "room_living",
+        "room_kitchen",
+        "room_dining",
+        "room_master",
+        "room_bed2",
+        "room_bed3",
+        "room_bath"
+      ],
+      "created_at": "2026-03-31T09:18:08.755Z",
+      "modified_at": "2026-03-31T09:20:07.625Z",
+      "version": 1
+    },
+    "foundation_1": {
+      "id": "foundation_1",
+      "type": "Foundation",
+      "name": "Ranch Foundation",
+      "position": {
+        "x": 8,
+        "y": -0.35000000000000003,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 16.5,
+        "y": 0.4,
+        "z": 9.1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "concrete",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": true
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_cf236271",
+      "children_ids": [],
+      "created_at": "2026-03-31T09:18:08.757Z",
+      "modified_at": "2026-03-31T09:26:07.425Z",
+      "version": 35
+    },
+    "room_living": {
+      "id": "room_living",
+      "type": "Room",
+      "name": "Living Room",
+      "position": {
+        "x": 3.5,
+        "y": 1.5,
+        "z": 2.5
+      },
+      "dimensions": {
+        "x": 7,
+        "y": 2.7,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "room_function": "living",
+      "created_at": "2026-03-31T09:20:07.619Z",
+      "modified_at": "2026-03-31T09:20:07.619Z",
+      "version": 1
+    },
+    "room_kitchen": {
+      "id": "room_kitchen",
+      "type": "Room",
+      "name": "Kitchen",
+      "position": {
+        "x": 9.5,
+        "y": 1.5,
+        "z": 2.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.7,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "room_function": "kitchen",
+      "created_at": "2026-03-31T09:20:07.620Z",
+      "modified_at": "2026-03-31T09:20:07.620Z",
+      "version": 1
+    },
+    "room_dining": {
+      "id": "room_dining",
+      "type": "Room",
+      "name": "Dining Room",
+      "position": {
+        "x": 14,
+        "y": 1.5,
+        "z": 2.5
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "room_function": "dining",
+      "created_at": "2026-03-31T09:20:07.621Z",
+      "modified_at": "2026-03-31T09:20:07.621Z",
+      "version": 1
+    },
+    "room_master": {
+      "id": "room_master",
+      "type": "Room",
+      "name": "Master Bedroom",
+      "position": {
+        "x": 2.5,
+        "y": 1.5,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 2.7,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "room_function": "bedroom",
+      "created_at": "2026-03-31T09:20:07.622Z",
+      "modified_at": "2026-03-31T09:20:07.622Z",
+      "version": 1
+    },
+    "room_bed2": {
+      "id": "room_bed2",
+      "type": "Room",
+      "name": "Bedroom 2",
+      "position": {
+        "x": 7,
+        "y": 1.5,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "room_function": "bedroom",
+      "created_at": "2026-03-31T09:20:07.623Z",
+      "modified_at": "2026-03-31T09:20:07.623Z",
+      "version": 1
+    },
+    "room_bed3": {
+      "id": "room_bed3",
+      "type": "Room",
+      "name": "Bedroom 3",
+      "position": {
+        "x": 11,
+        "y": 1.5,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 4,
+        "y": 2.7,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "room_function": "bedroom",
+      "created_at": "2026-03-31T09:20:07.623Z",
+      "modified_at": "2026-03-31T09:20:07.623Z",
+      "version": 1
+    },
+    "room_bath": {
+      "id": "room_bath",
+      "type": "Room",
+      "name": "Bathroom",
+      "position": {
+        "x": 14.5,
+        "y": 1.5,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 2.7,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_1",
+      "children_ids": [],
+      "room_function": "bathroom",
+      "created_at": "2026-03-31T09:20:07.625Z",
+      "modified_at": "2026-03-31T09:20:07.625Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

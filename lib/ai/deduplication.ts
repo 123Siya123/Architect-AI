@@ -131,10 +131,13 @@ export class OperationLog {
 // =============================================================================
 
 /**
- * Check if adding a node of the given type under the given parent is allowed.
- * For singleton types (Roof, Floor, Foundation), only one per parent is permitted.
+ * Check if adding a node of the given type is allowed.
+ * For singleton types (Roof, Foundation), only one per project is permitted.
  *
- * @param parentId - The ID of the parent node
+ * NOTE: With flat parenting, all nodes are children of the House root.
+ * We check the ENTIRE project for existing singletons, not just siblings.
+ *
+ * @param parentId - The ID of the parent node (may be overridden by flat parenting)
  * @param type - The type of node being added
  * @param project - The current project state
  * @returns DedupeResult with action ALLOW or BLOCK
@@ -149,18 +152,12 @@ export function checkBeforeAdd(
         return { action: 'ALLOW' };
     }
 
-    const parent = project.nodes[parentId];
-    if (!parent) {
-        return { action: 'ALLOW' }; // Parent not found — let downstream validation handle it
-    }
+    // With flat parenting, search the ENTIRE project for existing nodes of this type
+    const existingOfType = Object.values(project.nodes)
+        .filter(node => node.type === type);
 
-    // Find existing siblings of the same type
-    const existingSiblings = parent.children_ids
-        .map(id => project.nodes[id])
-        .filter(child => child && child.type === type);
-
-    if (existingSiblings.length > 0) {
-        const existing = existingSiblings[0];
+    if (existingOfType.length > 0) {
+        const existing = existingOfType[0];
         const dims = existing.dimensions;
         const pos = existing.position;
         return {

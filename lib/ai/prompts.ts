@@ -148,6 +148,7 @@ AVAILABLE SPECIALISTS:
 7. detail_specialist: Fine architectural details — spires, clock faces, trim, hardware
 8. master_planner: Site layout and floor plan coordination for multi-structure projects
 9. quality_inspector: Final audit and quality report
+(Note: research_specialist runs pre-loop and provides the build brief)
 
 OUTPUT FORMAT (strict JSON):
 {
@@ -262,46 +263,7 @@ CRITICAL RULES
    - "Using set_node_position because instruction contains [0, 1.75, -4.875]"
    - "Using move_node because this is a small 0.2m adjustment"
 
-═══════════════════════════════════════════════════
-🚨 NODE ID RULES (MOST COMMON ERROR) 🚨
-═══════════════════════════════════════════════════
 
-EVERY tool call requires a real node ID (target_id or parent_id).
-These IDs come from the "AVAILABLE NODE IDS" table in your context.
-
-RULES:
-1. NEVER invent an ID. Do NOT use "floor_level_2", "room_upper", "wall_1", etc.
-   unless those EXACT strings appear in the AVAILABLE NODE IDS table.
-2. If you need to add nodes as children of a new Floor, you MUST:
-   a) First add_node the Floor (parent_id = the House root node ID)
-   b) Wait for the NEXT turn to use the Floor's returned ID as parent
-   c) OR add nodes as children of the House root and position them correctly
-3. When building multi-story: add the Floor FIRST, then add walls/rooms
-   as children of the EXISTING root node — NOT as children of a floor
-   you're about to create in the same turn.
-4. If your parent_id is rejected, look at the AVAILABLE NODE IDS table
-   and pick the correct, existing parent node.
-
-═══════════════════════════════════════════════════
-🧮 Y-COORDINATE FORMULA (MOST COMMON BUG)
-═══════════════════════════════════════════════════
-
-DO NOT use height/2 as the Y position! You MUST account for the floor slab.
-
-Read the floor node from the 3D STATE. Find its top surface:
-  floorTop = floor.position_y + floor.height / 2
-
-Then:
-  Wall Y   = floorTop + wallHeight / 2
-  Roof Y   = highestWallTop + roofHeight / 2
-  Door Y   = wallBottom + doorHeight / 2
-  Window Y = wallBottom + sillHeight + windowHeight / 2
-
-EXAMPLE: Floor at Y=0, floor height=0.3m → floorTop = 0.15m
-  Wall 3.5m tall → wallY = 0.15 + 1.75 = 1.90m ✓
-  WRONG: wallY = 3.5/2 = 1.75m ✗ (ignores floor slab!)
-
-═══════════════════════════════════════════════════
 📐 BUILD BRIEF ENFORCEMENT
 ═══════════════════════════════════════════════════
 
@@ -480,7 +442,8 @@ EXECUTION RULES:
 2. If the target Wall does not exist, fail gracefully and explain the missing dependency.
 3. Name elements descriptively (e.g., "Living Room South Window").
 4. parent_id for Windows/Doors MUST be the ID of the Wall they penetrate.
-5. parent_id for Stairs MUST be the ID of the Room or Floor they start on.`;
+5. For all other elements, parent_id is auto-set by the system — pass any valid node ID.
+6. ALL coordinates are ABSOLUTE world-space. Never calculate positions relative to a parent node.`;
 
 // =============================================================================
 // 6. DETAIL SPECIALIST — Fine architectural elements

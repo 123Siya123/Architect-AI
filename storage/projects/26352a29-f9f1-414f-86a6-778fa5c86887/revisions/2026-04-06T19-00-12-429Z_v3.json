@@ -1,0 +1,147 @@
+{
+  "id": "26352a29-f9f1-414f-86a6-778fa5c86887",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-06T18:51:55.123Z",
+  "modified_at": "2026-04-06T19:00:09.815Z",
+  "version": 3,
+  "root_node_id": "house_7adb482f",
+  "nodes": {
+    "house_7adb482f": {
+      "id": "house_7adb482f",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "slab_iwicpqte",
+        "slab_44wcsih5"
+      ],
+      "created_at": "2026-04-06T18:51:55.122Z",
+      "modified_at": "2026-04-06T19:00:09.815Z",
+      "version": 1
+    },
+    "slab_iwicpqte": {
+      "id": "slab_iwicpqte",
+      "type": "Slab",
+      "name": "Foundation_Main",
+      "position": {
+        "x": 10,
+        "y": -0.15,
+        "z": 5
+      },
+      "dimensions": {
+        "x": 20,
+        "y": 0.3,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T18:59:45.073Z",
+      "modified_at": "2026-04-06T18:59:45.073Z",
+      "version": 1
+    },
+    "slab_44wcsih5": {
+      "id": "slab_44wcsih5",
+      "type": "Slab",
+      "name": "Foundation_Atrium",
+      "position": {
+        "x": 23,
+        "y": -0.15,
+        "z": 7.5
+      },
+      "dimensions": {
+        "x": 6,
+        "y": 0.3,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_7adb482f",
+      "children_ids": [],
+      "created_at": "2026-04-06T19:00:09.814Z",
+      "modified_at": "2026-04-06T19:00:09.814Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

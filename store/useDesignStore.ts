@@ -21,7 +21,7 @@ import { create } from 'zustand';
 import type {
     PSGProject, PSGNode, PSGOperation, OperationResult,
     ViewMode, ViewLayer, ActivePanel, SelectionState,
-    CameraState, ChatMessage,
+    CameraState, ChatMessage, ArchitectureMode, ThinkingEffort,
 } from '@/types';
 import { applyOperation, applyBatchOperations, createUndoOperation } from '@/lib/psg/operations';
 import { createEmptyProject } from '@/lib/psg/schema';
@@ -44,6 +44,9 @@ function projectWithCalculatedCost(project: PSGProject): PSGProject {
 // STATE INTERFACE
 // =============================================================================
 
+// Architecture mode for benchmarking different orchestration strategies
+
+
 interface DesignState {
     project: PSGProject;
     viewMode: ViewMode;
@@ -60,6 +63,10 @@ interface DesignState {
     isScreenshotRequested: boolean;
     undoStack: PSGOperation[];
     redoStack: PSGOperation[];
+
+    // Architecture mode for benchmarking
+    architectureMode: ArchitectureMode;
+    thinkingEffort: ThinkingEffort;
 
     // Autosave & Status
     isDirty: boolean;
@@ -100,6 +107,8 @@ interface DesignState {
     getProfessionalContext: () => string;
     setTotalBudget: (amount: number) => void;
     setUserSpecifications: (specs: string) => void;
+    setArchitectureMode: (mode: ArchitectureMode) => void;
+    setThinkingEffort: (effort: ThinkingEffort) => void;
 }
 
 // Defaults
@@ -140,6 +149,8 @@ export const useDesignStore = create<DesignState>((set, get) => ({
     isDirty: false,
     lastSaved: null,
     autosaveTimer: null,
+    architectureMode: 'v3' as ArchitectureMode,
+    thinkingEffort: 'high',
     professionalSpecs: null,
     isProfessionalProject: false,
     userSpecifications: '',
@@ -268,7 +279,9 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                     project,
                     history: chatMessages,
                     attachments: attachments,
-                    professionalContext: combinedContext
+                    professionalContext: combinedContext,
+                    architecture: get().architectureMode,
+                    thinkingEffort: get().thinkingEffort
                 }),
             });
 
@@ -541,5 +554,14 @@ Professional Client Context:
     setUserSpecifications: (specs: string) => {
         set({ userSpecifications: specs });
         get().triggerAutosave();
+    },
+
+    setArchitectureMode: (mode: ArchitectureMode) => {
+        set({ architectureMode: mode });
+        console.log(`[Store] Architecture mode set to: ${mode}`);
+    },
+    setThinkingEffort: (effort: ThinkingEffort) => {
+        set({ thinkingEffort: effort });
+        console.log(`[Store] Thinking effort set to: ${effort}`);
     },
 }));

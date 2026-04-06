@@ -1,0 +1,1530 @@
+{
+  "id": "188aceb8-ea98-4c4e-9921-82c130ba540e",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-04-04T22:47:45.373Z",
+  "modified_at": "2026-04-04T23:38:37.218Z",
+  "version": 52,
+  "root_node_id": "house_01767111",
+  "nodes": {
+    "house_01767111": {
+      "id": "house_01767111",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "wall_upnquzcw",
+        "wall_zqqfk0en",
+        "wall_vg654rg3",
+        "wall_a3v0p0rm",
+        "wall_u6h4k7x6",
+        "wall_f9jmqmjm",
+        "mansion_west_wall",
+        "mansion_east_wall",
+        "roof_exsjc7fg",
+        "custom_kmwrye35",
+        "floor_3davadzv",
+        "feature_wall_iloveyou",
+        "custom_a16sa7b4",
+        "mansion_ground_floor",
+        "custom_poxqfgme",
+        "custom_vczd2n6c",
+        "custom_pvo5t7ot",
+        "custom_lk7jhw4b",
+        "custom_gexylyvs",
+        "custom_mbv1nign"
+      ],
+      "created_at": "2026-04-04T22:47:45.372Z",
+      "modified_at": "2026-04-04T23:38:37.218Z",
+      "version": 5
+    },
+    "wall_upnquzcw": {
+      "id": "wall_upnquzcw",
+      "type": "Wall",
+      "name": "Front Perimeter Privacy Wall",
+      "position": {
+        "x": 22.5,
+        "y": 2,
+        "z": 0.5
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pastel_pink_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:50:43.100Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "wall_zqqfk0en": {
+      "id": "wall_zqqfk0en",
+      "type": "Wall",
+      "name": "Back Perimeter Privacy Wall",
+      "position": {
+        "x": 22.5,
+        "y": 2,
+        "z": 34.5
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 4,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pastel_pink_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:51:58.475Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "wall_vg654rg3": {
+      "id": "wall_vg654rg3",
+      "type": "Wall",
+      "name": "Left Perimeter Privacy Wall",
+      "position": {
+        "x": 0.5,
+        "y": 2,
+        "z": 17.5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 33
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pastel_pink_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:52:27.161Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "wall_a3v0p0rm": {
+      "id": "wall_a3v0p0rm",
+      "type": "Wall",
+      "name": "Right Perimeter Privacy Wall",
+      "position": {
+        "x": 44.5,
+        "y": 2,
+        "z": 17.5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 4,
+        "z": 33
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "pastel_pink_stucco",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:52:56.461Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "wall_u6h4k7x6": {
+      "id": "wall_u6h4k7x6",
+      "type": "Wall",
+      "name": "Main Mansion Front Facade",
+      "position": {
+        "x": 22.5,
+        "y": 6,
+        "z": 15.5
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 12,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_rosegold_mullions",
+      "opacity": 0.3,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:53:28.902Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "wall_f9jmqmjm": {
+      "id": "wall_f9jmqmjm",
+      "type": "Wall",
+      "name": "Main Mansion Back Wall",
+      "position": {
+        "x": 22.5,
+        "y": 6,
+        "z": 29.5
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 12,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_rosegold_mullions",
+      "opacity": 0.3,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:54:08.142Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "mansion_west_wall": {
+      "id": "mansion_west_wall",
+      "type": "Wall",
+      "name": "Main Mansion Left Wall",
+      "position": {
+        "x": 10.5,
+        "y": 6,
+        "z": 22.5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 12,
+        "z": 13
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_rosegold_mullions",
+      "opacity": 0.3,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:54:44.020Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "mansion_east_wall": {
+      "id": "mansion_east_wall",
+      "type": "Wall",
+      "name": "Main Mansion Right Wall",
+      "position": {
+        "x": 34.5,
+        "y": 6,
+        "z": 22.5
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 12,
+        "z": 13
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "glass_rosegold_mullions",
+      "opacity": 0.3,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:55:24.711Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "roof_exsjc7fg": {
+      "id": "roof_exsjc7fg",
+      "type": "Roof",
+      "name": "Mansion Rooftop Deck",
+      "position": {
+        "x": 22.5,
+        "y": 12.5,
+        "z": 22.5
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 1,
+        "z": 15
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "roof_style": "flat",
+      "created_at": "2026-04-04T22:55:57.132Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "custom_kmwrye35": {
+      "id": "custom_kmwrye35",
+      "type": "Custom",
+      "name": "Central Glass Elevator Shaft",
+      "position": {
+        "x": 24,
+        "y": 16,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 3,
+        "y": 16,
+        "z": 3
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "high_clarity_glass",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: Central Glass Elevator Shaft\n# Description: Central Glass Elevator Shaft\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T22:56:45.920Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "floor_3davadzv": {
+      "id": "floor_3davadzv",
+      "type": "Floor",
+      "name": "Infinity Pool and Sun Deck",
+      "position": {
+        "x": 40,
+        "y": 1,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 12,
+        "y": 1,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "hot_pink_pearl_mosaic",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T22:58:13.273Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "feature_wall_iloveyou": {
+      "id": "feature_wall_iloveyou",
+      "type": "Wall",
+      "name": "I Love You Quartz Feature Wall",
+      "position": {
+        "x": 6,
+        "y": 6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 2,
+        "y": 6,
+        "z": 10
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "solid_white_quartz",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T23:00:31.314Z",
+      "modified_at": "2026-04-04T23:15:57.402Z",
+      "version": 11,
+      "surface_matrix": {
+        "code": "let cx=Math.floor(u*35),cy=Math.floor((1-v)*21),t=1; if(cy>=7&&cy<14){ let ly=cy-7; if(cx>=0&&cx<=2){if(ly===0||ly===6||cx===1)t=0.3;} else if(cx>=6&&cx<=8){if(cx===6||ly===6)t=0.3;} else if(cx>=10&&cx<=12){if(cx===10||cx===12||ly===0||ly===6)t=0.3;} else if(cx>=14&&cx<=16){if(ly<4&&(cx===14||cx===16))t=0.3;else if(ly>=4&&cx===15)t=0.3;} else if(cx>=18&&cx<=20){if(cx===18||ly===0||ly===3||ly===6)t=0.3;} else if(cx>=24&&cx<=26){if(ly<3&&(cx===24||cx===26))t=0.3;else if(ly===3)t=0.3;else if(ly>3&&cx===25)t=0.3;} else if(cx>=28&&cx<=30){if(cx===28||cx===30||ly===0||ly===6)t=0.3;} else if(cx>=32&&cx<=34){if(ly<6&&(cx===32||cx===34))t=0.3;else if(ly===6)t=0.3;} } return t;",
+        "resolution": 128,
+        "min_value": 0,
+        "max_value": 10,
+        "hole_threshold": 0.01,
+        "interpolation": "bilinear",
+        "rows": 24,
+        "cols": 24,
+        "data": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "description": "Custom Wall shape"
+      }
+    },
+    "custom_a16sa7b4": {
+      "id": "custom_a16sa7b4",
+      "type": "Custom",
+      "name": "Giant Custom Heart Centerpiece",
+      "position": {
+        "x": 25,
+        "y": 5,
+        "z": 10
+      },
+      "dimensions": {
+        "x": 5,
+        "y": 5,
+        "z": 5
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "hot_pink_pearl_mosaic",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const shape = new THREE.Shape(); const steps = 64; for (let i = 0; i <= steps; i++) { const t = (i / steps) * Math.PI * 2; const hx = 16 * Math.pow(Math.sin(t), 3); const hy = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t); const nx = (hx / 32) * width; const ny = ((hy + 6) / 22) * height; if (i === 0) shape.moveTo(nx, ny); else shape.lineTo(nx, ny); } const geom = new THREE.ExtrudeGeometry(shape, { depth: depth, bevelEnabled: false }); geom.center(); return geom;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: Giant Custom Heart Centerpiece\n# Description: A grand, beautiful heart sculpture suitable for a Barbie mansion courtyard.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T23:02:03.140Z",
+      "modified_at": "2026-04-04T23:06:46.487Z",
+      "version": 5
+    },
+    "mansion_ground_floor": {
+      "id": "mansion_ground_floor",
+      "type": "Floor",
+      "name": "Mansion Ground Floor Slab",
+      "position": {
+        "x": 22.5,
+        "y": 0.5,
+        "z": 22.5
+      },
+      "dimensions": {
+        "x": 23,
+        "y": 1,
+        "z": 13
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "solid_white_quartz",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "created_at": "2026-04-04T23:07:42.309Z",
+      "modified_at": "2026-04-04T23:07:42.309Z",
+      "version": 1
+    },
+    "custom_poxqfgme": {
+      "id": "custom_poxqfgme",
+      "type": "Custom",
+      "name": "I Love You Text",
+      "position": {
+        "x": 7.1,
+        "y": 6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "hot_pink_pearl_mosaic",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "custom_geometry": {
+        "code": "const group = new THREE.Group();\n\nfunction createLetter(shape, x) {\n  const geo = new THREE.ExtrudeGeometry(shape, { depth: width, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2 });\n  geo.center();\n  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color: 0xff007f, roughness: 0.2, metalness: 0.8}));\n  mesh.position.x = x;\n  group.add(mesh);\n}\n\nconst shapeI = new THREE.Shape(); shapeI.moveTo(0,0); shapeI.lineTo(0.2,0); shapeI.lineTo(0.2,1); shapeI.lineTo(0,1); shapeI.lineTo(0,0);\ncreateLetter(shapeI, -3.5);\n\nconst shapeL = new THREE.Shape(); shapeL.moveTo(0,0); shapeL.lineTo(0.6,0); shapeL.lineTo(0.6,0.2); shapeL.lineTo(0.2,0.2); shapeL.lineTo(0.2,1); shapeL.lineTo(0,1); shapeL.lineTo(0,0);\ncreateLetter(shapeL, -2.5);\n\nconst shapeO = new THREE.Shape(); shapeO.moveTo(0,0); shapeO.lineTo(0.6,0); shapeO.lineTo(0.6,1); shapeO.lineTo(0,1); shapeO.lineTo(0,0);\nconst holeO = new THREE.Path(); holeO.moveTo(0.2,0.2); holeO.lineTo(0.4,0.2); holeO.lineTo(0.4,0.8); holeO.lineTo(0.2,0.8); holeO.lineTo(0.2,0.2); shapeO.holes.push(holeO);\ncreateLetter(shapeO, -1.5);\n\nconst shapeV = new THREE.Shape(); shapeV.moveTo(0.3,0); shapeV.lineTo(0.6,1); shapeV.lineTo(0.4,1); shapeV.lineTo(0.2,0.2); shapeV.lineTo(0,1); shapeV.lineTo(-0.2,1); shapeV.lineTo(0.1,0); shapeV.lineTo(0.3,0);\ncreateLetter(shapeV, -0.5);\n\nconst shapeE = new THREE.Shape(); shapeE.moveTo(0,0); shapeE.lineTo(0.6,0); shapeE.lineTo(0.6,0.2); shapeE.lineTo(0.2,0.2); shapeE.lineTo(0.2,0.4); shapeE.lineTo(0.5,0.4); shapeE.lineTo(0.5,0.6); shapeE.lineTo(0.2,0.6); shapeE.lineTo(0.2,0.8); shapeE.lineTo(0.6,0.8); shapeE.lineTo(0.6,1); shapeE.lineTo(0,1); shapeE.lineTo(0,0);\ncreateLetter(shapeE, 0.5);\n\nconst shapeY = new THREE.Shape(); shapeY.moveTo(0.2,0); shapeY.lineTo(0.4,0); shapeY.lineTo(0.4,0.5); shapeY.lineTo(0.8,1); shapeY.lineTo(0.5,1); shapeY.lineTo(0.3,0.7); shapeY.lineTo(0.1,1); shapeY.lineTo(-0.2,1); shapeY.lineTo(0.2,0.5); shapeY.lineTo(0.2,0);\ncreateLetter(shapeY, 2.0);\n\nconst shapeO2 = new THREE.Shape(); shapeO2.moveTo(0,0); shapeO2.lineTo(0.6,0); shapeO2.lineTo(0.6,1); shapeO2.lineTo(0,1); shapeO2.lineTo(0,0);\nconst holeO2 = new THREE.Path(); holeO2.moveTo(0.2,0.2); holeO2.lineTo(0.4,0.2); holeO2.lineTo(0.4,0.8); holeO2.lineTo(0.2,0.8); holeO2.lineTo(0.2,0.2); shapeO2.holes.push(holeO2);\ncreateLetter(shapeO2, 3.0);\n\nconst shapeU = new THREE.Shape(); shapeU.moveTo(0,1); shapeU.lineTo(0.2,1); shapeU.lineTo(0.2,0.2); shapeU.lineTo(0.4,0.2); shapeU.lineTo(0.4,1); shapeU.lineTo(0.6,1); shapeU.lineTo(0.6,0); shapeU.lineTo(0,0); shapeU.lineTo(0,1);\ncreateLetter(shapeU, 4.0);\n\nconst box = new THREE.Box3().setFromObject(group);\nconst center = box.getCenter(new THREE.Vector3());\nconst size = box.getSize(new THREE.Vector3());\ngroup.children.forEach(c => {\n  c.position.x -= center.x;\n  c.position.y -= center.y;\n  c.position.z -= center.z;\n});\n\nconst scaleX = depth / size.x;\nconst scaleY = height / size.y;\ngroup.scale.set(scaleX, scaleY, 1);\n\ngroup.rotation.y = Math.PI / 2;\n\nreturn group;",
+        "type": "code"
+      },
+      "cad_script": "# Custom element: I Love You Text\n# Description: 3D text spelling 'I LOVE YOU' in hot pink, mounted on the feature wall\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T23:12:09.198Z",
+      "modified_at": "2026-04-04T23:12:09.198Z",
+      "version": 1
+    },
+    "custom_vczd2n6c": {
+      "id": "custom_vczd2n6c",
+      "type": "Custom",
+      "name": "I Love You Text",
+      "position": {
+        "x": 7.1,
+        "y": 6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "hot_pink_pearl_mosaic",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: I Love You Text\n# Description: 3D text spelling 'I Love You'\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T23:15:57.403Z",
+      "modified_at": "2026-04-04T23:15:57.403Z",
+      "version": 1
+    },
+    "custom_pvo5t7ot": {
+      "id": "custom_pvo5t7ot",
+      "type": "Custom",
+      "name": "I Love You Text",
+      "position": {
+        "x": 7.1,
+        "y": 6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.2,
+        "y": 2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "hot_pink_pearl_mosaic",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: I Love You Text\n# Description: I Love You Text\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T23:21:41.336Z",
+      "modified_at": "2026-04-04T23:21:41.336Z",
+      "version": 1
+    },
+    "custom_lk7jhw4b": {
+      "id": "custom_lk7jhw4b",
+      "type": "Custom",
+      "name": "I Love You Text",
+      "position": {
+        "x": 7.1,
+        "y": 6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: I Love You Text\n# Description: 3D text saying 'I Love You' configured as a boolean subtract to carve into the wall.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T23:33:09.369Z",
+      "modified_at": "2026-04-04T23:33:09.369Z",
+      "version": 1
+    },
+    "custom_gexylyvs": {
+      "id": "custom_gexylyvs",
+      "type": "Custom",
+      "name": "I Love You Text",
+      "position": {
+        "x": 6.8,
+        "y": 6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 0.5,
+        "y": 2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "cad_script": "# Custom element: I Love You Text\n# Description: 3D text reading 'I Love You'. This element must be configured to apply a boolean subtract operation against its parent wall, acting as negative space carved into the quartz.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T23:36:35.682Z",
+      "modified_at": "2026-04-04T23:36:35.682Z",
+      "version": 1
+    },
+    "custom_mbv1nign": {
+      "id": "custom_mbv1nign",
+      "type": "Custom",
+      "name": "I Love You Text",
+      "position": {
+        "x": 6,
+        "y": 6,
+        "z": 15
+      },
+      "dimensions": {
+        "x": 2.5,
+        "y": 2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_01767111",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "box"
+      },
+      "cad_script": "# Custom element: I Love You Text\n# Description: 3D text saying 'I Love You'. boolean_operation: subtract\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-04-04T23:38:37.218Z",
+      "modified_at": "2026-04-04T23:38:37.218Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.0005,
+    "precision_level": 2,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  }
+}

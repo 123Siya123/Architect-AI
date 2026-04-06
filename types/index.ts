@@ -24,6 +24,10 @@
  * =============================================================================
  */
 
+// --- Architecture Modes ---
+export type ArchitectureMode = 'v3' | 'oneshot';
+export type ThinkingEffort = 'low' | 'medium' | 'high' | 'max';
+
 // =============================================================================
 // 1. GEOMETRY PRIMITIVES
 // =============================================================================
@@ -144,7 +148,9 @@ export type PSGNodeType =
   | 'Bathtub'    // Plumbing
   | 'LightSwitch'// Electrical
   | 'ElectricalOutlet' // Electrical
-  | 'ElectricalPanel'; // Electrical
+  | 'ElectricalPanel' // Electrical
+  | 'Tower'      // Vertical structure/room
+  | 'Detail';    // Architectural detail
 
 /**
  * Surface modification for walls — supports TWO modes:
@@ -550,6 +556,7 @@ export interface AIChatRequest {
     data: string;
   }[];
   professionalContext?: string; // Professional client project context
+  thinkingEffort?: ThinkingEffort; // Claude/OpenAI thinking level
 }
 
 /** Response from the AI chat endpoint */

@@ -3,16 +3,17 @@
  * LIB/PSG/OPERATIONS.TS — PSG Edit Operations
  * =============================================================================
  *
- * UPGRADE v2 — Grid snapping + move_room compound operation
- *
  * This is the ONLY module that can mutate the PSG. Every edit — whether from
  * the AI, the UI sliders, or direct manipulation — goes through these functions.
  *
- * Changes from v1:
- * 1. Grid snapping (5cm) on ALL position/dimension changes — eliminates
- *    floating-point micro-gaps between walls
- * 2. move_room compound operation — moves a room + all children atomically
- * 3. create_custom_element stub — generates a node from natural language description
+ * Features:
+ * 1. move_room compound operation — moves a room + all children atomically
+ * 2. create_custom_element stub — generates a node from natural language description
+ *
+ * NOTE: Grid snapping has been DISABLED. Coordinates are stored exactly as
+ * specified by the AI or UI to prevent infinite retry loops where the AI
+ * places a component at coordinate X, snapping moves it to X', and the AI
+ * retries endlessly.
  *
  * WHY A SINGLE MUTATION POINT?
  * 1. Every edit is validated before application (via validator.ts)
@@ -21,7 +22,7 @@
  * 4. Budget is recalculated after every edit
  *
  * OPERATION FLOW:
- * User/AI action → create PSGOperation → validate → apply → snap → update state
+ * User/AI action → create PSGOperation → validate → apply → update state
  *
  * IMMUTABILITY:
  * All functions return a NEW PSGProject. They never mutate the input.
@@ -48,34 +49,21 @@ import {
 } from './templates';
 
 // =============================================================================
-// GRID SNAPPING — Eliminates floating-point drift
+// GRID SNAPPING — DISABLED
 // =============================================================================
+// Snapping has been disabled to prevent infinite AI retry loops.
+// Coordinates are stored exactly as provided.
 
-/**
- * Default grid size: 5cm (0.05m).
- * Every position and dimension is snapped to this grid after edits.
- * This prevents micro-gaps between walls (e.g., 3.00001 instead of 3.0).
- *
- * WHY 5CM?
- * - 1cm is too fine (no architectural significance at residential scale)
- * - 10cm is too coarse (can't do 0.25m wall thickness cleanly)
- * - 5cm divides evenly into all standard dimensions:
- *   0.25m walls, 0.9m doors, 1.2m windows, 2.7m ceilings
- */
-const GRID_SIZE = 0.05; // 5cm
+const GRID_SIZE = 0.05; // Kept for reference but not used for snapping
 
-/** Snaps a single value to the nearest grid increment. */
-function snapToGrid(value: number, gridSize: number): number {
-    return Math.round(value / gridSize) * gridSize;
+/** Identity — returns the value as-is (snapping disabled). */
+function snapToGrid(value: number, _gridSize: number): number {
+    return value;
 }
 
-/** Snaps a Vec3 position to the grid. */
-function snapVec3(vec: Vec3, gridSize: number): Vec3 {
-    return {
-        x: snapToGrid(vec.x, gridSize),
-        y: snapToGrid(vec.y, gridSize),
-        z: snapToGrid(vec.z, gridSize),
-    };
+/** Identity — returns the Vec3 as-is (snapping disabled). */
+function snapVec3(vec: Vec3, _gridSize: number): Vec3 {
+    return { x: vec.x, y: vec.y, z: vec.z };
 }
 
 // =============================================================================
@@ -268,12 +256,11 @@ export function applyBatchOperations(
 // =============================================================================
 // Each function takes the current project and returns a NEW project.
 // They use the spread operator for immutability.
-// ALL position/dimension changes are grid-snapped.
+// Coordinates are stored exactly as specified (no snapping).
 
 /**
  * Moves a node by a delta offset (in meters).
  * Also moves all children by the same delta to maintain relative positions.
- * All resulting positions are snapped to the 5cm grid.
  */
 function moveNode(project: PSGProject, operation: PSGOperation): PSGProject {
     const { delta_x = 0, delta_y = 0, delta_z = 0 } = operation.params as {
@@ -305,13 +292,15 @@ function moveNode(project: PSGProject, operation: PSGOperation): PSGProject {
 /**
  * Sets the absolute position of a node (in meters).
  * Also moves all children to maintain relative positions.
- * All resulting positions are snapped to the 5cm grid.
  */
 function setNodePosition(project: PSGProject, operation: PSGOperation): PSGProject {
-    const { position_x, position_y, position_z } = operation.params as {
+    const params = operation.params as {
         position_x?: number;
         position_y?: number;
         position_z?: number;
+        x_min?: number;
+        y_min?: number;
+        z_min?: number;
     };
 
     const gridSize = project.settings.grid_size;
@@ -321,9 +310,14 @@ function setNodePosition(project: PSGProject, operation: PSGOperation): PSGProje
     const currentY = node.position.y;
     const currentZ = node.position.z;
 
-    const newX = position_x !== undefined ? position_x : currentX;
-    const newY = position_y !== undefined ? position_y : currentY;
-    const newZ = position_z !== undefined ? position_z : currentZ;
+    const hw = node.dimensions.x / 2;
+    const hh = node.dimensions.y / 2;
+    const hd = node.dimensions.z / 2;
+
+    // Both x_min and position_x are now edge-based (V3 convention)
+    const newX = params.x_min !== undefined ? params.x_min + hw : (params.position_x !== undefined ? params.position_x + hw : currentX);
+    const newY = params.y_min !== undefined ? params.y_min + hh : (params.position_y !== undefined ? params.position_y + hh : currentY);
+    const newZ = params.z_min !== undefined ? params.z_min + hd : (params.position_z !== undefined ? params.position_z + hd : currentZ);
 
     const deltaX = newX - currentX;
     const deltaY = newY - currentY;
@@ -349,7 +343,6 @@ function setNodePosition(project: PSGProject, operation: PSGOperation): PSGProje
 /**
  * Helper: recursively moves all descendant nodes.
  * Mutates the nodes map in place (but it's already a shallow copy).
- * Snaps all positions to grid.
  */
 function moveChildrenRecursive(
     nodes: Record<string, PSGNode>,
@@ -379,7 +372,6 @@ function moveChildrenRecursive(
 
 /**
  * Resizes a node by setting new absolute dimensions.
- * All dimensions are snapped to the 5cm grid.
  *
  * NOTE: This sets ABSOLUTE dimensions, not deltas.
  * The AI or UI provides the new width/height/depth.
@@ -462,11 +454,55 @@ function replaceMaterial(project: PSGProject, operation: PSGOperation): PSGProje
     };
 }
 
+// =============================================================================
+// FLAT PARENTING — Forces all nodes to root unless they need a specific parent
+// =============================================================================
+
+/**
+ * Types that MUST keep their AI-specified parent because they are part of
+ * the parent's geometry (e.g., a Window creates a hole in its parent Wall).
+ */
+const TYPES_THAT_KEEP_PARENT = new Set(['Window', 'Door']);
+
+/**
+ * Determines the correct parent_id for a node.
+ *
+ * RULE: All nodes are parented directly to the root House node (flat tree),
+ * EXCEPT Window/Door which must stay parented to their Wall for hole-cutting.
+ *
+ * WHY? The 3D renderer uses world-space coordinates for ALL nodes. There are
+ * no parent-relative transforms. Hierarchical parenting (Wall→Room→Floor) only
+ * caused coordinate-frame confusion: the AI would think positions were relative
+ * to the parent, but the renderer always treated them as absolute. This led to
+ * floating roofs, misplaced walls, and cascading-move bugs.
+ *
+ * By forcing flat parenting at the code level, ALL positions are guaranteed
+ * world-space and the AI never has to reason about coordinate frames.
+ */
+function resolveParentId(
+    nodeType: string,
+    aiSpecifiedParent: string | null,
+    project: PSGProject
+): string | null {
+    // Root node has no parent
+    if (nodeType === 'House') return null;
+
+    // Window/Door MUST stay parented to their Wall for geometry hole-cutting
+    if (TYPES_THAT_KEEP_PARENT.has(nodeType) && aiSpecifiedParent) {
+        return aiSpecifiedParent;
+    }
+
+    // Everything else → force parent to root House node
+    return project.root_node_id;
+}
+
 /**
  * Builds a valid PSGNode from the flat args the AI sends via tool call.
  * The AI sends: { type, parent_id, name, position_x, position_y, position_z, width, height, depth, material_id }
  * We need to turn that into a full PSGNode with id, systems, constraints, etc.
- * All positions and dimensions are grid-snapped.
+ *
+ * NOTE: parent_id from the AI is IGNORED for most types — see resolveParentId().
+ * Coordinates are always world-space, stored exactly as specified.
  */
 function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
     const {
@@ -474,9 +510,12 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         type = 'Wall',
         parent_id = null,
         name = 'New Element',
-        position_x = 0,
-        position_y = 0,
-        position_z = 0,
+        position_x,
+        position_y,
+        position_z,
+        x_min,
+        y_min,
+        z_min,
         width,
         height,
         depth,
@@ -529,6 +568,26 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
     const finalHeight = (height !== undefined && Number(height) > 0) ? Number(height) : defaults.h;
     const finalDepth = (depth !== undefined && Number(depth) > 0) ? Number(depth) : defaults.d;
 
+    // Convert AI edge-based coordinates to internal center coordinates if provided
+    // Both x_min and position_x are now edge-based (V3 convention)
+    const posX = x_min !== undefined ? Number(x_min) + finalWidth / 2
+               : position_x !== undefined ? Number(position_x) + finalWidth / 2
+               : 0;
+    const posY = y_min !== undefined ? Number(y_min) + finalHeight / 2
+               : position_y !== undefined ? Number(position_y) + finalHeight / 2
+               : 0;
+    const posZ = z_min !== undefined ? Number(z_min) + finalDepth / 2
+               : position_z !== undefined ? Number(position_z) + finalDepth / 2
+               : 0;
+
+    // SAFETY: If ALL coordinates are 0, it's almost certainly a missed argument
+    if (posX === 0 && posY === 0 && posZ === 0 && nodeType !== 'House' && nodeType !== 'Foundation') {
+        console.warn(`[OPERATIONS] ⚠️ WARNING: Node "${name}" (${nodeType}) has position (0,0,0). ` +
+            `The AI likely omitted coordinates. Check dispatch_instruction. ` +
+            `Args received: x_min=${x_min}, y_min=${y_min}, z_min=${z_min}, ` +
+            `position_x=${position_x}, position_y=${position_y}, position_z=${position_z}`);
+    }
+
     const gridSize = 0.0005; // Force high precision for AI creation, then snap to project level
 
     return {
@@ -536,9 +595,9 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         type: nodeType as PSGNode['type'],
         name: name as string,
         position: snapVec3({
-            x: Number(position_x),
-            y: Number(position_y),
-            z: Number(position_z),
+            x: posX,
+            y: posY,
+            z: posZ,
         }, gridSize),
         dimensions: snapVec3({
             x: finalWidth,
@@ -576,6 +635,11 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
  * Accepts either a complete PSGNode in params (legacy) or flat AI tool call
  * args like { type, parent_id, name, position_x, width, height, ... }.
  * The AI sends flat args; the factory functions send complete nodes.
+ *
+ * FLAT PARENTING: The AI's specified parent_id is overridden by code.
+ * All nodes are parented to the root House node, except Window/Door
+ * which stay parented to their Wall for hole-cutting geometry.
+ * Coordinates are always world-space.
  */
 function addNode(project: PSGProject, operation: PSGOperation): PSGProject {
     const params = operation.params as Record<string, unknown>;
@@ -589,6 +653,18 @@ function addNode(project: PSGProject, operation: PSGOperation): PSGProject {
         // AI sent flat tool args — build a proper PSGNode from them
         newNode = createNodeFromAIArgs(params);
     }
+
+    // ── FLAT PARENTING OVERRIDE ──────────────────────────────────────────
+    // Force parent to root_node_id for non-opening types.
+    // The AI may send parent_id=<room_id> or <floor_id>, but we ignore it.
+    // This ensures all coordinates are always world-space with no
+    // coordinate-frame ambiguity.
+    const resolvedParent = resolveParentId(
+        newNode.type,
+        newNode.parent_id,
+        project
+    );
+    newNode = { ...newNode, parent_id: resolvedParent };
 
     // Verify parent exists
     if (newNode.parent_id && !project.nodes[newNode.parent_id]) {
@@ -817,7 +893,7 @@ function createCustomElement(project: PSGProject, operation: PSGOperation): PSGP
         tags: ['custom'],
         constraints: { connected_to: [], fixed_position: false },
         systems: { electrical: [], plumbing: [], hvac: [] },
-        parent_id: (parent_id as string | null),
+        parent_id: resolveParentId('Custom', parent_id as string | null, project),
         children_ids: [],
         // Mathematical geometry definition
         custom_geometry: params.custom_geometry as PSGNode['custom_geometry'],
