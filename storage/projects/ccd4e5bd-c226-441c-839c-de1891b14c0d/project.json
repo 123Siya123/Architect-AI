@@ -1,0 +1,148 @@
+{
+  "id": "ccd4e5bd-c226-441c-839c-de1891b14c0d",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-19T01:21:38.810Z",
+  "modified_at": "2026-03-19T01:21:38.810Z",
+  "version": 1,
+  "root_node_id": "house_381eae48",
+  "nodes": {
+    "house_381eae48": {
+      "id": "house_381eae48",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [],
+      "created_at": "2026-03-19T01:21:38.809Z",
+      "modified_at": "2026-03-19T01:21:38.809Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  },
+  "chat_history": [
+    {
+      "id": "msg_1773883304147",
+      "role": "user",
+      "content": "A one story, big on the outside (very big!), modern with a infinity pool. \n\nInside the Kitchen has to be very big and very open with a hughe islend. Then the dining room has to be almost secluded. \n\nThe living room were the couches are has to almost lowerd, giving it a grounded comfy feel. \n\nThere has to be a spaar room and elevator, 3 bedrooms and 4 baths, 2 garages, and a bascetball court outside and a theater room.\nA little area that has a greenhouse for our plants, a planting area, and a hourse stabel next to the house.",
+      "timestamp": "2026-03-19T01:21:44.147Z",
+      "snapshot": {
+        "id": "ccd4e5bd-c226-441c-839c-de1891b14c0d",
+        "name": "Untitled Project",
+        "description": "",
+        "created_at": "2026-03-19T01:21:38.810Z",
+        "modified_at": "2026-03-19T01:21:38.810Z",
+        "version": 1,
+        "root_node_id": "house_381eae48",
+        "nodes": {
+          "house_381eae48": {
+            "id": "house_381eae48",
+            "type": "House",
+            "name": "Untitled Project",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "dimensions": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            },
+            "material_id": "",
+            "opacity": 1,
+            "tags": [],
+            "constraints": {
+              "fixed_position": true,
+              "connected_to": []
+            },
+            "systems": {
+              "electrical": [],
+              "plumbing": [],
+              "hvac": []
+            },
+            "parent_id": null,
+            "children_ids": [],
+            "created_at": "2026-03-19T01:21:38.809Z",
+            "modified_at": "2026-03-19T01:21:38.809Z",
+            "version": 1
+          }
+        },
+        "settings": {
+          "unit": "metric",
+          "grid_size": 0.1,
+          "precision_level": 1,
+          "building_standard": "eurocode",
+          "default_wall_height": 2.7,
+          "default_wall_thickness": 0.25,
+          "locale": "en-US",
+          "currency": "EUR"
+        },
+        "budget": {
+          "total_budget": 200000,
+          "spent": 0,
+          "remaining": 200000,
+          "currency": "EUR",
+          "warnings_enabled": true,
+          "warning_threshold": 90
+        }
+      },
+      "attachments": []
+    },
+    {
+      "id": "msg_1773883304148_ai",
+      "role": "assistant",
+      "content": "Generation was stopped.",
+      "timestamp": "2026-03-19T01:21:44.148Z",
+      "pipeline_log": []
+    }
+  ]
+}

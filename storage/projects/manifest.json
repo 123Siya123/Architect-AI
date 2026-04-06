@@ -480,6 +480,7 @@
     "preview_summary": "29 elements"
   },
   {
+<<<<<<< HEAD
     "id": "686c1838-a776-4cc5-b011-3b7c8f393eb7",
     "name": "Modern 4-Bedroom Home",
     "modified_at": "2026-03-28T17:15:43.829Z",
@@ -598,5 +599,89 @@
     "name": "Untitled Project",
     "modified_at": "2026-04-06T19:18:38.175Z",
     "preview_summary": "26 elements"
+=======
+    "id": "e7d9b802-3d02-4e05-bf37-e6a6621759b8",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-17T06:48:32.670Z",
+    "preview_summary": "58 elements"
+  },
+  {
+    "id": "d487e3f1-d765-44ed-a2f1-4e6818aae0ee",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T00:41:58.566Z",
+    "preview_summary": "6 elements"
+  },
+  {
+    "id": "56379f68-b60a-4afd-b4f9-1d4c763463d0",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:01:29.674Z",
+    "preview_summary": "16 elements"
+  },
+  {
+    "id": "dfaa7924-93ba-4927-964a-53a8eeb15746",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:03:24.516Z",
+    "preview_summary": "5 elements"
+  },
+  {
+    "id": "e957e205-2fa8-4750-bb82-05310ca0c740",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:08:36.286Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "ea634646-9e4f-49d7-8a78-385260b53be0",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:11:19.898Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "23e530e0-fc8f-4363-b1b9-d37cf0365e20",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:12:01.158Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "c704803a-d1bc-4373-8f07-6f44e8281cde",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:15:41.051Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "d6a6310e-29c1-4ed9-9647-2072e95d7dab",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:16:04.649Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "ccd4e5bd-c226-441c-839c-de1891b14c0d",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:21:38.810Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "a689223a-03a2-4920-9017-2184ed4202dd",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:21:54.446Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "23dfa36e-5c9a-4182-830e-0c6608a7be3f",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:26:57.513Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "0fba9fa5-bbbd-49a6-a842-c1302b194d28",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T01:27:16.730Z",
+    "preview_summary": "1 elements"
+  },
+  {
+    "id": "9ba66fdb-e45d-4b03-89bb-3cf0064176d0",
+    "name": "Untitled Project",
+    "modified_at": "2026-03-19T11:05:25.559Z",
+    "preview_summary": "1 elements"
+>>>>>>> origin/main
   }
 ]

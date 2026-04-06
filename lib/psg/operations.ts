@@ -559,6 +559,8 @@ function createNodeFromAIArgs(params: Record<string, unknown>): PSGNode {
         LightSwitch: { w: 0.1, h: 0.1, d: 0.02 },
         ElectricalOutlet: { w: 0.1, h: 0.1, d: 0.02 },
         ElectricalPanel: { w: 0.4, h: 0.6, d: 0.1 },
+        Garage: { w: 6, h: 3, d: 6 },
+        Chimney: { w: 0.8, h: 4, d: 0.8 },
     };
 
     const defaults = typeDefaults[nodeType] || { w: 1, h: 1, d: 1 };

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { callProviderNoTools } from '@/lib/ai/orchestrator';
+import { callProviderNoTools } from '@/lib/ai/base-orchestrator';
 import { getProviderConfig } from '@/lib/ai/key-manager';
 
 export const maxDuration = 300; 

@@ -1,0 +1,362 @@
+{
+  "id": "d487e3f1-d765-44ed-a2f1-4e6818aae0ee",
+  "name": "Untitled Project",
+  "description": "",
+  "created_at": "2026-03-19T00:25:38.481Z",
+  "modified_at": "2026-03-19T00:41:58.566Z",
+  "version": 6,
+  "root_node_id": "house_e2eb73c7",
+  "nodes": {
+    "house_e2eb73c7": {
+      "id": "house_e2eb73c7",
+      "type": "House",
+      "name": "Untitled Project",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "fixed_position": true,
+        "connected_to": []
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": null,
+      "children_ids": [
+        "floor_o93anrzl",
+        "custom_r1ymppef",
+        "floor_main_residence"
+      ],
+      "created_at": "2026-03-19T00:25:38.480Z",
+      "modified_at": "2026-03-19T00:41:58.565Z",
+      "version": 1
+    },
+    "floor_o93anrzl": {
+      "id": "floor_o93anrzl",
+      "type": "Floor",
+      "name": "Basement Floor Slab",
+      "position": {
+        "x": 0,
+        "y": -3,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 25,
+        "y": 0.2,
+        "z": 20
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_e2eb73c7",
+      "children_ids": [],
+      "created_at": "2026-03-19T00:34:01.981Z",
+      "modified_at": "2026-03-19T00:34:01.981Z",
+      "version": 1
+    },
+    "custom_r1ymppef": {
+      "id": "custom_r1ymppef",
+      "type": "Custom",
+      "name": "Main Residence Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 0.2,
+        "z": 35
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_e2eb73c7",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const group = new THREE.Group(); const mainShape = new THREE.Shape(); mainShape.moveTo(-width/2, -depth/2); mainShape.lineTo(width/2, -depth/2); mainShape.lineTo(width/2, depth/2); mainShape.lineTo(-width/2, depth/2); mainShape.lineTo(-width/2, -depth/2); const hole = new THREE.Path(); hole.moveTo(-width/6, -depth/6); hole.lineTo(-width/6, depth/6); hole.lineTo(width/6, depth/6); hole.lineTo(width/6, -depth/6); hole.lineTo(-width/6, -depth/6); mainShape.holes.push(hole); const mainGeo = new THREE.ExtrudeGeometry(mainShape, { depth: height, bevelEnabled: false }); mainGeo.rotateX(Math.PI / 2); mainGeo.translate(0, height / 2, 0); const sunkenShape = new THREE.Shape(); sunkenShape.moveTo(-width/6, -depth/6); sunkenShape.lineTo(width/6, -depth/6); sunkenShape.lineTo(width/6, depth/6); sunkenShape.lineTo(-width/6, depth/6); sunkenShape.lineTo(-width/6, -depth/6); const sunkenGeo = new THREE.ExtrudeGeometry(sunkenShape, { depth: height/2, bevelEnabled: false }); sunkenGeo.rotateX(Math.PI / 2); const mat = new THREE.MeshStandardMaterial({ color: 0x888888 }); group.add(new THREE.Mesh(mainGeo, mat)); group.add(new THREE.Mesh(sunkenGeo, mat)); return group;"
+      },
+      "cad_script": "# Custom element: Main Residence Floor Slab\n# Description: Main floor slab with a localized depression for the sunken living room.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-19T00:36:49.094Z",
+      "modified_at": "2026-03-19T00:36:49.094Z",
+      "version": 1
+    },
+    "floor_main_residence": {
+      "id": "floor_main_residence",
+      "type": "Floor",
+      "name": "Main Residence Floor Slab",
+      "position": {
+        "x": 0,
+        "y": 0.1,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 0.2,
+        "z": 35
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "house_e2eb73c7",
+      "children_ids": [
+        "custom_0bc6qns2",
+        "slab_c5ltcy9f"
+      ],
+      "created_at": "2026-03-19T00:41:58.565Z",
+      "modified_at": "2026-03-19T00:41:58.566Z",
+      "version": 1
+    },
+    "custom_0bc6qns2": {
+      "id": "custom_0bc6qns2",
+      "type": "Custom",
+      "name": "Main Slab Geometry with Hole",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 45,
+        "y": 0.2,
+        "z": 35
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "custom"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main_residence",
+      "children_ids": [],
+      "custom_geometry": {
+        "type": "code",
+        "code": "const shape = new THREE.Shape(); shape.moveTo(-width/2, -depth/2); shape.lineTo(width/2, -depth/2); shape.lineTo(width/2, depth/2); shape.lineTo(-width/2, depth/2); shape.lineTo(-width/2, -depth/2); const hole = new THREE.Path(); hole.moveTo(-4, -4); hole.lineTo(4, -4); hole.lineTo(4, 4); hole.lineTo(-4, 4); hole.lineTo(-4, -4); shape.holes.push(hole); const extrudeSettings = { depth: height, bevelEnabled: false }; const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings); geom.rotateX(Math.PI / 2); geom.translate(0, height/2, 0); return geom;"
+      },
+      "cad_script": "# Custom element: Main Slab Geometry with Hole\n# Description: CSG extruded slab with an 8x8m hole for the sunken living room.\n# TODO: Replace with CadQuery script when backend is ready",
+      "created_at": "2026-03-19T00:41:58.566Z",
+      "modified_at": "2026-03-19T00:41:58.566Z",
+      "version": 1
+    },
+    "slab_c5ltcy9f": {
+      "id": "slab_c5ltcy9f",
+      "type": "Slab",
+      "name": "Sunken Living Room Slab",
+      "position": {
+        "x": 0,
+        "y": -0.4,
+        "z": 0
+      },
+      "dimensions": {
+        "x": 8,
+        "y": 0.2,
+        "z": 8
+      },
+      "rotation": {
+        "yaw": 0,
+        "pitch": 0,
+        "roll": 0
+      },
+      "material_id": "",
+      "opacity": 1,
+      "tags": [
+        "load_bearing"
+      ],
+      "constraints": {
+        "connected_to": [],
+        "fixed_position": false
+      },
+      "systems": {
+        "electrical": [],
+        "plumbing": [],
+        "hvac": []
+      },
+      "parent_id": "floor_main_residence",
+      "children_ids": [],
+      "created_at": "2026-03-19T00:41:58.566Z",
+      "modified_at": "2026-03-19T00:41:58.566Z",
+      "version": 1
+    }
+  },
+  "settings": {
+    "unit": "metric",
+    "grid_size": 0.1,
+    "precision_level": 1,
+    "building_standard": "eurocode",
+    "default_wall_height": 2.7,
+    "default_wall_thickness": 0.25,
+    "locale": "en-US",
+    "currency": "EUR"
+  },
+  "budget": {
+    "total_budget": 200000,
+    "spent": 0,
+    "remaining": 200000,
+    "currency": "EUR",
+    "warnings_enabled": true,
+    "warning_threshold": 90
+  },
+  "chat_history": [
+    {
+      "id": "msg_1773879968943",
+      "role": "user",
+      "content": "A one story, big on the outside (very big!), modern with a infinity pool. \n\nInside the Kitchen has to be very big and very open with a hughe islend. Then the dining room has to be almost secluded. \n\nThe living room were the couches are has to almost lowerd, giving it a grounded comfy feel. \n\nThere has to be a spaar room and elevator, 3 bedrooms and 4 baths, 2 garages, and a bascetball court outside and a theater room.\nA little area that has a greenhouse for our plants, a planting area, and a hourse stabel next to the house.",
+      "timestamp": "2026-03-19T00:26:08.943Z",
+      "snapshot": {
+        "id": "d487e3f1-d765-44ed-a2f1-4e6818aae0ee",
+        "name": "Untitled Project",
+        "description": "",
+        "created_at": "2026-03-19T00:25:38.481Z",
+        "modified_at": "2026-03-19T00:25:38.481Z",
+        "version": 1,
+        "root_node_id": "house_e2eb73c7",
+        "nodes": {
+          "house_e2eb73c7": {
+            "id": "house_e2eb73c7",
+            "type": "House",
+            "name": "Untitled Project",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "dimensions": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "yaw": 0,
+              "pitch": 0,
+              "roll": 0
+            },
+            "material_id": "",
+            "opacity": 1,
+            "tags": [],
+            "constraints": {
+              "fixed_position": true,
+              "connected_to": []
+            },
+            "systems": {
+              "electrical": [],
+              "plumbing": [],
+              "hvac": []
+            },
+            "parent_id": null,
+            "children_ids": [],
+            "created_at": "2026-03-19T00:25:38.480Z",
+            "modified_at": "2026-03-19T00:25:38.481Z",
+            "version": 1
+          }
+        },
+        "settings": {
+          "unit": "metric",
+          "grid_size": 0.1,
+          "precision_level": 1,
+          "building_standard": "eurocode",
+          "default_wall_height": 2.7,
+          "default_wall_thickness": 0.25,
+          "locale": "en-US",
+          "currency": "EUR"
+        },
+        "budget": {
+          "total_budget": 200000,
+          "spent": 0,
+          "remaining": 200000,
+          "currency": "EUR",
+          "warnings_enabled": true,
+          "warning_threshold": 90
+        }
+      },
+      "attachments": []
+    },
+    {
+      "id": "msg_1773879968943_ai",
+      "role": "assistant",
+      "content": "Generation was stopped.",
+      "timestamp": "2026-03-19T00:26:08.943Z",
+      "pipeline_log": []
+    },
+    {
+      "id": "msg_qc_loading_1773881031765",
+      "role": "assistant",
+      "content": "📸 Taking a snapshot to ensure the design meets your requests...",
+      "timestamp": "2026-03-19T00:43:51.765Z"
+    }
+  ]
+}
