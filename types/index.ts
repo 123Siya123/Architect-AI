@@ -27,6 +27,7 @@
 // --- Architecture Modes ---
 export type ArchitectureMode = 'v3' | 'oneshot';
 export type ThinkingEffort = 'low' | 'medium' | 'high' | 'max';
+export type AIModel = 'gemini-3.1-pro-preview' | 'gemini-2.5-pro-preview-05-06' | 'gemini-2.0-flash' | string;
 
 // =============================================================================
 // 1. GEOMETRY PRIMITIVES
@@ -560,6 +561,7 @@ export interface AIChatRequest {
   }[];
   professionalContext?: string; // Professional client project context
   thinkingEffort?: ThinkingEffort; // Claude/OpenAI thinking level
+  model?: AIModel;                 // User selected model override
 }
 
 /** Response from the AI chat endpoint */

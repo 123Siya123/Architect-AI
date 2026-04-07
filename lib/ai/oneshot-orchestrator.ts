@@ -15,7 +15,7 @@
 import type { AIChatRequest, AIChatResponse, PSGProject, PSGOperation, Material } from '@/types';
 import { getProviderConfig } from './key-manager';
 import type { ThinkingEffort } from '@/types';
-import { callProviderWithTools, toolCallToOperation, normalizeMessages } from './orchestrator';
+import { callProviderWithTools, toolCallToOperation, normalizeMessages } from './base-orchestrator';
 import { validateOperation } from '@/lib/psg/validator';
 import { applyOperation } from '@/lib/psg/operations';
 import { prepare3DNodeTree, generateASCIIFloorPlan, prepareBudgetContext } from './context';

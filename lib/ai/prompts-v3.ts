@@ -115,19 +115,13 @@ Available Contractors:
   "next_contractor": "ContractorName",
   "dispatch_instruction": {
     "component_id": "id from master plan",
-<<<<<<< HEAD
     "component_spec": "What they must build exactly. YOU MUST QUOTE the position (x_min, y_min, z_min) and size (w, h, d) directly from the Master Build Plan. The Contractor uses these as starting-edge coordinates for the add_node tool. Do NOT convert to center.",
-    "watch_items": "What to watch out for based on plan/inspector"
-  }
-=======
-    "component_spec": "What they must build exactly",
     "watch_items": "What to watch out for based on plan/inspector",
     "target_punch_list_id": "ID of punch list item if this dispatch is fixing one, otherwise null"
   },
   "punch_list_updates": [
     { "id": "punch_id_here", "status": "in-progress", "note": "Your note to the Inspector about what fix you are attempting, or why previous attempts failed." }
   ]
->>>>>>> origin/main
 }
 
 7. THINKING DIRECTIVE

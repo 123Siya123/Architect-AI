@@ -37,6 +37,7 @@ export async function PUT(
         await saveProject(project, createRevision);
         return NextResponse.json({ success: true });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+        console.error('[PUT /api/projects/[id]] Save error:', error instanceof Error ? error.message : error);
+        return NextResponse.json({ error: 'Failed to update project', detail: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }

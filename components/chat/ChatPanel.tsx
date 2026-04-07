@@ -1,6 +1,5 @@
 /**
  * =============================================================================
-<<<<<<< HEAD
  * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Interface
  * =============================================================================
  *
@@ -8,21 +7,7 @@
  * Supports switching between AI architectures:
  * - V3: Sequential Phased (Architect → Contractor → Inspector loop)
  * - One-Shot: Single Gemini AI call with all tools (1 call)
-=======
- * COMPONENTS/CHAT/CHAT-PANEL.TSX — AI Chat Interface (Multi-Agent)
- * =============================================================================
- *
- * UPGRADE v3 — Shows multi-agent pipeline status
- * UPGRADE v3.2 — Planning Mode with AI-generated house previews
- *
- * The chat panel where users interact with the AI architect.
- * Now includes:
- * - 🧠 Coordinator analyzing...
- * - ⚡ Workers executing...
- * - 🔍 Checker reviewing...
- * - 🔧 Fixer correcting...
- * - 🎨 Planning Mode: Generate 4 AI preview images before sending
->>>>>>> origin/main
+ * Also includes Planning Mode with AI-generated house previews.
  * =============================================================================
  */
 
@@ -31,16 +16,12 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { useDesignStore } from '@/store/useDesignStore';
-<<<<<<< HEAD
 import { prepareProjectContext, generateASCIIFloorPlan } from '@/lib/ai/context';
 import type { ChatMessage, ArchitectureMode } from '@/types';
 
 // =============================================================================
 // ARCHITECTURE MODE CONFIG
 // =============================================================================
-
-
-
 
 interface ArchModeConfig {
     id: ArchitectureMode;
@@ -72,10 +53,6 @@ const ARCH_MODES: ArchModeConfig[] = [
         description: 'Single Gemini call, no repair (fastest, ~85% quality)',
     },
 ];
-=======
-import type { ChatMessage } from '@/types';
-import { prepareProjectContext, generateASCIIFloorPlan } from '@/lib/ai/context';
->>>>>>> origin/main
 
 // =============================================================================
 // SUGGESTION CHIPS
@@ -91,7 +68,6 @@ const SUGGESTIONS = [
 ];
 
 // =============================================================================
-<<<<<<< HEAD
 // ARCHITECTURE MODE SWITCHER
 // =============================================================================
 
@@ -178,19 +154,12 @@ function ArchitectureSwitcher() {
     );
 }
 
-
-
 // =============================================================================
-=======
->>>>>>> origin/main
 // MESSAGE BUBBLE
 // =============================================================================
 
 function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onRevert?: (id: string) => void, showRevert?: boolean }) {
     const isUser = msg.role === 'user';
-<<<<<<< HEAD
-    const [showPipeline, setShowPipeline] = useState(false);
-=======
     const isThinking = !isUser && msg.content === 'Thinking...';
     const [showPipeline, setShowPipeline] = useState(isThinking);
 
@@ -201,7 +170,6 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 
     // Check for image attachments to display inline
     const imageAttachments = msg.attachments?.filter(a => a.type.startsWith('image/')) || [];
->>>>>>> origin/main
 
     return (
         <div className={`chat-message ${isUser ? 'chat-message-user' : 'chat-message-ai'}`}>
@@ -216,10 +184,6 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                     })}
                 </span>
             </div>
-<<<<<<< HEAD
-            <div className="chat-message-content-scroll">
-                <p className="chat-message-content" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
-=======
 
             {/* Show image attachments inline */}
             {imageAttachments.length > 0 && (
@@ -251,7 +215,6 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                         msg.content
                     )}
                 </p>
->>>>>>> origin/main
             </div>
 
             {/* Operation badges — show when AI made edits */}
@@ -288,17 +251,6 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                             background: '#0a0a0a',
                             color: '#00ff41', // Terminal green
                             borderRadius: '6px',
-<<<<<<< HEAD
-                            fontSize: '0.8em',
-                            border: '1px solid #333',
-                            maxHeight: '300px',
-                            overflowY: 'auto',
-                            boxShadow: 'inset 0 0 10px #000',
-                            lineHeight: '1.4'
-                        }}>
-                            <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px' }}>
-                                [SYSTEM] Antigravity ReAct v3.1 Logic Stream
-=======
                             fontSize: '0.85em',
                             border: '1px solid #333',
                             maxHeight: '400px',
@@ -310,20 +262,13 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
                             <div style={{ color: '#888', marginBottom: '8px', fontSize: '0.9em', borderBottom: '1px solid #222', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
                                 <span>[LIVE STREAM] AI Reasoning & Execution Log</span>
                                 {isThinking && <span className="pulse-text">ACTIVE</span>}
->>>>>>> origin/main
                             </div>
                             {msg.pipeline_log.map((line, i) => (
                                 <div key={i} style={{
                                     marginBottom: '4px',
-<<<<<<< HEAD
-                                    fontFamily: '"Fira Code", "Courier New", monospace',
-                                    opacity: line.startsWith('   ') ? 0.8 : 1,
-                                    color: line.includes('❌') ? '#ff4d4d' : line.includes('✅') ? '#4dff4d' : '#00ff41'
-=======
                                     opacity: line.startsWith('   ') ? 0.8 : 1,
                                     color: line.includes('❌') ? '#ff4d4d' : line.includes('✅') ? '#4dff4d' : '#00ff41',
                                     whiteSpace: 'pre-wrap'
->>>>>>> origin/main
                                 }}>
                                     {line}
                                 </div>
@@ -347,10 +292,6 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 }
 
 // =============================================================================
-<<<<<<< HEAD
-// PIPELINE STATUS INDICATOR
-// =============================================================================
-
 // =============================================================================
 // REACT LOOP STATUS INDICATOR
 // =============================================================================
@@ -422,7 +363,11 @@ function ReactLoopStatus() {
                     <div ref={logsEndRef} />
                 </div>
             </div>
-=======
+        </div>
+    );
+}
+
+// =============================================================================
 // PLANNING MODE IMAGE SELECTOR
 // =============================================================================
 
@@ -669,7 +614,6 @@ function PlanningLoader() {
                     100% { transform: translateX(350%); }
                 }
             `}</style>
->>>>>>> origin/main
         </div>
     );
 }
@@ -687,12 +631,8 @@ export default function ChatPanel() {
     const project = useDesignStore((s) => s.project);
     const revertToMessage = useDesignStore((s) => s.revertToMessage);
     const sendMessageToAI = useDesignStore((s) => s.sendMessageToAI);
-<<<<<<< HEAD
     const architectureMode = useDesignStore((s) => s.architectureMode);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-
     const activeConfig = ARCH_MODES.find(m => m.id === architectureMode) || ARCH_MODES[0];
-=======
     const stopAIThinking = useDesignStore((s) => s.stopAIThinking);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -704,16 +644,11 @@ export default function ChatPanel() {
     const [planningAdditionalText, setPlanningAdditionalText] = useState('');
     const [originalInstruction, setOriginalInstruction] = useState('');
     const [isPlanSending, setIsPlanSending] = useState(false);
->>>>>>> origin/main
 
     // Auto-scroll to bottom on new messages
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-<<<<<<< HEAD
-    }, [chatMessages.length, isAIThinking]);
-=======
     }, [chatMessages.length, isAIThinking, planningImages.length, isPlanningLoading]);
->>>>>>> origin/main
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -758,8 +693,6 @@ export default function ChatPanel() {
         setAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
-<<<<<<< HEAD
-=======
     // Capture current 3D scene as base64 screenshot
     const captureSceneScreenshot = useCallback((): string | null => {
         try {
@@ -774,7 +707,6 @@ export default function ChatPanel() {
     }, []);
 
     // Normal send for non-planning mode
->>>>>>> origin/main
     const sendMessage = useCallback((text: string) => {
         if ((!text.trim() && attachments.length === 0) || isAIThinking) return;
         setInput('');
@@ -782,11 +714,6 @@ export default function ChatPanel() {
         sendMessageToAI(text, attachments);
     }, [isAIThinking, sendMessageToAI, attachments]);
 
-<<<<<<< HEAD
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        sendMessage(input);
-=======
     // Planning Mode: Generate 4 preview images
     const handlePlanningSubmit = useCallback(async () => {
         const text = input.trim();
@@ -890,21 +817,16 @@ export default function ChatPanel() {
         } else {
             sendMessage(input);
         }
->>>>>>> origin/main
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-<<<<<<< HEAD
-            sendMessage(input);
-=======
             if (planningMode) {
                 handlePlanningSubmit();
             } else {
                 sendMessage(input);
             }
->>>>>>> origin/main
         }
     };
 
@@ -931,7 +853,6 @@ export default function ChatPanel() {
                 <div style={{ flex: 1 }}>
                     <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         🏗️ AI Architect
-<<<<<<< HEAD
                         <span style={{
                             fontSize: '0.6em',
                             background: activeConfig.bgColor,
@@ -949,42 +870,22 @@ export default function ChatPanel() {
                     {/* Architecture Mode Switcher */}
                     <div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                         <ArchitectureSwitcher />
-
-=======
-                        <span style={{ fontSize: '0.6em', background: 'var(--accent)', color: 'white', padding: '2px 6px', borderRadius: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            ReAct v3.1
-                        </span>
-                    </h3>
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
->>>>>>> origin/main
                         <button
                             onClick={handleDownloadSpecs}
                             className="debug-btn"
                             title="Download raw geometry and ASCII logic maps"
                             style={{ fontSize: '0.65em', background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border)', cursor: 'pointer', transition: 'all 0.2s' }}
                         >
-<<<<<<< HEAD
                             📥 LOGS
-=======
-                            📥 EXPORT LOGS
->>>>>>> origin/main
                         </button>
                     </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-<<<<<<< HEAD
                     <div className="chat-status" style={{ fontSize: '0.7em', fontWeight: 'bold', color: isAIThinking ? activeConfig.color : '#4dff4d' }}>
                         {isAIThinking ? '🌀 COMPUTING...' : '● AGENT READY'}
                     </div>
                     <div style={{ fontSize: '0.6em', opacity: 0.5, marginTop: '2px' }}>
                         {activeConfig.description}
-=======
-                    <div className="chat-status" style={{ fontSize: '0.7em', fontWeight: 'bold', color: isAIThinking ? 'var(--accent)' : '#4dff4d' }}>
-                        {isAIThinking ? '🌀 COMPUTING...' : '● AGENT READY'}
-                    </div>
-                    <div style={{ fontSize: '0.6em', opacity: 0.5, marginTop: '2px' }}>
-                        Gemini 3.1 Pro High-Thinking
->>>>>>> origin/main
                     </div>
                 </div>
             </div>
@@ -995,17 +896,11 @@ export default function ChatPanel() {
                     <div className="chat-welcome">
                         <p className="chat-welcome-title">Hello! 👋</p>
                         <p className="chat-welcome-text">
-<<<<<<< HEAD
                             I&apos;m your AI architect. Switch between architectures above to benchmark different approaches.
                             Currently using <strong style={{ color: activeConfig.color }}>{activeConfig.label}</strong>.
-=======
-                            I&apos;m your AI architect. I use a continuous ReAct loop to reason through
-                            your requests, perform precise geometric operations, and audit the results
-                            against a 0.5mm construction tolerance.
                         </p>
                         <p className="chat-welcome-text" style={{ marginTop: '8px', fontSize: '0.8em', color: '#8888aa' }}>
                             💡 <strong>Tip:</strong> Toggle <strong>Planning Mode</strong> (🎨 button below) to preview 4 AI-generated design options before building!
->>>>>>> origin/main
                         </p>
                         <div className="chat-suggestions">
                             {SUGGESTIONS.map((s) => (
@@ -1030,9 +925,7 @@ export default function ChatPanel() {
                     />
                 ))}
 
-<<<<<<< HEAD
                 {isAIThinking && <ReactLoopStatus />}
-=======
                 {/* Planning Mode Loading */}
                 {isPlanningLoading && <PlanningLoader />}
 
@@ -1049,7 +942,6 @@ export default function ChatPanel() {
                         isLoading={isPlanSending}
                     />
                 )}
->>>>>>> origin/main
 
                 <div ref={messagesEndRef} />
             </div>
@@ -1098,8 +990,6 @@ export default function ChatPanel() {
                     >
                         +
                     </button>
-<<<<<<< HEAD
-=======
 
                     {/* Planning Mode Toggle */}
                     <button
@@ -1146,35 +1036,14 @@ export default function ChatPanel() {
                             }} />
                         )}
                     </button>
-
->>>>>>> origin/main
                     <textarea
                         className="chat-input"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-<<<<<<< HEAD
-                        placeholder={`Message (${activeConfig.shortLabel} mode)...`}
-                        rows={2}
-                        disabled={isAIThinking}
-                        style={{ flex: 1 }}
-                    />
-                    <button
-                        type="submit"
-                        className="chat-send-btn"
-                        disabled={(!input.trim() && attachments.length === 0) || isAIThinking}
-                        style={{
-                            background: isAIThinking ? undefined : `${activeConfig.color}22`,
-                            borderColor: isAIThinking ? undefined : `${activeConfig.color}40`,
-                        }}
-                    >
-                        Send →
-                    </button>
-                </div>
-=======
                         placeholder={planningMode
                             ? "Describe the house you want to see previews of..."
-                            : "Describe what you'd like to change..."}
+                            : `Message (${activeConfig.shortLabel} mode)...`}
                         rows={2}
                         disabled={isAIThinking || isPlanningLoading}
                         style={{ flex: 1 }}
@@ -1206,7 +1075,10 @@ export default function ChatPanel() {
                                 background: 'linear-gradient(135deg, #4466ff, #6488ff)',
                                 color: 'white',
                                 boxShadow: '0 2px 12px rgba(68,102,255,0.3)',
-                            } : undefined}
+                            } : {
+                                background: `${activeConfig.color}22`,
+                                borderColor: `${activeConfig.color}40`,
+                            }}
                         >
                             {planningMode ? 'Preview 🎨' : 'Send →'}
                         </button>
@@ -1248,7 +1120,6 @@ export default function ChatPanel() {
                         `}</style>
                     </div>
                 )}
->>>>>>> origin/main
             </form>
         </div>
     );
