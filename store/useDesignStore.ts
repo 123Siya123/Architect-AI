@@ -267,7 +267,9 @@ export const useDesignStore = create<DesignState>((set, get) => ({
         if ((!text.trim() && (!attachments || attachments.length === 0)) || isAIThinking) return;
 
         const currentProject = get().project;
-        const projectSnapshot = JSON.parse(JSON.stringify(currentProject));
+        // Strip chat_history from snapshot to prevent exponential size growth.
+        // Each message snapshot only needs nodes/settings/budget for "go back" to work.
+        const projectSnapshot = JSON.parse(JSON.stringify({ ...currentProject, chat_history: [] }));
         const professionalContext = getProfessionalContext();
         const userSpecsContext = get().userSpecifications ? `User Global Specifications:\n${get().userSpecifications}\n\n` : '';
         const combinedContext = [userSpecsContext, professionalContext].filter(Boolean).join('\n') || undefined;
