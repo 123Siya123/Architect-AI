@@ -4,7 +4,7 @@
  * =============================================================================
  *
  * UPGRADE v3 — Shows multi-agent pipeline status
- * UPGRADE v3.2 — Planning Mode with AI-generated house previews
+ * UPGRADE v4.0 — Plan & Design Mode with 2-phase wizard (replaces old Planning Mode)
  *
  * The chat panel where users interact with the AI architect.
  * Now includes:
@@ -12,7 +12,7 @@
  * - ⚡ Workers executing...
  * - 🔍 Checker reviewing...
  * - 🔧 Fixer correcting...
- * - 🎨 Planning Mode: Generate 4 AI preview images before sending
+ * - 🏠 Plan & Design Mode: 2-phase wizard (Style → Layout → Build)
  * =============================================================================
  */
 
@@ -23,6 +23,7 @@ import * as THREE from 'three';
 import { useDesignStore } from '@/store/useDesignStore';
 import type { ChatMessage } from '@/types';
 import { prepareProjectContext, generateASCIIFloorPlan } from '@/lib/ai/context';
+import DesignModePanel from './DesignModePanel';
 
 // =============================================================================
 // SUGGESTION CHIPS
@@ -175,257 +176,6 @@ function MessageBubble({ msg, onRevert, showRevert }: { msg: ChatMessage, onReve
 }
 
 // =============================================================================
-// PLANNING MODE IMAGE SELECTOR
-// =============================================================================
-
-interface PlanningImage {
-    index: number;
-    base64: string;
-    prompt: string;
-}
-
-function PlanningImageSelector({
-    images,
-    selectedIndex,
-    onSelect,
-    onConfirm,
-    onCancel,
-    additionalText,
-    onTextChange,
-    isLoading,
-}: {
-    images: PlanningImage[];
-    selectedIndex: number | null;
-    onSelect: (index: number) => void;
-    onConfirm: () => void;
-    onCancel: () => void;
-    additionalText: string;
-    onTextChange: (text: string) => void;
-    isLoading: boolean;
-}) {
-    return (
-        <div style={{
-            background: 'linear-gradient(135deg, rgba(20,20,35,0.98), rgba(15,15,30,0.98))',
-            border: '1px solid rgba(100,130,255,0.3)',
-            borderRadius: '16px',
-            padding: '20px',
-            margin: '12px 0',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-            backdropFilter: 'blur(20px)',
-        }}>
-            {/* Header */}
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '16px',
-                paddingBottom: '12px',
-                borderBottom: '1px solid rgba(100,130,255,0.15)'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '1.3em' }}>🎨</span>
-                    <div>
-                        <div style={{ fontWeight: 'bold', fontSize: '0.95em', color: '#e0e0ff' }}>
-                            Planning Preview
-                        </div>
-                        <div style={{ fontSize: '0.7em', color: '#8888aa', marginTop: '2px' }}>
-                            Select a design direction to build from
-                        </div>
-                    </div>
-                </div>
-                <button
-                    onClick={onCancel}
-                    style={{
-                        background: 'rgba(255,80,80,0.15)',
-                        border: '1px solid rgba(255,80,80,0.3)',
-                        color: '#ff8888',
-                        borderRadius: '8px',
-                        padding: '6px 12px',
-                        cursor: 'pointer',
-                        fontSize: '0.75em',
-                        fontWeight: 'bold',
-                        transition: 'all 0.2s'
-                    }}
-                >
-                    ✕ Cancel
-                </button>
-            </div>
-
-            {/* Images Grid */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '12px',
-                marginBottom: '16px',
-            }}>
-                {images.map((img) => (
-                    <div
-                        key={img.index}
-                        onClick={() => onSelect(img.index)}
-                        style={{
-                            position: 'relative',
-                            borderRadius: '12px',
-                            overflow: 'hidden',
-                            cursor: 'pointer',
-                            border: selectedIndex === img.index
-                                ? '3px solid #6488ff'
-                                : '3px solid transparent',
-                            boxShadow: selectedIndex === img.index
-                                ? '0 0 20px rgba(100,136,255,0.3), inset 0 0 20px rgba(100,136,255,0.05)'
-                                : '0 2px 8px rgba(0,0,0,0.3)',
-                            transition: 'all 0.3s ease',
-                            transform: selectedIndex === img.index ? 'scale(1.02)' : 'scale(1)',
-                            aspectRatio: '16/10',
-                        }}
-                    >
-                        <img
-                            src={`data:image/png;base64,${img.base64}`}
-                            alt={`Design Variant ${img.index + 1}`}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                display: 'block',
-                            }}
-                        />
-                        {/* Variant label */}
-                        <div style={{
-                            position: 'absolute',
-                            top: '8px',
-                            left: '8px',
-                            background: selectedIndex === img.index
-                                ? 'rgba(100,136,255,0.9)'
-                                : 'rgba(0,0,0,0.7)',
-                            color: 'white',
-                            borderRadius: '6px',
-                            padding: '3px 8px',
-                            fontSize: '0.7em',
-                            fontWeight: 'bold',
-                            letterSpacing: '0.5px',
-                            backdropFilter: 'blur(4px)',
-                        }}>
-                            {selectedIndex === img.index ? '✓' : ''} Option {img.index + 1}
-                        </div>
-                        {/* Selected overlay */}
-                        {selectedIndex === img.index && (
-                            <div style={{
-                                position: 'absolute',
-                                inset: 0,
-                                background: 'rgba(100,136,255,0.08)',
-                                pointerEvents: 'none',
-                            }} />
-                        )}
-                    </div>
-                ))}
-            </div>
-
-            {/* Additional instruction input + Send */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
-                <textarea
-                    value={additionalText}
-                    onChange={(e) => onTextChange(e.target.value)}
-                    placeholder="Add extra instructions (optional)..."
-                    rows={2}
-                    style={{
-                        flex: 1,
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(100,130,255,0.2)',
-                        borderRadius: '10px',
-                        color: '#e0e0ff',
-                        padding: '10px 14px',
-                        fontSize: '0.85em',
-                        resize: 'none',
-                        outline: 'none',
-                        fontFamily: 'inherit',
-                        transition: 'border-color 0.2s',
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'rgba(100,136,255,0.5)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(100,130,255,0.2)'}
-                />
-                <button
-                    onClick={onConfirm}
-                    disabled={selectedIndex === null || isLoading}
-                    style={{
-                        background: selectedIndex !== null
-                            ? 'linear-gradient(135deg, #4466ff, #6488ff)'
-                            : 'rgba(100,100,120,0.3)',
-                        color: selectedIndex !== null ? 'white' : '#666',
-                        border: 'none',
-                        borderRadius: '10px',
-                        padding: '12px 20px',
-                        cursor: selectedIndex !== null ? 'pointer' : 'not-allowed',
-                        fontWeight: 'bold',
-                        fontSize: '0.85em',
-                        transition: 'all 0.2s',
-                        whiteSpace: 'nowrap',
-                        boxShadow: selectedIndex !== null ? '0 4px 12px rgba(68,102,255,0.3)' : 'none',
-                    }}
-                >
-                    {isLoading ? '⏳ Building...' : 'Build This →'}
-                </button>
-            </div>
-        </div>
-    );
-}
-
-// =============================================================================
-// PLANNING LOADING INDICATOR
-// =============================================================================
-
-function PlanningLoader() {
-    return (
-        <div style={{
-            background: 'linear-gradient(135deg, rgba(20,20,35,0.95), rgba(15,15,30,0.95))',
-            border: '1px solid rgba(100,130,255,0.2)',
-            borderRadius: '16px',
-            padding: '32px',
-            margin: '12px 0',
-            textAlign: 'center',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-        }}>
-            <div style={{
-                fontSize: '2em',
-                marginBottom: '12px',
-                animation: 'spin 2s linear infinite',
-            }}>
-                🎨
-            </div>
-            <div style={{ fontWeight: 'bold', color: '#e0e0ff', marginBottom: '6px' }}>
-                Generating Design Previews...
-            </div>
-            <div style={{ fontSize: '0.75em', color: '#8888aa' }}>
-                AI is creating 4 unique design options from your instruction
-            </div>
-            <div style={{
-                marginTop: '16px',
-                height: '3px',
-                background: 'rgba(100,130,255,0.1)',
-                borderRadius: '3px',
-                overflow: 'hidden',
-            }}>
-                <div style={{
-                    height: '100%',
-                    background: 'linear-gradient(90deg, transparent, #6488ff, transparent)',
-                    borderRadius: '3px',
-                    animation: 'shimmer 1.5s ease-in-out infinite',
-                    width: '40%',
-                }} />
-            </div>
-            <style>{`
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-                @keyframes shimmer {
-                    0% { transform: translateX(-100%); }
-                    100% { transform: translateX(350%); }
-                }
-            `}</style>
-        </div>
-    );
-}
-
-// =============================================================================
 // MAIN CHAT PANEL
 // =============================================================================
 
@@ -441,27 +191,20 @@ export default function ChatPanel() {
     const stopAIThinking = useDesignStore((s) => s.stopAIThinking);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Planning Mode State
-    const [planningMode, setPlanningMode] = useState(false);
-    const [isPlanningLoading, setIsPlanningLoading] = useState(false);
-    const [planningImages, setPlanningImages] = useState<PlanningImage[]>([]);
-    const [selectedPlanIndex, setSelectedPlanIndex] = useState<number | null>(null);
-    const [planningAdditionalText, setPlanningAdditionalText] = useState('');
-    const [originalInstruction, setOriginalInstruction] = useState('');
-    const [isPlanSending, setIsPlanSending] = useState(false);
+    // Plan & Design Mode
+    const [designModeOpen, setDesignModeOpen] = useState(false);
 
     // Auto-scroll to bottom on new messages
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [chatMessages.length, isAIThinking, planningImages.length, isPlanningLoading]);
+    }, [chatMessages.length, isAIThinking]);
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             const newAttachments: { name: string; type: string; data: string }[] = [];
-            
+
             for (let i = 0; i < e.target.files.length; i++) {
                 const file = e.target.files[i];
-                // Check if file is image or text
                 if (!file.type.startsWith('image/') && !file.type.startsWith('text/') && file.type !== 'application/pdf') {
                     alert(`File type ${file.type} not supported. Please upload images or text documents.`);
                     continue;
@@ -474,10 +217,9 @@ export default function ChatPanel() {
                         reader.onerror = reject;
                         reader.readAsDataURL(file);
                     });
-                    
-                    // Extract base64 data (remove data:image/png;base64, prefix)
+
                     const data = base64.split(',')[1];
-                    
+
                     newAttachments.push({
                         name: file.name,
                         type: file.type,
@@ -487,9 +229,8 @@ export default function ChatPanel() {
                     console.error('Error reading file:', err);
                 }
             }
-            
+
             setAttachments(prev => [...prev, ...newAttachments]);
-            // Reset input so same file can be selected again if needed
             if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
@@ -498,20 +239,6 @@ export default function ChatPanel() {
         setAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
-    // Capture current 3D scene as base64 screenshot
-    const captureSceneScreenshot = useCallback((): string | null => {
-        try {
-            const canvas = document.querySelector('canvas');
-            if (!canvas) return null;
-            const dataUrl = canvas.toDataURL('image/png', 0.8);
-            return dataUrl.split(',')[1]; // Return just the base64 part
-        } catch (err) {
-            console.error('Failed to capture scene screenshot:', err);
-            return null;
-        }
-    }, []);
-
-    // Normal send for non-planning mode
     const sendMessage = useCallback((text: string) => {
         if ((!text.trim() && attachments.length === 0) || isAIThinking) return;
         setInput('');
@@ -519,119 +246,15 @@ export default function ChatPanel() {
         sendMessageToAI(text, attachments);
     }, [isAIThinking, sendMessageToAI, attachments]);
 
-    // Planning Mode: Generate 4 preview images
-    const handlePlanningSubmit = useCallback(async () => {
-        const text = input.trim();
-        if (!text || isPlanningLoading || isAIThinking) return;
-
-        setOriginalInstruction(text);
-        setIsPlanningLoading(true);
-        setPlanningImages([]);
-        setSelectedPlanIndex(null);
-        setPlanningAdditionalText('');
-
-        try {
-            // Check if there's existing structure in the 3D scene
-            const nodeCount = Object.keys(project.nodes).length;
-            let existingSceneBase64: string | undefined;
-
-            if (nodeCount > 1) { // more than just the root House node
-                existingSceneBase64 = captureSceneScreenshot() || undefined;
-            }
-
-            const response = await fetch('/api/ai/plan', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    instruction: text,
-                    existingSceneBase64,
-                }),
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Failed to generate previews');
-            }
-
-            const data = await response.json();
-            if (data.images && data.images.length > 0) {
-                setPlanningImages(data.images);
-                setInput(''); // Clear input after successful generation
-            } else {
-                throw new Error('No images were generated');
-            }
-        } catch (err) {
-            console.error('Planning mode error:', err);
-            alert(`Planning failed: ${(err as Error).message}. Try again or switch to normal mode.`);
-        } finally {
-            setIsPlanningLoading(false);
-        }
-    }, [input, isPlanningLoading, isAIThinking, project.nodes, captureSceneScreenshot]);
-
-    // Planning Mode: Send selected image + instruction to the normal AI pipeline
-    const handlePlanningConfirm = useCallback(async () => {
-        if (selectedPlanIndex === null || isPlanSending) return;
-
-        const selectedImage = planningImages.find(img => img.index === selectedPlanIndex);
-        if (!selectedImage) return;
-
-        setIsPlanSending(true);
-
-        // Build the message with the selected image as an attachment
-        const combinedInstruction = planningAdditionalText.trim()
-            ? `${originalInstruction}\n\nAdditional instructions: ${planningAdditionalText.trim()}`
-            : originalInstruction;
-
-        // The selected image becomes an attachment, just like a user-uploaded image
-        const imageAttachment = {
-            name: `planning_preview_${selectedPlanIndex + 1}.png`,
-            type: 'image/png',
-            data: selectedImage.base64,
-        };
-
-        // Combine with any existing attachments
-        const allAttachments = [...attachments, imageAttachment];
-
-        // Clear planning state
-        setPlanningImages([]);
-        setSelectedPlanIndex(null);
-        setPlanningAdditionalText('');
-        setOriginalInstruction('');
-        setAttachments([]);
-        setIsPlanSending(false);
-
-        // Send through the EXACT same pipeline as normal chat with image upload
-        // This is the v3 architecture flow: sendMessageToAI -> /api/ai/chat -> v3-orchestrator
-        const prefixedInstruction = `[PLANNING MODE] The user selected a design preview image (attached) that represents their desired vision. Build the house to match this design as closely as possible. Instructions: ${combinedInstruction}`;
-        sendMessageToAI(prefixedInstruction, allAttachments);
-    }, [selectedPlanIndex, planningImages, planningAdditionalText, originalInstruction, attachments, sendMessageToAI, isPlanSending]);
-
-    // Cancel planning and clear state
-    const handlePlanningCancel = useCallback(() => {
-        setPlanningImages([]);
-        setSelectedPlanIndex(null);
-        setPlanningAdditionalText('');
-        setOriginalInstruction('');
-        setIsPlanningLoading(false);
-    }, []);
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (planningMode) {
-            handlePlanningSubmit();
-        } else {
-            sendMessage(input);
-        }
+        sendMessage(input);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            if (planningMode) {
-                handlePlanningSubmit();
-            } else {
-                sendMessage(input);
-            }
+            sendMessage(input);
         }
     };
 
@@ -694,7 +317,7 @@ export default function ChatPanel() {
                             against a 0.5mm construction tolerance.
                         </p>
                         <p className="chat-welcome-text" style={{ marginTop: '8px', fontSize: '0.8em', color: '#8888aa' }}>
-                            💡 <strong>Tip:</strong> Toggle <strong>Planning Mode</strong> (🎨 button below) to preview 4 AI-generated design options before building!
+                            💡 <strong>Tip:</strong> Use <strong>Plan & Design</strong> (🏠 button below) to explore styles and floor plans before building!
                         </p>
                         <div className="chat-suggestions">
                             {SUGGESTIONS.map((s) => (
@@ -719,25 +342,19 @@ export default function ChatPanel() {
                     />
                 ))}
 
-                {/* Planning Mode Loading */}
-                {isPlanningLoading && <PlanningLoader />}
-
-                {/* Planning Mode Image Selection */}
-                {planningImages.length > 0 && (
-                    <PlanningImageSelector
-                        images={planningImages}
-                        selectedIndex={selectedPlanIndex}
-                        onSelect={setSelectedPlanIndex}
-                        onConfirm={handlePlanningConfirm}
-                        onCancel={handlePlanningCancel}
-                        additionalText={planningAdditionalText}
-                        onTextChange={setPlanningAdditionalText}
-                        isLoading={isPlanSending}
-                    />
-                )}
-
                 <div ref={messagesEndRef} />
             </div>
+
+            {/* Plan & Design Mode Overlay */}
+            <DesignModePanel
+                isOpen={designModeOpen}
+                onClose={() => setDesignModeOpen(false)}
+                onBuild={(msg, attachments, planningContext) => {
+                    setDesignModeOpen(false);
+                    sendMessageToAI(msg, attachments, planningContext);
+                }}
+                isAIThinking={isAIThinking}
+            />
 
             {/* Input Area */}
             <form className="chat-input-form" onSubmit={handleSubmit} style={{ flexDirection: 'column' }}>
@@ -784,38 +401,32 @@ export default function ChatPanel() {
                         +
                     </button>
 
-                    {/* Planning Mode Toggle */}
+                    {/* Plan & Design Mode Toggle */}
                     <button
                         type="button"
-                        onClick={() => {
-                            setPlanningMode(!planningMode);
-                            // Clear planning state if turning off
-                            if (planningMode) {
-                                handlePlanningCancel();
-                            }
-                        }}
+                        onClick={() => setDesignModeOpen(!designModeOpen)}
                         disabled={isAIThinking}
-                        title={planningMode ? 'Switch to normal mode' : 'Switch to Planning Mode — generates 4 AI previews before building'}
+                        title="Plan & Design — explore styles and floor plans before building"
                         style={{
                             padding: '8px 12px',
                             fontSize: '1em',
-                            background: planningMode
+                            background: designModeOpen
                                 ? 'linear-gradient(135deg, rgba(100,136,255,0.25), rgba(140,100,255,0.25))'
                                 : 'var(--bg-secondary)',
-                            border: planningMode
+                            border: designModeOpen
                                 ? '1px solid rgba(100,136,255,0.5)'
                                 : '1px solid var(--border)',
                             borderRadius: '8px',
-                            color: planningMode ? '#a0b4ff' : 'var(--text-secondary)',
+                            color: designModeOpen ? '#a0b4ff' : 'var(--text-secondary)',
                             cursor: 'pointer',
                             transition: 'all 0.3s ease',
                             position: 'relative',
                             overflow: 'hidden',
-                            fontWeight: planningMode ? 'bold' : 'normal',
+                            fontWeight: designModeOpen ? 'bold' : 'normal',
                         }}
                     >
-                        🎨
-                        {planningMode && (
+                        🏠
+                        {designModeOpen && (
                             <span style={{
                                 position: 'absolute',
                                 bottom: '2px',
@@ -835,11 +446,9 @@ export default function ChatPanel() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder={planningMode
-                            ? "Describe the house you want to see previews of..."
-                            : "Describe what you'd like to change..."}
+                        placeholder="Describe what you'd like to change..."
                         rows={2}
-                        disabled={isAIThinking || isPlanningLoading}
+                        disabled={isAIThinking}
                         style={{ flex: 1 }}
                     />
                     {isAIThinking ? (
@@ -851,66 +460,16 @@ export default function ChatPanel() {
                         >
                             Stop ⏹
                         </button>
-                    ) : isPlanningLoading ? (
-                        <button
-                            type="button"
-                            className="chat-send-btn"
-                            disabled
-                            style={{ background: 'rgba(100,136,255,0.3)', color: '#8888aa' }}
-                        >
-                            Generating...
-                        </button>
                     ) : (
                         <button
                             type="submit"
                             className="chat-send-btn"
                             disabled={!input.trim() && attachments.length === 0}
-                            style={planningMode && input.trim() ? {
-                                background: 'linear-gradient(135deg, #4466ff, #6488ff)',
-                                color: 'white',
-                                boxShadow: '0 2px 12px rgba(68,102,255,0.3)',
-                            } : undefined}
                         >
-                            {planningMode ? 'Preview 🎨' : 'Send →'}
+                            Send →
                         </button>
                     )}
                 </div>
-
-                {/* Planning Mode Status Bar */}
-                {planningMode && (
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        marginTop: '8px',
-                        padding: '6px 12px',
-                        background: 'linear-gradient(90deg, rgba(100,136,255,0.08), rgba(140,100,255,0.08))',
-                        borderRadius: '8px',
-                        border: '1px solid rgba(100,136,255,0.15)',
-                        fontSize: '0.7em',
-                        color: '#a0b4ff',
-                    }}>
-                        <span style={{
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%',
-                            background: '#6488ff',
-                            boxShadow: '0 0 8px #6488ff',
-                            animation: 'pulse-glow 2s ease-in-out infinite',
-                        }} />
-                        <span style={{ fontWeight: 'bold' }}>PLANNING MODE</span>
-                        <span style={{ color: '#6666aa' }}>•</span>
-                        <span style={{ color: '#8888aa' }}>
-                            Your prompt will generate 4 design previews. Pick one to build.
-                        </span>
-                        <style>{`
-                            @keyframes pulse-glow {
-                                0%, 100% { opacity: 1; box-shadow: 0 0 8px #6488ff; }
-                                50% { opacity: 0.5; box-shadow: 0 0 4px #6488ff; }
-                            }
-                        `}</style>
-                    </div>
-                )}
             </form>
         </div>
     );

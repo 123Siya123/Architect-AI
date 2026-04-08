@@ -27,7 +27,7 @@ import { applyOperation, applyBatchOperations, createUndoOperation } from '@/lib
 import { createEmptyProject } from '@/lib/psg/schema';
 import { calculateProjectCost } from '@/lib/psg/cost-calculator';
 import materialsDatabase from '@/data/materials.json';
-import type { Material } from '@/types';
+import type { Material, PlanningContext } from '@/types';
 
 // =============================================================================
 // HELPER FOR COST CALCULATION
@@ -86,7 +86,7 @@ interface DesignState {
     setActiveFloorId: (floorId: string | null) => void;
     addChatMessage: (message: ChatMessage) => void;
     updateChatMessage: (id: string, updates: Partial<ChatMessage>) => void;
-    sendMessageToAI: (text: string, attachments?: { name: string; type: string; data: string }[]) => Promise<void>;
+    sendMessageToAI: (text: string, attachments?: { name: string; type: string; data: string }[], planningContext?: PlanningContext) => Promise<void>;
     revertToMessage: (messageId: string) => void;
     setAIThinking: (thinking: boolean) => void;
     setAIThinkingLogs: (logs: string[]) => void;
@@ -262,7 +262,7 @@ export const useDesignStore = create<DesignState>((set, get) => ({
             };
         });
     },
-    sendMessageToAI: async (text: string, attachments?: { name: string; type: string; data: string }[]) => {
+    sendMessageToAI: async (text: string, attachments?: { name: string; type: string; data: string }[], planningContext?: PlanningContext) => {
         const { isAIThinking, addChatMessage, updateChatMessage, setAIThinking, setAIThinkingLogs, triggerAutosave, getProfessionalContext } = get();
         if ((!text.trim() && (!attachments || attachments.length === 0)) || isAIThinking) return;
 
@@ -310,7 +310,8 @@ export const useDesignStore = create<DesignState>((set, get) => ({
                     project: get().project, // Use LATEST project (including user message in chat_history)
                     history: get().chatMessages.slice(0, -1), // Everything except the placeholder
                     attachments: attachments,
-                    professionalContext: combinedContext
+                    professionalContext: combinedContext,
+                    planningContext: planningContext,
                 }),
             });
 

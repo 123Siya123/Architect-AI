@@ -108,55 +108,66 @@ export async function sendChatToAI_V3(
     const maxCycles = complexity.maxTurns * 2; // Increased cycles for rigorous loop
     const minCycles = complexity.minTurns;
 
-    // Phase 0: Request Classification & Research
+    // Phase 0+1: Research & Planning (or bypass if pre-built by Plan & Design wizard)
     let buildBriefText = 'No Build Brief (Trivial/Standard Tier)';
-    if (['COMPLEX', 'LANDMARK', 'MEGA'].includes(complexity.tier)) {
-        log('🔬 Phase 0: Research Specialist gathering spatial knowledge...');
-        const prompt = RESEARCH_SPECIALIST_V3_PROMPT.replace('{USER_REQUEST}', request.message);
-        const researchResult = await callProviderNoTools(config, [{ role: 'user', content: prompt }], undefined, signal);
-        const briefObj = extractJSON(researchResult.text);
-        if (briefObj) {
-            buildBriefText = JSON.stringify(briefObj, null, 2);
-            log('✅ Build Brief generated:');
-            log(buildBriefText);
-            
-            logAgentStep({
-                phase: 'Research',
-                model: config.model,
-                response: researchResult.text,
-                status: 'success'
-            });
-        } else {
-            log('⚠️ Failed to generate structured Build Brief.');
-            log(`Raw Result: ${researchResult.text}`);
+    let masterBuildDoc: MasterBuildDocument | null = null;
+
+    if (request.planningContext?.masterBuildDocument) {
+        // BYPASS: masterplan pre-built by Plan & Design wizard
+        log('📐 Using pre-built masterplan from Plan & Design mode — skipping Phase 0 and Phase 1.');
+        masterBuildDoc = request.planningContext.masterBuildDocument;
+        buildBriefText = request.planningContext.buildBrief ?? 'Pre-built via Plan & Design wizard.';
+        log(`✅ Pre-built Master Build Document loaded: ${masterBuildDoc.buildOrder.length} steps.`);
+    } else {
+        // Phase 0: Request Classification & Research
+        if (['COMPLEX', 'LANDMARK', 'MEGA'].includes(complexity.tier)) {
+            log('🔬 Phase 0: Research Specialist gathering spatial knowledge...');
+            const prompt = RESEARCH_SPECIALIST_V3_PROMPT.replace('{USER_REQUEST}', request.message);
+            const researchResult = await callProviderNoTools(config, [{ role: 'user', content: prompt }], undefined, signal);
+            const briefObj = extractJSON(researchResult.text);
+            if (briefObj) {
+                buildBriefText = JSON.stringify(briefObj, null, 2);
+                log('✅ Build Brief generated:');
+                log(buildBriefText);
+
+                logAgentStep({
+                    phase: 'Research',
+                    model: config.model,
+                    response: researchResult.text,
+                    status: 'success'
+                });
+            } else {
+                log('⚠️ Failed to generate structured Build Brief.');
+                log(`Raw Result: ${researchResult.text}`);
+            }
         }
+
+        // Phase 1: The Architect Plans (Master Build Document)
+        log('🏛️ Phase 1: Architect drafting Master Build Document...');
+        const phase1Context = `BUILD BRIEF:\n${buildBriefText}\n\nCURRENT SCENE GRAPH:\n${prepare3DNodeTree(currentProject)}`;
+        const prompt1 = ARCHITECT_PHASE1_PROMPT
+            .replace('{USER_REQUEST}', request.message)
+            .replace('{CONTEXT}', phase1Context);
+
+        const architect1Result = await callProviderNoTools(config, [{ role: 'user', content: prompt1 }], undefined, signal);
+        masterBuildDoc = extractJSON<MasterBuildDocument>(architect1Result.text);
+
+        if (!masterBuildDoc) {
+            log('❌ Architect failed to produce Master Build Document. Aborting.');
+            log(`Raw Result: ${architect1Result.text}`);
+            return { message: 'Failed to create Master Build Plan.', operations: [], warnings: [] };
+        }
+
+        log(`✅ Master Build Document drafted with ${masterBuildDoc.buildOrder.length} steps:`);
+        log(JSON.stringify(masterBuildDoc, null, 2));
+
+        logAgentStep({
+            phase: 'Planning',
+            model: config.model,
+            response: architect1Result.text,
+            status: 'success'
+        });
     }
-
-    // Phase 1: The Architect Plans (Master Build Document)
-    log('🏛️ Phase 1: Architect drafting Master Build Document...');
-    const phase1Context = `BUILD BRIEF:\n${buildBriefText}\n\nCURRENT SCENE GRAPH:\n${prepare3DNodeTree(currentProject)}`;
-    const prompt1 = ARCHITECT_PHASE1_PROMPT
-        .replace('{USER_REQUEST}', request.message)
-        .replace('{CONTEXT}', phase1Context);
-
-    const architect1Result = await callProviderNoTools(config, [{ role: 'user', content: prompt1 }], undefined, signal);
-    const masterBuildDoc = extractJSON<MasterBuildDocument>(architect1Result.text);
-    
-    if (!masterBuildDoc) {
-        log('❌ Architect failed to produce Master Build Document. Aborting.');
-        log(`Raw Result: ${architect1Result.text}`);
-        return { message: 'Failed to create Master Build Plan.', operations: [], warnings: [] };
-    }
-    
-    log(`✅ Master Build Document drafted with ${masterBuildDoc.buildOrder.length} steps:`);
-    log(JSON.stringify(masterBuildDoc, null, 2));
-
-    logAgentStep({
-        phase: 'Planning',
-        model: config.model,
-        response: architect1Result.text,
-        status: 'success'
-    });
     let checklistItems = masterBuildDoc.completionChecklist || [];
     let punchList: PunchListItem[] = [];
     let lastInspectorReportText = 'No previous actions. Begin first component.';

@@ -8,7 +8,7 @@ export const maxDuration = 300; // Allow long running requests
 export async function POST(request: NextRequest) {
     try {
         const body: AIChatRequest = await request.json();
-        const { message, project, history, attachments, professionalContext } = body;
+        const { message, project, history, attachments, professionalContext, planningContext } = body;
 
         if (!message?.trim() && (!attachments || attachments.length === 0)) {
             return NextResponse.json(
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
                 try {
                     // Send to AI orchestrator with progress callback
                     const aiResponse = await sendChatToAI(
-                        { message, project, history: history || [], attachments, professionalContext },
+                        { message, project, history: history || [], attachments, professionalContext, planningContext },
                         materials,
                         (event) => {
                             try {
