@@ -14,7 +14,8 @@ import {
     ARCHITECT_PHASE2_PROMPT,
     CONTRACTOR_PROMPT,
     INSPECTOR_PROMPT,
-    RESEARCH_SPECIALIST_V3_PROMPT
+    RESEARCH_SPECIALIST_V3_PROMPT,
+    VISUAL_INSPECTOR_PROMPT
 } from './prompts-v3';
 
 // =============================================================================
@@ -69,6 +70,15 @@ interface ContractorLog {
     coordinatesUsed: string;
     decisionsExplained: string;
     toolsCalled: Array<{ tool: string; args: Record<string, unknown> }>;
+}
+
+interface VisualInspectorReport {
+    visionAlignment: { score: number; assessment: string };
+    aestheticIssues: Array<{ component: string; issue: string; suggestion: string }>;
+    detailOpportunities: string[];
+    positives: string[];
+    overallVerdict: 'ON_TRACK' | 'NEEDS_REFINEMENT' | 'MAJOR_DEVIATION';
+    summary: string;
 }
 
 interface InspectorReport {
@@ -178,6 +188,7 @@ export async function sendChatToAI_V3(
     let checklistItems = masterBuildDoc.completionChecklist || [];
     let punchList: PunchListItem[] = [];
     let lastInspectorReportText = 'No previous actions. Begin first component.';
+    let lastVisualInspectorText = 'No visual inspection yet.';
 
     // Phase 2: Contractor Dispatch Loop
     log('🔄 Phase 2: Entering Contractor Dispatch Loop...');
@@ -204,6 +215,9 @@ ${asciiPlan}
 
 LAST INSPECTOR REPORT:
 ${lastInspectorReportText}
+
+LAST VISUAL INSPECTOR REPORT (client-side aesthetic review):
+${lastVisualInspectorText}
 
 CHECKLIST STATE:
 ${JSON.stringify(checklistItems)}
@@ -393,6 +407,52 @@ ${JSON.stringify(checklistItems)}
         } else {
             lastInspectorReportText = 'Inspector failed to generate report format. Proceeding with caution.';
             log('⚠️ Inspector failed to produce structured report.');
+        }
+
+        // 4. VISUAL INSPECTOR — runs every 3 cycles, or on first cycle, to check aesthetic quality and vision alignment
+        const isVisualInspectionCycle = cycle === 1 || cycle % 3 === 0;
+        if (isVisualInspectionCycle) {
+            log('👁️ Visual Inspector reviewing build aesthetics and vision alignment...');
+
+            const completedIds = checklistItems.filter(c => c.complete).map(c => c.id);
+            const remainingIds = checklistItems.filter(c => !c.complete).map(c => c.id);
+
+            const visualPrompt = VISUAL_INSPECTOR_PROMPT
+                .replace('{USER_REQUEST}', request.message)
+                .replace('{BUILD_BRIEF}', buildBriefText)
+                .replace('{MASTER_PLAN}', JSON.stringify(masterBuildDoc, null, 2))
+                .replace('{SCENE_STATE}', prepare3DNodeTree(currentProject))
+                .replace('{ASCII_PLAN}', generateASCIIFloorPlan(currentProject))
+                .replace('{COMPLETED_COMPONENTS}', completedIds.join(', ') || 'None yet')
+                .replace('{REMAINING_COMPONENTS}', remainingIds.join(', ') || 'None — all planned components built');
+
+            try {
+                const visualResult = await callProviderNoTools(config, [{ role: 'user', content: visualPrompt }], undefined, signal);
+                const visualReport = extractJSON<VisualInspectorReport>(visualResult.text);
+
+                if (visualReport) {
+                    lastVisualInspectorText = JSON.stringify(visualReport, null, 2);
+                    log(`👁️ Visual Inspector verdict: ${visualReport.overallVerdict} (Vision Score: ${visualReport.visionAlignment.score}/10)`);
+                    if (visualReport.aestheticIssues.length > 0) {
+                        log(`   🎨 Aesthetic issues: ${visualReport.aestheticIssues.map(i => i.issue).join('; ')}`);
+                    }
+                    if (visualReport.detailOpportunities.length > 0) {
+                        log(`   ✨ Detail opportunities: ${visualReport.detailOpportunities.slice(0, 3).join('; ')}`);
+                    }
+                    log(`   💬 Client feedback: ${visualReport.summary}`);
+
+                    logAgentStep({
+                        phase: `Cycle ${cycle}: Visual Inspector`,
+                        model: config.model,
+                        response: visualResult.text,
+                        status: 'success'
+                    });
+                } else {
+                    log('⚠️ Visual Inspector failed to produce structured report.');
+                }
+            } catch (e) {
+                log(`⚠️ Visual Inspector error: ${(e as Error).message}`);
+            }
         }
     }
 
