@@ -19,89 +19,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getNextKey } from '@/lib/ai/key-manager';
+import { generateDesignImage } from '@/lib/ai/design-image';
 
 export const maxDuration = 180;
-
-// The correct model for Gemini native image generation (Nano Banana 2)
-const IMAGE_MODEL = 'gemini-3.1-flash-image-preview';
-
-// Helper to call Gemini image generation
-async function generateDesignImage(
-    prompt: string,
-    variantIndex: number,
-    apiKey: string,
-    existingSceneBase64?: string,
-    signal?: AbortSignal
-): Promise<string | null> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${IMAGE_MODEL}:generateContent?key=${apiKey}`;
-
-    const parts: any[] = [];
-
-    // If we have an existing scene screenshot, include it as context
-    if (existingSceneBase64) {
-        parts.push({
-            inlineData: {
-                mimeType: 'image/png',
-                data: existingSceneBase64
-            }
-        });
-    }
-
-    parts.push({ text: prompt });
-
-    const body = {
-        contents: [{
-            role: 'user',
-            parts
-        }],
-        generationConfig: {
-            responseModalities: ['Image', 'Text'],
-            temperature: 0.8 + (variantIndex * 0.15), // Increase temperature per variant for diversity
-        }
-    };
-
-    try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 150000);
-
-        if (signal) {
-            signal.addEventListener('abort', () => controller.abort(), { once: true });
-        }
-
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-            signal: controller.signal
-        });
-
-        clearTimeout(timeout);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`[Plan API] Image generation failed for variant ${variantIndex}: ${response.status}`, errorText);
-            return null;
-        }
-
-        const data = await response.json();
-        const candidate = data.candidates?.[0];
-        if (!candidate?.content?.parts) return null;
-
-        // Find the image part in the response
-        for (const part of candidate.content.parts) {
-            if (part.inlineData?.data) {
-                return part.inlineData.data; // base64 image data
-            }
-        }
-
-        console.warn(`[Plan API] No image found in response for variant ${variantIndex}. Parts:`, 
-            candidate.content.parts.map((p: any) => Object.keys(p)));
-        return null;
-    } catch (err) {
-        console.error(`[Plan API] Error generating variant ${variantIndex}:`, err);
-        return null;
-    }
-}
 
 // Classify instruction detail level
 function classifyDetailLevel(instruction: string): 'sparse' | 'moderate' | 'detailed' {

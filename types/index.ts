@@ -553,6 +553,40 @@ export interface AIChatRequest {
     data: string;
   }[];
   professionalContext?: string; // Professional client project context
+  planningContext?: PlanningContext; // Pre-built context from Plan & Design wizard
+}
+
+/** Master Build Document — single source of truth for the agentic build */
+export interface MasterBuildDocument {
+  target: string;
+  tier: string;
+  totalFootprint: { x: number; z: number };
+  origin: { x: number; y: number; z: number };
+  components: Array<{
+    id: string;
+    name: string;
+    type: string;
+    position: { x: number; y: number; z: number };
+    size: { w: number; h: number; d: number };
+    adjacentTo: string[];
+    watchItems: string[];
+  }>;
+  buildOrder: string[];
+  completionChecklist: Array<{
+    id: string;
+    description: string;
+    requiredNodeType: string;
+    priority: 'P0' | 'P1' | 'P2';
+    complete: boolean;
+  }>;
+  materialPalette: Array<{ role: string; materialId: string }>;
+  knownRisks: string[];
+}
+
+/** Pre-built planning context from the Plan & Design wizard */
+export interface PlanningContext {
+  masterBuildDocument: MasterBuildDocument;
+  buildBrief?: string;
 }
 
 /** Response from the AI chat endpoint */

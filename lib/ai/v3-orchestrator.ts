@@ -1,4 +1,4 @@
-import type { AIChatRequest, AIChatResponse, PSGProject, PSGNode, PSGOperation, Material } from '@/types';
+import type { AIChatRequest, AIChatResponse, PSGProject, PSGNode, PSGOperation, Material, MasterBuildDocument } from '@/types';
 import { getProviderConfig, type AIProviderConfig } from './key-manager';
 import { callProviderNoTools, callProviderWithTools, extractJSON, toolCallToOperation, reloadProjectState, normalizeMessages } from './base-orchestrator';
 import { validateOperation } from '@/lib/psg/validator';
@@ -30,25 +30,7 @@ export interface PunchListItem {
     history?: string[];
 }
 
-export interface MasterBuildDocument {
-    target: string;
-    tier: string;
-    totalFootprint: { x: number; z: number };
-    origin: { x: number; y: number; z: number };
-    components: Array<{
-        id: string;
-        name: string;
-        type: string;
-        position: { x: number; y: number; z: number };
-        size: { w: number; h: number; d: number };
-        adjacentTo: string[];
-        watchItems: string[];
-    }>;
-    buildOrder: string[];
-    completionChecklist: ChecklistItem[];
-    materialPalette: Array<{ role: string; materialId: string }>;
-    knownRisks: string[];
-}
+// MasterBuildDocument is now imported from @/types
 
 interface ArchitectDecision {
     reasoning_step_1_inspector: string;

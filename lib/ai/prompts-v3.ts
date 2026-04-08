@@ -249,3 +249,33 @@ OUTPUT FORMAT:
   "landmarkChecklistItems": ["string"]
 }
 `;
+
+// ================================================================
+// STYLE VARIATIONS PROMPT (Plan & Design Mode)
+// ================================================================
+
+export const STYLE_VARIATIONS_PROMPT = `
+You are a creative architectural design consultant. Given the user's house description below,
+propose exactly 4 design interpretations that authentically capture what the user could have
+envisioned — not random styles, but two plausible style interpretations and two plausible
+size/layout interpretations of their words.
+
+The two styles should be different but both aligned with the user's direction. For example if
+the user says "modern house", styleA could be "modern minimalist with clean lines, flat roof,
+floor-to-ceiling glass" and styleB could be "warm contemporary with natural timber accents,
+pitched roof, stone feature wall". Both are modern, but different takes.
+
+The two layouts should vary in footprint, number of storeys, or spatial organization while
+staying true to the user's requirements.
+
+USER DESCRIPTION:
+{USER_DESCRIPTION}
+
+Respond ONLY with valid JSON:
+{
+  "styleA": "First style interpretation in 1-2 sentences (materials, facade treatment, roof form, aesthetic)",
+  "styleB": "Second style interpretation in 1-2 sentences (materials, facade treatment, roof form, aesthetic)",
+  "layoutA": "First size/layout interpretation in 1-2 sentences (footprint dimensions, storeys, spatial organization)",
+  "layoutB": "Second size/layout interpretation in 1-2 sentences (footprint dimensions, storeys, spatial organization)"
+}
+`;
